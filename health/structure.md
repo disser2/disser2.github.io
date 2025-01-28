@@ -1,5 +1,7 @@
 # Künstliche Intelligenz in der Medizin
 
+## Anwendungen
+
 ## Forschung
 ### Forschungsprojekte
 ### Förderlinien
@@ -53,3 +55,20 @@
 - MDR
 - EU AI Act
 - DSGVO
+
+## Netzwerk
+### Fachmessen
+- DMEA
+- MEDICA
+- Deutscher Krankenhaustag
+- Digital Health Summit
+- BVM Workshop
+- DRG Forum
+
+### Fachpublikationen
+- Management & Krankenhaus
+
+### Inkubatoren & Netzwerke
+- Life Science Inkubator Bonn
+- BIO.NRW – Netzwerk Biotechnologie Nordrhein-Westfalen
+- KI.NRW
