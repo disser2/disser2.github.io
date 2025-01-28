@@ -40,6 +40,14 @@
 	- Artificial Intelligence in Medical Imaging (AI-Med)
 
 ## Daten
+### Datensätze
+- GGPONC
+- CARDIO:DE
+- BRONCO
+- PhysioNET
+  - MIMIC-III
+  - MIMIC-IV
+
 ### Interoperabilität
 - Terminologien:
   - Semantik
@@ -48,6 +56,7 @@
     - SNOMED CT
     - ICD
     - UMLS
+    - ICPM (--> OPS)
   - Syntax
     - DICOM
 
