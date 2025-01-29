@@ -6,6 +6,8 @@
 ### Forschungsprojekte
 ### Förderlinien
 - Innovationsfonds https://innovationsfonds.g-ba.de/
+- BMBF
+  - Interaktive Technologien https://www.interaktive-technologien.de/
 - Medizin-Informatik-Initiative https://www.medizininformatik-initiative.de/
   - SMITH
   - HighMED
@@ -48,6 +50,42 @@
 - LMU München
 	- Artificial Intelligence in Medical Imaging (AI-Med)
 
+### Wissenschaftliche Konferenzen
+- IEEE ICHI
+- MLHC
+- ACM CHIL
+- SAIL
+- AIME
+- HEALTHINF https://healthinf.scitevents.org/
+- AAAI W3PHIAI
+- Rheumatologie
+  - Deutscher Rheumakongress
+  - EULAR
+  - ACR
+
+### Journals
+- Healthcare Analytics (Elsevier)
+- npj digital medicine (IF 13)
+- Journal of Biomedical Informatics (IF 8)
+- Elsevier Artificial Intelligence in Medicine (IF 7.5)
+- JMIR - Journal of Medical Internet Research (IF 7)
+- International Journal of Medical Informatics (IF 5)
+- MDPI Biomedicines OpenAccess (IF 4)
+- Experimental Biology and Medicine (IF 4)
+- International Journal of Medical Sciences (IF 3.6)
+- Journal of Healthcare Informatics Research (IF 3)
+- Artificial Intelligence in the Life Sciences (Elsevier, OA)
+- Frontiers in Digital Health
+- BMC Medical Informatics and Decision Making
+- JCO Clinical Cancer Informatics
+- Public Health
+  - Frontiers in Public Health
+  - International Journal of Public Health
+  - BMC Public Health
+- Deutschland
+  - Bundesgesundheitsblatt
+  - Medizinrecht
+
 ## Daten
 ### Datensätze
 - GGPONC
@@ -56,24 +94,55 @@
 - PhysioNET
   - MIMIC-III
   - MIMIC-IV
+- i2b2
+- n2c2
+- MedMentions
+
+### Datenbanken
+- Pharmazie
+  - ABDATA
 
 ### Interoperabilität
 - Terminologien:
   - Semantik
-    - HL7
-    - LOINC
+    - LOINC - Logical Observation Identifiers Names and Codes
     - SNOMED CT
-    - ICD
+    - ICD https://www.icd-code.de/
     - UMLS
     - ICPM (--> OPS)
     - ICF - International Classification of Functioning, Disability and Health
+    - HPO - Human Phenotype Ontology
   - Syntax
     - DICOM
+    - HL7
+    - FHIR - Fast Healthcare Interoperability Resources
+    - CDA - Clinical Document Architecture
+  - CPT - Current Procedural Terminology
+  - RxNorm
+  - USC - Uniform System of Classification
+  - Medikation
+    - ATC - Anatomical Classification system
+    - NDC - National Drug Codes
+  - DRG - Diagnosis Related Groups
+  - ICHI - International Classification of Health Interventions
+  - UCUM - Unified Code for Units of Measure
+   
+## Modelle
+### Large Language Models
+- ClinicalBERT
+- MedBERT:DE
+- BioGottBERT
 
 ## Regulierung
-- MDR
+### Gesetzgebung
+- MDR, IVDR
 - EU AI Act
 - DSGVO
+
+### Behörden
+- Deutsches Institut für Medizinische Dokumentation und Information https://www.dimdi.de/dynamic/de/startseite/
+- InEK - Institut für das Entgeltsystem im Krankenhaus https://www.g-drg.de/
+- IQTIG
 
 ## Netzwerk
 ### Fachmessen
@@ -83,12 +152,16 @@
 - Digital Health Summit
 - BVM Workshop
 - DRG Forum
+- Hauptstadtkongress
+- Europäischer Gesundheitskongress
+- Gesundheitskongress des Westens
 
 ### Fachpublikationen
-- Management & Krankenhaus
+- Management & Krankenhaus https://www.management-krankenhaus.de/
 - Ärzteblatt https://www.aerzteblatt.de/
 
 ### Inkubatoren & Netzwerke
+- Plattform Lernende Systeme https://www.plattform-lernende-systeme.de/startseite.html
 - NRW
   - Life Science Inkubator Bonn
   - BIO.NRW – Netzwerk Biotechnologie Nordrhein-Westfalen
