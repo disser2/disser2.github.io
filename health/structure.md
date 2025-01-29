@@ -106,7 +106,7 @@
 - Terminologien:
   - Semantik
     - LOINC - Logical Observation Identifiers Names and Codes
-    - SNOMED CT
+    - SNOMED CT - Systematized Nomenclature of Medicine
     - ICD https://www.icd-code.de/
     - UMLS
     - ICPM (--> OPS)
@@ -117,6 +117,7 @@
     - HL7
     - FHIR - Fast Healthcare Interoperability Resources
     - CDA - Clinical Document Architecture
+    - GDT - Gerätedatentransfer
   - CPT - Current Procedural Terminology
   - RxNorm
   - USC - Uniform System of Classification
@@ -140,9 +141,19 @@
 - DSGVO
 
 ### Behörden
-- Deutsches Institut für Medizinische Dokumentation und Information https://www.dimdi.de/dynamic/de/startseite/
+- Gemeinsamer Bundesausschuss (G-BA)
+  - IQTIG
 - InEK - Institut für das Entgeltsystem im Krankenhaus https://www.g-drg.de/
-- IQTIG
+- IQWIG - Institut für Qualität und Wirtschaftlichkeit im Gesundheitswesen
+- BMG - Bundesministerium für Gesundheit
+  - Bundesamt für Arzneimittel und Medizinprodukte (BfArM)
+    - Deutsches Institut für Med. Dok. und Inf. (DIMDI)
+  - Bundeszentrale für gesundheitliche Aufklärung (BZgA)
+  - Paul-Ehrlich-Institut (PEI)
+  - Robert-Koch-Institut (RKI)
+    - STIKO
+  - Bundesamt für Soziale Sicherung (BAS)
+  - gematik
 
 ## Netzwerk
 ### Fachmessen
