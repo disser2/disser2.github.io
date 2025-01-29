@@ -5,13 +5,22 @@
 ## Forschung
 ### Forschungsprojekte
 ### Förderlinien
+- Innovationsfonds https://innovationsfonds.g-ba.de/
+- Medizin-Informatik-Initiative https://www.medizininformatik-initiative.de/
+  - SMITH
+  - HighMED
+  - DIFUTURE
+  - MIRACUM
+
 ### Forschungsinstitute
-- Fraunhofer IIS in Erlangen
-	- Digitale Pathologie und Computergestützte Mikroskopie
-- Fraunhofer-Institut für Bildgestützte Medizin MEVIS in Bremen
-	- Dr.-Ing. Markus Wenzel
-	- Grand Challenges COMIC – Consortium for Open Medical Image Computing
-- Fraunhofer IME in Frankfurt
+- Fraunhofer Gesellschaft
+	- Fraunhofer IIS in Erlangen
+		- Digitale Pathologie und Computergestützte Mikroskopie
+	- Fraunhofer-Institut für Bildgestützte Medizin MEVIS in Bremen
+		- Dr.-Ing. Markus Wenzel
+		- Grand Challenges COMIC – Consortium for Open Medical Image Computing
+	 - Fraunhofer IAIS in Sankt Augustin
+	- Fraunhofer ITMP in Frankfurt
 - Uniklinik RWTH Aachen
 	- Institut für Medizinische Informatik
 	- Comprehensive Diagnostic Center Aachen (CDCA)
@@ -57,6 +66,7 @@
     - ICD
     - UMLS
     - ICPM (--> OPS)
+    - ICF - International Classification of Functioning, Disability and Health
   - Syntax
     - DICOM
 
@@ -67,8 +77,8 @@
 
 ## Netzwerk
 ### Fachmessen
-- DMEA
-- MEDICA
+- DMEA (April, Berlin) https://www.dmea.de/
+- MEDICA (Düsseldorf, November) https://www.medica.de/
 - Deutscher Krankenhaustag
 - Digital Health Summit
 - BVM Workshop
@@ -76,8 +86,11 @@
 
 ### Fachpublikationen
 - Management & Krankenhaus
+- Ärzteblatt https://www.aerzteblatt.de/
 
 ### Inkubatoren & Netzwerke
-- Life Science Inkubator Bonn
-- BIO.NRW – Netzwerk Biotechnologie Nordrhein-Westfalen
-- KI.NRW
+- NRW
+  - Life Science Inkubator Bonn
+  - BIO.NRW – Netzwerk Biotechnologie Nordrhein-Westfalen
+  - KI.NRW https://www.ki.nrw/
+  - Cluster Medizin.NRW https://www.medizin.nrw/
