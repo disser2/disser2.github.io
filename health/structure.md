@@ -102,18 +102,27 @@
 - Pharmazie
   - ABDATA
 
+### Leitlinien
+- AWMF Leitlinien
+- CCG - Computable Clinical Guidelie
+
 ### Interoperabilität
 - Terminologien:
+  - Meta
+    - MeSH - Medical Subject Headings
+    - UMLS - United Medical Language System
   - Semantik
     - LOINC - Logical Observation Identifiers Names and Codes
     - SNOMED CT - Systematized Nomenclature of Medicine
     - ICD https://www.icd-code.de/
-    - UMLS
-    - ICPM (--> OPS)
+    - ICPM
+    - OPS - Operationen- und Prozedurenschlüssel
     - ICF - International Classification of Functioning, Disability and Health
+    - ICHI - International Classification of Health Interventions
     - HPO - Human Phenotype Ontology
+    - Orphanet - Nomenklatur der Seltenen Krankheiten
   - Syntax
-    - DICOM
+    - DICOM - Digital Imaging and Communications in Medicine
     - HL7
     - FHIR - Fast Healthcare Interoperability Resources
     - CDA - Clinical Document Architecture
@@ -133,6 +142,11 @@
 - ClinicalBERT
 - MedBERT:DE
 - BioGottBERT
+- GatorTron
+- BioMegatron
+- PubMedBERT
+- CheXbert
+- UmlsBERT
 
 ## Regulierung
 ### Gesetzgebung
