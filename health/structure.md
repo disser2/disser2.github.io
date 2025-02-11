@@ -119,6 +119,7 @@
     - OPS - Operationen- und Prozedurenschlüssel
     - ICF - International Classification of Functioning, Disability and Health
     - ICHI - International Classification of Health Interventions
+    - ICPC - International Classification of Primary Care
     - HPO - Human Phenotype Ontology
     - Orphanet - Nomenklatur der Seltenen Krankheiten
   - Syntax
