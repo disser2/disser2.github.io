@@ -1,6 +1,6 @@
 # Künstliche Intelligenz in der Medizin
 
-##### Table of Contents  
+##### Übersicht
 [Anwendungen](#anwendungen)  
 [Forschung](#forschung)  
 [Daten](#daten)  
