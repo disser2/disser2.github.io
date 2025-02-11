@@ -1,7 +1,14 @@
 # Künstliche Intelligenz in der Medizin
 
+##### Table of Contents  
+[Anwendungen](#anwendungen)  
+[Forschung](#forschung)  
+[Daten](#daten)  
+
+<a name="anwendungen"/>
 ## Anwendungen
 
+<a name="forschung"/>
 ## Forschung
 ### Forschungsprojekte
 ### Förderlinien
@@ -86,6 +93,8 @@
   - Bundesgesundheitsblatt
   - Medizinrecht
 
+
+<a name="daten"/>
 ## Daten
 ### Datensätze
 - GGPONC
