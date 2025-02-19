@@ -4,6 +4,7 @@
 [Anwendungen](#anwendungen)  
 [Forschung](#forschung)  
 [Daten](#daten)  
+[Modelle](#modelle)  
 
 <a name="anwendungen"/>
 ## Anwendungen
@@ -11,6 +12,11 @@
 <a name="forschung"/>
 ## Forschung
 ### Forschungsprojekte
+- Baden-Württemberg
+  - MEDI:CUS
+- Bayern
+  - Medical Valley Erlangen
+
 ### Förderlinien
 - Innovationsfonds https://innovationsfonds.g-ba.de/
 - BMBF
@@ -124,7 +130,7 @@
     - LOINC - Logical Observation Identifiers Names and Codes
     - SNOMED CT - Systematized Nomenclature of Medicine
     - ICD https://www.icd-code.de/
-    - ICPM
+    - ICPM - International Classification of Procedures in Medicine
     - OPS - Operationen- und Prozedurenschlüssel
     - ICF - International Classification of Functioning, Disability and Health
     - ICHI - International Classification of Health Interventions
@@ -133,7 +139,7 @@
     - Orphanet - Nomenklatur der Seltenen Krankheiten
   - Syntax
     - DICOM - Digital Imaging and Communications in Medicine
-    - HL7
+    - HL7 - Health Level 7
     - FHIR - Fast Healthcare Interoperability Resources
     - CDA - Clinical Document Architecture
     - GDT - Gerätedatentransfer
@@ -146,7 +152,8 @@
   - DRG - Diagnosis Related Groups
   - ICHI - International Classification of Health Interventions
   - UCUM - Unified Code for Units of Measure
-   
+
+<a name="modelle"/>
 ## Modelle
 ### Large Language Models
 - ClinicalBERT
@@ -160,13 +167,14 @@
 
 ## Regulierung
 ### Gesetzgebung
-- MDR, IVDR
+- MDR
+- IVDR
 - EU AI Act
 - DSGVO
 
 ### Behörden
 - Gemeinsamer Bundesausschuss (G-BA)
-  - IQTIG
+  - IQTIG - Institut für Qualitätssicherung und Transparenz im Gesundheitswesen
 - InEK - Institut für das Entgeltsystem im Krankenhaus https://www.g-drg.de/
 - IQWIG - Institut für Qualität und Wirtschaftlichkeit im Gesundheitswesen
 - BMG - Bundesministerium für Gesundheit
@@ -175,7 +183,7 @@
   - Bundeszentrale für gesundheitliche Aufklärung (BZgA)
   - Paul-Ehrlich-Institut (PEI)
   - Robert-Koch-Institut (RKI)
-    - STIKO
+    - STIKO - Ständige Impfkommission
   - Bundesamt für Soziale Sicherung (BAS)
   - gematik
 
