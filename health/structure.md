@@ -152,6 +152,9 @@
   - DRG - Diagnosis Related Groups
   - ICHI - International Classification of Health Interventions
   - UCUM - Unified Code for Units of Measure
+ 
+### Frameworks
+- METRIC for assessing data quality for trustworthy AI in medicinehttps://doi.org/10.1038/s41746-024-01196-4
 
 <a name="modelle"/>
 ## Modelle
