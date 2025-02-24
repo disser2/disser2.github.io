@@ -154,7 +154,8 @@
   - UCUM - Unified Code for Units of Measure
  
 ### Frameworks
-- METRIC for assessing data quality for trustworthy AI in medicinehttps://doi.org/10.1038/s41746-024-01196-4
+- METRIC for assessing data quality for trustworthy AI in medicine https://doi.org/10.1038/s41746-024-01196-4
+- FUTURE-AI Guiding Principles and Consensus Recommendations for Trustworthy Artificial Intelligence in Medical Imaging https://doi.org/10.48550/arXiv.2109.09658
 
 <a name="modelle"/>
 ## Modelle
