@@ -137,6 +137,7 @@
     - ICPC - International Classification of Primary Care
     - HPO - Human Phenotype Ontology
     - Orphanet - Nomenklatur der Seltenen Krankheiten
+    - NANDA - North American Nursing Diagnosis Association (Pflege)
   - Syntax
     - DICOM - Digital Imaging and Communications in Medicine
     - HL7 - Health Level 7
