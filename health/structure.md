@@ -20,8 +20,8 @@
 ### Förderlinien
 - Innovationsfonds https://innovationsfonds.g-ba.de/
 - BMBF
-  - Interaktive Technologien https://www.interaktive-technologien.de/
-- Medizin-Informatik-Initiative https://www.medizininformatik-initiative.de/
+  - Interaktive Technologien <a href="https://www.interaktive-technologien.de/">https://www.interaktive-technologien.de/</a>
+- Medizin-Informatik-Initiative <a href="https://www.medizininformatik-initiative.de/">https://www.medizininformatik-initiative.de/</a>
   - SMITH
   - HighMED
   - DIFUTURE
@@ -69,7 +69,7 @@
 - ACM CHIL
 - SAIL
 - AIME
-- HEALTHINF https://healthinf.scitevents.org/
+- HEALTHINF <a href="https://healthinf.scitevents.org/">https://healthinf.scitevents.org/</a>
 - AAAI W3PHIAI
 - Rheumatologie
   - Deutscher Rheumakongress
@@ -155,8 +155,8 @@
   - UCUM - Unified Code for Units of Measure
  
 ### Frameworks
-- METRIC for assessing data quality for trustworthy AI in medicine https://doi.org/10.1038/s41746-024-01196-4
-- FUTURE-AI Guiding Principles and Consensus Recommendations for Trustworthy Artificial Intelligence in Medical Imaging https://doi.org/10.48550/arXiv.2109.09658
+- METRIC for assessing data quality for trustworthy AI in medicine <a href="https://doi.org/10.1038/s41746-024-01196-4">https://doi.org/10.1038/s41746-024-01196-4</a>
+- FUTURE-AI Guiding Principles and Consensus Recommendations for Trustworthy Artificial Intelligence in Medical Imaging <a href="https://doi.org/10.48550/arXiv.2109.09658">https://doi.org/10.48550/arXiv.2109.09658</a>
 
 <a name="modelle"/>
 ## Modelle
