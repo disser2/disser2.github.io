@@ -138,6 +138,7 @@
     - HPO - Human Phenotype Ontology
     - Orphanet - Nomenklatur der Seltenen Krankheiten
     - NANDA - North American Nursing Diagnosis Association (Pflege)
+    - Alpha-ID Identifikationsnummer für Diagnosen
   - Syntax
     - DICOM - Digital Imaging and Communications in Medicine
     - HL7 - Health Level 7
