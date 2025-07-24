@@ -116,6 +116,12 @@
 ### Datenbanken
 - Pharmazie
   - ABDATA
+ 
+### Register
+- Registerdatenbank der medizinischen Register in Deutschland https://registersuche.bqs.de/
+- Krebsregister
+- Implantateregister (DIMDI, verpflichtend, über Meldung über TI)
+- TraumaRegister (DGU, freiwillig, über 500k Patienten)
 
 ### Leitlinien
 - AWMF Leitlinien
