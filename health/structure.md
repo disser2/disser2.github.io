@@ -214,6 +214,7 @@
 ### Fachpublikationen
 - Management & Krankenhaus https://www.management-krankenhaus.de/
 - Ärzteblatt https://www.aerzteblatt.de/
+- kma online https://www.kma-online.de/
 
 ### Inkubatoren & Netzwerke
 - Plattform Lernende Systeme https://www.plattform-lernende-systeme.de/startseite.html
