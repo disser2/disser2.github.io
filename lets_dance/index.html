@@ -1,0 +1,684 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Let's Dance 2025 – Datenanalyse</title>
+  <style>
+    /* ── Color palette ── */
+    :root {
+      --c1: #CCF2FF; /* 20/5/0/0  */
+      --c2: #80D9FF; /* 50/15/0/0 */
+      --c3: #3399FF; /* 80/40/0/0 */
+      --c4: #1360BF; /* 90/50/0/25 */
+      --c5: #002A8C; /* 100/70/0/45 */
+      --gray-light: #f4f6f8;
+      --gray-mid:   #dce2ea;
+      --gray-dark:  #5a6473;
+      --text:       #1a2030;
+      --radius:     6px;
+    }
+
+    /* ── Reset & base ── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: "Segoe UI", Arial, sans-serif;
+      font-size: 15px;
+      color: var(--text);
+      background: var(--gray-light);
+      line-height: 1.6;
+    }
+
+    /* ── Header ── */
+    header {
+      background: var(--c5);
+      color: #fff;
+      padding: 20px 40px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 20px;
+    }
+    header .header-left h1 {
+      font-size: 1.6rem;
+      font-weight: 700;
+      letter-spacing: 0.3px;
+    }
+    header .header-left p {
+      font-size: 0.88rem;
+      color: var(--c2);
+      margin-top: 3px;
+    }
+
+    /* ── Top toolbar ── */
+    .toolbar {
+      background: var(--c4);
+      padding: 8px 40px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+    }
+    .toolbar span {
+      color: var(--c2);
+      font-size: 0.82rem;
+      margin-right: 4px;
+    }
+    .btn {
+      border: none;
+      border-radius: var(--radius);
+      cursor: pointer;
+      font-size: 0.82rem;
+      font-weight: 600;
+      padding: 5px 14px;
+      transition: background 0.15s, color 0.15s;
+    }
+    .btn-light {
+      background: rgba(255,255,255,0.15);
+      color: #fff;
+    }
+    .btn-light:hover { background: rgba(255,255,255,0.28); }
+    .btn-export {
+      background: var(--c3);
+      color: #fff;
+      margin-left: auto;
+    }
+    .btn-export:hover { background: #2280e6; }
+
+    /* ── Nav pill links (section jump) ── */
+    .nav-pills {
+      background: var(--c5);
+      padding: 0 40px;
+      display: flex;
+      gap: 2px;
+      overflow-x: auto;
+    }
+    .nav-pills a {
+      display: inline-block;
+      padding: 8px 16px;
+      font-size: 0.82rem;
+      font-weight: 600;
+      color: var(--c2);
+      text-decoration: none;
+      white-space: nowrap;
+      border-bottom: 3px solid transparent;
+      transition: border-color 0.15s, color 0.15s;
+    }
+    .nav-pills a:hover { color: #fff; border-bottom-color: var(--c3); }
+
+    /* ── Main layout ── */
+    main { max-width: 1400px; margin: 0 auto; padding: 32px 24px 60px; }
+
+    /* ── Section ── */
+    .section {
+      background: #fff;
+      border-radius: var(--radius);
+      box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+      margin-bottom: 28px;
+      overflow: hidden;
+    }
+    .section-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 16px 24px;
+      background: var(--c4);
+      cursor: pointer;
+      user-select: none;
+    }
+    .section-header h2 {
+      flex: 1;
+      font-size: 1.05rem;
+      font-weight: 700;
+      color: #fff;
+    }
+    .section-header .section-count {
+      font-size: 0.78rem;
+      color: var(--c2);
+      background: rgba(255,255,255,0.12);
+      padding: 2px 9px;
+      border-radius: 20px;
+    }
+    .section-header .toggle-icon {
+      color: var(--c2);
+      font-size: 1rem;
+      transition: transform 0.2s;
+    }
+    .section-header.collapsed .toggle-icon { transform: rotate(-90deg); }
+    .section-body {
+      padding: 24px;
+    }
+    .section-body.hidden { display: none; }
+
+    /* ── Figure grid ── */
+    .fig-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(480px, 1fr));
+      gap: 24px;
+    }
+    .fig-grid.wide {
+      grid-template-columns: 1fr;
+    }
+    .fig-grid.two-col {
+      grid-template-columns: repeat(2, 1fr);
+    }
+
+    /* ── Figure card ── */
+    .fig-card {
+      border: 1px solid var(--gray-mid);
+      border-radius: var(--radius);
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      transition: box-shadow 0.15s;
+    }
+    .fig-card:hover { box-shadow: 0 4px 14px rgba(0,0,0,0.10); }
+    .fig-card .fig-img-wrap {
+      background: #fafbfc;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      min-height: 200px;
+      cursor: zoom-in;
+    }
+    .fig-card .fig-img-wrap img {
+      width: 100%;
+      height: auto;
+      display: block;
+      transition: transform 0.2s;
+    }
+    .fig-card .fig-img-wrap:hover img { transform: scale(1.015); }
+    .fig-card .fig-img-wrap .img-missing {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+      color: #aab4c0;
+      font-size: 0.82rem;
+      padding: 40px 20px;
+      text-align: center;
+    }
+    .fig-card .fig-img-wrap .img-missing svg {
+      width: 40px; height: 40px; opacity: 0.35;
+    }
+
+    .fig-caption {
+      padding: 14px 16px;
+      flex: 1;
+      border-top: 1px solid var(--gray-mid);
+    }
+    .fig-caption h3 {
+      font-size: 0.92rem;
+      font-weight: 700;
+      color: var(--c4);
+      margin-bottom: 5px;
+    }
+    .fig-caption p {
+      font-size: 0.83rem;
+      color: var(--gray-dark);
+      line-height: 1.55;
+    }
+    .fig-caption .fig-tag {
+      display: inline-block;
+      margin-top: 8px;
+      padding: 2px 8px;
+      border-radius: 20px;
+      font-size: 0.72rem;
+      font-weight: 600;
+      background: var(--c1);
+      color: var(--c4);
+    }
+
+    /* ── Lightbox ── */
+    #lightbox {
+      display: none;
+      position: fixed; inset: 0;
+      background: rgba(0,18,60,0.85);
+      z-index: 1000;
+      align-items: center;
+      justify-content: center;
+    }
+    #lightbox.active { display: flex; }
+    #lightbox img {
+      max-width: 92vw;
+      max-height: 90vh;
+      border-radius: var(--radius);
+      box-shadow: 0 8px 40px rgba(0,0,0,0.6);
+    }
+    #lightbox-close {
+      position: fixed;
+      top: 18px; right: 24px;
+      background: rgba(255,255,255,0.15);
+      border: none; border-radius: 50%;
+      width: 38px; height: 38px;
+      cursor: pointer;
+      color: #fff; font-size: 1.2rem;
+      display: flex; align-items: center; justify-content: center;
+    }
+    #lightbox-close:hover { background: rgba(255,255,255,0.3); }
+
+    /* ── Intro block ── */
+    .intro {
+      background: var(--c1);
+      border-left: 4px solid var(--c3);
+      border-radius: var(--radius);
+      padding: 16px 20px;
+      margin-bottom: 28px;
+      font-size: 0.88rem;
+      color: var(--c5);
+    }
+    .intro strong { color: var(--c4); }
+
+    /* ── Footer ── */
+    footer {
+      background: var(--c5);
+      color: rgba(255,255,255,0.65);
+      text-align: center;
+      padding: 18px 24px;
+      font-size: 0.8rem;
+    }
+    footer strong { color: #fff; }
+
+    /* ── Responsive ── */
+    @media (max-width: 900px) {
+      header { padding: 16px 20px; }
+      .toolbar { padding: 8px 16px; }
+      .nav-pills { padding: 0 16px; }
+      main { padding: 20px 12px 48px; }
+      .fig-grid { grid-template-columns: 1fr; }
+      .fig-grid.two-col { grid-template-columns: 1fr; }
+    }
+
+    @media print {
+      .toolbar, .nav-pills, #lightbox, .btn { display: none !important; }
+      .section-body.hidden { display: block !important; }
+      .section-header { cursor: default; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ── HEADER ── -->
+<header>
+  <div class="header-left">
+    <h1>Let's Dance 2025 – Datenanalyse</h1>
+    <p>Statistische Auswertung der Sendungsdaten: Jury, Tanzarten, Profitänzer und Saisonverlauf</p>
+  </div>
+</header>
+
+<!-- ── SECTION NAVIGATION ── -->
+<nav class="nav-pills" aria-label="Abschnitte">
+  <a href="#sec-jury">Jury</a>
+  <a href="#sec-tanzarten">Tanzarten</a>
+  <a href="#sec-verlauf">Zeitverlauf</a>
+  <a href="#sec-profis">Profitänzer</a>
+  <a href="#sec-jurydetail">Jury-Präferenzen</a>
+  <a href="#sec-staffeln">Staffelverlauf</a>
+</nav>
+
+<!-- ── TOOLBAR ── -->
+<div class="toolbar">
+  <span>Abschnitte:</span>
+  <button class="btn btn-light" id="btn-expand-all">Alle aufklappen</button>
+  <button class="btn btn-light" id="btn-collapse-all">Alle einklappen</button>
+  <button class="btn btn-export" id="btn-export" onclick="window.print()">Drucken / PDF exportieren</button>
+</div>
+
+<!-- ── MAIN CONTENT ── -->
+<main>
+
+  <div class="intro">
+    <strong>Hinweis:</strong> Die Abbildungen werden aus dem Unterordner <code>visuals/</code> geladen.
+    Bitte die generierten Bilddateien (Format: <code>YYYY-MM-DD_name.png</code>) in diesen Ordner ablegen.
+    Das Datum kann im folgenden Skript-Block angepasst werden.
+  </div>
+
+  <!-- ===== 1. JURY ===== -->
+  <section class="section" id="sec-jury">
+    <div class="section-header" onclick="toggleSection(this)">
+      <h2>Jury – Bewertungsverhalten</h2>
+      <span class="section-count">3 Abbildungen</span>
+      <span class="toggle-icon">&#9660;</span>
+    </div>
+    <div class="section-body">
+      <div class="fig-grid">
+
+        <div class="fig-card">
+          <div class="fig-img-wrap" onclick="openLightbox(this)">
+            <img data-stem="judges_comparison" src="" alt="Vergleich der Jurybewertungen (KDE)" />
+          </div>
+          <div class="fig-caption">
+            <h3>Vergleich der Jurybewertungen</h3>
+            <p>KDE-Dichtekurven der Einzelwertungen von González, Mabuse und Llambi. Die Kurven zeigen, welche Punktzahlen die Juroren am häufigsten vergeben und ob ein Juror systematisch strenger oder milder bewertet als die anderen.</p>
+            <span class="fig-tag">Jury</span>
+          </div>
+        </div>
+
+        <div class="fig-card">
+          <div class="fig-img-wrap" onclick="openLightbox(this)">
+            <img data-stem="judges_dance_boxplot_sorted" src="" alt="Jurybewertungen nach Tanzstil" />
+          </div>
+          <div class="fig-caption">
+            <h3>Jurybewertungen nach Tanzstil (sortiert)</h3>
+            <p>Box-Plots der Einzelbewertungen, aufgeteilt nach Juror und Tanzart, sortiert nach dem Gesamtdurchschnitt. Ermöglicht den direkten Vergleich, ob die Juroren bei bestimmten Tanzstilen unterschiedlich streng oder großzügig sind.</p>
+            <span class="fig-tag">Jury</span>
+            <span class="fig-tag">Tanzarten</span>
+          </div>
+        </div>
+
+        <div class="fig-card">
+          <div class="fig-img-wrap" onclick="openLightbox(this)">
+            <img data-stem="judge_dance_heatmap" src="" alt="Heatmap Juror x Tanzstil" />
+          </div>
+          <div class="fig-caption">
+            <h3>Heatmap: Juror x Tanzstil</h3>
+            <p>Mittlere Einzelbewertung je Juror und Tanzart. Helle Felder markieren überdurchschnittlich hohe, dunkle Felder unterdurchschnittlich niedrige Wertungen. So lassen sich spezifische Vorlieben oder Abneigungen einzelner Juroren für bestimmte Tanzstile ablesen.</p>
+            <span class="fig-tag">Jury</span>
+            <span class="fig-tag">Tanzarten</span>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== 2. TANZARTEN ===== -->
+  <section class="section" id="sec-tanzarten">
+    <div class="section-header" onclick="toggleSection(this)">
+      <h2>Tanzarten</h2>
+      <span class="section-count">2 Abbildungen</span>
+      <span class="toggle-icon">&#9660;</span>
+    </div>
+    <div class="section-body">
+      <div class="fig-grid">
+
+        <div class="fig-card">
+          <div class="fig-img-wrap" onclick="openLightbox(this)">
+            <img data-stem="dance_average_scores_bar" src="" alt="Durchschnittsbewertungen nach Tanzstil" />
+          </div>
+          <div class="fig-caption">
+            <h3>Durchschnittsbewertungen nach Tanzstil</h3>
+            <p>Balkendiagramm der mittleren Gesamtpunktzahl je Tanzart, farblich nach Tanzkategorie gegliedert (Ballroom, Latin, Swing, Folk/Kulturell, Modern/Contemporary). Die rote gestrichelte Linie markiert den übergeordneten Gesamtdurchschnitt. Die Anzahl der Auftritte je Tanzart ist als n-Wert auf den Balken angegeben.</p>
+            <span class="fig-tag">Tanzarten</span>
+          </div>
+        </div>
+
+        <div class="fig-card">
+          <div class="fig-img-wrap" onclick="openLightbox(this)">
+            <img data-stem="lets_dance_visualization" src="" alt="Tanzarten über die Staffeln" />
+          </div>
+          <div class="fig-caption">
+            <h3>Tanzarten über die Staffeln</h3>
+            <p>Gestapeltes Balkendiagramm der absoluten Häufigkeit je Tanzart pro Staffel. Zeigt, welche Tänze in welchen Staffeln wie oft eingesetzt wurden und ob sich die Programmzusammenstellung über die Jahre verändert hat.</p>
+            <span class="fig-tag">Tanzarten</span>
+            <span class="fig-tag">Staffeln</span>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== 3. ZEITVERLAUF ===== -->
+  <section class="section" id="sec-verlauf">
+    <div class="section-header" onclick="toggleSection(this)">
+      <h2>Zeitverlauf</h2>
+      <span class="section-count">4 Abbildungen</span>
+      <span class="toggle-icon">&#9660;</span>
+    </div>
+    <div class="section-body">
+      <div class="fig-grid">
+
+        <div class="fig-card">
+          <div class="fig-img-wrap" onclick="openLightbox(this)">
+            <img data-stem="scores_by_show_number" src="" alt="Durchschnittsbewertungen je Sendung" />
+          </div>
+          <div class="fig-caption">
+            <h3>Durchschnittsbewertungen je Sendung</h3>
+            <p>Liniendiagramm der mittleren Jurorwertungen über alle Sendungsnummern hinweg, getrennt nach den drei Juroren sowie als Gesamtdurchschnitt. Annotationen zeigen den genauen Durchschnittswert und die Anzahl der Auftritte pro Sendung.</p>
+            <span class="fig-tag">Verlauf</span>
+            <span class="fig-tag">Jury</span>
+          </div>
+        </div>
+
+        <div class="fig-card">
+          <div class="fig-img-wrap" onclick="openLightbox(this)">
+            <img data-stem="score_distribution_by_show" src="" alt="Punkteverteilung je Sendung" />
+          </div>
+          <div class="fig-caption">
+            <h3>Punkteverteilung je Sendung</h3>
+            <p>Box-Plot der Gesamtpunktzahlen je Sendung mit zusätzlichen Einzelpunkten (Strip-Plot). Die rote Linie verbindet die Sendungsdurchschnitte. Zeigt, wie weit die Punktespanne in den späteren Sendungen auseinandergeht – typischerweise steigen die Scores mit weniger verbleibenden Paaren.</p>
+            <span class="fig-tag">Verlauf</span>
+          </div>
+        </div>
+
+        <div class="fig-card">
+          <div class="fig-img-wrap" onclick="openLightbox(this)">
+            <img data-stem="celebrity_progression" src="" alt="Leistungsentwicklung der Promis" />
+          </div>
+          <div class="fig-caption">
+            <h3>Leistungsentwicklung der Promis</h3>
+            <p>Individuelle Punktverläufe je Promitänzer über alle Sendungen, mit Annotationen der jeweiligen Tanzart. Ermöglicht es, Lernkurven, Ausreißersendungen und das Ausscheiden einzelner Teilnehmer nachzuverfolgen.</p>
+            <span class="fig-tag">Verlauf</span>
+            <span class="fig-tag">Promis</span>
+          </div>
+        </div>
+
+        <div class="fig-card">
+          <div class="fig-img-wrap" onclick="openLightbox(this)">
+            <img data-stem="dance_show_heatmap" src="" alt="Heatmap Tanzstil x Sendungsnummer" />
+          </div>
+          <div class="fig-caption">
+            <h3>Heatmap: Tanzstil x Sendungsnummer</h3>
+            <p>Mittlere Gesamtpunktzahl je Tanzart und Sendungsnummer. Zeigt, in welchen Shows bestimmte Tänze besonders gut oder schlecht bewertet wurden, und ob der Einsatz von Tanzstilen einem Muster über den Staffelverlauf folgt.</p>
+            <span class="fig-tag">Verlauf</span>
+            <span class="fig-tag">Tanzarten</span>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== 4. PROFITÄNZER ===== -->
+  <section class="section" id="sec-profis">
+    <div class="section-header" onclick="toggleSection(this)">
+      <h2>Profitänzer</h2>
+      <span class="section-count">3 Abbildungen</span>
+      <span class="toggle-icon">&#9660;</span>
+    </div>
+    <div class="section-body">
+      <div class="fig-grid">
+
+        <div class="fig-card">
+          <div class="fig-img-wrap" onclick="openLightbox(this)">
+            <img data-stem="professional_dancers_avg_scores" src="" alt="Durchschnittspunktzahlen der Profitänzer" />
+          </div>
+          <div class="fig-caption">
+            <h3>Durchschnittspunktzahlen der Profitänzer</h3>
+            <p>Ranking aller Profitänzer nach ihrer mittleren Gesamtpunktzahl. Die Anzahl gewerteter Auftritte steht in Klammern. Die gestrichelte rote Linie zeigt den Gesamtdurchschnitt. Da die Promis die Ergebnisse mitbestimmen, spiegelt dieses Ranking indirekt auch die Qualität der zugelosten Promitänzer wider.</p>
+            <span class="fig-tag">Profis</span>
+          </div>
+        </div>
+
+        <div class="fig-card">
+          <div class="fig-img-wrap" onclick="openLightbox(this)">
+            <img data-stem="dancer_dance_heatmap" src="" alt="Heatmap Profitänzer x Tanzstil" />
+          </div>
+          <div class="fig-caption">
+            <h3>Heatmap: Profitänzer x Tanzstil</h3>
+            <p>Mittlere Punktzahl je Profitänzer und Tanzart. Leere Felder bedeuten, dass dieser Profi den betreffenden Tanz in der Saison nicht getanzt hat. Farbunterschiede innerhalb einer Zeile deuten auf Stärken oder Schwächen in bestimmten Tanzstilen hin.</p>
+            <span class="fig-tag">Profis</span>
+            <span class="fig-tag">Tanzarten</span>
+          </div>
+        </div>
+
+        <div class="fig-card">
+          <div class="fig-img-wrap" onclick="openLightbox(this)">
+            <img data-stem="professional_dancer_boxplot" src="" alt="Punkteverteilung der Profitänzer" />
+          </div>
+          <div class="fig-caption">
+            <h3>Punkteverteilung der Profitänzer (nach Durchschnitt sortiert)</h3>
+            <p>Horizontale Box-Plots je Profitänzer, farblich nach Geschlecht kodiert (Rosa = weiblich, Blau = männlich). Die weißen Punkte markieren den Mittelwert. Zusätzliche schwarze Punkte zeigen alle Einzelauftritte. Vertikale Referenzlinien bei 15, 20 und 25 Punkten helfen bei der Einordnung.</p>
+            <span class="fig-tag">Profis</span>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== 5. JURY-PRÄFERENZEN ===== -->
+  <section class="section" id="sec-jurydetail">
+    <div class="section-header" onclick="toggleSection(this)">
+      <h2>Jury-Präferenzen im Detail</h2>
+      <span class="section-count">3 Abbildungen</span>
+      <span class="toggle-icon">&#9660;</span>
+    </div>
+    <div class="section-body">
+      <div class="fig-grid">
+
+        <div class="fig-card">
+          <div class="fig-img-wrap" onclick="openLightbox(this)">
+            <img data-stem="jury_vs_profi" src="" alt="Jury x Profitänzer Heatmap" />
+          </div>
+          <div class="fig-caption">
+            <h3>Jury x Profitänzer – Mittlere Einzelwertungen</h3>
+            <p>Divergierende Heatmap mit dem Gesamtdurchschnitt als Referenzpunkt (Farbmitte). Grüne Felder = überdurchschnittliche Wertung, rote Felder = unterdurchschnittliche Wertung. Zeigt, ob einzelne Juroren bestimmte Profitänzer systematisch bevorzugen oder benachteiligen.</p>
+            <span class="fig-tag">Jury</span>
+            <span class="fig-tag">Profis</span>
+          </div>
+        </div>
+
+        <div class="fig-card">
+          <div class="fig-img-wrap" onclick="openLightbox(this)">
+            <img data-stem="jury_vs_dance_type" src="" alt="Jury x Tanzstil Heatmap" />
+          </div>
+          <div class="fig-caption">
+            <h3>Jury x Tanzstil – Mittlere Einzelwertungen</h3>
+            <p>Analoges Format zur vorherigen Abbildung, jedoch mit Tanzarten als Zeilen. Der Balken rechts zeigt die Anzahl der Auftritte je Tanzart und gibt damit an, wie belastbar die jeweiligen Durchschnittswerte sind. Seltene Tänze (niedriges n) sind entsprechend mit Vorsicht zu interpretieren.</p>
+            <span class="fig-tag">Jury</span>
+            <span class="fig-tag">Tanzarten</span>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== 6. STAFFELVERLAUF ===== -->
+  <section class="section" id="sec-staffeln">
+    <div class="section-header" onclick="toggleSection(this)">
+      <h2>Staffelverlauf – Verteilung der Jurywertungen</h2>
+      <span class="section-count">1 Abbildung</span>
+      <span class="toggle-icon">&#9660;</span>
+    </div>
+    <div class="section-body">
+      <div class="fig-grid wide">
+
+        <div class="fig-card">
+          <div class="fig-img-wrap" onclick="openLightbox(this)">
+            <img data-stem="staffel_score_distribution" src="" alt="Verteilung der Jurywertungen je Sendung und Staffel" />
+          </div>
+          <div class="fig-caption">
+            <h3>Verteilung der Jurywertungen je Sendung und Staffel</h3>
+            <p>Normierte gestapelte Balkendiagramme (ein Subplot je Staffel): Die Balkenhohe entspricht stets 100 %, die Segmente zeigen den prozentualen Anteil jedes Punktwerts (1 bis 10) an allen Jurywertungen der jeweiligen Sendung. Wechsel von eher roten (niedrige Noten) zu eher grünen (hohe Noten) Balken im Staffelverlauf deuten auf eine steigende Scoring-Tendenz hin, wie sie typischerweise durch das Ausscheiden schwächerer Paare entsteht.</p>
+            <span class="fig-tag">Staffeln</span>
+            <span class="fig-tag">Jury</span>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<!-- ── FOOTER ── -->
+<footer>
+  <strong>(c) Dario Antweiler</strong> &nbsp;|&nbsp;
+  <span id="footer-date"></span>
+</footer>
+
+<!-- ── LIGHTBOX ── -->
+<div id="lightbox" onclick="closeLightbox()">
+  <button id="lightbox-close" onclick="closeLightbox()">&#10005;</button>
+  <img id="lightbox-img" src="" alt="" />
+</div>
+
+<script>
+  // ── Date configuration ──────────────────────────────────────────────
+  // Set this to the date prefix used when saving the figures, e.g. "2026-05-12"
+  const FIGURE_DATE = "2026-05-14";
+  const VISUALS_DIR = "visuals";
+
+  // ── Footer date ─────────────────────────────────────────────────────
+  document.getElementById("footer-date").textContent =
+    new Date().toLocaleDateString("de-DE", { year: "numeric", month: "long", day: "numeric" });
+
+  // ── Inject image src from data-stem ─────────────────────────────────
+  document.querySelectorAll("img[data-stem]").forEach(img => {
+    const stem = img.getAttribute("data-stem");
+    img.src = `${VISUALS_DIR}/${FIGURE_DATE}_${stem}.png`;
+    img.addEventListener("error", function () {
+      const wrap = this.closest(".fig-img-wrap");
+      if (wrap && !wrap.querySelector(".img-missing")) {
+        this.style.display = "none";
+        const placeholder = document.createElement("div");
+        placeholder.className = "img-missing";
+        placeholder.innerHTML = `
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+            <rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9l4-4 4 4 4-4 4 4"/>
+            <circle cx="8.5" cy="14.5" r="1.5"/>
+          </svg>
+          <span>${FIGURE_DATE}_${stem}.png</span>
+          <span>Bild noch nicht hochgeladen</span>`;
+        wrap.appendChild(placeholder);
+      }
+    });
+  });
+
+  // ── Section toggle ───────────────────────────────────────────────────
+  function toggleSection(header) {
+    const body = header.nextElementSibling;
+    const collapsed = body.classList.toggle("hidden");
+    header.classList.toggle("collapsed", collapsed);
+  }
+
+  document.getElementById("btn-expand-all").addEventListener("click", () => {
+    document.querySelectorAll(".section-body").forEach(b => b.classList.remove("hidden"));
+    document.querySelectorAll(".section-header").forEach(h => h.classList.remove("collapsed"));
+  });
+
+  document.getElementById("btn-collapse-all").addEventListener("click", () => {
+    document.querySelectorAll(".section-body").forEach(b => b.classList.add("hidden"));
+    document.querySelectorAll(".section-header").forEach(h => h.classList.add("collapsed"));
+  });
+
+  // ── Lightbox ─────────────────────────────────────────────────────────
+  function openLightbox(wrap) {
+    const img = wrap.querySelector("img");
+    if (!img || !img.src || img.style.display === "none") return;
+    document.getElementById("lightbox-img").src = img.src;
+    document.getElementById("lightbox-img").alt = img.alt;
+    document.getElementById("lightbox").classList.add("active");
+    document.body.style.overflow = "hidden";
+  }
+
+  function closeLightbox() {
+    document.getElementById("lightbox").classList.remove("active");
+    document.body.style.overflow = "";
+  }
+
+  document.addEventListener("keydown", e => {
+    if (e.key === "Escape") closeLightbox();
+  });
+</script>
+</body>
+</html>
