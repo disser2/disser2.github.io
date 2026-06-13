@@ -1,0 +1,692 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Galaxy Conquest — Rotating Galaxy Expansion Simulator</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --c1:#CCF2FF; /* CMYK 20/5/0/0   */
+  --c2:#80D9FF; /* CMYK 50/15/0/0  */
+  --c3:#3399FF; /* CMYK 80/40/0/0  */
+  --c4:#1360BF; /* CMYK 90/50/0/25 */
+  --c5:#002A8C; /* CMYK 100/70/0/45*/
+  --bg:#05080F;
+  --panel:#0A111E;
+  --panel2:#0D1626;
+  --line:rgba(128,217,255,0.14);
+  --txt:#D8E6F2;
+  --txt-dim:#7E90A6;
+  --mono:'IBM Plex Mono',ui-monospace,monospace;
+  --sans:'IBM Plex Sans',system-ui,sans-serif;
+  --disp:'Space Grotesk',var(--sans);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%}
+body{
+  background:var(--bg);color:var(--txt);font-family:var(--sans);
+  display:flex;flex-direction:column;overflow:hidden;font-size:14px;
+}
+button{font-family:var(--sans)}
+:focus-visible{outline:2px solid var(--c2);outline-offset:2px}
+
+/* ---------- header ---------- */
+header{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:14px 22px;border-bottom:1px solid var(--line);flex:0 0 auto;
+  background:linear-gradient(180deg,#070D18,#05080F);
+}
+.title-block h1{
+  font-family:var(--disp);font-size:20px;font-weight:700;letter-spacing:0.06em;
+  text-transform:uppercase;color:var(--c1);
+}
+.title-block p{font-size:12px;color:var(--txt-dim);margin-top:2px}
+.logo{display:flex;align-items:center;gap:10px}
+.logo img{height:34px}
+.logo-text{
+  font-family:var(--disp);font-weight:700;font-size:15px;letter-spacing:0.04em;
+  color:#fff;border:1.5px solid var(--c3);padding:6px 12px;
+}
+.logo-text span{color:var(--c2);font-weight:400}
+
+/* ---------- layout ---------- */
+main{flex:1 1 auto;display:flex;min-height:0}
+.stage{flex:1 1 auto;position:relative;min-width:0}
+canvas#galaxy{position:absolute;inset:0;width:100%;height:100%;display:block}
+.hud{
+  position:absolute;top:14px;left:16px;font-family:var(--mono);font-size:12px;
+  color:var(--c2);background:rgba(5,8,15,0.55);border:1px solid var(--line);
+  padding:8px 12px;line-height:1.7;pointer-events:none;backdrop-filter:blur(3px);
+}
+.hud b{color:var(--c1);font-weight:500}
+.hud .warn{color:#FFB36B}
+
+aside{
+  flex:0 0 340px;border-left:1px solid var(--line);background:var(--panel);
+  overflow-y:auto;display:flex;flex-direction:column;
+}
+.aside-head{
+  display:flex;gap:8px;padding:10px 14px;border-bottom:1px solid var(--line);
+  position:sticky;top:0;background:var(--panel);z-index:2;
+}
+.aside-head button{
+  flex:1;background:none;border:1px solid var(--line);color:var(--txt-dim);
+  font-size:11px;padding:5px 0;cursor:pointer;letter-spacing:0.05em;text-transform:uppercase;
+}
+.aside-head button:hover{color:var(--c2);border-color:var(--c4)}
+
+details{border-bottom:1px solid var(--line)}
+summary{
+  cursor:pointer;padding:12px 14px;font-family:var(--disp);font-weight:500;
+  font-size:13px;letter-spacing:0.08em;text-transform:uppercase;color:var(--c2);
+  list-style:none;display:flex;justify-content:space-between;align-items:center;
+  user-select:none;
+}
+summary::after{content:"+";font-family:var(--mono);color:var(--txt-dim)}
+details[open] summary::after{content:"–"}
+summary:hover{background:var(--panel2)}
+.sec{padding:4px 14px 16px}
+
+.ctl{margin:10px 0}
+.ctl label{display:flex;justify-content:space-between;font-size:12px;color:var(--txt-dim);margin-bottom:5px}
+.ctl label output{font-family:var(--mono);color:var(--c1)}
+input[type=range]{width:100%;accent-color:#3399FF;height:18px}
+.derived{
+  font-family:var(--mono);font-size:12px;color:var(--txt-dim);
+  border-left:2px solid var(--c4);padding:6px 10px;margin:12px 0 4px;line-height:1.6;
+}
+.derived b{color:var(--c2);font-weight:500}
+.derived .warn{color:#FFB36B}
+
+.btnrow{display:flex;gap:8px;margin-top:12px;flex-wrap:wrap}
+.btn{
+  flex:1;min-width:70px;cursor:pointer;padding:9px 10px;font-size:12px;font-weight:600;
+  letter-spacing:0.04em;text-transform:uppercase;border:1px solid var(--c4);
+  background:transparent;color:var(--c2);transition:background .15s,color .15s;
+}
+.btn:hover{background:rgba(19,96,191,0.25)}
+.btn.primary{background:var(--c4);color:#fff;border-color:var(--c4)}
+.btn.primary:hover{background:var(--c3)}
+.btn:disabled{opacity:0.4;cursor:default}
+
+.stats{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:4px}
+.stat{background:var(--panel2);border:1px solid var(--line);padding:8px 10px}
+.stat .v{font-family:var(--mono);font-size:17px;color:var(--c1)}
+.stat .l{font-size:10px;color:var(--txt-dim);text-transform:uppercase;letter-spacing:0.06em;margin-top:2px}
+
+canvas.chart{width:100%;background:var(--panel2);border:1px solid var(--line);margin-top:10px}
+.sweep-status{font-family:var(--mono);font-size:12px;color:var(--txt-dim);margin-top:8px;min-height:18px}
+.sweep-result{
+  font-family:var(--mono);font-size:12.5px;color:var(--c1);margin-top:8px;line-height:1.6;
+  border-left:2px solid var(--c2);padding:6px 10px;display:none;
+}
+.note{font-size:12px;color:var(--txt-dim);line-height:1.55;margin-top:6px}
+.note b{color:var(--txt);font-weight:600}
+
+footer{
+  flex:0 0 auto;padding:8px 22px;border-top:1px solid var(--line);
+  font-size:11px;color:var(--txt-dim);display:flex;justify-content:space-between;
+  background:#070D18;
+}
+@media (max-width:900px){
+  body{overflow:auto}
+  main{flex-direction:column}
+  .stage{height:55vh;flex:0 0 auto}
+  aside{flex:1 1 auto;border-left:none;border-top:1px solid var(--line)}
+}
+@media (prefers-reduced-motion:reduce){ .twinkle{display:none} }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="title-block">
+    <h1>Galaxy Conquest</h1>
+    <p>Expansion in a differentially rotating galaxy — how fast, and at which jump range?</p>
+  </div>
+</header>
+
+<main>
+  <div class="stage">
+    <canvas id="galaxy"></canvas>
+    <div class="hud" id="hud"></div>
+  </div>
+
+  <aside>
+    <div class="aside-head">
+      <button id="openAll" type="button">Expand all</button>
+      <button id="closeAll" type="button">Collapse all</button>
+    </div>
+
+    <details open id="d-model">
+      <summary>Model</summary>
+      <div class="sec">
+        <p class="note">
+          Each timestep your empire spends a fixed <b>fleet capacity C</b> on hyperspace jumps.
+          Drives are rated for a fixed <b>jump range D</b> — every jump costs D, regardless of the
+          actual hop. So you get <b>K = ⌊C / D⌋</b> jumps per step, always to the nearest reachable
+          unconquered systems. Short range: many jumps, but the frontier can stall until galactic
+          rotation and orbital eccentricity shear new systems into reach. Long range: targets everywhere, but few jumps per step. Note: pure rotation preserves radii, so radial gaps only close through eccentric orbits.
+        </p>
+      </div>
+    </details>
+
+    <details open id="d-params">
+      <summary>Parameters</summary>
+      <div class="sec">
+        <div class="ctl">
+          <label>Star systems N <output id="oN">400</output></label>
+          <input type="range" id="pN" min="100" max="900" step="50" value="400">
+        </div>
+        <div class="ctl">
+          <label>Jump range D <output id="oD">0.120</output></label>
+          <input type="range" id="pD" min="0.03" max="0.50" step="0.005" value="0.12">
+        </div>
+        <div class="ctl">
+          <label>Fleet capacity C per step <output id="oC">0.60</output></label>
+          <input type="range" id="pC" min="0.1" max="2.0" step="0.05" value="0.60">
+        </div>
+        <div class="ctl">
+          <label>Rotation speed ω<sub>0</sub> <output id="oR">0.015</output></label>
+          <input type="range" id="pR" min="0" max="0.04" step="0.001" value="0.015">
+        </div>
+        <div class="ctl">
+          <label>Orbital eccentricity <output id="oE">0.05</output></label>
+          <input type="range" id="pE" min="0" max="0.12" step="0.005" value="0.05">
+        </div>
+        <div class="ctl">
+          <label>Simulation speed (steps/s) <output id="oS">12</output></label>
+          <input type="range" id="pS" min="1" max="60" step="1" value="12">
+        </div>
+        <div class="derived" id="derived"></div>
+        <div class="btnrow">
+          <button class="btn primary" id="bPlay" type="button">Start</button>
+          <button class="btn" id="bStep" type="button">Step</button>
+          <button class="btn" id="bReset" type="button">Reset</button>
+          <button class="btn" id="bNew" type="button">New galaxy</button>
+        </div>
+      </div>
+    </details>
+
+    <details open id="d-stats">
+      <summary>Status</summary>
+      <div class="sec">
+        <div class="stats">
+          <div class="stat"><div class="v" id="sT">0</div><div class="l">Timestep</div></div>
+          <div class="stat"><div class="v" id="sP">0 %</div><div class="l">Conquered</div></div>
+          <div class="stat"><div class="v" id="sJ">0</div><div class="l">Jumps total</div></div>
+          <div class="stat"><div class="v" id="sW">0</div><div class="l">Stalled steps</div></div>
+        </div>
+        <canvas class="chart" id="progChart" height="110"></canvas>
+      </div>
+    </details>
+
+    <details open id="d-sweep">
+      <summary>Range sweep — which D is optimal?</summary>
+      <div class="sec">
+        <p class="note">Runs batch simulations across jump ranges (same C, fresh random galaxies
+        and starting systems) and reports the mean time to full conquest.</p>
+        <div class="ctl">
+          <label>Range values sampled <output id="oSN">14</output></label>
+          <input type="range" id="pSN" min="6" max="24" step="2" value="14">
+        </div>
+        <div class="ctl">
+          <label>Runs per value <output id="oSR">8</output></label>
+          <input type="range" id="pSR" min="2" max="20" step="1" value="8">
+        </div>
+        <div class="btnrow">
+          <button class="btn primary" id="bSweep" type="button">Run sweep</button>
+          <button class="btn" id="bSweepStop" type="button" disabled>Stop</button>
+        </div>
+        <div class="sweep-status" id="sweepStatus"></div>
+        <canvas class="chart" id="sweepChart" height="170"></canvas>
+        <div class="sweep-result" id="sweepResult"></div>
+      </div>
+    </details>
+
+    <details id="d-export">
+      <summary>Export</summary>
+      <div class="sec">
+        <p class="note">Download parameters, the current run and sweep results as structured JSON.</p>
+        <div class="btnrow">
+          <button class="btn" id="bExport" type="button">Export JSON</button>
+        </div>
+      </div>
+    </details>
+  </aside>
+</main>
+
+<footer>
+  <span>(c) Dario Antweiler — <span id="fDate"></span></span>
+  <span style="font-family:var(--mono)">flat rotation curve ω(r) = ω₀ / max(r, 0.15) · epicyclic orbits κ = 1.4 ω</span>
+</footer>
+
+<script>
+"use strict";
+/* ============================== utilities ============================== */
+function mulberry32(a){return function(){a|=0;a=a+0x6D2B79F5|0;let t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296}}
+const $=id=>document.getElementById(id);
+$('fDate').textContent=new Date().toLocaleDateString('en-GB',{day:'numeric',month:'long',year:'numeric'});
+
+/* ============================== simulation core ============================== */
+const MAX_STEPS=2500, R_MIN=0.15;
+
+function genGalaxy(N,seed){
+  const rng=mulberry32(seed);
+  const arms=3,pitch=0.32,
+    r=new Float64Array(N),th0=new Float64Array(N),om=new Float64Array(N),
+    ea=new Float64Array(N),eph=new Float64Array(N),eom=new Float64Array(N);
+  for(let i=0;i<N;i++){
+    const rad=0.07+0.93*Math.sqrt(rng());
+    const arm=(rng()*arms)|0;
+    const spiral=Math.log(rad/0.07)/pitch;
+    const scatter=(rng()-0.5)*(0.45+0.5*rng());
+    r[i]=rad;
+    th0[i]=arm*(2*Math.PI/arms)+spiral+scatter;
+    om[i]=1/Math.max(rad,R_MIN);          // flat rotation curve, scaled by ω0 at runtime
+    ea[i]=0.4+1.1*rng();                  // individual epicycle amplitude factor
+    eph[i]=rng()*2*Math.PI;               // epicycle phase
+    eom[i]=1.4*om[i];                     // epicyclic frequency
+  }
+  return {N,seed,r,th0,om,ea,eph,eom};
+}
+
+function newSimState(gal,startIdx,params){
+  const N=gal.N;
+  return {
+    gal,N,t:0,phase:0,
+    D:params.D,C:params.C,rot:params.rot,ecc:params.ecc,
+    conq:new Uint8Array(N),
+    conqAt:new Int32Array(N).fill(-1),
+    conqList:[startIdx],
+    conqueredCount:1,
+    start:startIdx,
+    jumps:0,stalled:0,
+    history:[1],
+    recentJumps:[],          // {fx,fy,tx,ty,t} for rendering
+    done:false
+  };
+}
+function initStart(st){ st.conq[st.start]=1; st.conqAt[st.start]=0; }
+
+function positions(st,xs,ys,phase){
+  const g=st.gal,e=st.ecc;
+  for(let i=0;i<g.N;i++){
+    const a=g.th0[i]+g.om[i]*phase;
+    const rr=g.r[i]*(1+e*g.ea[i]*Math.sin(g.eph[i]+g.eom[i]*phase));
+    xs[i]=rr*Math.cos(a); ys[i]=rr*Math.sin(a);
+  }
+}
+
+/* one timestep; records jumps for rendering if 'visual' */
+function stepSim(st,xs,ys,visual){
+  if(st.done) return;
+  st.t++; st.phase+=st.rot;
+  positions(st,xs,ys,st.phase);
+  const D=st.D, K=Math.floor(st.C/st.D+1e-9);
+  if(K<1){ st.stalled++; st.history.push(st.conqueredCount); return; }
+
+  // spatial hash of conquered systems, cell size = D
+  const cell=D, grid=new Map();
+  for(let m=0;m<st.conqList.length;m++){
+    const i=st.conqList[m];
+    const key=(Math.floor(xs[i]/cell)+2048)*4096+(Math.floor(ys[i]/cell)+2048);
+    let arr=grid.get(key); if(!arr){arr=[];grid.set(key,arr)}
+    arr.push(i);
+  }
+  // candidate unconquered systems within D of any conquered
+  const cj=[],cd=[],cf=[];
+  const D2=D*D;
+  for(let j=0;j<st.N;j++){
+    if(st.conq[j]) continue;
+    const gx=Math.floor(xs[j]/cell),gy=Math.floor(ys[j]/cell);
+    let best=Infinity,from=-1;
+    for(let dx=-1;dx<=1;dx++)for(let dy=-1;dy<=1;dy++){
+      const arr=grid.get((gx+dx+2048)*4096+(gy+dy+2048));
+      if(!arr) continue;
+      for(let m=0;m<arr.length;m++){
+        const i=arr[m],ddx=xs[i]-xs[j],ddy=ys[i]-ys[j],d2=ddx*ddx+ddy*ddy;
+        if(d2<best){best=d2;from=i}
+      }
+    }
+    if(best<=D2){cj.push(j);cd.push(best);cf.push(from)}
+  }
+  // conquer the K nearest candidates
+  const order=cj.map((_,k)=>k).sort((a,b)=>cd[a]-cd[b]);
+  const n=Math.min(K,order.length);
+  for(let m=0;m<n;m++){
+    const k=order[m],j=cj[k];
+    st.conq[j]=1; st.conqAt[j]=st.t; st.conqList.push(j); st.conqueredCount++;
+    if(visual){
+      const f=cf[k];
+      st.recentJumps.push({fx:xs[f],fy:ys[f],tx:xs[j],ty:ys[j],t:st.t});
+      if(st.recentJumps.length>200) st.recentJumps.splice(0,st.recentJumps.length-200);
+    }
+  }
+  st.jumps+=n;
+  if(n===0) st.stalled++;
+  st.history.push(st.conqueredCount);
+  if(st.conqueredCount>=st.N) st.done=true;
+}
+
+/* headless run for the sweep */
+function runHeadless(N,seed,D,C,rot,ecc){
+  const gal=genGalaxy(N,seed);
+  const rng=mulberry32(seed^0x9E3779B9);
+  const st=newSimState(gal,(rng()*N)|0,{D,C,rot,ecc});
+  initStart(st);
+  const xs=new Float64Array(N),ys=new Float64Array(N);
+  while(!st.done&&st.t<MAX_STEPS) stepSim(st,xs,ys,false);
+  return st.done?st.t:Infinity;
+}
+
+/* ============================== live state ============================== */
+let params={N:400,D:0.12,C:0.60,rot:0.015,ecc:0.05,sps:12};
+let gal,sim,XS,YS;
+let playing=false,acc=0,lastFrame=0;
+let sweepData=null,sweepAbort=false;
+let bgStars=null;
+
+function makeGalaxy(seed){
+  gal=genGalaxy(params.N,seed);
+  XS=new Float64Array(params.N); YS=new Float64Array(params.N);
+  resetSim(true);
+}
+function resetSim(newStart){
+  const startIdx=newStart? (Math.random()*gal.N)|0 : sim?sim.start:0;
+  sim=newSimState(gal,startIdx,{D:params.D,C:params.C,rot:params.rot,ecc:params.ecc});
+  initStart(sim);
+  positions(sim,XS,YS,0);
+  playing=false; $('bPlay').textContent='Start';
+  drawProgress(); updateStats();
+}
+
+/* ============================== rendering ============================== */
+const cv=$('galaxy'),ctx=cv.getContext('2d');
+function fitCanvas(){
+  const dpr=window.devicePixelRatio||1,rect=cv.parentElement.getBoundingClientRect();
+  cv.width=rect.width*dpr; cv.height=rect.height*dpr;
+}
+window.addEventListener('resize',()=>{fitCanvas();bgStars=null});
+
+function ageColor(age){
+  // fresh -> light, old -> deep corporate blue
+  if(age<4)  return '#CCF2FF';
+  if(age<15) return '#80D9FF';
+  if(age<50) return '#3399FF';
+  if(age<150)return '#1360BF';
+  return '#1E4BA0';
+}
+
+function render(now){
+  const W=cv.width,H=cv.height,S=Math.min(W,H)*0.46,cx=W/2,cy=H/2;
+  ctx.fillStyle='#05080F'; ctx.fillRect(0,0,W,H);
+
+  // background star dust (static)
+  if(!bgStars){
+    bgStars=[];const rng=mulberry32(7);
+    for(let i=0;i<160;i++)bgStars.push([rng()*W,rng()*H,rng()*1.2+0.3,rng()*0.25+0.05]);
+  }
+  for(const [x,y,r,a] of bgStars){ctx.fillStyle=`rgba(204,242,255,${a})`;ctx.beginPath();ctx.arc(x,y,r,0,7);ctx.fill();}
+
+  // smooth rotation between sim steps while playing
+  const frac=playing? Math.min(acc*params.sps,1):0;
+  const phase=sim.phase+frac*params.rot;
+  positions(sim,XS,YS,phase);
+
+  // faint range circle around the capital
+  const dpr=window.devicePixelRatio||1;
+  ctx.strokeStyle='rgba(128,217,255,0.12)';ctx.lineWidth=1*dpr;
+  ctx.beginPath();ctx.arc(cx+XS[sim.start]*S,cy+YS[sim.start]*S,sim.D*S,0,7);ctx.stroke();
+
+  // recent jump beams
+  for(const j of sim.recentJumps){
+    const age=sim.t-j.t; if(age>3)continue;
+    ctx.strokeStyle=`rgba(204,242,255,${0.55*(1-age/3)})`;
+    ctx.lineWidth=1.1*dpr;
+    ctx.beginPath();ctx.moveTo(cx+j.fx*S,cy+j.fy*S);ctx.lineTo(cx+j.tx*S,cy+j.ty*S);ctx.stroke();
+  }
+
+  // systems
+  for(let i=0;i<sim.N;i++){
+    const x=cx+XS[i]*S,y=cy+YS[i]*S;
+    if(sim.conq[i]){
+      const col=ageColor(sim.t-sim.conqAt[i]);
+      ctx.fillStyle=col;
+      ctx.beginPath();ctx.arc(x,y,2.4*dpr,0,7);ctx.fill();
+      if(sim.t-sim.conqAt[i]<4){ // fresh glow
+        ctx.fillStyle='rgba(204,242,255,0.18)';
+        ctx.beginPath();ctx.arc(x,y,6*dpr,0,7);ctx.fill();
+      }
+    }else{
+      ctx.fillStyle='rgba(150,165,190,0.55)';
+      ctx.beginPath();ctx.arc(x,y,1.5*dpr,0,7);ctx.fill();
+    }
+  }
+  // capital marker
+  const sx=cx+XS[sim.start]*S,sy=cy+YS[sim.start]*S;
+  ctx.strokeStyle='#CCF2FF';ctx.lineWidth=1.4*dpr;
+  ctx.beginPath();ctx.arc(sx,sy,5.5*dpr,0,7);ctx.stroke();
+}
+
+/* ============================== loop ============================== */
+function loop(now){
+  if(!lastFrame)lastFrame=now;
+  const dt=(now-lastFrame)/1000;lastFrame=now;
+  if(playing&&!sim.done){
+    acc+=dt;
+    const stepT=1/params.sps;
+    let guard=0;
+    while(acc>=stepT&&guard<240){
+      acc-=stepT;guard++;
+      stepSim(sim,XS,YS,true);
+      if(sim.done){playing=false;$('bPlay').textContent='Start';break}
+    }
+    updateStats();drawProgress();
+  }
+  render(now);
+  requestAnimationFrame(loop);
+}
+
+/* ============================== stats & charts ============================== */
+function updateStats(){
+  $('sT').textContent=sim.t;
+  $('sP').textContent=(100*sim.conqueredCount/sim.N).toFixed(1)+' %';
+  $('sJ').textContent=sim.jumps;
+  $('sW').textContent=sim.stalled;
+  const K=Math.floor(params.C/params.D+1e-9);
+  const hud=$('hud');
+  hud.innerHTML=
+    `t = <b>${sim.t}</b><br>`+
+    `conquered <b>${sim.conqueredCount}</b> / ${sim.N}`+
+    (sim.done?`<br><b>Galaxy conquered in ${sim.t} steps</b>`:``)+
+    (K<1?`<br><span class="warn">D exceeds capacity C — no jumps possible</span>`:``);
+  const d=$('derived');
+  d.innerHTML=`Jumps per timestep: <b>K = ⌊${params.C.toFixed(2)} / ${params.D.toFixed(3)}⌋ = ${K}</b>`+
+    (K<1?` <span class="warn">— infeasible, lower D or raise C</span>`:``);
+}
+
+function drawProgress(){
+  const c=$('progChart'),g=c.getContext('2d');
+  const dpr=window.devicePixelRatio||1;
+  if(c.width!==c.clientWidth*dpr){c.width=c.clientWidth*dpr;c.height=110*dpr}
+  const W=c.width,H=c.height;
+  g.fillStyle='#0D1626';g.fillRect(0,0,W,H);
+  const h=sim.history,n=h.length;if(n<2)return;
+  const pad=8*dpr;
+  g.strokeStyle='#3399FF';g.lineWidth=1.5*dpr;g.beginPath();
+  for(let i=0;i<n;i++){
+    const x=pad+(W-2*pad)*i/(n-1);
+    const y=H-pad-(H-2*pad)*(h[i]/sim.N);
+    i?g.lineTo(x,y):g.moveTo(x,y);
+  }
+  g.stroke();
+  g.fillStyle='rgba(126,144,166,0.9)';g.font=`${10*dpr}px IBM Plex Mono`;
+  g.fillText('conquered systems vs. timestep',pad,12*dpr);
+}
+
+/* ============================== sweep ============================== */
+function drawSweep(){
+  const c=$('sweepChart'),g=c.getContext('2d');
+  const dpr=window.devicePixelRatio||1;
+  if(c.width!==c.clientWidth*dpr){c.width=c.clientWidth*dpr;c.height=170*dpr}
+  const W=c.width,H=c.height;
+  g.fillStyle='#0D1626';g.fillRect(0,0,W,H);
+  if(!sweepData||!sweepData.points.length)
+    {g.fillStyle='rgba(126,144,166,0.7)';g.font=`${10*dpr}px IBM Plex Mono`;
+     g.fillText('no sweep yet — run one to find the optimal D',10*dpr,18*dpr);return}
+  const pts=sweepData.points.filter(p=>p.mean!=null);
+  if(!pts.length)return;
+  const padL=34*dpr,padR=10*dpr,padT=16*dpr,padB=24*dpr;
+  const xs=p=>padL+(W-padL-padR)*(Math.log(p.D)-Math.log(sweepData.Dmin))/(Math.log(sweepData.Dmax)-Math.log(sweepData.Dmin));
+  const finite=pts.filter(p=>isFinite(p.mean));
+  const ymax=Math.max(...finite.map(p=>p.max),10);
+  const ys=v=>H-padB-(H-padT-padB)*Math.min(v,ymax)/ymax;
+  // axes
+  g.strokeStyle='rgba(128,217,255,0.18)';g.lineWidth=1;
+  g.strokeRect(padL,padT,W-padL-padR,H-padT-padB);
+  // min-max band
+  g.fillStyle='rgba(51,153,255,0.15)';
+  g.beginPath();
+  finite.forEach((p,i)=>{const x=xs(p),y=ys(p.min);i?g.lineTo(x,y):g.moveTo(x,y)});
+  for(let i=finite.length-1;i>=0;i--)g.lineTo(xs(finite[i]),ys(finite[i].max));
+  g.closePath();g.fill();
+  // mean line
+  g.strokeStyle='#80D9FF';g.lineWidth=1.6*dpr;g.beginPath();
+  finite.forEach((p,i)=>{const x=xs(p),y=ys(p.mean);i?g.lineTo(x,y):g.moveTo(x,y)});
+  g.stroke();
+  // points + timeouts
+  for(const p of pts){
+    const x=xs(p);
+    if(isFinite(p.mean)){g.fillStyle='#80D9FF';g.beginPath();g.arc(x,ys(p.mean),2.5*dpr,0,7);g.fill();}
+    else{g.fillStyle='#FFB36B';g.fillText('×',x-3*dpr,padT+10*dpr)}
+  }
+  // optimum
+  const best=finite.reduce((a,b)=>b.mean<a.mean?b:a,finite[0]);
+  if(best){
+    const x=xs(best);
+    g.strokeStyle='#CCF2FF';g.setLineDash([4*dpr,3*dpr]);
+    g.beginPath();g.moveTo(x,padT);g.lineTo(x,H-padB);g.stroke();g.setLineDash([]);
+    g.fillStyle='#CCF2FF';g.beginPath();g.arc(x,ys(best.mean),3.5*dpr,0,7);g.fill();
+  }
+  g.fillStyle='rgba(126,144,166,0.9)';g.font=`${9.5*dpr}px IBM Plex Mono`;
+  g.fillText('mean conquest time (steps)',padL,11*dpr);
+  g.fillText('jump range D (log)',padL,H-7*dpr);
+  g.fillText(String(Math.round(ymax)),4*dpr,padT+8*dpr);
+  g.fillText('0',4*dpr,H-padB);
+}
+
+async function runSweep(){
+  const nD=+$('pSN').value,runs=+$('pSR').value;
+  const Dmin=0.04,Dmax=0.5;
+  const Ds=[];for(let i=0;i<nD;i++)Ds.push(Dmin*Math.pow(Dmax/Dmin,i/(nD-1)));
+  sweepData={Dmin,Dmax,C:params.C,rot:params.rot,N:params.N,runs,points:Ds.map(D=>({D,results:[],mean:null,min:null,max:null,timeouts:0}))};
+  sweepAbort=false;
+  $('bSweep').disabled=true;$('bSweepStop').disabled=false;$('sweepResult').style.display='none';
+  const total=nD*runs;let doneCount=0;
+  const Nsw=Math.min(params.N,400); // cap sweep size for responsiveness
+
+  for(const p of sweepData.points){
+    if(Math.floor(params.C/p.D+1e-9)<1){p.mean=Infinity;p.min=p.max=Infinity;p.timeouts=runs;continue}
+    for(let r=0;r<runs;r++){
+      if(sweepAbort)break;
+      const seed=(Math.random()*2**31)|0;
+      const T=runHeadless(Nsw,seed,p.D,params.C,params.rot,params.ecc);
+      p.results.push(T);
+      if(!isFinite(T))p.timeouts++;
+      doneCount++;
+      $('sweepStatus').textContent=`running… ${doneCount}/${total}  (D = ${p.D.toFixed(3)})`;
+      drawSweep();
+      await new Promise(res=>setTimeout(res,0));
+    }
+    const ok=p.results.filter(isFinite);
+    p.mean=ok.length?ok.reduce((a,b)=>a+b,0)/ok.length:Infinity;
+    p.min=ok.length?Math.min(...ok):Infinity;
+    p.max=ok.length?Math.max(...ok):Infinity;
+    drawSweep();
+    if(sweepAbort)break;
+  }
+  $('bSweep').disabled=false;$('bSweepStop').disabled=true;
+  $('sweepStatus').textContent=sweepAbort?'sweep stopped':'sweep complete';
+  const finite=sweepData.points.filter(p=>isFinite(p.mean));
+  if(finite.length){
+    const best=finite.reduce((a,b)=>b.mean<a.mean?b:a,finite[0]);
+    const K=Math.floor(params.C/best.D+1e-9);
+    $('sweepResult').style.display='block';
+    $('sweepResult').innerHTML=
+      `Optimal jump range: <b>D ≈ ${best.D.toFixed(3)}</b> (K = ${K} jumps/step)<br>`+
+      `Mean conquest time: ${Math.round(best.mean)} steps `+
+      `(range ${Math.round(best.min)}–${Math.round(best.max)}, N = ${Nsw}, C = ${params.C.toFixed(2)})`;
+  }
+  drawSweep();
+}
+
+/* ============================== export ============================== */
+function exportJSON(){
+  const data={
+    app:'Galaxy Conquest Simulator',
+    author:'Dario Antweiler',
+    exported:new Date().toISOString(),
+    model:'Per timestep, fleet capacity C buys K=floor(C/D) jumps of rated range D to the nearest reachable unconquered systems. Flat rotation curve omega(r)=omega0/max(r,0.15) with epicyclic radial oscillation r(t)=r0*(1+ecc*a_i*sin(phi_i+1.4*omega*t)).',
+    parameters:{...params,galaxySeed:gal.seed,maxSteps:MAX_STEPS},
+    currentRun:{
+      start:sim.start,timestep:sim.t,conquered:sim.conqueredCount,total:sim.N,
+      done:sim.done,jumps:sim.jumps,stalledSteps:sim.stalled,
+      progressHistory:sim.history
+    },
+    sweep:sweepData?{
+      C:sweepData.C,rotation:sweepData.rot,N:sweepData.N,runsPerValue:sweepData.runs,
+      points:sweepData.points.map(p=>({D:p.D,meanSteps:isFinite(p.mean)?p.mean:'timeout',
+        minSteps:isFinite(p.min)?p.min:'timeout',maxSteps:isFinite(p.max)?p.max:'timeout',
+        timeouts:p.timeouts,results:p.results.map(t=>isFinite(t)?t:'timeout')}))
+    }:null
+  };
+  const blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'});
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(blob);
+  a.download='galaxy-conquest-results.json';
+  a.click();URL.revokeObjectURL(a.href);
+}
+
+/* ============================== wiring ============================== */
+function bindSlider(id,out,key,fmt,onchg){
+  const el=$(id);
+  el.addEventListener('input',()=>{
+    params[key]=+el.value;$(out).textContent=fmt(+el.value);
+    if(onchg)onchg();updateStats();
+  });
+}
+bindSlider('pD','oD','D',v=>v.toFixed(3),()=>{sim.D=params.D});
+bindSlider('pC','oC','C',v=>v.toFixed(2),()=>{sim.C=params.C});
+bindSlider('pR','oR','rot',v=>v.toFixed(3),()=>{sim.rot=params.rot});
+bindSlider('pE','oE','ecc',v=>v.toFixed(3),()=>{sim.ecc=params.ecc});
+bindSlider('pS','oS','sps',v=>v.toFixed(0));
+$('pN').addEventListener('input',()=>{
+  params.N=+$('pN').value;$('oN').textContent=params.N;
+  makeGalaxy((Math.random()*2**31)|0);
+});
+
+$('bPlay').addEventListener('click',()=>{
+  if(sim.done)return;
+  playing=!playing;acc=0;
+  $('bPlay').textContent=playing?'Pause':'Start';
+});
+$('bStep').addEventListener('click',()=>{if(!sim.done){stepSim(sim,XS,YS,true);updateStats();drawProgress()}});
+$('bReset').addEventListener('click',()=>resetSim(false));
+$('bNew').addEventListener('click',()=>makeGalaxy((Math.random()*2**31)|0));
+$('bSweep').addEventListener('click',runSweep);
+$('bSweepStop').addEventListener('click',()=>{sweepAbort=true});
+$('bExport').addEventListener('click',exportJSON);
+$('openAll').addEventListener('click',()=>document.querySelectorAll('details').forEach(d=>d.open=true));
+$('closeAll').addEventListener('click',()=>document.querySelectorAll('details').forEach(d=>d.open=false));
+
+/* ============================== boot ============================== */
+fitCanvas();
+makeGalaxy(42);
+updateStats();drawSweep();drawProgress();
+requestAnimationFrame(loop);
+</script>
+</body>
+</html>
