@@ -1,0 +1,1041 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Verwirbelung — Die Kármánsche Wirbelstraße</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --abyss:#0A141A;
+  --panel:#0F1F28;
+  --panel2:#152C38;
+  --rule:#22404E;
+  --rule-soft:#193440;
+  --ink:#E6F2F5;
+  --ink-dim:#9BB6C0;
+  --ink-faint:#5F7D89;
+  /* Die beiden einzigen Farbakzente der Seite = die beiden Drehrichtungen */
+  --turn-a:#4ECDE0;
+  --turn-b:#F2A03D;
+  --shadow:0 18px 50px -20px rgba(0,0,0,.85);
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{
+  background:var(--abyss);
+  color:var(--ink);
+  font-family:"IBM Plex Sans",system-ui,sans-serif;
+  font-size:16px;line-height:1.6;
+  -webkit-font-smoothing:antialiased;
+}
+body::before{
+  content:"";position:fixed;inset:0;pointer-events:none;z-index:0;
+  background:radial-gradient(1100px 520px at 50% -5%, rgba(78,205,224,.07), transparent 65%);
+}
+.wrap{position:relative;z-index:1;max-width:1280px;margin:0 auto;padding:0 22px 90px}
+
+/* ---------- Typo-Bausteine ---------- */
+.eyebrow{
+  font-family:"IBM Plex Mono",monospace;font-size:.7rem;font-weight:500;
+  letter-spacing:.2em;text-transform:uppercase;color:var(--ink-faint);
+}
+.lbl{
+  font-family:"IBM Plex Mono",monospace;font-size:.68rem;font-weight:500;
+  letter-spacing:.16em;text-transform:uppercase;color:var(--ink-dim);
+}
+h1{
+  font-family:"Space Grotesk",sans-serif;font-weight:700;
+  font-size:clamp(2.9rem,10vw,6.4rem);line-height:.9;letter-spacing:-.045em;
+  text-transform:uppercase;margin:.18em 0 0;
+}
+h2{
+  font-family:"Space Grotesk",sans-serif;font-weight:700;
+  font-size:clamp(1.3rem,2.6vw,1.75rem);letter-spacing:-.02em;line-height:1.15;margin:0 0 .5rem;
+}
+h3{
+  font-family:"Space Grotesk",sans-serif;font-weight:500;
+  font-size:1.02rem;letter-spacing:-.01em;margin:0 0 .45rem;
+}
+p{margin:0 0 .85rem}
+.dim{color:var(--ink-dim)}
+.faint{color:var(--ink-faint)}
+
+/* ---------- Kopf ---------- */
+header{padding:64px 0 34px}
+.lede{
+  max-width:56ch;margin-top:1.5rem;font-size:clamp(1.02rem,1.7vw,1.18rem);
+  color:var(--ink-dim);line-height:1.62;
+}
+.lede b{color:var(--ink);font-weight:600}
+
+/* ---------- Sektionslabel mit Haarlinie ---------- */
+.seclabel{display:flex;align-items:center;gap:14px;margin:0 0 18px}
+.seclabel::after{content:"";flex:1;height:1px;background:var(--rule-soft)}
+
+/* ---------- Bühne ---------- */
+.stage{display:grid;grid-template-columns:minmax(0,1fr) 296px;gap:18px;align-items:start}
+.viewport{
+  position:relative;border:1px solid var(--rule);border-radius:4px;overflow:hidden;
+  background:#050D12;box-shadow:var(--shadow);
+}
+#sim{display:block;width:100%;height:auto}
+.badge{
+  position:absolute;top:12px;left:12px;
+  background:rgba(6,16,21,.72);backdrop-filter:blur(6px);
+  border:1px solid var(--rule);border-radius:3px;padding:7px 11px 8px;
+  max-width:70%;
+}
+.badge .lbl{font-size:.6rem;letter-spacing:.18em;display:block;margin-bottom:2px}
+.badge strong{font-family:"Space Grotesk",sans-serif;font-size:.95rem;font-weight:500;letter-spacing:-.01em}
+.legend{
+  position:absolute;bottom:12px;left:12px;display:flex;gap:16px;
+  font-family:"IBM Plex Mono",monospace;font-size:.65rem;color:var(--ink-dim);
+  background:rgba(6,16,21,.72);backdrop-filter:blur(6px);
+  border:1px solid var(--rule);border-radius:3px;padding:6px 11px;
+}
+.legend span{display:flex;align-items:center;gap:7px}
+.swatch{width:11px;height:11px;border-radius:2px;display:inline-block}
+.warn{
+  position:absolute;inset:auto 12px 12px auto;font-family:"IBM Plex Mono",monospace;
+  font-size:.65rem;color:var(--turn-b);background:rgba(6,16,21,.8);
+  border:1px solid var(--turn-b);border-radius:3px;padding:6px 10px;opacity:0;transition:opacity .3s;
+}
+.warn.on{opacity:1}
+
+/* ---------- Bedienfeld ---------- */
+.panel{
+  border:1px solid var(--rule);border-radius:4px;background:var(--panel);
+  padding:16px 16px 18px;
+}
+.ctrl{margin-bottom:16px}
+.ctrl:last-child{margin-bottom:0}
+.ctrl .lbl{display:block;margin-bottom:7px}
+.ends{display:flex;justify-content:space-between;font-family:"IBM Plex Mono",monospace;
+  font-size:.62rem;color:var(--ink-faint);margin-top:3px}
+input[type=range]{
+  -webkit-appearance:none;appearance:none;width:100%;height:22px;background:transparent;cursor:pointer;
+}
+input[type=range]::-webkit-slider-runnable-track{height:2px;background:var(--rule);border-radius:2px}
+input[type=range]::-moz-range-track{height:2px;background:var(--rule);border-radius:2px}
+input[type=range]::-webkit-slider-thumb{
+  -webkit-appearance:none;width:15px;height:15px;border-radius:50%;background:var(--ink);
+  margin-top:-6.5px;border:none;box-shadow:0 0 0 3px rgba(230,242,245,.12)}
+input[type=range]::-moz-range-thumb{
+  width:15px;height:15px;border-radius:50%;background:var(--ink);border:none;
+  box-shadow:0 0 0 3px rgba(230,242,245,.12)}
+input[type=range]:focus-visible{outline:2px solid var(--ink);outline-offset:4px;border-radius:3px}
+
+.seg{display:grid;gap:5px}
+.seg.two{grid-template-columns:1fr 1fr}
+.seg.three{grid-template-columns:repeat(3,1fr)}
+.seg button, .btn{
+  font-family:"IBM Plex Mono",monospace;font-size:.68rem;letter-spacing:.04em;
+  background:transparent;color:var(--ink-dim);border:1px solid var(--rule);
+  border-radius:3px;padding:8px 4px;cursor:pointer;transition:background .15s,color .15s,border-color .15s;
+}
+.seg button:hover,.btn:hover{color:var(--ink);border-color:var(--ink-faint)}
+.seg button[aria-pressed=true]{
+  background:rgba(230,242,245,.11);color:var(--ink);border-color:var(--ink-dim);
+}
+.seg button:focus-visible,.btn:focus-visible{outline:2px solid var(--ink);outline-offset:2px}
+.btnrow{display:grid;grid-template-columns:1fr 1fr 1fr;gap:5px;margin-top:16px;
+  padding-top:16px;border-top:1px solid var(--rule-soft)}
+
+/* ---------- Messwerte ---------- */
+.meters{display:grid;grid-template-columns:repeat(3,minmax(0,1fr)) 1.5fr;gap:1px;
+  background:var(--rule);border:1px solid var(--rule);border-radius:4px;margin-top:18px;overflow:hidden}
+.meter{background:var(--panel);padding:14px 16px 13px}
+.meter .lbl{font-size:.62rem;display:block;margin-bottom:6px}
+.meter .val{font-family:"Space Grotesk",sans-serif;font-size:1.5rem;font-weight:500;
+  letter-spacing:-.02em;line-height:1;display:block}
+.meter .sub{font-family:"IBM Plex Mono",monospace;font-size:.63rem;color:var(--ink-faint);margin-top:6px;display:block}
+#scope{display:block;width:100%;height:52px;margin-top:2px}
+
+/* ---------- Signatur: das Reynolds-Lineal ---------- */
+.ruler-sec{margin-top:56px}
+.ruler{
+  position:relative;border:1px solid var(--rule);border-radius:4px;background:var(--panel);
+  padding:78px 30px 96px;margin-top:14px;
+}
+.axis{position:relative;height:2px;background:var(--rule)}
+.zone-out{position:absolute;top:-4px;height:10px;background:repeating-linear-gradient(
+  -45deg,rgba(155,182,192,.16) 0 4px,transparent 4px 8px)}
+.tick{position:absolute;top:-5px;transform:translateX(-50%);width:64px;text-align:center}
+.tick i{display:block;width:1px;height:12px;background:var(--rule);margin:0 auto}
+.tick span{display:block;font-family:"IBM Plex Mono",monospace;font-size:.6rem;
+  color:var(--ink-faint);margin-top:4px;white-space:nowrap}
+.station{
+  position:absolute;top:100%;margin-top:36px;transform:translateX(-50%);
+  background:transparent;border:0;padding:0;cursor:pointer;text-align:center;width:126px;
+}
+.station::before{content:"";position:absolute;left:50%;top:-36px;width:1px;height:30px;
+  background:var(--rule-soft)}
+.station .dot{width:9px;height:9px;border-radius:50%;background:var(--panel);
+  border:1px solid var(--ink-faint);margin:0 auto 10px;transition:background .18s,border-color .18s}
+.station .nm{font-family:"IBM Plex Mono",monospace;font-size:.63rem;line-height:1.4;
+  letter-spacing:.03em;color:var(--ink-faint);display:block;transition:color .18s}
+.station:hover .nm{color:var(--ink)}
+.station:hover .dot{border-color:var(--ink)}
+.station[aria-pressed=true] .dot{background:var(--ink);border-color:var(--ink);
+  box-shadow:0 0 0 4px rgba(230,242,245,.12)}
+.station[aria-pressed=true] .nm{color:var(--ink)}
+.station:focus-visible{outline:2px solid var(--ink);outline-offset:4px;border-radius:3px}
+.needle{
+  position:absolute;bottom:0;transform:translateX(-50%);pointer-events:none;
+  transition:left .5s cubic-bezier(.4,.9,.3,1);
+}
+.needle i{display:block;width:1px;height:50px;
+  background:linear-gradient(to top,var(--ink),rgba(230,242,245,.12));margin:0 auto}
+.needle b{
+  display:block;font-family:"IBM Plex Mono",monospace;font-size:.68rem;font-weight:600;
+  color:var(--abyss);background:var(--ink);border-radius:2px;padding:3px 8px;
+  white-space:nowrap;margin-bottom:4px;
+}
+.ruler-foot{display:flex;justify-content:space-between;gap:24px;flex-wrap:wrap;
+  margin-top:24px;padding-top:18px;border-top:1px solid var(--rule-soft)}
+.ruler-foot p{margin:0;font-size:.88rem;color:var(--ink-dim);max-width:52ch}
+#stationText{font-size:.92rem}
+#stationText b{color:var(--ink);font-weight:600}
+
+/* ---------- Erklärkarten ---------- */
+.cards{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:22px}
+.card{border:1px solid var(--rule);border-radius:4px;background:var(--panel);padding:20px 20px 6px}
+.card .lbl{display:block;margin-bottom:12px;font-size:.62rem}
+.card p{font-size:.93rem;color:var(--ink-dim)}
+.card p b{color:var(--ink);font-weight:600}
+.cards-2{display:grid;grid-template-columns:1.4fr 1fr;gap:16px;margin-top:16px}
+.note{border:1px solid var(--rule);border-left:2px solid var(--turn-b);border-radius:4px;
+  background:var(--panel);padding:20px 20px 6px}
+.note .lbl{color:var(--turn-b);display:block;margin-bottom:12px;font-size:.62rem}
+.note p{font-size:.93rem;color:var(--ink-dim)}
+.note p b{color:var(--ink);font-weight:600}
+
+.scales{margin-top:56px}
+.scale-row{display:grid;grid-template-columns:118px 1fr;gap:20px;padding:15px 0;
+  border-top:1px solid var(--rule-soft);align-items:baseline}
+.scale-row:last-child{border-bottom:1px solid var(--rule-soft)}
+.scale-row .k{font-family:"IBM Plex Mono",monospace;font-size:.72rem;color:var(--ink);letter-spacing:.04em}
+.scale-row .v{font-size:.93rem;color:var(--ink-dim)}
+.scale-row .v b{color:var(--ink);font-weight:600}
+
+footer{margin-top:64px;padding-top:20px;border-top:1px solid var(--rule-soft);
+  font-family:"IBM Plex Mono",monospace;font-size:.66rem;color:var(--ink-faint);
+  display:flex;justify-content:space-between;gap:20px;flex-wrap:wrap}
+
+@media (max-width:1000px){
+  .stage{grid-template-columns:1fr}
+  .meters{grid-template-columns:1fr 1fr}
+  .cards{grid-template-columns:1fr}
+  .cards-2{grid-template-columns:1fr}
+  .station{width:96px}
+  .station .nm{font-size:.58rem}
+  .ruler{padding:60px 16px 22px}
+}
+@media (max-width:620px){
+  header{padding:40px 0 26px}
+  .meters{grid-template-columns:1fr}
+  .ruler{padding:70px 12px 132px}
+  .station{width:82px}
+  .station .nm{font-size:.55rem;letter-spacing:.01em}
+  .station.alt{margin-top:92px}
+  .station.alt::before{top:-92px;height:86px}
+  .legend{font-size:.58rem;gap:10px;padding:5px 8px}
+  .scale-row{grid-template-columns:1fr;gap:4px}
+}
+@media (prefers-reduced-motion:reduce){
+  *{transition:none !important;animation:none !important}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header>
+  <div class="eyebrow">Interaktive Schulung · Strömung um ein Hindernis</div>
+  <h1>Verwirbelung</h1>
+  <p class="lede">Ein Hindernis im Strom lässt Wirbel ablösen. Sind sie einmal in Fahrt, kommen sie nicht zufällig,
+  sondern <b>abwechselnd oben und unten, in festem Takt</b>. Aus dem Muster wird die Kármánsche Wirbelstraße.
+  Drehen Sie unten an den Reglern und beobachten Sie, wann der Takt einsetzt.</p>
+</header>
+
+<section class="stage" id="stage">
+  <div class="viewport">
+    <canvas id="sim" width="1200" height="400" aria-label="Simulation der Strömung um ein Hindernis"></canvas>
+    <div class="badge">
+      <span class="lbl">Zustand</span>
+      <strong id="regime">Wirbelstraße</strong>
+    </div>
+    <div class="legend" id="legend"></div>
+    <div class="warn" id="warn">Rechnung instabil — zurückgesetzt</div>
+  </div>
+
+  <div class="panel">
+    <div class="ctrl">
+      <span class="lbl">Geschwindigkeit</span>
+      <input id="rSpeed" type="range" min="0.012" max="0.140" step="0.002" value="0.100" aria-label="Strömungsgeschwindigkeit">
+      <div class="ends"><span>langsam</span><span id="vSpeed">0.100</span><span>schnell</span></div>
+    </div>
+    <div class="ctrl">
+      <span class="lbl">Zähigkeit</span>
+      <input id="rVisc" type="range" min="0.006" max="0.120" step="0.002" value="0.016" aria-label="Zähigkeit des Mediums">
+      <div class="ends"><span>wie Wasser</span><span id="vVisc">0.016</span><span>wie Sirup</span></div>
+    </div>
+    <div class="ctrl">
+      <span class="lbl">Größe des Hindernisses</span>
+      <input id="rSize" type="range" min="8" max="30" step="1" value="16" aria-label="Größe des Hindernisses">
+      <div class="ends"><span>klein</span><span id="vSize">16</span><span>groß</span></div>
+    </div>
+    <div class="ctrl">
+      <span class="lbl">Form</span>
+      <div class="seg two" id="segShape">
+        <button data-v="circle" aria-pressed="true">Kreis</button>
+        <button data-v="square" aria-pressed="false">Quadrat</button>
+        <button data-v="plate" aria-pressed="false">Platte</button>
+        <button data-v="wing" aria-pressed="false">Stromlinie</button>
+      </div>
+    </div>
+    <div class="ctrl">
+      <span class="lbl">Ansicht</span>
+      <div class="seg three" id="segView">
+        <button data-v="curl" aria-pressed="true">Drehung</button>
+        <button data-v="speed" aria-pressed="false">Tempo</button>
+        <button data-v="rho" aria-pressed="false">Druck</button>
+      </div>
+    </div>
+    <div class="ctrl">
+      <span class="lbl">Sichtbarmacher</span>
+      <div class="seg three" id="segTrace">
+        <button data-v="dye" aria-pressed="true">Farbe</button>
+        <button data-v="lines" aria-pressed="false">Fäden</button>
+        <button data-v="off" aria-pressed="false">aus</button>
+      </div>
+    </div>
+    <div class="ctrl">
+      <span class="lbl">Kontrast</span>
+      <input id="rContrast" type="range" min="0.4" max="2.6" step="0.05" value="1" aria-label="Farbkontrast der Darstellung">
+      <div class="ends"><span>weich</span><span></span><span>hart</span></div>
+    </div>
+    <div class="btnrow">
+      <button class="btn" id="bPlay">Pause</button>
+      <button class="btn" id="bNudge">Anstoßen</button>
+      <button class="btn" id="bReset">Neu</button>
+    </div>
+  </div>
+</section>
+
+<div class="meters">
+  <div class="meter">
+    <span class="lbl">Reynolds-Zahl</span>
+    <span class="val" id="mRe">100</span>
+    <span class="sub">Schwung ÷ Zähigkeit</span>
+  </div>
+  <div class="meter">
+    <span class="lbl">Takt</span>
+    <span class="val" id="mPeriod">—</span>
+    <span class="sub">Rechenschritte je Wirbelpaar</span>
+  </div>
+  <div class="meter">
+    <span class="lbl">Strouhal-Zahl</span>
+    <span class="val" id="mSt">—</span>
+    <span class="sub">Takt × Größe ÷ Tempo</span>
+  </div>
+  <div class="meter">
+    <span class="lbl">Seitliche Strömung hinter dem Hindernis</span>
+    <canvas id="scope" width="640" height="104"></canvas>
+  </div>
+</div>
+
+<section class="ruler-sec">
+  <div class="seclabel"><span class="lbl">Lernpfad</span></div>
+  <h2>Vier Zustände auf einer einzigen Achse</h2>
+  <p class="dim" style="max-width:62ch">Ob Wirbel entstehen, hängt nicht an Wasser oder Luft, groß oder klein, schnell oder
+  langsam — sondern nur am Zusammenspiel dieser Größen. Die Reynolds-Zahl fasst sie zusammen. Klicken Sie eine Station an.</p>
+
+  <div class="ruler" id="ruler">
+    <div class="axis" id="axis">
+      <div class="zone-out" id="zoneOut"></div>
+      <div class="needle" id="needle"><b>Re 100</b><i></i></div>
+    </div>
+  </div>
+
+  <div class="ruler-foot">
+    <p id="stationText"><b>Wirbelstraße.</b> Die Wirbel bleiben nicht mehr hängen. Sie lösen sich abwechselnd oben und unten ab
+    und ziehen als versetztes Doppelmuster stromab. Der Takt ist so regelmäßig, dass man ihn hören und messen kann.</p>
+    <p class="faint" style="font-size:.78rem;font-family:'IBM Plex Mono',monospace">Rechenbereich der Simulation:<br>Re ≈ 2 bis 700</p>
+  </div>
+</section>
+
+<section style="margin-top:56px">
+  <div class="seclabel"><span class="lbl">Was da passiert</span></div>
+  <div class="cards">
+    <div class="card">
+      <span class="lbl">01 — Ablösung</span>
+      <p>Direkt an der Oberfläche des Hindernisses haftet die Flüssigkeit und wird fast bis zum Stillstand gebremst.
+      Diese langsame Schicht schafft es hinter dem Hindernis nicht mehr gegen den ansteigenden Druck an —
+      sie <b>löst sich ab und rollt sich auf</b>. Das ist ein Wirbel.</p>
+    </div>
+    <div class="card">
+      <span class="lbl">02 — Der Taktwechsel</span>
+      <p>Ein Wirbel auf der Oberseite saugt Flüssigkeit von unten herüber. Dadurch reißt der untere Wirbel ab und macht
+      sich selbständig — und zieht jetzt seinerseits am oberen. <b>Oben, unten, oben, unten.</b> Das System schaukelt sich
+      in einen stabilen Rhythmus ein.</p>
+    </div>
+    <div class="card">
+      <span class="lbl">03 — Die Rückwirkung</span>
+      <p>Jeder abgehende Wirbel gibt dem Hindernis einen kleinen Stoß zur Seite. Aus dem Takt wird eine <b>rhythmische
+      Kraft quer zur Strömung</b>. Trifft sie zufällig die Eigenfrequenz des Bauteils, schaukelt es sich auf — und genau
+      dann wird das Muster zum Problem.</p>
+    </div>
+  </div>
+
+  <div class="cards-2">
+    <div class="card">
+      <span class="lbl">Woran man es im Alltag erkennt</span>
+      <p>Das <b>Summen von Stromleitungen und Zaunspannseilen</b> im Wind ist die Tonhöhe der ablösenden Wirbel.
+      Hohe <b>Schornsteine tragen Spiralwülste</b> auf den obersten Metern — sie zerstören den gemeinsamen Takt entlang
+      der Höhe, sodass keine Kraft mehr synchron angreift. In <b>Wärmetauschern</b> müssen Rohrabstände so gewählt werden,
+      dass sich die Rohre nicht gegenseitig in Schwingung versetzen. Und im <b>Satellitenbild</b> zeichnen Wolken hinter
+      Inseln wie Madeira oder Jan Mayen exakt dasselbe Muster über Dutzende Kilometer.</p>
+    </div>
+    <div class="note">
+      <span class="lbl">Vorsicht, gängiger Fehler</span>
+      <p>Die 1940 eingestürzte <b>Tacoma-Narrows-Brücke</b> wird fast immer als Beispiel für Wirbelablösung genannt.
+      Sie ist keins: dort wirkte <b>Flattern</b>, eine selbstverstärkende Kopplung von Verdrehung und Luftkraft.
+      Bei Schornsteinen, Masten und Rohren stimmt das Beispiel dagegen.</p>
+    </div>
+  </div>
+</section>
+
+<section class="scales">
+  <div class="seclabel"><span class="lbl">Dasselbe Muster, sehr verschiedene Maßstäbe</span></div>
+  <div class="scale-row"><span class="k">≈ 1 mm</span><span class="v">Draht im Wind — <b>Wirbel im Millisekundentakt</b>, hörbar als Sirren</span></div>
+  <div class="scale-row"><span class="k">≈ 10 cm</span><span class="v">Antenne, Fahrradspeiche, Rührwerkswelle — <b>einige hundert Wirbel pro Sekunde</b></span></div>
+  <div class="scale-row"><span class="k">≈ 5 m</span><span class="v">Brückenpfeiler im Fluss — <b>ein Wirbel pro Sekunde</b>, sichtbar an der Oberfläche</span></div>
+  <div class="scale-row"><span class="k">≈ 30 km</span><span class="v">Vulkaninsel in der Wolkenschicht — <b>ein Wirbel pro Stunde</b>, sichtbar nur aus dem Orbit</span></div>
+  <p class="faint" style="margin-top:16px;font-size:.85rem;max-width:60ch">Der Takt folgt in allen vier Fällen derselben
+  Regel: Größe verdoppeln heißt halb so schnell. Das ist die Aussage der Strouhal-Zahl, die im Messfeld oben
+  ziemlich hartnäckig bei etwa 0,2 stehen bleibt.</p>
+</section>
+
+<footer>
+  <span>Simulation: Lattice-Boltzmann-Verfahren, D2Q9 · zweidimensional</span>
+  <span>Echte Turbulenz ist dreidimensional — ab etwa Re 300 zeigt das Modell, <em>dass</em> es unruhig wird, nicht genau <em>wie</em>.</span>
+</footer>
+
+</div>
+
+<script>
+"use strict";
+(function(){
+
+/* ============================================================
+   1. Gitter und Zustandsfelder (Lattice Boltzmann, D2Q9)
+   ============================================================ */
+const XD = 300, YD = 100, N = XD*YD;
+const F = () => new Float32Array(N);
+const n0=F(),nN=F(),nS=F(),nE=F(),nW=F(),nNE=F(),nSE=F(),nNW=F(),nSW=F();
+const rho=F(), ux=F(), uy=F();
+const barrier = new Uint8Array(N);
+
+const W0=4/9, W1=1/9, W2=1/36;
+
+const state = {
+  speed:0.100, visc:0.016, size:16, shape:'circle',
+  view:'curl', trace:'dye', contrast:1,
+  running:true, steps:0, stepsPerFrame:10, nudge:0
+};
+const OBS_X = 74;              // Position des Hindernisses (Gitterzellen)
+const OBS_Y = YD/2;
+
+function setEquil(i, vx, vy, r){
+  const vx3=3*vx, vy3=3*vy, vx2=vx*vx, vy2=vy*vy, vxvy2=2*vx*vy;
+  const u2=vx2+vy2, u215=1.5*u2;
+  n0[i]  = W0*r*(1-u215);
+  nE[i]  = W1*r*(1+vx3+4.5*vx2-u215);
+  nW[i]  = W1*r*(1-vx3+4.5*vx2-u215);
+  nN[i]  = W1*r*(1+vy3+4.5*vy2-u215);
+  nS[i]  = W1*r*(1-vy3+4.5*vy2-u215);
+  nNE[i] = W2*r*(1+vx3+vy3+4.5*(u2+vxvy2)-u215);
+  nSE[i] = W2*r*(1+vx3-vy3+4.5*(u2-vxvy2)-u215);
+  nNW[i] = W2*r*(1-vx3+vy3+4.5*(u2-vxvy2)-u215);
+  nSW[i] = W2*r*(1-vx3-vy3+4.5*(u2+vxvy2)-u215);
+  rho[i]=r; ux[i]=vx; uy[i]=vy;
+}
+
+function buildBarrier(){
+  barrier.fill(0);
+  const d = state.size;
+  const r = d/2;
+  const cy = OBS_Y + 0.5;              // halbe Zelle Versatz: bricht die perfekte Symmetrie
+  for(let y=1;y<YD-1;y++){
+    for(let x=1;x<XD-1;x++){
+      const dx = x-OBS_X, dy = y-cy;
+      let hit=false;
+      switch(state.shape){
+        case 'circle': hit = dx*dx+dy*dy <= r*r; break;
+        case 'square': hit = Math.abs(dx)<=r*0.85 && Math.abs(dy)<=r*0.85; break;
+        case 'plate':  hit = Math.abs(dx)<=1.2 && Math.abs(dy)<=r; break;
+        case 'wing': {
+          const a=r*3.0, b=r;          // schlanke Ellipse, leicht angestellt
+          const th=-0.12, cx1=dx*Math.cos(th)-dy*Math.sin(th), cy1=dx*Math.sin(th)+dy*Math.cos(th);
+          hit = (cx1*cx1)/(a*a) + (cy1*cy1)/(b*b) <= 1; break;
+        }
+      }
+      if(hit) barrier[x+y*XD]=1;
+    }
+  }
+}
+
+function initFluid(){
+  const v = state.speed;
+  for(let y=0;y<YD;y++){
+    for(let x=0;x<XD;x++){
+      const i=x+y*XD;
+      setEquil(i, v, 0, 1 + (Math.random()-0.5)*0.008);
+    }
+  }
+  state.steps=0;
+  clearScope();
+  initTracers();
+}
+
+function setBoundaries(){
+  const v=state.speed;
+  for(let x=0;x<XD;x++){ setEquil(x+0*XD, v,0,1); setEquil(x+(YD-1)*XD, v,0,1); }
+  for(let y=0;y<YD;y++){ setEquil(0+y*XD, v,0,1); setEquil((XD-1)+y*XD, v,0,1); }
+}
+
+function collide(){
+  const omega = 1/(3*state.visc + 0.5);
+  for(let y=1;y<YD-1;y++){
+    const row=y*XD;
+    for(let x=1;x<XD-1;x++){
+      const i=row+x;
+      if(barrier[i]){ ux[i]=0; uy[i]=0; rho[i]=1; continue; }
+      let r = n0[i]+nN[i]+nS[i]+nE[i]+nW[i]+nNE[i]+nSE[i]+nNW[i]+nSW[i];
+      if(r<0.65) r=0.65; else if(r>1.55) r=1.55;
+      let vx = (nE[i]+nNE[i]+nSE[i]-nW[i]-nNW[i]-nSW[i])/r;
+      let vy = (nN[i]+nNE[i]+nNW[i]-nS[i]-nSE[i]-nSW[i])/r;
+      const u2raw = vx*vx+vy*vy;
+      if(u2raw>0.0625){ const f=Math.sqrt(0.0625/u2raw); vx*=f; vy*=f; }  // |u| ≤ 0.25
+      rho[i]=r; ux[i]=vx; uy[i]=vy;
+      const vx3=3*vx, vy3=3*vy, vx2=vx*vx, vy2=vy*vy, vxvy2=2*vx*vy;
+      const u2=vx2+vy2, u215=1.5*u2;
+      n0[i]  += omega*(W0*r*(1-u215) - n0[i]);
+      nE[i]  += omega*(W1*r*(1+vx3+4.5*vx2-u215) - nE[i]);
+      nW[i]  += omega*(W1*r*(1-vx3+4.5*vx2-u215) - nW[i]);
+      nN[i]  += omega*(W1*r*(1+vy3+4.5*vy2-u215) - nN[i]);
+      nS[i]  += omega*(W1*r*(1-vy3+4.5*vy2-u215) - nS[i]);
+      nNE[i] += omega*(W2*r*(1+vx3+vy3+4.5*(u2+vxvy2)-u215) - nNE[i]);
+      nSE[i] += omega*(W2*r*(1+vx3-vy3+4.5*(u2-vxvy2)-u215) - nSE[i]);
+      nNW[i] += omega*(W2*r*(1-vx3+vy3+4.5*(u2-vxvy2)-u215) - nNW[i]);
+      nSW[i] += omega*(W2*r*(1-vx3-vy3+4.5*(u2+vxvy2)-u215) - nSW[i]);
+    }
+  }
+}
+
+function stream(){
+  for(let y=YD-2;y>0;y--) for(let x=1;x<XD-1;x++){
+    nN[x+y*XD]  = nN[x+(y-1)*XD];
+    nNW[x+y*XD] = nNW[x+1+(y-1)*XD];
+  }
+  for(let y=YD-2;y>0;y--) for(let x=XD-2;x>0;x--){
+    nE[x+y*XD]  = nE[x-1+y*XD];
+    nNE[x+y*XD] = nNE[x-1+(y-1)*XD];
+  }
+  for(let y=1;y<YD-1;y++) for(let x=XD-2;x>0;x--){
+    nS[x+y*XD]  = nS[x+(y+1)*XD];
+    nSE[x+y*XD] = nSE[x-1+(y+1)*XD];
+  }
+  for(let y=1;y<YD-1;y++) for(let x=1;x<XD-1;x++){
+    nW[x+y*XD]  = nW[x+1+y*XD];
+    nSW[x+y*XD] = nSW[x+1+(y+1)*XD];
+  }
+  // Abprallen am Hindernis (halfway bounce-back)
+  for(let y=1;y<YD-1;y++) for(let x=1;x<XD-1;x++){
+    const i=x+y*XD;
+    if(!barrier[i]) continue;
+    nE[x+1+y*XD]       = nW[i];
+    nW[x-1+y*XD]       = nE[i];
+    nN[x+(y+1)*XD]     = nS[i];
+    nS[x+(y-1)*XD]     = nN[i];
+    nNE[x+1+(y+1)*XD]  = nSW[i];
+    nNW[x-1+(y+1)*XD]  = nSE[i];
+    nSE[x+1+(y-1)*XD]  = nNW[i];
+    nSW[x-1+(y-1)*XD]  = nNE[i];
+  }
+}
+
+function applyNudge(){
+  // kurzer Querimpuls direkt hinter dem Hindernis
+  const r = state.size/2, cy = Math.round(OBS_Y);
+  for(let y=cy-Math.round(r); y<=cy+Math.round(r); y++){
+    for(let x=OBS_X+Math.round(r)+1; x<OBS_X+Math.round(r)+6; x++){
+      if(x<1||x>=XD-1||y<1||y>=YD-1) continue;
+      const i=x+y*XD; if(barrier[i]) continue;
+      setEquil(i, ux[i], 0.06, 1);
+    }
+  }
+}
+
+/* ---- Messsonde für den Takt ---- */
+const SCOPE_N = 600;
+const scopeBuf = new Float32Array(SCOPE_N);
+let scopeIdx=0, scopeFill=0, scopeEvery=6, scopeCnt=0;
+
+// Erwartete Ablösedauer (Strouhal ≈ 0,2) — daraus die Abtastrate, damit
+// im Fenster immer etwa fünf Takte liegen.
+function probeInterval(){
+  const T = state.size/(0.2*state.speed);
+  return Math.max(1, Math.round(T*5/SCOPE_N));
+}
+function clearScope(){ scopeBuf.fill(0); scopeIdx=0; scopeFill=0; scopeCnt=0; }
+
+function probe(){
+  const iv = probeInterval();
+  if(iv!==scopeEvery){ scopeEvery=iv; clearScope(); }
+  if(++scopeCnt < scopeEvery) return;
+  scopeCnt=0;
+  const sx = Math.min(XD-6, OBS_X + Math.round(state.size*3.5));
+  const sy = Math.round(OBS_Y);
+  scopeBuf[scopeIdx] = uy[sx+sy*XD];
+  scopeIdx = (scopeIdx+1)%SCOPE_N;
+  if(scopeFill<SCOPE_N) scopeFill++;
+}
+
+function analyseScope(){
+  if(scopeFill<SCOPE_N) return null;
+  let mean=0; for(let k=0;k<SCOPE_N;k++) mean+=scopeBuf[k]; mean/=SCOPE_N;
+  let sq=0; for(let k=0;k<SCOPE_N;k++){const d=scopeBuf[k]-mean; sq+=d*d;}
+  const rms=Math.sqrt(sq/SCOPE_N);
+  if(rms < 0.04*state.speed) return null;
+  let cross=0, prev=scopeBuf[scopeIdx]-mean;
+  for(let k=1;k<SCOPE_N;k++){
+    const cur=scopeBuf[(scopeIdx+k)%SCOPE_N]-mean;
+    if(prev<=0 && cur>0) cross++;
+    prev=cur;
+  }
+  if(cross<3) return null;
+  const period = (SCOPE_N/cross)*scopeEvery;
+  return {period, freq:1/period, rms};
+}
+
+function stepOnce(){
+  setBoundaries();
+  collide();
+  stream();
+  if(state.nudge>0){ applyNudge(); state.nudge--; }
+  probe();
+  state.steps++;
+}
+
+/* ============================================================
+   2. Tracer — Fäden und Farbstoff
+   ============================================================ */
+const MAXP = 6000;
+const px = new Float32Array(MAXP), py = new Float32Array(MAXP);
+const pc = new Uint8Array(MAXP), pAlive = new Uint8Array(MAXP);
+let pCount=0;
+
+function initTracers(){
+  pAlive.fill(0); pCount=0;
+  if(state.trace==='lines'){
+    let k=0;
+    for(let y=2;y<YD-2;y+=3){
+      for(let x=2;x<XD-2;x+=6){
+        if(k>=MAXP) break;
+        px[k]=x; py[k]=y; pc[k]=0; pAlive[k]=1; k++;
+      }
+    }
+    pCount=k;
+  } else if(state.trace==='dye'){
+    pCount=MAXP;
+  }
+}
+
+function sampleV(x,y,arr){
+  let x0=Math.floor(x), y0=Math.floor(y);
+  if(x0<1)x0=1; if(x0>XD-3)x0=XD-3;
+  if(y0<1)y0=1; if(y0>YD-3)y0=YD-3;
+  const fx=x-x0, fy=y-y0;
+  const a=arr[x0+y0*XD], b=arr[x0+1+y0*XD], c=arr[x0+(y0+1)*XD], d=arr[x0+1+(y0+1)*XD];
+  return (a*(1-fx)+b*fx)*(1-fy) + (c*(1-fx)+d*fx)*fy;
+}
+
+function emitDye(){
+  const r=state.size/2, cy=OBS_Y+0.5;
+  const ex=Math.max(4, OBS_X - r*3);
+  const per=5;
+  for(let side=0;side<2;side++){
+    const yy = cy + (side===0 ? 1 : -1)*r*0.82;
+    for(let m=0;m<per;m++){
+      let k=-1;
+      for(let t=0;t<MAXP;t++){ const j=(dyeCursor+t)%MAXP; if(!pAlive[j]){k=j;dyeCursor=(j+1)%MAXP;break;} }
+      if(k<0) return;
+      px[k]=ex+(Math.random()-0.5)*1.2;
+      py[k]=yy+(Math.random()-0.5)*1.0;
+      pc[k]=side; pAlive[k]=1;
+    }
+  }
+}
+let dyeCursor=0;
+
+function moveTracers(dt){
+  if(state.trace==='off') return;
+  if(state.trace==='dye') emitDye();
+  for(let k=0;k<MAXP;k++){
+    if(!pAlive[k]) continue;
+    const vx=sampleV(px[k],py[k],ux), vy=sampleV(px[k],py[k],uy);
+    px[k]+=vx*dt; py[k]+=vy*dt;
+    const ix=Math.round(px[k]), iy=Math.round(py[k]);
+    if(ix>0&&ix<XD&&iy>0&&iy<YD&&barrier[ix+iy*XD]){
+      if(state.trace==='dye'){ pAlive[k]=0; continue; }
+      px[k]-=vx*dt*2; py[k]-=vy*dt*2;
+    }
+    if(py[k]<1) py[k]=1; if(py[k]>YD-2) py[k]=YD-2;
+    if(px[k]>XD-3 || px[k]<1){
+      if(state.trace==='lines'){ px[k]=1.5; }
+      else { pAlive[k]=0; }
+    }
+  }
+}
+
+/* ============================================================
+   3. Darstellung
+   ============================================================ */
+const cv = document.getElementById('sim');
+const ctx = cv.getContext('2d');
+const off = document.createElement('canvas'); off.width=XD; off.height=YD;
+const octx = off.getContext('2d');
+const img = octx.createImageData(XD,YD);
+
+function ramp(stops){
+  const out=new Uint8ClampedArray(256*3);
+  for(let i=0;i<256;i++){
+    const t=i/255;
+    let a=stops[0], b=stops[stops.length-1];
+    for(let s=0;s<stops.length-1;s++){
+      if(t>=stops[s][0] && t<=stops[s+1][0]){ a=stops[s]; b=stops[s+1]; break; }
+    }
+    const f = (b[0]-a[0])>0 ? (t-a[0])/(b[0]-a[0]) : 0;
+    out[i*3]   = a[1]+(b[1]-a[1])*f;
+    out[i*3+1] = a[2]+(b[2]-a[2])*f;
+    out[i*3+2] = a[3]+(b[3]-a[3])*f;
+  }
+  return out;
+}
+const hexs=(h)=>[parseInt(h.slice(1,3),16),parseInt(h.slice(3,5),16),parseInt(h.slice(5,7),16)];
+const S=(p,h)=>[p,...hexs(h)];
+// links = Drehung gegen den Uhrzeigersinn (cyan), rechts = mit dem Uhrzeigersinn (amber)
+const PAL_DIV = ramp([S(0,'#9EF2FF'),S(.22,'#2FA9C4'),S(.42,'#0D2430'),S(.5,'#08131A'),S(.58,'#2E1B0C'),S(.78,'#D07822'),S(1,'#FFD79A')]);
+const PAL_SPD = ramp([S(0,'#06121A'),S(.25,'#0E3444'),S(.5,'#1C6E82'),S(.72,'#48C0CF'),S(.88,'#B8ECF2'),S(1,'#FFFFFF')]);
+
+function draw(){
+  const d=img.data;
+  const cont=state.contrast;
+  const cScale = Math.max(0.015, state.speed*0.62)/cont;
+  const sScale = (state.speed*1.75)/cont;
+  const rScale = 0.020/cont;
+  const view=state.view;
+
+  for(let py2=0;py2<YD;py2++){
+    const gy = YD-1-py2;                 // Gitter: y=0 unten, Canvas: y=0 oben
+    for(let x=0;x<XD;x++){
+      const i=x+gy*XD, o=(py2*XD+x)*4;
+      if(barrier[i]){ d[o]=214; d[o+1]=228; d[o+2]=234; d[o+3]=255; continue; }
+      let t=0.5, pal=PAL_DIV;
+      if(view==='curl'){
+        if(gy>0&&gy<YD-1&&x>0&&x<XD-1){
+          const c = (uy[i+1]-uy[i-1])*0.5 - (ux[i+XD]-ux[i-XD])*0.5;
+          t = 0.5 + c/(2*cScale);
+        }
+      } else if(view==='speed'){
+        pal=PAL_SPD;
+        t = Math.sqrt(ux[i]*ux[i]+uy[i]*uy[i])/sScale;
+      } else {
+        t = 0.5 + (rho[i]-1)/(2*rScale);
+      }
+      let ci = t*255; ci = ci<0?0:(ci>255?255:ci)|0;
+      d[o]=pal[ci*3]; d[o+1]=pal[ci*3+1]; d[o+2]=pal[ci*3+2]; d[o+3]=255;
+    }
+  }
+  octx.putImageData(img,0,0);
+
+  const W=cv.width, H=cv.height, sx=W/XD, sy=H/YD;
+  ctx.imageSmoothingEnabled=true;
+  ctx.imageSmoothingQuality='high';
+  ctx.clearRect(0,0,W,H);
+  ctx.drawImage(off,0,0,W,H);
+
+  // Tracer
+  if(state.trace!=='off'){
+    const rad = state.trace==='dye' ? Math.max(1.1, sx*0.42) : Math.max(0.9, sx*0.34);
+    ctx.globalCompositeOperation='lighter';
+    for(let pass=0;pass<2;pass++){
+      ctx.fillStyle = state.trace==='lines'
+        ? 'rgba(232,246,250,0.55)'
+        : (pass===0 ? 'rgba(120,232,250,0.62)' : 'rgba(255,178,84,0.62)');
+      ctx.beginPath();
+      for(let k=0;k<MAXP;k++){
+        if(!pAlive[k]) continue;
+        if(state.trace==='dye' && pc[k]!==pass) continue;
+        const cx=px[k]*sx, cy2=(YD-1-py[k])*sy;
+        ctx.moveTo(cx+rad,cy2);
+        ctx.arc(cx,cy2,rad,0,6.28318);
+      }
+      ctx.fill();
+      if(state.trace==='lines') break;
+    }
+    ctx.globalCompositeOperation='source-over';
+  }
+
+  // Hindernis sauber nachzeichnen
+  const r=state.size/2;
+  ctx.save();
+  ctx.translate(OBS_X*sx, (YD-1-(OBS_Y+0.5))*sy);
+  ctx.fillStyle='#DCE9EE';
+  ctx.strokeStyle='rgba(6,14,19,.85)';
+  ctx.lineWidth=Math.max(1, sx*0.55);
+  ctx.beginPath();
+  if(state.shape==='circle'){
+    ctx.ellipse(0,0,r*sx,r*sy,0,0,6.28318);
+  } else if(state.shape==='square'){
+    ctx.rect(-r*0.9*sx,-r*0.9*sy,r*1.8*sx,r*1.8*sy);
+  } else if(state.shape==='plate'){
+    ctx.rect(-1.7*sx,-(r+0.5)*sy,3.4*sx,(2*r+1)*sy);
+  } else {
+    ctx.ellipse(0,0,r*3.0*sx,r*sy,0.12,0,6.28318);
+  }
+  ctx.fill(); ctx.stroke();
+  ctx.restore();
+}
+
+/* ---- Oszilloskop ---- */
+const sc = document.getElementById('scope');
+const sctx = sc.getContext('2d');
+function drawScope(){
+  const W=sc.width,H=sc.height, mid=H/2;
+  sctx.clearRect(0,0,W,H);
+  sctx.strokeStyle='rgba(155,182,192,0.28)'; sctx.lineWidth=1;
+  sctx.beginPath(); sctx.moveTo(0,mid); sctx.lineTo(W,mid); sctx.stroke();
+  if(scopeFill<20) return;
+  let amp=0;
+  for(let k=0;k<scopeFill;k++){const a=Math.abs(scopeBuf[k]); if(a>amp)amp=a;}
+  amp=Math.max(amp,1e-5);
+  const sy=(H*0.42)/amp;
+  const step=W/SCOPE_N;
+  for(let sign=0;sign<2;sign++){
+    sctx.beginPath(); sctx.moveTo(0,mid);
+    for(let k=0;k<SCOPE_N;k++){
+      const v=scopeBuf[(scopeIdx+k)%SCOPE_N];
+      const use = sign===0 ? Math.max(0,v) : Math.min(0,v);
+      sctx.lineTo(k*step, mid-use*sy);
+    }
+    sctx.lineTo(W,mid); sctx.closePath();
+    sctx.fillStyle = sign===0 ? 'rgba(78,205,224,0.30)' : 'rgba(242,160,61,0.30)';
+    sctx.fill();
+  }
+  sctx.beginPath();
+  for(let k=0;k<SCOPE_N;k++){
+    const v=scopeBuf[(scopeIdx+k)%SCOPE_N];
+    if(k===0) sctx.moveTo(0,mid-v*sy); else sctx.lineTo(k*step,mid-v*sy);
+  }
+  sctx.strokeStyle='rgba(230,242,245,0.85)'; sctx.lineWidth=1.2; sctx.stroke();
+}
+
+/* ============================================================
+   4. Reynolds-Lineal
+   ============================================================ */
+const RE_MIN=1, RE_MAX=2000;
+const LG=(v)=>Math.log10(v);
+const posOf=(re)=>{
+  const t=(LG(Math.max(RE_MIN,Math.min(RE_MAX,re)))-LG(RE_MIN))/(LG(RE_MAX)-LG(RE_MIN));
+  return t*100;
+};
+const STATIONS=[
+  {re:2.3, name:'Zähe\nUmströmung', p:{speed:0.020,visc:0.120,size:14},
+   text:'<b>Zähe Umströmung.</b> Die Flüssigkeit ist so träge, dass sie sich vollständig an das Hindernis anschmiegt und dahinter wieder zusammenläuft. Vorne und hinten sieht das Bild fast gleich aus. Es gibt schlicht keine Wirbel.'},
+  {re:20, name:'Zwei stehende\nWirbel', p:{speed:0.040,visc:0.030,size:15},
+   text:'<b>Zwei stehende Wirbel.</b> Hinter dem Hindernis bildet sich ein Paar gegenläufiger Wirbel — aber sie bleiben hängen. Sie drehen sich auf der Stelle und wachsen mit der Geschwindigkeit. Noch ist nichts in Bewegung stromab.'},
+  {re:100, name:'Wirbelstraße', p:{speed:0.100,visc:0.016,size:16},
+   text:'<b>Wirbelstraße.</b> Die Wirbel bleiben nicht mehr hängen. Sie lösen sich abwechselnd oben und unten ab und ziehen als versetztes Doppelmuster stromab. Der Takt ist so regelmäßig, dass man ihn hören und messen kann.'},
+  {re:513, name:'Unruhig', p:{speed:0.140,visc:0.006,size:22},
+   text:'<b>Unruhig.</b> Der Grundtakt ist noch da, aber die Wirbel zerfasern und verlieren ihre saubere Form. Kleinere Strukturen überlagern das Muster. Ab hier wird die Strömung in Wirklichkeit dreidimensional — das flache Modell stößt an seine Grenze.'}
+];
+
+function buildRuler(){
+  const axis=document.getElementById('axis');
+  const ruler=document.getElementById('ruler');
+  [1,10,100,1000].forEach(v=>{
+    const t=document.createElement('div');
+    t.className='tick'; t.style.left=posOf(v)+'%';
+    t.innerHTML='<i></i><span>Re '+v+'</span>';
+    axis.appendChild(t);
+  });
+  const z=document.getElementById('zoneOut');
+  z.style.left=posOf(700)+'%'; z.style.width=(100-posOf(700))+'%';
+  STATIONS.forEach((s,idx)=>{
+    const b=document.createElement('button');
+    b.className='station'+(idx%2?' alt':''); b.style.left=posOf(s.re)+'%';
+    b.setAttribute('aria-pressed', idx===2?'true':'false');
+    b.innerHTML='<span class="dot"></span><span class="nm">'+s.name.replace('\n','<br>')+'</span>';
+    b.addEventListener('click',()=>applyStation(idx));
+    ruler.appendChild(b);
+  });
+}
+
+function applyStation(idx){
+  const s=STATIONS[idx];
+  state.speed=s.p.speed; state.visc=s.p.visc; state.size=s.p.size;
+  document.getElementById('rSpeed').value=s.p.speed;
+  document.getElementById('rVisc').value=s.p.visc;
+  document.getElementById('rSize').value=s.p.size;
+  document.getElementById('stationText').innerHTML=s.text;
+  setShape('circle');
+  reset();
+  syncStations();
+}
+function syncStations(){
+  const re=reynolds();
+  document.querySelectorAll('.station').forEach((b,i)=>{
+    const near = Math.abs(Math.log10(re)-Math.log10(STATIONS[i].re))<0.09;
+    b.setAttribute('aria-pressed', near?'true':'false');
+  });
+}
+
+function reynolds(){ return state.speed*state.size/state.visc; }
+
+function regimeOf(re){
+  if(re<5)   return 'Zähe Umströmung — keine Ablösung';
+  if(re<40)  return 'Zwei stehende Wirbel';
+  if(re<200) return 'Wirbelstraße — regelmäßiger Takt';
+  if(re<800) return 'Wirbelstraße mit Feinstruktur';
+  return 'Unruhig bis turbulent';
+}
+
+/* ============================================================
+   5. Bedienung
+   ============================================================ */
+const $=(id)=>document.getElementById(id);
+
+function segment(containerId, key, after){
+  const c=$(containerId);
+  c.addEventListener('click',(e)=>{
+    const b=e.target.closest('button'); if(!b) return;
+    [...c.querySelectorAll('button')].forEach(x=>x.setAttribute('aria-pressed', x===b?'true':'false'));
+    state[key]=b.dataset.v;
+    if(after) after();
+  });
+}
+function setShape(v){
+  const c=$('segShape');
+  [...c.querySelectorAll('button')].forEach(x=>x.setAttribute('aria-pressed', x.dataset.v===v?'true':'false'));
+  state.shape=v;
+}
+
+segment('segShape','shape',()=>{ buildBarrier(); reset(); });
+segment('segView','view', updateLegend);
+segment('segTrace','trace',()=>{ initTracers(); updateLegend(); });
+
+$('rSpeed').addEventListener('input',e=>{ state.speed=+e.target.value; $('vSpeed').textContent=state.speed.toFixed(3); syncStations(); });
+$('rVisc').addEventListener('input', e=>{ state.visc=+e.target.value;  $('vVisc').textContent=state.visc.toFixed(3);  syncStations(); });
+$('rSize').addEventListener('input', e=>{ state.size=+e.target.value;  $('vSize').textContent=state.size; buildBarrier(); syncStations(); });
+$('rContrast').addEventListener('input', e=>{ state.contrast=+e.target.value; });
+
+$('bPlay').addEventListener('click',()=>{
+  state.running=!state.running;
+  $('bPlay').textContent = state.running?'Pause':'Weiter';
+});
+$('bNudge').addEventListener('click',()=>{ state.nudge=25; });
+$('bReset').addEventListener('click', reset);
+
+function reset(){
+  buildBarrier();
+  initFluid();
+  $('warn').classList.remove('on');
+}
+
+function updateLegend(){
+  const L=$('legend');
+  if(state.view==='curl'){
+    L.innerHTML='<span><i class="swatch" style="background:#4ECDE0"></i>dreht links herum</span>'+
+                '<span><i class="swatch" style="background:#F2A03D"></i>dreht rechts herum</span>';
+  } else if(state.view==='speed'){
+    L.innerHTML='<span><i class="swatch" style="background:#06121A;border:1px solid #22404E"></i>steht still</span>'+
+                '<span><i class="swatch" style="background:#B8ECF2"></i>schnell</span>';
+  } else {
+    L.innerHTML='<span><i class="swatch" style="background:#4ECDE0"></i>Unterdruck</span>'+
+                '<span><i class="swatch" style="background:#F2A03D"></i>Überdruck</span>';
+  }
+}
+
+/* ============================================================
+   6. Schleife
+   ============================================================ */
+let lastMeter=0, lastTs=0, ema=16;
+function frame(ts){
+  if(lastTs){
+    ema = ema*0.9 + Math.min(90, ts-lastTs)*0.1;
+    if(ema>26 && state.stepsPerFrame>4) state.stepsPerFrame--;
+    else if(ema<14 && state.stepsPerFrame<12) state.stepsPerFrame++;
+  }
+  lastTs=ts;
+  if(state.running){
+    for(let s=0;s<state.stepsPerFrame;s++) stepOnce();
+    moveTracers(state.stepsPerFrame);
+    if(!isFinite(rho[Math.round(OBS_X+30)+Math.round(OBS_Y)*XD])){
+      $('warn').classList.add('on'); reset();
+    }
+  }
+  draw();
+  if(ts-lastMeter>140){
+    lastMeter=ts;
+    drawScope();
+    const re=reynolds();
+    $('mRe').textContent = re<10 ? re.toFixed(1) : Math.round(re);
+    $('regime').textContent = regimeOf(re);
+    const nd=$('needle');
+    nd.style.left=posOf(re)+'%';
+    nd.querySelector('b').textContent='Re '+(re<10?re.toFixed(1):Math.round(re));
+    const a=analyseScope();
+    if(a){
+      $('mPeriod').textContent = Math.round(a.period);
+      const st = a.freq*state.size/state.speed;
+      $('mSt').textContent = st.toFixed(2).replace('.',',');
+    } else {
+      $('mPeriod').textContent='—';
+      $('mSt').textContent='—';
+    }
+  }
+  requestAnimationFrame(frame);
+}
+
+function fitCanvas(){
+  const w=cv.parentElement.clientWidth;
+  const dpr=Math.min(2, window.devicePixelRatio||1);
+  cv.width=Math.round(w*dpr);
+  cv.height=Math.round(w*dpr*YD/XD);
+  cv.style.height=Math.round(w*YD/XD)+'px';
+  const sw=sc.parentElement.clientWidth-32;
+  sc.width=Math.round(Math.max(120,sw)*dpr); sc.height=Math.round(52*dpr);
+}
+window.addEventListener('resize', fitCanvas);
+
+/* Start */
+buildRuler();
+updateLegend();
+fitCanvas();
+reset();
+$('vSpeed').textContent=state.speed.toFixed(3);
+$('vVisc').textContent=state.visc.toFixed(3);
+$('vSize').textContent=state.size;
+syncStations();
+requestAnimationFrame(frame);
+
+})();
+</script>
+</body>
+</html>

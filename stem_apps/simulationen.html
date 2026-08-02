@@ -285,7 +285,7 @@ h1{
 </div>
 
 <footer class="foot">
-  <span>(c) Dario Antweiler, Fraunhofer IAIS &middot; 26. Juli 2026</span>
+  <span>(c) Dario Antweiler, Fraunhofer IAIS &middot; 2. August 2026</span>
   <span>Alle Modelle laufen lokal, ohne Build-Schritt und ohne Netzverbindung.</span>
 </footer>
 
@@ -320,10 +320,16 @@ const CATALOG = [
       title:'Perkolationsschwelle',
       desc:'Ein zufälliges Gitter kippt an einem scharfen Schwellenwert vom Inselreich zum durchgängigen Netz.',
       tags:'Statistische Physik · Phasenübergang' },
-    { id:'stroemungssimulation', sim:'vortex', status:'todo',
+    { id:'stroemungssimulation', sim:'vortex',
       title:'Verwirbelung',
       desc:'Ein Hindernis im Strom lässt Wirbel ablösen, die sich zu einer Kármánschen Straße ordnen.',
+      path:'verwirbelung/verwirbelung-wirbelstrasse.html',
       tags:'Strömungsmechanik · CFD' },
+    { id:'drake-gleichung', sim:'drake',
+      title:'Drake-Gleichung',
+      desc:'Sieben Faktoren multiplizieren sich zur geschätzten Zahl kommunizierender Zivilisationen in der Galaxis.',
+      path:'drake_equation/drake-gleichung.html',
+      tags:'Astrobiologie · Wahrscheinlichkeit' },
   ]},
   { id:'biologie', name:'Biologie', apps:[
     { id:'evolution', sim:'phylo',
@@ -379,10 +385,16 @@ const CATALOG = [
       title:'Satz von Pick',
       desc:'Die Fläche eines Gitterpolygons ergibt sich allein aus der Zahl der Rand- und Innenpunkte.',
       tags:'Geometrie · Gitterpunkte' },
-    { id:'spannbaum-kreise', sim:'growingcircles', status:'todo',
+    { id:'spannbaum-kreise', sim:'growingcircles',
       title:'Minimaler Spannbaum durch wachsende Kreise',
-      desc:'Um jeden Punkt wächst ein Kreis; erste Berührungen zweier Kreise liefern nach und nach den Spannbaum.',
+      desc:'Um jeden Punkt wächst ein Kreis, alle gleich schnell. Berühren sich zwei Kreise, wird eine Verbindung angeboten — angenommen wird sie nur, wenn sie zwei bisher getrennte Gruppen zusammenführt.',
+      path:'spanning-tree/spannbaum-wachsende-kreise.html',
       tags:'Graphentheorie · Algorithmen' },
+    { id:'graphenfaerbung', sim:'graphcoloring',
+      title:'Vier-Farben-Satz',
+      desc:'Karte oder Graph interaktiv einfärben: nie treffen zwei benachbarte Flächen dieselbe Farbe, vier reichen stets.',
+      path:'graphenfaerbung/graphenfaerbung.html',
+      tags:'Graphentheorie · Kombinatorik' },
     { id:'pythagorasbaum', sim:'pythagorastree', status:'todo',
       title:'Fraktaler Pythagorasbaum',
       desc:'Auf jedem Quadrat wächst ein rechtwinkliges Dreieck, auf dessen Katheten wieder zwei Quadrate.',
@@ -405,6 +417,11 @@ const CATALOG = [
       desc:'Kooperation überlebt in Clustern, sobald nur noch Nachbarn gegeneinander spielen.',
       path:'spieltheorie/spatial-pd/index.html',
       tags:'Spieltheorie · Nowak-May' },
+    { id:'braess-paradoxon', sim:'braess',
+      title:'Braess-Paradoxon',
+      desc:'Eine zusätzliche Straße, die jeder für sich nutzt, macht das Netz für alle langsamer.',
+      path:'braess-paradoxon/braess-paradoxon.html',
+      tags:'Spieltheorie · Netzwerke' },
   ]},
   { id:'ingenieurwissenschaften', name:'Ingenieurwissenschaften', apps:[
     { id:'ubahn', sim:'metro',
