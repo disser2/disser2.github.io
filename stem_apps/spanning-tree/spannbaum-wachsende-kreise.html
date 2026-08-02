@@ -1,0 +1,616 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Spannbaum durch wachsende Kreise</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@300;400;500&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper:#F8F7F1;
+    --paper-2:#F1EFE6;
+    --grid-fine:#CBDCD2;
+    --grid-bold:#A6C2B2;
+    --ink:#1C2723;
+    --ink-soft:#65736C;
+    --ink-faint:#9AA49E;
+    --rule:#D9D5C7;
+    --teal:#0E7C7B;
+    --ochre:#BE8A26;
+    --plum:#79497F;
+    --rust:#B24E33;
+    --slate:#2C5B87;
+    --moss:#5A8A36;
+    --rose:#AC4568;
+    --indigo:#3E3C8C;
+    --skip:#B4AEA0;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;height:100%}
+  body{
+    background:var(--paper-2);
+    color:var(--ink);
+    font-family:"IBM Plex Sans",system-ui,sans-serif;
+    font-size:15px;
+    line-height:1.5;
+    -webkit-font-smoothing:antialiased;
+  }
+  .app{
+    display:grid;
+    grid-template-columns:minmax(0,1fr) 372px;
+    gap:0;
+    height:100vh;
+  }
+
+  /* ---------- Zeichenbrett ---------- */
+  .board{
+    display:flex;flex-direction:column;
+    min-width:0;padding:22px 22px 16px 26px;gap:14px;
+  }
+  .board-head{display:flex;align-items:flex-end;justify-content:space-between;gap:18px;flex-wrap:wrap}
+  h1{
+    font-family:"Oswald",sans-serif;font-weight:400;
+    font-size:clamp(21px,2.4vw,30px);letter-spacing:.02em;
+    margin:0;text-transform:uppercase;
+  }
+  h1 em{font-style:normal;color:var(--teal)}
+  .sub{color:var(--ink-soft);font-size:13.5px;max-width:56ch;margin:4px 0 0}
+  .stage{
+    position:relative;flex:1;min-height:0;
+    background:var(--paper);
+    border:1px solid var(--rule);
+    box-shadow:0 1px 0 #fff inset, 0 6px 18px -14px rgba(28,39,35,.5);
+  }
+  #board{display:block;width:100%;height:100%;touch-action:none;cursor:crosshair}
+  .done-flag{
+    position:absolute;left:14px;top:14px;
+    font-family:"Oswald",sans-serif;text-transform:uppercase;letter-spacing:.14em;
+    font-size:12px;padding:6px 12px;border:1px solid var(--teal);color:var(--teal);
+    background:rgba(248,247,241,.9);
+    opacity:0;transform:translateY(-4px);transition:opacity .3s,transform .3s;pointer-events:none;
+  }
+  .done-flag.on{opacity:1;transform:none}
+
+  /* ---------- Signature: Radiuslineal ---------- */
+  .ruler-wrap{display:flex;flex-direction:column;gap:5px}
+  .ruler-label{
+    display:flex;justify-content:space-between;align-items:baseline;
+    font-family:"Oswald",sans-serif;text-transform:uppercase;letter-spacing:.16em;
+    font-size:10.5px;color:var(--ink-soft);
+  }
+  #ruler{display:block;width:100%;height:62px;touch-action:none;cursor:ew-resize}
+  .hint{font-size:12px;color:var(--ink-faint);margin:0}
+  .hint b{font-weight:500;color:var(--ink-soft)}
+
+  /* ---------- Steuerpult ---------- */
+  .panel{
+    background:var(--paper);
+    border-left:1px solid var(--rule);
+    padding:22px 22px 28px;
+    overflow-y:auto;
+    display:flex;flex-direction:column;gap:20px;
+  }
+  .readout{display:flex;align-items:flex-end;gap:16px;flex-wrap:wrap}
+  .big{
+    font-family:"IBM Plex Mono",monospace;font-weight:500;
+    font-size:44px;line-height:.9;letter-spacing:-.02em;
+  }
+  .big span{font-size:16px;color:var(--ink-faint);margin-left:2px}
+  .stat{font-family:"IBM Plex Mono",monospace;font-size:15px}
+  .cap{
+    display:block;font-family:"Oswald",sans-serif;font-weight:300;
+    text-transform:uppercase;letter-spacing:.16em;font-size:9.5px;color:var(--ink-faint);
+  }
+  .row{display:flex;gap:8px;flex-wrap:wrap}
+  button{
+    font-family:"IBM Plex Sans",sans-serif;font-size:13.5px;
+    padding:9px 14px;border:1px solid var(--rule);background:var(--paper-2);
+    color:var(--ink);cursor:pointer;border-radius:2px;transition:background .15s,border-color .15s;
+  }
+  button:hover{background:#E7E4D8;border-color:#C6C1B0}
+  button:focus-visible{outline:2px solid var(--teal);outline-offset:2px}
+  button.primary{
+    background:var(--ink);color:var(--paper);border-color:var(--ink);min-width:132px;
+    font-family:"Oswald",sans-serif;text-transform:uppercase;letter-spacing:.1em;font-size:12.5px;padding:11px 14px;
+  }
+  button.primary:hover{background:#0F1815;border-color:#0F1815}
+  .sec{border-top:1px solid var(--rule);padding-top:16px}
+  .sec > .cap{margin-bottom:10px}
+  label.slider{display:block;font-size:12.5px;color:var(--ink-soft);margin-bottom:12px}
+  label.slider .val{font-family:"IBM Plex Mono",monospace;color:var(--ink);float:right}
+  input[type=range]{width:100%;accent-color:var(--teal);margin-top:4px}
+  .checks{display:flex;flex-direction:column;gap:7px;font-size:13px;color:var(--ink-soft)}
+  .checks label{display:flex;align-items:center;gap:8px;cursor:pointer}
+  input[type=checkbox]{accent-color:var(--teal);width:15px;height:15px}
+  .legend{display:flex;flex-direction:column;gap:8px;font-size:12.5px;color:var(--ink-soft)}
+  .legend i{display:inline-block;width:26px;height:0;border-top-width:3px;margin-right:9px;vertical-align:middle}
+  .log{
+    max-height:216px;overflow-y:auto;font-family:"IBM Plex Mono",monospace;font-size:11.5px;
+    display:flex;flex-direction:column;gap:3px;padding-right:4px;
+  }
+  .log div{display:flex;gap:8px;color:var(--ink-soft);white-space:nowrap}
+  .log .no{color:var(--ink-faint);width:22px;flex:none;text-align:right}
+  .log .pair{color:var(--ink);width:52px;flex:none}
+  .log .ok{color:var(--teal)}
+  .log .sk{color:var(--skip)}
+  .log .empty{color:var(--ink-faint);white-space:normal}
+  .steps{counter-reset:s;display:flex;flex-direction:column;gap:9px;font-size:13px;color:var(--ink-soft);margin:0;padding:0;list-style:none}
+  .steps li{display:flex;gap:10px}
+  .steps li::before{
+    counter-increment:s;content:counter(s);
+    font-family:"IBM Plex Mono",monospace;font-size:11px;color:var(--teal);
+    border:1px solid var(--grid-bold);width:19px;height:19px;flex:none;
+    display:flex;align-items:center;justify-content:center;margin-top:1px;
+  }
+
+  @media (max-width:920px){
+    .app{grid-template-columns:1fr;height:auto}
+    .board{height:auto;padding:16px}
+    .stage{height:56vh;min-height:320px}
+    .panel{border-left:0;border-top:1px solid var(--rule)}
+  }
+  @media (prefers-reduced-motion:reduce){
+    .done-flag{transition:none}
+  }
+</style>
+</head>
+<body>
+<div class="app">
+
+  <!-- ================= Zeichenbrett ================= -->
+  <main class="board">
+    <div class="board-head">
+      <div>
+        <h1>Spannbaum durch <em>wachsende Kreise</em></h1>
+        <p class="sub">Um jeden Punkt wächst ein Kreis, alle gleich schnell. Berühren sich zwei Kreise, wird eine Verbindung angeboten — angenommen wird sie nur, wenn sie zwei bisher getrennte Gruppen zusammenführt.</p>
+      </div>
+    </div>
+
+    <div class="stage">
+      <canvas id="board"></canvas>
+      <div class="done-flag" id="flag">Alle Punkte verbunden</div>
+    </div>
+
+    <div class="ruler-wrap">
+      <div class="ruler-label">
+        <span>Radiuslineal — jede Kerbe ist eine bevorstehende Berührung</span>
+        <span id="rulerRight">ziehen zum Spulen</span>
+      </div>
+      <canvas id="ruler"></canvas>
+    </div>
+
+    <p class="hint"><b>Klick</b> setzt einen Punkt · <b>Ziehen</b> verschiebt ihn · <b>Shift-Klick</b> löscht ihn · <b>Leertaste</b> startet und stoppt</p>
+  </main>
+
+  <!-- ================= Steuerpult ================= -->
+  <aside class="panel">
+
+    <div class="readout">
+      <div>
+        <span class="cap">Radius</span>
+        <div class="big" id="rVal">0<span>px</span></div>
+      </div>
+      <div>
+        <span class="cap">Verbindungen</span>
+        <div class="stat" id="cVal">0 / 0</div>
+      </div>
+      <div>
+        <span class="cap">Gesamtlänge</span>
+        <div class="stat" id="lVal">0 px</div>
+      </div>
+    </div>
+
+    <div class="row">
+      <button class="primary" id="play">Start</button>
+      <button id="step">Nächste Berührung</button>
+      <button id="reset">Zurück auf null</button>
+    </div>
+
+    <div class="sec">
+      <span class="cap">Ablauf</span>
+      <ol class="steps">
+        <li>Alle Kreise wachsen gleichmäßig, der Radius ist überall gleich.</li>
+        <li>Zwei Kreise berühren sich genau dann, wenn der Radius die Hälfte ihres Abstands erreicht. Die kürzeste Strecke kommt also zuerst.</li>
+        <li>Gehören die beiden Punkte zu verschiedenen Gruppen, bleibt die Verbindung. Gehören sie schon zusammen, wird sie übersprungen.</li>
+        <li>Nach <em>n − 1</em> Verbindungen hängt alles zusammen — kürzer geht es nicht.</li>
+      </ol>
+    </div>
+
+    <div class="sec">
+      <span class="cap">Tempo &amp; Punkte</span>
+      <label class="slider">Wachstumstempo <span class="val" id="spdVal">55</span>
+        <input type="range" id="spd" min="10" max="260" value="55">
+      </label>
+      <label class="slider">Anzahl Punkte <span class="val" id="numVal">12</span>
+        <input type="range" id="num" min="2" max="40" value="12">
+      </label>
+      <div class="row">
+        <button data-layout="random">Zufall</button>
+        <button data-layout="cluster">Gruppen</button>
+        <button data-layout="ring">Ring</button>
+        <button data-layout="grid">Raster</button>
+      </div>
+    </div>
+
+    <div class="sec">
+      <span class="cap">Anzeige</span>
+      <div class="checks">
+        <label><input type="checkbox" id="cCircles" checked> Wachsende Kreise zeigen</label>
+        <label><input type="checkbox" id="cSkipped" checked> Übersprungene Berührungen zeigen</label>
+        <label><input type="checkbox" id="cLabels" checked> Punkte beschriften</label>
+        <label><input type="checkbox" id="cGrid" checked> Millimeterraster zeigen</label>
+      </div>
+    </div>
+
+    <div class="sec">
+      <span class="cap">Legende</span>
+      <div class="legend">
+        <div><i style="border-top:3px solid var(--teal)"></i>Verbindung im Spannbaum</div>
+        <div><i style="border-top:3px dashed var(--skip)"></i>Berührung übersprungen (Gruppe schon verbunden)</div>
+        <div><i style="border-top:3px solid var(--ochre)"></i>Farbe = Gruppe; beim Verbinden verschmelzen die Farben</div>
+      </div>
+    </div>
+
+    <div class="sec">
+      <span class="cap">Protokoll der Berührungen</span>
+      <div class="log" id="log"></div>
+    </div>
+
+  </aside>
+</div>
+
+<script>
+(() => {
+  "use strict";
+
+  const W = 1000, H = 700;                 // Weltkoordinaten (px im Modell)
+  const PAL = ["--teal","--ochre","--plum","--rust","--slate","--moss","--rose","--indigo"];
+  const css = n => getComputedStyle(document.documentElement).getPropertyValue(n).trim();
+  const COL = () => PAL.map(css);
+  const reduceMotion = matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+  const board = document.getElementById("board"), bx = board.getContext("2d");
+  const ruler = document.getElementById("ruler"), rx = ruler.getContext("2d");
+  const $ = id => document.getElementById(id);
+
+  let pts = [];        // {x,y}
+  let events = [];     // {a,b,d,r,ok}
+  let maxR = 100;
+  let R = 0, playing = false, speed = 55;
+  let drag = -1, lastLogCount = -1, palette = [];
+
+  /* ---------------- Modell ---------------- */
+
+  function recompute(){
+    events = [];
+    for (let i = 0; i < pts.length; i++)
+      for (let j = i + 1; j < pts.length; j++){
+        const d = Math.hypot(pts[i].x - pts[j].x, pts[i].y - pts[j].y);
+        events.push({a:i, b:j, d, r:d/2, ok:false});
+      }
+    events.sort((p,q) => p.r - q.r);
+
+    const par = pts.map((_,i) => i);
+    const find = x => { while (par[x] !== x){ par[x] = par[par[x]]; x = par[x]; } return x; };
+    let joined = 0;
+    for (const e of events){
+      const ra = find(e.a), rb = find(e.b);
+      if (ra !== rb){ par[ra] = rb; e.ok = true; joined++; if (joined === pts.length - 1) break; }
+    }
+    const lastNeeded = [...events].reverse().find(e => e.ok);
+    maxR = Math.max(60, (lastNeeded ? lastNeeded.r : 60) * 1.12);
+    R = Math.min(R, maxR);
+  }
+
+  // Zustand bei Radius R: Gruppen, akzeptierte Kanten, Länge
+  function snapshot(){
+    const par = pts.map((_,i) => i);
+    const find = x => { while (par[x] !== x){ par[x] = par[par[x]]; x = par[x]; } return x; };
+    const kept = [], skipped = [];
+    let len = 0, revealed = 0;
+    for (const e of events){
+      if (e.r > R) break;
+      revealed++;
+      if (e.ok){ par[find(e.a)] = find(e.b); kept.push(e); len += e.d; }
+      else skipped.push(e);
+    }
+    const root = pts.map((_,i) => find(i));
+    const minIdx = {};
+    root.forEach((r,i) => { if (minIdx[r] === undefined) minIdx[r] = i; });
+    const color = root.map(r => palette[minIdx[r] % palette.length]);
+    return {kept, skipped, color, len, revealed, count: kept.length};
+  }
+
+  /* ---------------- Layouts ---------------- */
+
+  const rnd = (a,b) => a + Math.random() * (b - a);
+  function layout(kind, n){
+    const P = [], m = 90;
+    if (kind === "cluster"){
+      const k = Math.max(2, Math.round(n/5));
+      const cs = Array.from({length:k}, () => ({x:rnd(m+60,W-m-60), y:rnd(m+50,H-m-50)}));
+      for (let i = 0; i < n; i++){
+        const c = cs[i % k];
+        P.push({x:Math.min(W-m,Math.max(m,c.x+rnd(-75,75))), y:Math.min(H-m,Math.max(m,c.y+rnd(-70,70)))});
+      }
+    } else if (kind === "ring"){
+      for (let i = 0; i < n; i++){
+        const t = i/n*Math.PI*2, rr = 250 + rnd(-26,26);
+        P.push({x:W/2 + Math.cos(t)*rr*1.25, y:H/2 + Math.sin(t)*rr});
+      }
+    } else if (kind === "grid"){
+      const cols = Math.ceil(Math.sqrt(n*1.4)), rows = Math.ceil(n/cols);
+      for (let i = 0; i < n; i++){
+        const c = i % cols, r = Math.floor(i/cols);
+        P.push({x:m + c*(W-2*m)/Math.max(1,cols-1) + rnd(-16,16),
+                y:m + r*(H-2*m)/Math.max(1,rows-1) + rnd(-16,16)});
+      }
+    } else {
+      let guard = 0;
+      while (P.length < n && guard++ < 4000){
+        const p = {x:rnd(m,W-m), y:rnd(m,H-m)};
+        if (P.every(q => Math.hypot(p.x-q.x, p.y-q.y) > 58)) P.push(p);
+      }
+    }
+    return P;
+  }
+
+  function setPoints(kind){
+    pts = layout(kind, +$("num").value);
+    R = 0; playing = false; syncPlay(); recompute();
+  }
+
+  /* ---------------- Zeichnen ---------------- */
+
+  function fit(cv, ctx){
+    const dpr = Math.min(2, devicePixelRatio || 1);
+    const w = cv.clientWidth, h = cv.clientHeight;
+    if (cv.width !== Math.round(w*dpr) || cv.height !== Math.round(h*dpr)){
+      cv.width = Math.round(w*dpr); cv.height = Math.round(h*dpr);
+    }
+    ctx.setTransform(dpr,0,0,dpr,0,0);
+    return {w,h};
+  }
+
+  let view = {s:1, ox:0, oy:0};
+  function toWorld(cx, cy){ return {x:(cx-view.ox)/view.s, y:(cy-view.oy)/view.s}; }
+
+  function drawBoard(snap){
+    const {w,h} = fit(board, bx);
+    const s = Math.min(w/W, h/H);
+    view = {s, ox:(w - W*s)/2, oy:(h - H*s)/2};
+
+    bx.clearRect(0,0,w,h);
+    bx.save();
+    bx.translate(view.ox, view.oy); bx.scale(s,s);
+
+    // Millimeterpapier
+    if ($("cGrid").checked){
+      bx.lineWidth = 1/s;
+      bx.strokeStyle = css("--grid-fine"); bx.globalAlpha = .55; bx.beginPath();
+      for (let x = 0; x <= W; x += 20){ bx.moveTo(x,0); bx.lineTo(x,H); }
+      for (let y = 0; y <= H; y += 20){ bx.moveTo(0,y); bx.lineTo(W,y); }
+      bx.stroke();
+      bx.strokeStyle = css("--grid-bold"); bx.globalAlpha = .7; bx.beginPath();
+      for (let x = 0; x <= W; x += 100){ bx.moveTo(x,0); bx.lineTo(x,H); }
+      for (let y = 0; y <= H; y += 100){ bx.moveTo(0,y); bx.lineTo(W,y); }
+      bx.stroke();
+      bx.globalAlpha = 1;
+    }
+
+    // Kreise
+    if ($("cCircles").checked && R > 0){
+      pts.forEach((p,i) => {
+        bx.beginPath(); bx.arc(p.x, p.y, R, 0, Math.PI*2);
+        bx.fillStyle = snap.color[i]; bx.globalAlpha = .07; bx.fill();
+        bx.globalAlpha = .55; bx.lineWidth = 1.6; bx.strokeStyle = snap.color[i]; bx.stroke();
+        bx.globalAlpha = 1;
+      });
+    }
+
+    // Übersprungene Berührungen
+    if ($("cSkipped").checked){
+      bx.save(); bx.setLineDash([7,7]); bx.lineWidth = 1.6; bx.strokeStyle = css("--skip");
+      for (const e of snap.skipped){
+        bx.beginPath(); bx.moveTo(pts[e.a].x, pts[e.a].y); bx.lineTo(pts[e.b].x, pts[e.b].y); bx.stroke();
+      }
+      bx.restore();
+    }
+
+    // Spannbaum-Kanten
+    bx.lineCap = "round";
+    for (const e of snap.kept){
+      bx.beginPath(); bx.moveTo(pts[e.a].x, pts[e.a].y); bx.lineTo(pts[e.b].x, pts[e.b].y);
+      bx.lineWidth = 3.6; bx.strokeStyle = snap.color[e.a]; bx.stroke();
+    }
+
+    // Berührungsfunke
+    if (!reduceMotion){
+      for (const e of events){
+        const age = R - e.r;
+        if (age < 0) break;
+        if (age > 26) continue;
+        const t = age/26;
+        bx.beginPath();
+        bx.arc((pts[e.a].x+pts[e.b].x)/2, (pts[e.a].y+pts[e.b].y)/2, 6 + t*26, 0, Math.PI*2);
+        bx.globalAlpha = (1-t)*.85; bx.lineWidth = 2.4;
+        bx.strokeStyle = e.ok ? snap.color[e.a] : css("--skip");
+        bx.stroke(); bx.globalAlpha = 1;
+      }
+    }
+
+    // Punkte
+    pts.forEach((p,i) => {
+      bx.beginPath(); bx.arc(p.x, p.y, 6.5, 0, Math.PI*2);
+      bx.fillStyle = css("--paper"); bx.fill();
+      bx.lineWidth = 3; bx.strokeStyle = snap.color[i]; bx.stroke();
+      bx.beginPath(); bx.arc(p.x, p.y, 2.4, 0, Math.PI*2);
+      bx.fillStyle = css("--ink"); bx.fill();
+    });
+
+    if ($("cLabels").checked){
+      bx.fillStyle = css("--ink-soft");
+      bx.font = "500 15px 'IBM Plex Mono', monospace";
+      bx.textAlign = "center";
+      pts.forEach((p,i) => bx.fillText(name(i), p.x, p.y - 15));
+    }
+    bx.restore();
+  }
+
+  const name = i => i < 26 ? String.fromCharCode(65+i) : String.fromCharCode(65+Math.floor(i/26)-1) + String.fromCharCode(65+i%26);
+
+  function drawRuler(snap){
+    const {w,h} = fit(ruler, rx);
+    rx.clearRect(0,0,w,h);
+    const pad = 14, base = h - 20, span = w - 2*pad;
+    const X = r => pad + Math.min(1, r/maxR) * span;
+
+    rx.strokeStyle = css("--rule"); rx.lineWidth = 1;
+    rx.beginPath(); rx.moveTo(pad, base+.5); rx.lineTo(w-pad, base+.5); rx.stroke();
+
+    // Skala
+    rx.fillStyle = css("--ink-faint");
+    rx.font = "400 10px 'IBM Plex Mono', monospace"; rx.textAlign = "center";
+    const stepv = Math.max(10, Math.round(maxR/5/10)*10);
+    for (let v = 0; v <= maxR; v += stepv){
+      rx.beginPath(); rx.moveTo(X(v), base); rx.lineTo(X(v), base+5);
+      rx.strokeStyle = css("--rule"); rx.stroke();
+      rx.fillText(Math.round(v), X(v), base+17);
+    }
+
+    // Kerben = Berührungen
+    events.forEach(e => {
+      const x = X(e.r), done = e.r <= R;
+      const len = e.ok ? 26 : 13;
+      rx.beginPath(); rx.moveTo(x, base); rx.lineTo(x, base-len);
+      rx.lineWidth = e.ok ? 2.4 : 1.4;
+      rx.globalAlpha = done ? 1 : .28;
+      rx.strokeStyle = done ? (e.ok ? css("--teal") : css("--skip")) : css("--ink-faint");
+      rx.stroke(); rx.globalAlpha = 1;
+    });
+
+    // Laufmarke
+    const x = X(R);
+    rx.strokeStyle = css("--ink"); rx.lineWidth = 1.6;
+    rx.beginPath(); rx.moveTo(x, 4); rx.lineTo(x, base); rx.stroke();
+    rx.beginPath(); rx.moveTo(x-5, 4); rx.lineTo(x+5, 4); rx.lineTo(x, 11); rx.closePath();
+    rx.fillStyle = css("--ink"); rx.fill();
+  }
+
+  function drawLog(snap){
+    if (snap.revealed === lastLogCount) return;
+    lastLogCount = snap.revealed;
+    const el = $("log");
+    if (!snap.revealed){
+      el.innerHTML = '<div class="empty">Noch keine Berührung. Start drücken.</div>';
+      return;
+    }
+    let html = "", n = 0;
+    for (const e of events){
+      if (e.r > R) break;
+      n++;
+      html += `<div><span class="no">${n}</span><span class="pair">${name(e.a)}–${name(e.b)}</span>`
+            + `<span class="${e.ok?'ok':'sk'}">${Math.round(e.d)} px ${e.ok ? "verbunden" : "übersprungen"}</span></div>`;
+    }
+    el.innerHTML = html;
+    el.scrollTop = el.scrollHeight;
+  }
+
+  /* ---------------- Schleife ---------------- */
+
+  let prev = performance.now();
+  function frame(now){
+    const dt = Math.min(.05, (now - prev)/1000); prev = now;
+    if (playing){
+      R += speed * dt;
+      if (R >= maxR){ R = maxR; playing = false; syncPlay(); }
+    }
+    const snap = snapshot();
+    const need = Math.max(0, pts.length - 1);
+    if (playing && need > 0 && snap.count === need){ playing = false; syncPlay(); }
+
+    drawBoard(snap); drawRuler(snap); drawLog(snap);
+    $("rVal").innerHTML = Math.round(R) + "<span>px</span>";
+    $("cVal").textContent = snap.count + " / " + need;
+    $("lVal").textContent = Math.round(snap.len) + " px";
+    $("flag").classList.toggle("on", need > 0 && snap.count === need);
+    requestAnimationFrame(frame);
+  }
+
+  /* ---------------- Bedienung ---------------- */
+
+  const syncPlay = () => { $("play").textContent = playing ? "Pause" : (R >= maxR ? "Neu abspielen" : "Start"); };
+
+  $("play").onclick = () => {
+    if (!playing && R >= maxR) R = 0;
+    playing = !playing; syncPlay();
+  };
+  $("reset").onclick = () => { R = 0; playing = false; syncPlay(); };
+  $("step").onclick = () => {
+    const nxt = events.find(e => e.r > R + 1e-6);
+    R = nxt ? nxt.r + .8 : maxR;
+    playing = false; syncPlay();
+  };
+  $("spd").oninput = e => { speed = +e.target.value; $("spdVal").textContent = speed; };
+  $("num").oninput = e => { $("numVal").textContent = e.target.value; setPoints("random"); };
+  document.querySelectorAll("[data-layout]").forEach(b => b.onclick = () => setPoints(b.dataset.layout));
+  ["cCircles","cSkipped","cLabels","cGrid"].forEach(id => $(id).onchange = () => {});
+
+  addEventListener("keydown", e => {
+    if (e.code === "Space" && e.target.tagName !== "INPUT" && e.target.tagName !== "BUTTON"){
+      e.preventDefault(); $("play").click();
+    }
+  });
+
+  // Punkte setzen / ziehen / löschen
+  const pos = ev => { const r = board.getBoundingClientRect(); return toWorld(ev.clientX - r.left, ev.clientY - r.top); };
+  board.addEventListener("pointerdown", ev => {
+    const p = pos(ev);
+    let hit = -1, best = 16;
+    pts.forEach((q,i) => { const d = Math.hypot(q.x-p.x, q.y-p.y); if (d < best){ best = d; hit = i; } });
+    if (ev.shiftKey){
+      if (hit >= 0){ pts.splice(hit,1); recompute(); $("num").value = Math.max(2, pts.length); $("numVal").textContent = pts.length; }
+      return;
+    }
+    if (hit < 0){
+      if (p.x < 0 || p.y < 0 || p.x > W || p.y > H) return;
+      pts.push({x:p.x, y:p.y}); hit = pts.length-1;
+      $("num").value = Math.min(40, pts.length); $("numVal").textContent = pts.length;
+      recompute();
+    }
+    drag = hit; board.setPointerCapture(ev.pointerId);
+  });
+  board.addEventListener("pointermove", ev => {
+    if (drag < 0) return;
+    const p = pos(ev);
+    pts[drag] = {x:Math.max(8,Math.min(W-8,p.x)), y:Math.max(8,Math.min(H-8,p.y))};
+    recompute(); lastLogCount = -1;
+  });
+  const endDrag = () => { drag = -1; };
+  board.addEventListener("pointerup", endDrag);
+  board.addEventListener("pointercancel", endDrag);
+
+  // Radiuslineal spulen
+  let scrub = false;
+  const setFromRuler = ev => {
+    const r = ruler.getBoundingClientRect(), pad = 14;
+    const t = (ev.clientX - r.left - pad) / (r.width - 2*pad);
+    R = Math.max(0, Math.min(maxR, t*maxR));
+    lastLogCount = -1;
+  };
+  ruler.addEventListener("pointerdown", ev => { scrub = true; playing = false; syncPlay(); setFromRuler(ev); ruler.setPointerCapture(ev.pointerId); });
+  ruler.addEventListener("pointermove", ev => { if (scrub) setFromRuler(ev); });
+  ruler.addEventListener("pointerup", () => scrub = false);
+  ruler.addEventListener("pointercancel", () => scrub = false);
+
+  addEventListener("resize", () => { lastLogCount = -1; });
+
+  // Start
+  const boot = () => { palette = COL(); setPoints("random"); requestAnimationFrame(frame); };
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(boot); else boot();
+})();
+</script>
+</body>
+</html>
