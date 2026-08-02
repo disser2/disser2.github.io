@@ -1,0 +1,732 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Wer bin ich? — Fünf versiegelte Hinweise</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IM+Fell+English:ital@0;1&family=IM+Fell+English+SC&family=Karla:wght@400;500;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#14122B;
+    --ink-deep:#0C0A1B;
+    --parchment:#EDE3CC;
+    --parchment-dim:#D8CCB0;
+    --brass:#C9A227;
+    --wax:#8E2B2B;
+    --moss:#5B8250;
+    --text-dark:#241E33;
+    --display:'IM Fell English', Georgia, serif;
+    --caps:'IM Fell English SC', Georgia, serif;
+    --body:'Karla', system-ui, sans-serif;
+    --mono:'IBM Plex Mono', ui-monospace, monospace;
+  }
+
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0}
+  body{
+    min-height:100vh;
+    background:
+      radial-gradient(1px 1px at 12% 18%, rgba(237,227,204,.55), transparent),
+      radial-gradient(1px 1px at 78% 9%, rgba(237,227,204,.4), transparent),
+      radial-gradient(1px 1px at 33% 72%, rgba(237,227,204,.35), transparent),
+      radial-gradient(1px 1px at 88% 61%, rgba(237,227,204,.45), transparent),
+      radial-gradient(1.5px 1.5px at 62% 32%, rgba(201,162,39,.5), transparent),
+      radial-gradient(1px 1px at 5% 88%, rgba(237,227,204,.3), transparent),
+      radial-gradient(ellipse 90% 60% at 50% 0%, #221D40 0%, var(--ink) 45%, var(--ink-deep) 100%);
+    color:var(--parchment);
+    font-family:var(--body);
+    -webkit-font-smoothing:antialiased;
+    padding:clamp(18px,4vw,48px) clamp(14px,4vw,24px) 64px;
+  }
+
+  .wrap{max-width:660px;margin:0 auto}
+
+  /* ---------- Kopf ---------- */
+  header{text-align:center;margin-bottom:26px}
+  .eyebrow{
+    font-family:var(--caps);
+    font-size:13px;letter-spacing:.22em;
+    color:var(--brass);opacity:.85;
+  }
+  h1{
+    font-family:var(--display);
+    font-weight:400;
+    font-size:clamp(38px,9vw,60px);
+    line-height:1;
+    margin:.18em 0 .12em;
+    color:var(--parchment);
+  }
+  h1 em{font-style:italic;color:var(--brass)}
+  .lede{
+    font-size:14.5px;line-height:1.55;
+    color:rgba(237,227,204,.62);
+    max-width:44ch;margin:0 auto;
+  }
+
+  /* ---------- Leiste ---------- */
+  .status{
+    display:flex;gap:1px;margin:26px 0 14px;
+    background:rgba(201,162,39,.22);
+    border:1px solid rgba(201,162,39,.28);
+  }
+  .stat{
+    flex:1;background:rgba(12,10,27,.72);
+    padding:9px 6px 10px;text-align:center;
+  }
+  .stat-k{
+    display:block;font-family:var(--caps);
+    font-size:10.5px;letter-spacing:.18em;
+    color:rgba(237,227,204,.45);
+  }
+  .stat-v{
+    display:block;font-family:var(--mono);
+    font-size:19px;font-weight:500;color:var(--brass);
+    margin-top:2px;
+  }
+  .stat-v.flash{animation:flash .5s ease}
+  @keyframes flash{0%{color:var(--parchment);transform:scale(1.18)}100%{color:var(--brass);transform:scale(1)}}
+
+  .filters{display:flex;gap:8px;justify-content:center;margin-bottom:22px;flex-wrap:wrap}
+  .chip{
+    font-family:var(--caps);font-size:12px;letter-spacing:.14em;
+    background:none;border:1px solid rgba(237,227,204,.22);
+    color:rgba(237,227,204,.6);
+    padding:6px 14px;cursor:pointer;border-radius:2px;
+    transition:.18s;
+  }
+  .chip:hover{border-color:rgba(201,162,39,.6);color:var(--parchment)}
+  .chip[aria-pressed="true"]{
+    background:var(--brass);border-color:var(--brass);color:var(--ink-deep);
+  }
+
+  /* ---------- Karte ---------- */
+  .card{
+    background:linear-gradient(175deg,#F2E9D4,var(--parchment) 40%,#E2D6BC);
+    border:1px solid rgba(201,162,39,.5);
+    border-radius:2px;
+    box-shadow:0 24px 60px -22px rgba(0,0,0,.8), 0 0 0 6px rgba(201,162,39,.06);
+    padding:clamp(20px,5vw,32px);
+    color:var(--text-dark);
+  }
+  .card-head{
+    display:flex;justify-content:space-between;align-items:baseline;
+    border-bottom:1px solid rgba(36,30,51,.22);
+    padding-bottom:10px;margin-bottom:6px;
+  }
+  .kind{font-family:var(--caps);font-size:13px;letter-spacing:.2em;color:var(--wax)}
+  .worth{font-family:var(--mono);font-size:12.5px;color:rgba(36,30,51,.6)}
+
+  /* ---------- Hinweise ---------- */
+  ol.hints{list-style:none;margin:0;padding:0}
+  ol.hints li{
+    display:flex;gap:14px;align-items:flex-start;
+    padding:15px 0;
+    border-bottom:1px dotted rgba(36,30,51,.28);
+  }
+  ol.hints li:last-child{border-bottom:none}
+  .num{
+    font-family:var(--caps);font-size:15px;
+    color:rgba(36,30,51,.45);
+    min-width:26px;padding-top:2px;letter-spacing:.05em;
+  }
+  .hint-text{
+    font-family:var(--display);font-size:clamp(17px,3.4vw,19.5px);
+    line-height:1.45;flex:1;
+  }
+  .revealed .hint-text{animation:bleed .6s ease both}
+  @keyframes bleed{
+    from{opacity:0;filter:blur(4px);transform:translateY(4px);letter-spacing:.05em}
+    to{opacity:1;filter:blur(0);transform:none;letter-spacing:0}
+  }
+
+  .sealed{align-items:center}
+  .seal{
+    width:30px;height:30px;border-radius:50%;
+    background:radial-gradient(circle at 34% 30%, #B04040, var(--wax) 60%, #641D1D);
+    box-shadow:inset 0 -2px 3px rgba(0,0,0,.35);
+    display:grid;place-items:center;flex:0 0 auto;
+    font-family:var(--caps);font-size:13px;color:rgba(237,227,204,.85);
+  }
+  .sealed .hint-text{
+    font-family:var(--caps);font-size:13px;letter-spacing:.16em;
+    color:rgba(36,30,51,.4);
+  }
+  .cracking .seal{animation:crack .45s ease forwards}
+  @keyframes crack{
+    40%{transform:scale(1.18) rotate(-8deg)}
+    100%{transform:scale(.4) rotate(22deg);opacity:0}
+  }
+
+  /* ---------- Eingabe ---------- */
+  .guess{display:flex;gap:8px;margin-top:20px}
+  input[type=text]{
+    flex:1;min-width:0;
+    font-family:var(--display);font-size:19px;
+    background:rgba(255,255,255,.5);
+    border:1px solid rgba(36,30,51,.3);
+    border-radius:2px;padding:11px 13px;color:var(--text-dark);
+  }
+  input[type=text]::placeholder{color:rgba(36,30,51,.35)}
+  input[type=text]:focus-visible,button:focus-visible,.chip:focus-visible{
+    outline:2px solid var(--brass);outline-offset:2px;
+  }
+
+  button{font-family:var(--body);cursor:pointer;border-radius:2px;transition:.16s}
+  .btn-main{
+    background:var(--ink);color:var(--parchment);border:1px solid var(--ink);
+    font-family:var(--caps);letter-spacing:.14em;font-size:13.5px;
+    padding:0 20px;
+  }
+  .btn-main:hover{background:#2B2450}
+  .actions{display:flex;gap:8px;margin-top:10px;flex-wrap:wrap}
+  .btn-ghost{
+    background:none;border:1px solid rgba(36,30,51,.3);
+    color:rgba(36,30,51,.75);
+    font-size:13px;padding:9px 14px;flex:1;
+  }
+  .btn-ghost:hover:not(:disabled){border-color:var(--wax);color:var(--wax)}
+  .btn-ghost:disabled{opacity:.35;cursor:not-allowed}
+
+  .feedback{
+    min-height:22px;margin-top:12px;
+    font-family:var(--caps);font-size:14px;letter-spacing:.08em;
+  }
+  .feedback.bad{color:var(--wax)}
+  .feedback.warm{color:#9A6B12}
+
+  /* ---------- Auflösung ---------- */
+  .solution{
+    margin-top:18px;border-top:2px solid rgba(36,30,51,.25);
+    padding-top:16px;text-align:center;
+  }
+  .solution .label{font-family:var(--caps);font-size:12px;letter-spacing:.2em;color:rgba(36,30,51,.5)}
+  .solution .name{
+    font-family:var(--display);font-size:clamp(28px,7vw,38px);
+    line-height:1.1;margin:4px 0 6px;
+  }
+  .solution .name.win{color:var(--moss)}
+  .solution .name.lose{color:var(--wax)}
+  .solution .fact{font-size:14px;line-height:1.5;color:rgba(36,30,51,.7);max-width:46ch;margin:0 auto 16px}
+  .solution .btn-main{padding:12px 24px;width:100%}
+
+  /* ---------- Abschluss ---------- */
+  .final{text-align:center}
+  .final .big{font-family:var(--mono);font-size:46px;color:var(--wax);line-height:1}
+  .final p{font-size:15px;line-height:1.6;color:rgba(36,30,51,.75)}
+
+  footer{
+    text-align:center;margin-top:22px;
+    font-size:12px;color:rgba(237,227,204,.3);
+  }
+
+  @media (prefers-reduced-motion:reduce){
+    *,*::before,*::after{animation:none!important;transition:none!important}
+  }
+  @media (max-width:460px){
+    .guess{flex-direction:column}
+    .btn-main{padding:12px}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header>
+    <div class="eyebrow">Fünf versiegelte Hinweise</div>
+    <h1>Wer bin <em>ich?</em></h1>
+    <p class="lede">Jeder geöffnete Umschlag verrät mehr — und kostet Hauspunkte. Rate so früh du dich traust.</p>
+  </header>
+
+  <div class="status">
+    <div class="stat"><span class="stat-k">Hauspunkte</span><span class="stat-v" id="score">0</span></div>
+    <div class="stat"><span class="stat-k">Rätsel</span><span class="stat-v" id="round">1</span></div>
+    <div class="stat"><span class="stat-k">Serie</span><span class="stat-v" id="streak">0</span></div>
+  </div>
+
+  <div class="filters" role="group" aria-label="Auswahl der Rätsel">
+    <button class="chip" data-cat="alle" aria-pressed="true">Alle</button>
+    <button class="chip" data-cat="Figur" aria-pressed="false">Nur Figuren</button>
+    <button class="chip" data-cat="Wesen" aria-pressed="false">Nur Wesen</button>
+  </div>
+
+  <main class="card" id="card"></main>
+
+  <footer>Fan-Rätsel rund um die Zauberwelt · ohne Verbindung zu den Rechteinhabern</footer>
+</div>
+
+<script>
+const DATA = [
+/* ============ FIGUREN ============ */
+{n:"Harry Potter",k:"Figur",a:["harry","potter","harrypotter"],f:"Sein Patronus ist ein Hirsch — dieselbe Gestalt, die sein Vater als Animagus annahm.",h:[
+"Als Kind wurde ich berühmt, ohne mich später daran erinnern zu können.",
+"Ich wuchs bei Verwandten auf, die mich in einem Schrank unter der Treppe schlafen ließen.",
+"In meinem ersten Jahr wurde ich der jüngste Sucher seit einem Jahrhundert.",
+"Ich kann mit Schlangen sprechen, weil ein Stück fremder Seele in mir steckte.",
+"Auf meiner Stirn trage ich eine blitzförmige Narbe."]},
+
+{n:"Hermine Granger",k:"Figur",a:["hermine","hermione","granger","hermionegranger","hermninegranger"],f:"Im siebten Jahr löschte sie das Gedächtnis ihrer Eltern, um sie zu schützen.",h:[
+"In meiner Familie bin ich die Erste, die zaubern kann.",
+"Ich habe einen Verein zur Befreiung der Hauselfen gegründet — begeistert war niemand.",
+"Ein Ministeriumsgerät erlaubte mir einmal, mehr Unterricht zu besuchen, als der Stundenplan hergab.",
+"Mein Kater heißt Krummbein und ist deutlich klüger, als er aussieht.",
+"Meine beiden besten Freunde wären ohne meine Bibliotheksstunden längst tot."]},
+
+{n:"Ron Weasley",k:"Figur",a:["ron","ronald","weasley","ronweasley","ronaldweasley"],f:"Sein Boggart nimmt die Gestalt einer riesigen Spinne an.",h:[
+"Ich habe fünf ältere Brüder und eine jüngere Schwester.",
+"Fast alles, was ich besitze, hat vorher jemand anderem in der Familie gehört.",
+"Mein Haustier war jahrelang gar kein Haustier, sondern ein Mensch in Verkleidung.",
+"Im Zauberschach schlage ich jeden, auch ein lebensgroßes Brett.",
+"Ich habe rote Haare, Angst vor Spinnen und den berühmtesten besten Freund der Schule."]},
+
+{n:"Albus Dumbledore",k:"Figur",a:["dumbledore","albus","albusdumbledore","professordumbledore"],f:"Sein voller Name lautet Albus Percival Wulfric Brian Dumbledore.",h:[
+"Ich entdeckte einst die zwölf Verwendungen von Drachenblut.",
+"Mein treuester Begleiter verbrennt regelmäßig zu Asche und steht dann wieder auf.",
+"1945 besiegte ich einen dunklen Zauberer, den ich früher geliebt hatte.",
+"Ich besaß den mächtigsten Zauberstab der Welt und benutzte ihn kaum.",
+"Ich war Schulleiter von Hogwarts, mit halbmondförmiger Brille und silbernem Bart."]},
+
+{n:"Severus Snape",k:"Figur",a:["snape","severus","severussnape","professorsnape"],f:"Sein Patronus war eine silberne Hirschkuh — die gleiche Gestalt wie die von Lily Potter.",h:[
+"Ich habe mein Leben lang eine Frau geliebt, die einen anderen heiratete.",
+"Ich bin Meister der Okklumentik und Erfinder eigener Zaubersprüche.",
+"Zwei Seiten hielten mich für ihren Mann — nur eine hatte recht.",
+"Ich wollte immer Verteidigung gegen die dunklen Künste unterrichten und bekam den Kessel.",
+"An mich erinnert man sich vor allem wegen eines einzigen Wortes: „Immer.“"]},
+
+{n:"Rubeus Hagrid",k:"Figur",a:["hagrid","rubeus","rubeushagrid"],f:"Sein rosa Regenschirm verbirgt die Reste seines zerbrochenen Eichenzauberstabs.",h:[
+"In meinem dritten Schuljahr flog ich von der Schule, mein Zauberstab wurde zerbrochen.",
+"Meine Mutter war eine Riesin, mein Vater passte mir auf den Arm.",
+"Ich finde einen dreiköpfigen Hund und einen Feuerkrebs „ganz reizend“.",
+"Ich habe einen Halbbruder, den ich heimlich im Verbotenen Wald versteckte.",
+"Ich habe Harry seinen Brief überbracht — mit einer Geburtstagstorte in der Manteltasche."]},
+
+{n:"Lord Voldemort",k:"Figur",a:["voldemort","lordvoldemort","tomriddle","tomvorlostriddle","riddle","duweisstschonwer"],f:"Sein Geburtsname Tom Vorlost Riddle ist im Deutschen ein Anagramm von „ist Lord Voldemort“.",h:[
+"Mein Name wird aus Angst kaum ausgesprochen.",
+"Ich wuchs in einem Muggel-Waisenhaus auf und hasste jede Sekunde davon.",
+"Ich habe meine Seele in mehrere Teile gespalten und in Gegenständen versteckt.",
+"Meine Schlange Nagini war mein letzter Rückhalt.",
+"Ich habe keine Nase mehr und heiße bei den Vorsichtigen „Du-weißt-schon-wer“."]},
+
+{n:"Draco Malfoy",k:"Figur",a:["draco","malfoy","dracomalfoy"],f:"Er war der wahre Meister des Elderstabs, ohne ihn je in der Hand gehabt zu haben.",h:[
+"Ich kannte Harry Potters Namen, bevor ich sein Gesicht kannte.",
+"Mein Vater hat mir den Platz im Quidditch-Team praktisch gekauft.",
+"Ein Hippogreif verletzte meinen Arm — und ich sorgte dafür, dass er dafür büßen sollte.",
+"Im sechsten Jahr bekam ich einen Auftrag, den ich am Ende nicht ausführen konnte.",
+"Blondes Haar, spitzes Kinn, Slytherin — und zwei Freunde, die nur mitlaufen."]},
+
+{n:"Luna Lovegood",k:"Figur",a:["luna","lovegood","lunalovegood"],f:"Sie sieht Thestrale, seit sie als Neunjährige den Tod ihrer Mutter miterlebte.",h:[
+"Mein Vater gibt eine Zeitung heraus, die kaum jemand ernst nimmt.",
+"Ich glaube an Nargel, Schrumpfhörnige Schnarchkackler und andere Wesen ohne Beleg.",
+"Meine Mitschüler verstecken meine Sachen, ich finde sie am Ende des Jahres wieder.",
+"Ich trug einmal einen Hut in Form eines Löwenkopfs, der brüllen konnte.",
+"Ich sehe Wesen, die andere nicht sehen, und rede sehr ruhig über sehr seltsame Dinge."]},
+
+{n:"Neville Longbottom",k:"Figur",a:["neville","longbottom","nevillelongbottom"],f:"Die Prophezeiung hätte ebenso gut auf ihn gemünzt sein können — er wurde einen Tag vor Harry geboren.",h:[
+"Meine Eltern leben, erkennen mich aber nicht.",
+"Lange hielt man mich für den ungeschicktesten Schüler meines Jahrgangs.",
+"Ich benutzte jahrelang den Zauberstab meines Vaters, was mir nie richtig gelang.",
+"Kräuterkunde ist das Einzige, worin ich von Anfang an gut war.",
+"Am Ende zog ich ein Schwert aus einem Hut und tötete eine Schlange."]},
+
+{n:"Sirius Black",k:"Figur",a:["sirius","black","siriusblack","tatze"],f:"Als Animagus verwandelt er sich in einen großen schwarzen Hund — daher „Tatze“.",h:[
+"Ich stamme aus einer alten Familie, deren Stammbaum meinen Namen weggebrannt hat.",
+"Zwölf Jahre saß ich für ein Verbrechen ein, das ein anderer beging.",
+"Ich bin der erste Mensch, der aus Askaban entkam.",
+"Ich bin Harrys Patenonkel und wollte ihm ein Zuhause geben.",
+"Ich verwandle mich in einen großen schwarzen Hund und stürzte durch einen Vorhang."]},
+
+{n:"Remus Lupin",k:"Figur",a:["lupin","remus","remuslupin","moony","professorlupin"],f:"Der Wolfsbanntrank erlaubte ihm, bei Vollmond bei klarem Verstand zu bleiben.",h:[
+"Als Kind wurde ich gebissen, seither richtet sich mein Kalender nach dem Mond.",
+"Meine drei besten Schulfreunde lernten meinetwegen eine sehr schwierige Verwandlung.",
+"Ich brachte einer Klasse bei, wie man Angst mit Gelächter besiegt.",
+"Wegen meines Zustands verlor ich meine Stelle nach nur einem Jahr.",
+"Ich bin ein Werwolf, ein sanfter Lehrer und trage immer schäbige Roben."]},
+
+{n:"Minerva McGonagall",k:"Figur",a:["mcgonagall","minerva","minervamcgonagall","professormcgonagall"],f:"Als Animagus wird sie zu einer getigerten Katze mit brillenförmigen Zeichnungen um die Augen.",h:[
+"Ich sitze manchmal auf einer Mauer und sehe dabei ganz und gar nicht menschlich aus.",
+"Ich bin streng, gerecht und heimlich sehr sportbegeistert.",
+"Ich verteilte einmal fünfzig Punkte für einen einzigen guten Flug.",
+"Ich erweckte die Rüstungen des Schlosses zum Leben, um es zu verteidigen.",
+"Ich bin Hauslehrerin von Gryffindor, unterrichte Verwandlung und trage einen spitzen Hut."]},
+
+{n:"Dobby",k:"Figur",a:["dobby"],f:"Ein Hauself wird frei, sobald sein Herr ihm ein Kleidungsstück überreicht.",h:[
+"Ich musste mich selbst bestrafen, wenn ich schlecht über meine Herrschaft sprach.",
+"Ich verhexte einen Klatscher und brach dabei einem Jungen den Arm — aus Fürsorge.",
+"Eine alte Socke war das beste Geschenk meines Lebens.",
+"Ich trage später sieben Pullover übereinander, weil ich Kleidung tragen darf.",
+"Ich bin ein freier Hauself und starb in den Armen des Jungen, den ich retten wollte."]},
+
+{n:"Bellatrix Lestrange",k:"Figur",a:["bellatrix","lestrange","bellatrixlestrange","bella"],f:"Sie ist die Cousine von Sirius Black und die Tante von Draco Malfoy.",h:[
+"Ich bin stolzer darauf, in Askaban gesessen zu haben, als andere auf ihre Freiheit.",
+"Ich folterte ein Ehepaar in den Wahnsinn, weil es nicht reden wollte.",
+"Meine Schwester hat einen blonden Sohn, meine andere Schwester ist für mich gestorben.",
+"Ich tötete meinen eigenen Cousin mit einem Lachen.",
+"Wildes schwarzes Haar, schwerlidrige Augen — die treueste Anhängerin des Dunklen Lords."]},
+
+{n:"Dolores Umbridge",k:"Figur",a:["umbridge","dolores","doloresumbridge","professorumbridge"],f:"Ihre Feder schreibt mit dem Blut desjenigen, der sie benutzt.",h:[
+"Ich räuspere mich, wenn mir jemand ins Wort fällt — sehr oft.",
+"Mein Büro ist voller Teller mit schnurrenden Kätzchen.",
+"Ich habe Erlasse an eine Wand genagelt, bis kein Platz mehr war.",
+"Ich ließ Schüler Zeilen schreiben, die sich in ihre Haut ritzten.",
+"Ich trage rosa Strickjacken, spreche mit Mädchenstimme und bin grausamer als mancher Todesser."]},
+
+{n:"Gilderoy Lockhart",k:"Figur",a:["lockhart","gilderoy","gilderoylockhart","professorlockhart"],f:"Sein Gedächtniszauber traf ihn selbst — mit Rons kaputtem Zauberstab.",h:[
+"Fünfmal in Folge gewann ich den Preis für das gewinnendste Lächeln.",
+"Meine Bücher standen in jedem Regal, meine Taten in fremden Erinnerungen.",
+"Ich ließ Wichtel auf eine Klasse los und verließ dann fluchtartig den Raum.",
+"Ich entfernte einem Jungen versehentlich sämtliche Armknochen.",
+"Ich endete gedächtnislos und glücklich in einem Krankenhaus für magische Leiden."]},
+
+{n:"Peter Pettigrew",k:"Figur",a:["pettigrew","peter","peterpettigrew","wurmschwanz","krätze","kratze","wormtail"],f:"Als Animagus wird er zu einer Ratte, der ein Finger fehlt.",h:[
+"Ich verriet meine besten Freunde und ließ einen anderen dafür büßen.",
+"Zwölf Jahre lang lebte ich in einem Kinderzimmer und ließ mich füttern.",
+"Ich schnitt mir selbst einen Finger ab, um meinen Tod vorzutäuschen.",
+"Meine silberne Hand erwürgte mich, als ich einmal Gnade zeigte.",
+"Ich war eine Ratte namens Krätze, bevor ich wieder ein Mensch wurde."]},
+
+{n:"Alastor Moody",k:"Figur",a:["moody","alastor","alastormoody","madeye","madeyemoody","mad-eye"],f:"Sein magisches Auge sieht durch Holz, Stein, Tarnumhänge und Hinterköpfe.",h:[
+"Mein Misstrauen hat mich am Leben gehalten, meine Freunde aber müde gemacht.",
+"Ich trinke nur aus meiner eigenen Flasche, aus sehr guten Gründen.",
+"Ein Jahr lang war jemand anderes ich, und niemand merkte es.",
+"Mein Motto lautet: „Immer wachsam!“",
+"Ich habe ein Holzbein, ein zerfurchtes Gesicht und ein Auge, das sich frei dreht."]},
+
+{n:"Molly Weasley",k:"Figur",a:["molly","mollyweasley","frauweasley"],f:"Ihr Boggart zeigt ihr die Leichen ihrer gesamten Familie.",h:[
+"Ich habe sieben Kinder und behandle ein achtes wie mein eigenes.",
+"Meine Heuler sind gefürchteter als jeder Fluch.",
+"Ich stricke jedes Jahr Pullover mit Anfangsbuchstaben darauf.",
+"Meine Uhr zeigt keine Zeit, sondern wo meine Familie gerade steckt.",
+"Ich tötete Bellatrix Lestrange, nachdem sie meine Tochter angriff."]},
+
+{n:"Ginny Weasley",k:"Figur",a:["ginny","ginevra","ginnyweasley"],f:"Sie spielte später als Jägerin für die Holyhead Harpies.",h:[
+"In meinem ersten Schuljahr schrieb ich einem Tagebuch alles, was ich dachte.",
+"Ich bin das siebte Kind und die erste Tochter seit Generationen.",
+"Meine Fledermaus-Fluch-Version ist in der ganzen Schule berüchtigt.",
+"Ich übernahm den Widerstand in der Schule, während andere unterwegs waren.",
+"Ich bin die jüngste Weasley und heiratete am Ende den Jungen mit der Narbe."]},
+
+{n:"Cedric Diggory",k:"Figur",a:["cedric","diggory","cedricdiggory"],f:"Er bestand darauf, den Pokal gemeinsam zu greifen — was ihn das Leben kostete.",h:[
+"Ich fing einen Schnatz, ohne zu merken, dass mein Gegner vom Besen gefallen war.",
+"Ich gab einen ehrlichen Tipp über ein Ei, das unter Wasser singt.",
+"Man wählte mich, obwohl ein zweiter Name unerwartet dazukam.",
+"Mein Haus jubelte lauter für mich als je zuvor für irgendjemanden.",
+"Ich war Hufflepuffs Champion und starb auf einem Friedhof, weil ich im Weg stand."]},
+
+{n:"Sibyll Trelawney",k:"Figur",a:["trelawney","sibyll","sybill","sibylltrelawney","professortrelawney"],f:"Ihre beiden echten Prophezeiungen sprach sie in Trance — und erinnerte sich an keine.",h:[
+"Ich sage jedes Jahr mindestens einem Schüler einen frühen Tod voraus.",
+"Ich lebe am liebsten oben in einem stickigen Turmzimmer voller Duftlampen.",
+"Man hält mich für einen Schwindel — zu Recht, mit zwei entscheidenden Ausnahmen.",
+"Eine meiner Trance-Vorhersagen entschied den Lauf des ganzen Krieges.",
+"Große Brille, viele Schals, Teeblätter und Kristallkugeln."]},
+
+{n:"Horace Slughorn",k:"Figur",a:["slughorn","horace","horaceslughorn","professorslughorn"],f:"Die Erinnerung, die er so lange verfälschte, betraf Horkruxe.",h:[
+"Ich sammle vielversprechende Schüler wie andere Briefmarken.",
+"Meine kleinen Abendessen sind begehrter als jede Note.",
+"Ich versteckte mich einmal als Sessel verkleidet in einem fremden Haus.",
+"Eine Erinnerung schämte ich mich so sehr, dass ich sie erst nach Jahren herausgab.",
+"Ich bin ein dickbäuchiger Zaubertranklehrer und ehemaliger Hauslehrer von Slytherin."]},
+
+{n:"Lucius Malfoy",k:"Figur",a:["lucius","luciusmalfoy"],f:"Er schmuggelte Voldemorts Tagebuch in Ginny Weasleys Kessel.",h:[
+"Ich sitze im Schulrat und weiß genau, wie man Stimmen kauft.",
+"Mein Gehstock ist mehr als ein Gehstock.",
+"Ich schob einem Mädchen heimlich ein Buch in den Kessel.",
+"Ich verlor meinen Hauselfen durch eine Socke.",
+"Langes blondes Haar, Todessermaske und ein Sohn, der mir alles nachmacht."]},
+
+{n:"Nymphadora Tonks",k:"Figur",a:["tonks","nymphadora","nymphadoratonks","dora"],f:"Ihr Patronus änderte sich, als sie sich verliebte — in einen Werwolf.",h:[
+"Ich hasse meinen Vornamen so sehr, dass ich nur beim Nachnamen gerufen werde.",
+"Ich kann mein Aussehen ändern, ohne einen Trank zu brauchen.",
+"Meine Haarfarbe verrät meine Laune, meistens ist sie knallrosa.",
+"Ich bin Auror und stolpere trotzdem über jeden Schirmständer.",
+"Ich heiratete einen Werwolf und starb mit ihm in derselben Schlacht."]},
+
+{n:"Fred und George Weasley",k:"Figur",a:["fredundgeorge","fredgeorge","weasleyzwillinge","diezwillinge","zwillinge","fredundgeorgeweasley","fred","george"],f:"Ihr Laden in der Winkelgasse hieß „Weasleys Zauberhafte Zauberscherze“.",h:[
+"Wir haben unsere Prüfungen abgebrochen und trotzdem ein Vermögen gemacht.",
+"Wir kannten jeden Geheimgang des Schlosses, bevor wir sechzehn waren.",
+"Wir schenkten Harry eine Karte, die zeigt, wo jeder gerade steht.",
+"Unser Abgang aus der Schule war ein Feuerwerk, im Wortsinn.",
+"Wir sind rothaarige Zwillinge und beenden gegenseitig unsere Sätze."]},
+
+{n:"Viktor Krum",k:"Figur",a:["krum","viktor","viktorkrum"],f:"Er fing im WM-Finale den Schnatz, obwohl seine Mannschaft damit verlor.",h:[
+"Ich war Profi, bevor ich meinen Schulabschluss hatte.",
+"Meine Schule reiste in einem Schiff an, das aus einem See auftauchte.",
+"Ich verwandelte im Turnier meinen Kopf nur halb in den eines Hais.",
+"Ich lud ein Mädchen zum Ball ein, das lieber in der Bibliothek saß.",
+"Ich bin bulgarischer Sucher und fliege den berühmtesten Wronski-Bluff der Welt."]},
+
+{n:"Fleur Delacour",k:"Figur",a:["fleur","delacour","fleurdelacour"],f:"Ihre Großmutter war eine Veela — daher ihre Anziehungskraft.",h:[
+"Meine Großmutter war kein gewöhnlicher Mensch, das merkt man mir an.",
+"Ich kam mit einer Kutsche voller Riesenpferde an.",
+"Grindelohs hinderten mich daran, meine kleine Schwester selbst zu retten.",
+"Ich blieb bei meinem Verlobten, auch als sein Gesicht zerfetzt war.",
+"Ich bin Beauxbatons' Champion, silberblond und heiratete einen Weasley."]},
+
+/* ============ WESEN ============ */
+{n:"Dementor",k:"Wesen",a:["dementoren","dementor"],f:"Der Patronus-Zauber ist die einzige bekannte Verteidigung gegen sie.",h:[
+"Wo ich auftauche, gefriert die Luft und das Licht wird schwächer.",
+"Ich nähre mich von dem, was Menschen glücklich macht.",
+"Ich bewachte lange ein Gefängnis auf einer Insel im Nordmeer.",
+"Wer mir zu nahe kommt, hört die schlimmsten Momente seines Lebens wieder.",
+"Man vertreibt mich nur mit einer silbernen Gestalt aus glücklichen Erinnerungen."]},
+
+{n:"Basilisk",k:"Wesen",a:["basilisken","basilisk"],f:"Er wird aus einem Hühnerei ausgebrütet, das eine Kröte bebrütet hat.",h:[
+"Ich kann Jahrhunderte schlafen, ohne zu altern.",
+"Mein Blick allein genügt, um zu töten — ein Spiegelbild reicht für die Hälfte.",
+"Nur ein bestimmter Vogel und ein Hahnenschrei sind mir gefährlich.",
+"Mein Gift zerfrisst alles, außer der Erinnerung an Phönixtränen.",
+"Ich bin eine riesige Schlange und lebte in einer Kammer unter der Schule."]},
+
+{n:"Hippogreif",k:"Wesen",a:["hippogreif","hippogreife","seidenschnabel","buckbeak"],f:"Der bekannteste seiner Art heißt Seidenschnabel und wurde vor der Hinrichtung gerettet.",h:[
+"Wer mich beleidigt, sollte sehr schnell rennen können.",
+"Vorne bin ich Vogel, hinten Pferd.",
+"Man muss sich vor mir verbeugen und warten, ob ich zurückgrüße.",
+"Ein blonder Junge tat das nicht und trug wochenlang eine Schlinge.",
+"Ich flog einen Sträfling in die Freiheit, während unten die Uhr zurücklief."]},
+
+{n:"Thestral",k:"Wesen",a:["thestral","thestrale"],f:"Sie ziehen die Kutschen nach Hogwarts — für die meisten Erstklässler unsichtbar.",h:[
+"Die meisten Menschen sehen mich ihr Leben lang nicht.",
+"Ich habe einen ausgezeichneten Orientierungssinn und finde jeden Ort, den man mir nennt.",
+"Mein Fell liegt so eng an, dass man jeden Knochen zählen kann.",
+"Nur wer den Tod gesehen und begriffen hat, erkennt mich.",
+"Ich bin ein skelettartiges geflügeltes Pferd und ziehe die Kutschen zum Schloss."]},
+
+{n:"Irrwicht",k:"Wesen",a:["irrwicht","irrwichte","boggart"],f:"Der Zauberspruch gegen ihn lautet Riddikulus — Lachen ist die eigentliche Waffe.",h:[
+"Ich lebe am liebsten in dunklen, engen Räumen: Schränken, Truhen, unter Betten.",
+"Niemand weiß, wie ich allein aussehe.",
+"Vor einer Gruppe gerate ich in Verwirrung, weil ich mich nicht entscheiden kann.",
+"Ein Lehrer besiegte mich einmal, indem er mich in eine Großmutterkleidung steckte.",
+"Ich verwandle mich in das, wovor du am meisten Angst hast — bis du über mich lachst."]},
+
+{n:"Phönix",k:"Wesen",a:["phoenix","phönix","fawkes"],f:"Der Phönix Fawkes brachte Harry in der Kammer des Schreckens Hut und Schwert.",h:[
+"Mein Gesang gibt Reinen Mut und Bösen Angst.",
+"Ich kann unglaubliche Lasten tragen, obwohl ich klein wirke.",
+"Meine Tränen heilen selbst tödliche Wunden.",
+"Wenn meine Zeit kommt, verbrenne ich zu Asche und stehe daraus wieder auf.",
+"Ich bin ein scharlachroter Vogel und gehörte dem Schulleiter von Hogwarts."]},
+
+{n:"Werwolf",k:"Wesen",a:["werwolf","werwölfe","werwoelfe"],f:"Nur ein Biss in menschlicher Gestalt überträgt die Verwandlung.",h:[
+"Ich bin nur eine Nacht im Monat gefährlich, aber dann vollständig.",
+"In meiner anderen Gestalt erkenne ich niemanden, auch keine Freunde.",
+"Ein Trank kann mir den Verstand lassen, ist aber schwer zu brauen.",
+"Silber und Mondlicht bestimmen mein Leben mehr als jeder Zauberstab.",
+"Ein Lehrer von Hogwarts war einer — Professor Lupin."]},
+
+{n:"Zentaur",k:"Wesen",a:["zentaur","zentauren","kentaur","firenze"],f:"Firenze wurde aus seiner Herde verstoßen, weil er Menschen unterrichtete.",h:[
+"Wir leben in einer Herde und halten wenig von Menschen.",
+"Wir lesen die Zukunft in Sternen, nicht in Teeblättern.",
+"Uns „halbmenschlich“ zu nennen, ist die schnellste Art, uns zu beleidigen.",
+"Einer von uns trug Harry im ersten Jahr aus dem Wald und wurde dafür verstoßen.",
+"Oben Mensch, unten Pferd, Pfeil und Bogen im Verbotenen Wald."]},
+
+{n:"Alraune",k:"Wesen",a:["alraune","alraunen","mandragora","mandrake"],f:"Ihr Saft ist der Hauptbestandteil des Trankes gegen Versteinerung.",h:[
+"Ich bin eine Pflanze und trotzdem ein Wesen.",
+"Zum Umtopfen braucht man Ohrenschützer, keine Handschuhe.",
+"Mein Schrei betäubt als Jungpflanze und tötet als ausgewachsene.",
+"In der Pubertät werde ich launisch und ziehe zu Nachbarn in den Topf.",
+"Meine Wurzel sieht aus wie ein schreiendes Baby und heilte die Versteinerten."]},
+
+{n:"Niffler",k:"Wesen",a:["niffler","nifflers"],f:"Kobolde setzen sie ein, um in Gestein nach Metall zu graben.",h:[
+"Ich bin klein, flauschig und ein katastrophaler Hausgast.",
+"Alles, was glänzt, gehört ab sofort mir.",
+"In meinem Bauch ist deutlich mehr Platz, als von außen möglich scheint.",
+"Ein Zauberer nahm mich in einem Koffer mit nach New York, was viel Ärger machte.",
+"Ich habe einen langen Schnabel, schwarzes Fell und einen Hang zu Gold."]},
+
+{n:"Acromantula",k:"Wesen",a:["acromantula","acromantulas","riesenspinne","aragog"],f:"Aragog lebte im Verbotenen Wald, seit Hagrid ihn als Ei aufzog.",h:[
+"Ich spreche, aber das macht mich nicht freundlicher.",
+"Ich stamme ursprünglich aus Borneo und wurde für Zuchtzwecke gezüchtet.",
+"Ein Halbriese zog mich in einem Schrank auf und flog dafür von der Schule.",
+"Meine Kinder machen keinen Unterschied zwischen Freund und Abendessen.",
+"Ich bin eine sprechende Riesenspinne aus dem Verbotenen Wald."]},
+
+{n:"Kobold",k:"Wesen",a:["kobold","kobolde","goblin","goblins","griphook"],f:"Nach ihrem Recht gehört geschmiedetes Gut immer dem Schmied, nie dem Käufer.",h:[
+"Ich bin kleiner als du und rechne schneller.",
+"Mein Volk hat mehrere Aufstände gegen Zauberer geführt.",
+"Meine Arbeit findet tief unter der Erde statt, bewacht von einem Drachen.",
+"Nach meinem Recht gehört ein Schwert für immer dem, der es geschmiedet hat.",
+"Ich führe die Bank in der Winkelgasse und traue keinem Zauberer."]},
+
+{n:"Veela",k:"Wesen",a:["veela","veelas"],f:"Bei Wut verwandeln sie sich in vogelähnliche Wesen und werfen Feuerbälle.",h:[
+"Bei meinem Anblick vergessen Männer, was sie eigentlich sagen wollten.",
+"Ich tanzte einmal vor einem vollen Stadion als Maskottchen.",
+"Wer mich zu lange ansieht, springt schon mal von einer Tribüne.",
+"In Wut werde ich zu etwas Vogelartigem und werfe Feuer.",
+"Ich bin ein silberhaariges Wesen, und Fleur Delacours Großmutter war eine."]},
+
+{n:"Knallrümpfiger Kröter",k:"Wesen",a:["knallruempfigerkroeter","knallrümpfigerkröter","kroeter","kröter","knallrumpfigerkroter","blastendedskrewt"],f:"Eine illegale Kreuzung aus Feuerkrebs und Manticore, gezüchtet von Hagrid.",h:[
+"Es gibt mich eigentlich gar nicht — jedenfalls nicht legal.",
+"Ich wurde in einem Unterricht vorgestellt, in dem die Klasse nur fliehen wollte.",
+"Vorne beiße ich, hinten steche ich, in der Mitte explodiere ich.",
+"Ich wuchs auf Meterlänge heran und fraß fast alles außer meinen Geschwistern.",
+"Ein Halbriese züchtete mich als Kreuzung und war sehr stolz darauf."]},
+
+{n:"Inferius",k:"Wesen",a:["inferius","inferi","inferien"],f:"Feuer ist die wirksamste Waffe gegen sie, da sie Licht und Wärme fürchten.",h:[
+"Ich war einmal ein Mensch, jetzt bin ich nur noch ein Befehl.",
+"Ich fühle nichts, will nichts und höre nur auf eine Stimme.",
+"Ich lauere unter Wasser, bis jemand seine Hand hineinhält.",
+"Feuer ist das Einzige, was mich zurückhält.",
+"Ein ganzes Heer von mir bewachte eine Höhle mit einem Medaillon."]},
+
+{n:"Peeves",k:"Wesen",a:["peeves","poltergeist"],f:"Er ist kein Geist, sondern ein Poltergeist — nie lebendig gewesen.",h:[
+"Ich bin nie gestorben, weil ich nie gelebt habe.",
+"Ich lasse Kreidestücke fallen, Rüstungen scheppern und Türklinken verschwinden.",
+"Nur ein Hausmeister und ein Blutiger Baron können mich zur Ordnung rufen.",
+"Selbst der Schulleiter bittet mich manchmal höflich um etwas.",
+"Ich bin der Poltergeist von Hogwarts und schüttete am Ende Knollen auf Angreifer."]},
+
+{n:"Hedwig",k:"Wesen",a:["hedwig","hedwig eule","schneeeule"],f:"Sie war ein Geburtstagsgeschenk von Hagrid aus der Eulerei in der Winkelgasse.",h:[
+"Ich war ein Geburtstagsgeschenk und der erste Freund meines Besitzers.",
+"Ich zwicke in Finger, wenn man mich zu lange ignoriert.",
+"Einen ganzen Sommer lang durfte ich keine Post austragen.",
+"Ich starb während eines Fluges über England, im Käfig eingeschlossen.",
+"Ich bin eine schneeweiße Eule und gehörte Harry Potter."]}
+];
+
+/* ---------- Spiellogik ---------- */
+const ROMAN = ["I","II","III","IV","V"];
+const VALUES = [50,40,30,20,12];
+
+const S = {score:0, round:0, streak:0, best:0, cat:"alle", queue:[], cur:null, open:1, pts:VALUES[0], done:false, over:false};
+
+const $ = s => document.querySelector(s);
+const card = $("#card");
+
+function norm(s){
+  return (s||"").toLowerCase()
+    .replace(/ä/g,"ae").replace(/ö/g,"oe").replace(/ü/g,"ue").replace(/ß/g,"ss")
+    .normalize("NFD").replace(/[\u0300-\u036f]/g,"")
+    .replace(/\b(professor|prof|lord|der|die|das|dem|den|ein|eine)\b/g,"")
+    .replace(/[^a-z0-9]/g,"");
+}
+function lev(a,b){
+  const m=[...Array(a.length+1)].map((_,i)=>[i,...Array(b.length).fill(0)]);
+  for(let j=0;j<=b.length;j++) m[0][j]=j;
+  for(let i=1;i<=a.length;i++) for(let j=1;j<=b.length;j++)
+    m[i][j]=Math.min(m[i-1][j]+1,m[i][j-1]+1,m[i-1][j-1]+(a[i-1]===b[j-1]?0:1));
+  return m[a.length][b.length];
+}
+function keys(e){
+  const k = [norm(e.n), ...e.a.map(norm)];
+  const parts = e.n.split(" ");
+  if(parts.length>1 && e.k==="Figur") k.push(norm(parts[parts.length-1]));
+  return [...new Set(k.filter(Boolean))];
+}
+
+function buildQueue(){
+  const pool = DATA.filter(e => S.cat==="alle" || e.k===S.cat);
+  S.queue = pool.map(e=>e).sort(()=>Math.random()-.5);
+}
+function newGame(){
+  S.score=0; S.round=0; S.streak=0; S.over=false;
+  buildQueue(); nextRiddle();
+}
+function nextRiddle(){
+  if(!S.queue.length){ S.over=true; render(); return; }
+  S.cur = S.queue.pop();
+  S.round++; S.open=1; S.pts=VALUES[0]; S.done=false; S.result=null; S.msg=null;
+  render();
+}
+function openHint(){
+  if(S.done || S.open>=5) return;
+  S.open++; S.pts=VALUES[S.open-1];
+  S.msg=null; render(true);
+}
+function submitGuess(){
+  const input = $("#g"); if(!input) return;
+  const g = norm(input.value);
+  if(!g) return;
+  const ks = keys(S.cur);
+  const hit = ks.some(k => k===g || (k.length>5 && lev(k,g)<=1));
+  if(hit){
+    S.done=true; S.result="win"; S.streak++;
+    S.best=Math.max(S.best,S.streak);
+    S.score += S.pts; S.gain=S.pts;
+  } else {
+    const near = ks.some(k => lev(k,g) <= Math.max(2, Math.floor(k.length/4)));
+    S.pts = Math.max(5, S.pts-3);
+    S.msg = near ? {t:"Fast — Schreibweise prüfen. −3 Punkte.", c:"warm"}
+                 : {t:"Nicht richtig. −3 Punkte.", c:"bad"};
+    input.value="";
+  }
+  render();
+  if(!S.done) $("#g")?.focus();
+}
+function giveUp(){
+  S.done=true; S.result="lose"; S.streak=0; S.gain=0; render();
+}
+
+function render(cracked){
+  $("#score").textContent = S.score;
+  $("#round").textContent = S.over ? "—" : S.round;
+  $("#streak").textContent = S.streak;
+
+  if(S.over){
+    const total = DATA.filter(e=>S.cat==="alle"||e.k===S.cat).length;
+    card.innerHTML = `
+      <div class="final">
+        <div class="kind" style="text-align:center">Alle Rätsel gelöst</div>
+        <div class="big">${S.score}</div>
+        <p>Hauspunkte aus ${total} Rätseln.<br>Längste Serie: ${S.best}.</p>
+        <button class="btn-main" id="again" style="padding:12px 24px;width:100%">Noch einmal</button>
+      </div>`;
+    $("#again").onclick = newGame;
+    return;
+  }
+
+  const e = S.cur;
+  const hints = e.h.map((t,i)=>{
+    if(i < S.open) return `<li class="revealed"><span class="num">${ROMAN[i]}</span><span class="hint-text">${t}</span></li>`;
+    const first = (i === S.open);
+    return `<li class="sealed ${cracked&&i===S.open-1?"cracking":""}">
+      <span class="seal" aria-hidden="true">${ROMAN[i]}</span>
+      <span class="hint-text">Versiegelt${first?` · öffnen kostet ${VALUES[i-0]?VALUES[i]:5} Punkte Restwert`:""}</span></li>`;
+  }).join("");
+
+  const solution = S.done ? `
+    <div class="solution">
+      <div class="label">${S.result==="win"?"Richtig geraten":"Die Lösung lautet"}</div>
+      <div class="name ${S.result}">${e.n}</div>
+      <p class="fact">${e.f}</p>
+      <div class="worth" style="margin-bottom:12px">${S.result==="win"?`+${S.gain} Hauspunkte nach ${S.open} Hinweis${S.open>1?"en":""}`:"Keine Punkte in dieser Runde"}</div>
+      <button class="btn-main" id="next">Nächstes Rätsel</button>
+    </div>` : `
+    <div class="guess">
+      <input type="text" id="g" placeholder="Name eingeben …" autocomplete="off" spellcheck="false" aria-label="Dein Tipp">
+      <button class="btn-main" id="ok">Raten</button>
+    </div>
+    <div class="actions">
+      <button class="btn-ghost" id="hint" ${S.open>=5?"disabled":""}>
+        ${S.open>=5?"Alle Hinweise offen":`Nächsten Hinweis öffnen · Restwert ${VALUES[S.open]}`}
+      </button>
+      <button class="btn-ghost" id="give">Auflösen</button>
+    </div>
+    <div class="feedback ${S.msg?S.msg.c:""}">${S.msg?S.msg.t:""}</div>`;
+
+  card.innerHTML = `
+    <div class="card-head">
+      <span class="kind">${e.k==="Figur"?"Figur":"Wesen"}</span>
+      <span class="worth">Rätsel ${S.round} · ${S.pts} Punkte wert</span>
+    </div>
+    <ol class="hints">${hints}</ol>
+    ${solution}`;
+
+  if(S.done){ $("#next").onclick = nextRiddle; $("#next").focus(); }
+  else {
+    $("#ok").onclick = submitGuess;
+    $("#hint").onclick = openHint;
+    $("#give").onclick = giveUp;
+    $("#g").addEventListener("keydown", ev => { if(ev.key==="Enter") submitGuess(); });
+  }
+}
+
+document.querySelectorAll(".chip").forEach(c => c.onclick = () => {
+  document.querySelectorAll(".chip").forEach(x => x.setAttribute("aria-pressed", x===c));
+  S.cat = c.dataset.cat;
+  newGame();
+});
+
+newGame();
+</script>
+</body>
+</html>
