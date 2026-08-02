@@ -1,0 +1,881 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Drake-Gleichung — SETI-Konsole</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --void:#05070f;
+  --hull:#0b1022;
+  --hull-2:#0f1730;
+  --line:#1d2a4f;
+  --line-soft:#16203c;
+  --phos:#7cf9d0;
+  --phos-dim:#3fa88c;
+  --amber:#ffb45c;
+  --nebula:#a06bff;
+  --ice:#d3dcf7;
+  --dim:#7386ad;
+  --shadow:0 24px 60px -30px rgba(0,0,0,.9);
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  margin:0;
+  background:var(--void);
+  color:var(--ice);
+  font-family:'Chakra Petch',system-ui,sans-serif;
+  font-size:16px;
+  line-height:1.55;
+  -webkit-font-smoothing:antialiased;
+  overflow-x:hidden;
+}
+#sky{position:fixed;inset:0;width:100%;height:100%;z-index:0;display:block}
+.nebulae{
+  position:fixed;inset:0;z-index:1;pointer-events:none;
+  background:
+    radial-gradient(60vw 50vh at 12% 8%, rgba(160,107,255,.16), transparent 65%),
+    radial-gradient(50vw 45vh at 88% 22%, rgba(124,249,208,.10), transparent 65%),
+    radial-gradient(70vw 60vh at 50% 105%, rgba(255,180,92,.07), transparent 60%);
+}
+.scan{
+  position:fixed;inset:0;z-index:2;pointer-events:none;opacity:.35;
+  background:repeating-linear-gradient(to bottom, rgba(255,255,255,.025) 0 1px, transparent 1px 3px);
+  mix-blend-mode:overlay;
+}
+.wrap{position:relative;z-index:3;max-width:1360px;margin:0 auto;padding:0 20px 80px}
+
+/* ---------- Eyebrow / Header ---------- */
+.mast{
+  display:flex;flex-wrap:wrap;gap:10px 18px;align-items:center;
+  padding:16px 0 12px;border-bottom:1px solid var(--line-soft);
+  font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:.16em;
+  text-transform:uppercase;color:var(--dim);
+}
+.mast .live{color:var(--phos)}
+.mast .dot{
+  display:inline-block;width:6px;height:6px;border-radius:50%;background:var(--phos);
+  margin-right:7px;vertical-align:1px;box-shadow:0 0 10px var(--phos);
+  animation:blink 2.4s infinite;
+}
+@keyframes blink{0%,92%,100%{opacity:1}95%{opacity:.15}}
+.mast .sep{flex:1}
+
+header.hero{padding:52px 0 34px}
+h1{
+  margin:0;font-size:clamp(30px,5.6vw,58px);line-height:1.02;font-weight:700;
+  letter-spacing:-.02em;
+}
+h1 .thin{display:block;font-weight:400;color:var(--dim);font-size:.4em;letter-spacing:.22em;text-transform:uppercase;margin-bottom:14px;font-family:'JetBrains Mono',monospace}
+.lede{max-width:62ch;color:var(--dim);margin:18px 0 0;font-size:15.5px}
+.lede b{color:var(--ice);font-weight:500}
+
+/* ---------- Hero equation ---------- */
+.eq{
+  display:flex;flex-wrap:wrap;align-items:flex-end;gap:6px;
+  margin:34px 0 0;padding:22px 20px;
+  border:1px solid var(--line);background:linear-gradient(180deg,rgba(15,23,48,.75),rgba(11,16,34,.55));
+  border-radius:3px;position:relative;backdrop-filter:blur(8px);
+}
+.eq::before,.eq::after{
+  content:"";position:absolute;width:12px;height:12px;border:1px solid var(--phos);opacity:.6;
+}
+.eq::before{top:-1px;left:-1px;border-right:0;border-bottom:0}
+.eq::after{bottom:-1px;right:-1px;border-left:0;border-top:0}
+.eq .lhs{font-size:30px;font-weight:600;color:var(--phos);padding-right:6px;text-shadow:0 0 18px rgba(124,249,208,.45)}
+.eq .op{color:var(--dim);font-size:22px;padding:0 2px 6px}
+.term{
+  background:none;border:0;padding:4px 8px 4px;margin:0;cursor:pointer;text-align:center;
+  border-bottom:1px solid transparent;color:inherit;font-family:inherit;border-radius:2px 2px 0 0;
+}
+.term .s{display:block;font-size:22px;font-weight:600;letter-spacing:.02em}
+.term .s sub{font-size:.58em;font-weight:500;color:var(--dim)}
+.term .v{display:block;font-family:'JetBrains Mono',monospace;font-size:11.5px;color:var(--phos);margin-top:3px;white-space:nowrap}
+.term:hover,.term:focus-visible{border-bottom-color:var(--phos);background:rgba(124,249,208,.07)}
+.term:focus-visible{outline:1px solid var(--phos);outline-offset:2px}
+
+/* ---------- Presets ---------- */
+.presets{display:flex;flex-wrap:wrap;gap:8px;margin:26px 0 0;align-items:center}
+.presets .plabel{
+  font-family:'JetBrains Mono',monospace;font-size:10.5px;letter-spacing:.16em;
+  text-transform:uppercase;color:var(--dim);margin-right:6px;
+}
+.preset{
+  font-family:'JetBrains Mono',monospace;font-size:11.5px;letter-spacing:.06em;
+  padding:7px 13px;border:1px solid var(--line);background:rgba(15,23,48,.6);color:var(--ice);
+  border-radius:2px;cursor:pointer;transition:border-color .15s,color .15s,background .15s;
+}
+.preset:hover{border-color:var(--phos);color:var(--phos)}
+.preset:focus-visible{outline:1px solid var(--phos);outline-offset:2px}
+
+/* ---------- Layout ---------- */
+.deck{display:grid;grid-template-columns:minmax(0,1fr) 400px;gap:26px;margin-top:44px;align-items:start}
+@media(max-width:1080px){.deck{grid-template-columns:1fr}}
+
+/* ---------- Parameter cards ---------- */
+.chain{display:flex;flex-direction:column;gap:14px}
+.card{
+  border:1px solid var(--line-soft);background:rgba(11,16,34,.72);border-radius:3px;
+  padding:18px 18px 16px;backdrop-filter:blur(6px);scroll-margin-top:20px;
+  transition:border-color .2s;
+}
+.card:hover{border-color:var(--line)}
+.card-head{display:flex;gap:15px;align-items:baseline}
+.sym{
+  font-size:23px;font-weight:700;color:var(--phos);min-width:46px;
+  font-family:'JetBrains Mono',monospace;letter-spacing:-.02em;
+}
+.sym sub{font-size:.6em;color:var(--phos-dim)}
+.card h2{margin:0;font-size:17px;font-weight:600;letter-spacing:.01em}
+.card .sub{margin:2px 0 0;font-size:13.5px;color:var(--dim)}
+.chips{display:flex;flex-wrap:wrap;gap:7px;margin:15px 0 0}
+.chip{
+  flex:1 1 auto;min-width:92px;text-align:left;cursor:pointer;
+  border:1px solid var(--line-soft);background:rgba(5,7,15,.5);color:var(--ice);
+  padding:8px 11px;border-radius:2px;font-family:inherit;
+  transition:border-color .15s,background .15s,transform .1s;
+}
+.chip b{display:block;font-family:'JetBrains Mono',monospace;font-size:14px;font-weight:500}
+.chip b sup{font-size:.72em}
+.chip span{display:block;font-size:11px;color:var(--dim);letter-spacing:.02em;margin-top:1px}
+.chip:hover{border-color:var(--phos-dim);background:rgba(124,249,208,.05)}
+.chip:focus-visible{outline:1px solid var(--phos);outline-offset:2px}
+.chip[aria-pressed="true"]{
+  border-color:var(--phos);background:rgba(124,249,208,.11);
+  box-shadow:inset 0 0 0 1px rgba(124,249,208,.18);
+}
+.chip[aria-pressed="true"] b{color:var(--phos)}
+.chip[aria-pressed="true"] span{color:var(--ice)}
+.note{
+  margin:13px 0 0;padding:11px 13px;border-left:2px solid var(--nebula);
+  background:rgba(160,107,255,.07);font-size:13.5px;color:var(--ice);border-radius:0 2px 2px 0;
+}
+.note .tag{
+  display:block;font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.16em;
+  text-transform:uppercase;color:var(--nebula);margin-bottom:3px;
+}
+
+/* ---------- Readout ---------- */
+.readout{position:sticky;top:16px;display:flex;flex-direction:column;gap:14px}
+@media(max-width:1080px){.readout{position:static}}
+.panel{
+  border:1px solid var(--line);background:linear-gradient(180deg,rgba(15,23,48,.85),rgba(11,16,34,.7));
+  border-radius:3px;padding:18px;backdrop-filter:blur(8px);box-shadow:var(--shadow);
+}
+.panel h3{
+  margin:0 0 12px;font-family:'JetBrains Mono',monospace;font-size:10.5px;letter-spacing:.18em;
+  text-transform:uppercase;color:var(--dim);font-weight:500;
+  display:flex;justify-content:space-between;align-items:center;
+}
+.bigN{
+  font-family:'JetBrains Mono',monospace;font-weight:700;color:var(--phos);
+  font-size:clamp(34px,6.4vw,46px);line-height:1;letter-spacing:-.03em;
+  text-shadow:0 0 26px rgba(124,249,208,.35);word-break:break-word;
+}
+.bigN sup{font-size:.52em;letter-spacing:0}
+.bigN-cap{font-size:13px;color:var(--dim);margin-top:8px}
+.verdict{margin:16px 0 0;padding-top:14px;border-top:1px solid var(--line-soft)}
+.verdict .tier{
+  font-family:'JetBrains Mono',monospace;font-size:10.5px;letter-spacing:.2em;text-transform:uppercase;
+  color:var(--amber);
+}
+.verdict h4{margin:5px 0 6px;font-size:17px;font-weight:600;line-height:1.25}
+.verdict p{margin:0;font-size:13.5px;color:var(--dim)}
+.verdict p + p{margin-top:8px}
+.calc{
+  font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--dim);
+  margin-top:14px;padding-top:12px;border-top:1px solid var(--line-soft);
+  word-break:break-word;line-height:1.7;
+}
+.calc b{color:var(--phos);font-weight:500}
+
+.stats{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--line-soft);border:1px solid var(--line-soft)}
+.stat{background:rgba(11,16,34,.9);padding:12px 13px}
+.stat .k{
+  font-family:'JetBrains Mono',monospace;font-size:9.5px;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--dim);display:block;line-height:1.4;min-height:2.6em;
+}
+.stat .v{font-family:'JetBrains Mono',monospace;font-size:17px;color:var(--ice);margin-top:5px;display:block;word-break:break-word}
+.stat .v sup{font-size:.6em}
+.stat .u{font-size:11px;color:var(--dim);margin-left:3px}
+
+canvas#galaxy{width:100%;height:290px;display:block;border-radius:2px}
+.legend{
+  display:flex;flex-wrap:wrap;gap:12px;margin-top:10px;
+  font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.08em;color:var(--dim);
+}
+.legend i{display:inline-block;width:7px;height:7px;border-radius:50%;margin-right:5px;vertical-align:0}
+.legend .civ i{background:var(--phos);box-shadow:0 0 6px var(--phos)}
+.legend .sol i{background:var(--amber);box-shadow:0 0 6px var(--amber)}
+.legend .ring i{background:none;border:1px dashed var(--nebula);border-radius:0;width:12px;height:0;margin-bottom:3px}
+.smallnote{font-size:11.5px;color:var(--dim);margin:9px 0 0;line-height:1.5}
+
+/* ---------- Cascade ---------- */
+.cascade{display:flex;flex-direction:column;gap:0}
+.crow{padding:8px 0;border-bottom:1px dashed var(--line-soft)}
+.crow:last-child{border-bottom:0}
+.crow-top{display:flex;justify-content:space-between;gap:10px;align-items:baseline}
+.crow .lbl{font-size:12.5px;color:var(--ice)}
+.crow .lbl em{font-style:normal;font-family:'JetBrains Mono',monospace;color:var(--nebula);font-size:11px;margin-right:6px}
+.crow .val{font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--phos);white-space:nowrap}
+.crow .val sup{font-size:.68em}
+.bar{height:4px;background:rgba(29,42,79,.6);margin-top:6px;border-radius:2px;overflow:hidden}
+.bar i{
+  display:block;height:100%;border-radius:2px;
+  background:linear-gradient(90deg,var(--phos-dim),var(--phos));
+  transition:width .35s cubic-bezier(.2,.7,.3,1);
+}
+.crow.final .lbl{color:var(--phos);font-weight:600}
+.crow.final .bar i{background:linear-gradient(90deg,var(--amber),var(--phos))}
+
+.minibar{display:none}
+@media(max-width:1080px){
+  .minibar{
+    display:flex;align-items:baseline;gap:10px;
+    position:fixed;left:0;right:0;bottom:0;z-index:6;
+    padding:10px 20px;border-top:1px solid var(--line);
+    background:rgba(9,13,28,.94);backdrop-filter:blur(10px);
+    font-family:'JetBrains Mono',monospace;
+  }
+  .minibar span{font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:var(--dim)}
+  .minibar b{font-size:19px;color:var(--phos);font-weight:700}
+  .minibar b sup{font-size:.6em}
+  .minibar em{
+    font-style:normal;font-size:10.5px;color:var(--dim);margin-left:auto;text-align:right;
+    letter-spacing:.08em;max-width:58%;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+  }
+  body{padding-bottom:58px}
+}
+
+footer{
+  margin-top:56px;padding-top:20px;border-top:1px solid var(--line-soft);
+  font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--dim);letter-spacing:.05em;
+  display:flex;flex-wrap:wrap;gap:8px 22px;
+}
+@media (prefers-reduced-motion:reduce){
+  *{animation:none!important;transition:none!important}
+  html{scroll-behavior:auto}
+}
+</style>
+</head>
+<body>
+<canvas id="sky" aria-hidden="true"></canvas>
+<div class="nebulae" aria-hidden="true"></div>
+<div class="scan" aria-hidden="true"></div>
+
+<div class="wrap">
+
+  <div class="mast">
+    <span class="live"><span class="dot"></span>Empfänger aktiv</span>
+    <span>Green Bank, West Virginia · November 1961</span>
+    <span class="sep"></span>
+    <span>Frank D. Drake</span>
+  </div>
+
+  <header class="hero">
+    <h1><span class="thin">Wie viele sind da draußen?</span>Die Drake-Gleichung</h1>
+    <p class="lede">Drake schrieb diese Zeile 1961 an eine Tafel, um eine Tagung zu strukturieren — nicht, um eine Zahl vorherzusagen. Sie zerlegt eine unbeantwortbare Frage in sieben beantwortbare. <b>Stellen Sie jeden Faktor ein und sehen Sie, wo die Größenordnungen verloren gehen.</b></p>
+
+    <div class="eq" id="eq" aria-label="Drake-Gleichung"></div>
+
+    <div class="presets" id="presets">
+      <span class="plabel">Szenario laden</span>
+    </div>
+  </header>
+
+  <div class="deck">
+    <section class="chain" id="chain" aria-label="Parameter"></section>
+
+    <aside class="readout" aria-label="Ergebnis">
+
+      <div class="panel">
+        <h3><span>Ergebnis N</span><span id="stamp">—</span></h3>
+        <div class="bigN" id="bigN">—</div>
+        <div class="bigN-cap">gleichzeitig sendende Zivilisationen in der Milchstraße</div>
+        <div class="verdict">
+          <div class="tier" id="tier">—</div>
+          <h4 id="headline">—</h4>
+          <p id="body1"></p>
+          <p id="body2"></p>
+        </div>
+        <div class="calc" id="calc"></div>
+      </div>
+
+      <div class="panel">
+        <h3><span>Kennzahlen</span></h3>
+        <div class="stats">
+          <div class="stat"><span class="k">Abstand zur nächsten Zivilisation</span><span class="v" id="s-dist">—</span></div>
+          <div class="stat"><span class="k">Antwortzeit für ein Funksignal</span><span class="v" id="s-rt">—</span></div>
+          <div class="stat"><span class="k">Erwartet innerhalb 1000 Lj</span><span class="v" id="s-1000">—</span></div>
+          <div class="stat"><span class="k">Chance auf Kontakt in 100 Lj</span><span class="v" id="s-p100">—</span></div>
+        </div>
+        <p class="smallnote" id="fermi"></p>
+      </div>
+
+      <div class="panel">
+        <h3><span>Galaktische Karte</span><span id="capnote"></span></h3>
+        <canvas id="galaxy"></canvas>
+        <div class="legend">
+          <span class="civ"><i></i>Zivilisation</span>
+          <span class="sol"><i></i>Sonne</span>
+          <span class="ring"><i></i>mittlerer Abstand</span>
+        </div>
+        <p class="smallnote">Unsere Radioblase misst rund 125 Lichtjahre. Auf dieser Karte wäre sie schmaler als ein Pixel.</p>
+      </div>
+
+      <div class="panel">
+        <h3><span>Wo die Zahlen verloren gehen</span></h3>
+        <div class="cascade" id="cascade"></div>
+      </div>
+
+    </aside>
+  </div>
+
+  <footer>
+    <span>N = R∗ · f<sub>p</sub> · n<sub>e</sub> · f<sub>l</sub> · f<sub>i</sub> · f<sub>c</sub> · L</span>
+    <span>Scheibenmodell: R = 50 000 Lj, Dicke 1000 Lj</span>
+    <span>Sonne bei 26 000 Lj Bahnradius</span>
+  </footer>
+</div>
+
+<div class="minibar" id="minibar"><span>N</span><b id="miniN">—</b><em id="miniTier"></em></div>
+
+<script>
+"use strict";
+
+/* ============================ Parameter ============================ */
+const PARAMS = [
+  {
+    key:"R", sym:"R∗", subs:"", name:"Sternentstehungsrate",
+    sub:"Wie viele Sterne entstehen pro Jahr in der Milchstraße?",
+    unit:"Sterne/Jahr", def:1,
+    opts:[
+      {v:0.5,  l:"0,5",  t:"Untere Schranke",  n:"Infrarot-Durchmusterungen liefern für die Milchstraße teils weniger als eine Sonnenmasse pro Jahr. Bei einer massearmen Anfangsmassenfunktion entstehen daraus entsprechend wenige langlebige Sterne."},
+      {v:1.5,  l:"1,5",  t:"Spitzer-Messung",  n:"Aus Spitzer-Daten abgeleiteter moderner Wert von 1–3 Sonnenmassen pro Jahr (Robitaille & Whitney, 2010). Das ist heute die belastbarste Schätzung."},
+      {v:3,    l:"3",    t:"Drake 1961",       n:"Drakes ursprüngliche Annahme: 100 Milliarden Sterne, verteilt über rund 10 Milliarden Jahre Galaxiengeschichte."},
+      {v:7,    l:"7",    t:"Historisch gemittelt", n:"Die Milchstraße bildete früher deutlich mehr Sterne als heute. Über die gesamte Scheibengeschichte gemittelt liegt die Rate höher als der aktuelle Momentanwert."},
+      {v:20,   l:"20",   t:"Frühe Scheibe",    n:"In der Frühphase vor 8–10 Milliarden Jahren lag die Sternentstehung um eine Größenordnung über heute. Relevant, wenn alte Sterne Zivilisationen tragen können."}
+    ]
+  },
+  {
+    key:"fp", sym:"f", subs:"p", name:"Anteil Sterne mit Planeten",
+    sub:"Wie üblich sind Planetensysteme?",
+    unit:"Anteil", def:2,
+    opts:[
+      {v:0.2, l:"0,2", t:"Zurückhaltend", n:"Vor-Kepler-Position: Planetenbildung als eher seltener Nebeneffekt, etwa gestört durch enge Doppelsternsysteme."},
+      {v:0.5, l:"0,5", t:"Jeder zweite", n:"Mittelweg zwischen Drakes Originalannahme und den heutigen Beobachtungen."},
+      {v:0.9, l:"0,9", t:"Kepler-Befund", n:"Transit- und Radialgeschwindigkeitsdaten zeigen: Praktisch jeder Hauptreihenstern besitzt mindestens einen Planeten. Dieser Faktor ist der einzige, der heute wirklich gemessen ist."},
+      {v:1.0, l:"1,0", t:"Regelfall", n:"Planetenbildung als zwangsläufiges Nebenprodukt der protoplanetaren Scheibe — Sterne ohne Planeten wären die Ausnahme."}
+    ]
+  },
+  {
+    key:"ne", sym:"n", subs:"e", name:"Habitable Welten pro System",
+    sub:"Wie viele Planeten je System liegen in der lebensfreundlichen Zone?",
+    unit:"Welten/System", def:2,
+    opts:[
+      {v:0.01, l:"0,01", t:"Rare Earth", n:"Ward & Brownlee: Erst Plattentektonik, ein stabilisierender großer Mond, ein Jupiter als Kometenschild und eine ruhige galaktische Umgebung machen eine Welt dauerhaft bewohnbar. Diese Kombination wäre extrem selten."},
+      {v:0.1,  l:"0,1",  t:"Streng gefasst", n:"Nur Gesteinsplaneten mit stabiler Atmosphäre und flüssigem Wasser über Milliarden Jahre werden gezählt."},
+      {v:0.4,  l:"0,4",  t:"η⊕ aus Kepler", n:"Hochrechnungen der Kepler-Statistik für sonnenähnliche Sterne ergeben 0,1 bis 0,6 erdgroße Planeten in der habitablen Zone pro Stern."},
+      {v:1.0,  l:"1,0",  t:"Drake 1961", n:"Eine bewohnbare Welt pro Planetensystem — so wie unser eigenes System eine hervorbringt."},
+      {v:2.0,  l:"2,0",  t:"Eismonde mitgezählt", n:"Weit gefasste habitable Zone plus Ozeanmonde wie Europa oder Enceladus, deren Gezeitenheizung unabhängig vom Sternabstand funktioniert."}
+    ]
+  },
+  {
+    key:"fl", sym:"f", subs:"l", name:"Anteil mit entstandenem Leben",
+    sub:"Wie oft springt Chemie in Biologie um?",
+    unit:"Anteil", def:3,
+    opts:[
+      {v:1e-6, l:"10<sup>−6</sup>", t:"Chemischer Zufall", n:"Abiogenese als singuläres, praktisch unwiederholbares Ereignis. Die Erde wäre dann kein Beispiel, sondern ein Ausreißer."},
+      {v:1e-3, l:"10<sup>−3</sup>", t:"Schwierig", n:"Leben entsteht, aber nur unter sehr spezifischen Bedingungen an hydrothermalen Quellen mit langer chemischer Vorlaufzeit."},
+      {v:0.01, l:"0,01", t:"Selten, aber möglich", n:"Ein Prozent der bewohnbaren Welten überschreitet die Schwelle zur Selbstreplikation."},
+      {v:0.13, l:"0,13", t:"Bayes'sche Schranke", n:"Lineweaver & Davis (2002): Weil auf der Erde bereits kurz nach dem Ende des Bombardements Leben existierte, ergibt sich eine untere Schranke von rund 13 Prozent."},
+      {v:1.0,  l:"1,0",  t:"Kosmischer Imperativ", n:"De Duves Position: Leben entsteht überall dort, wo die Bedingungen stimmen — Chemie unter Energiefluss läuft zwangsläufig darauf zu."}
+    ]
+  },
+  {
+    key:"fi", sym:"f", subs:"i", name:"Anteil mit Intelligenz",
+    sub:"Wie oft führt Leben zu Werkzeug und Sprache?",
+    unit:"Anteil", def:2,
+    opts:[
+      {v:1e-9, l:"10<sup>−9</sup>", t:"Hard-Steps-Modell", n:"Carters Argument: Wenn mehrere äußerst unwahrscheinliche Evolutionsschritte hintereinander nötig sind, sinkt die Wahrscheinlichkeit für Intelligenz ins Verschwindende. Die Erde brauchte 3,5 Milliarden Jahre."},
+      {v:1e-5, l:"10<sup>−5</sup>", t:"Sauerstoff-Flaschenhals", n:"Zwei Milliarden Jahre lang blieb das Leben auf der Erde einzellig. Der Übergang zur Eukaryotenzelle fand offenbar genau einmal statt."},
+      {v:0.01, l:"0,01", t:"Mehrzelligkeit", n:"Komplexes Leben ist erreichbar, aber Intelligenz mit Symbolsprache bleibt ein seltener Sonderweg."},
+      {v:0.1,  l:"0,1",  t:"Wiederholtes Muster", n:"Kognition entstand auf der Erde mehrfach unabhängig — bei Primaten, Rabenvögeln, Kraken. Das spricht für Konvergenz."},
+      {v:1.0,  l:"1,0",  t:"Drake 1961", n:"Intelligenz als evolutionärer Attraktor: Wo Leben genug Zeit hat, entsteht sie zuverlässig."}
+    ]
+  },
+  {
+    key:"fc", sym:"f", subs:"c", name:"Anteil, der nachweisbar sendet",
+    sub:"Wie viele intelligente Arten werden über Distanz sichtbar?",
+    unit:"Anteil", def:3,
+    opts:[
+      {v:1e-3, l:"10<sup>−3</sup>", t:"Stille Mehrheit", n:"Ozeanwelten ohne Feuer, Kulturen ohne Metallurgie oder Zivilisationen, die Funk früh durch gerichtete Glasfaser ersetzen — sie alle bleiben unsichtbar."},
+      {v:0.01, l:"0,01", t:"Schmales Fenster", n:"Technik entsteht, aber nur wenige senden stark genug und lange genug, um über interstellare Distanzen aufzufallen."},
+      {v:0.1,  l:"0,1",  t:"Zurückhaltend", n:"Ein Zehntel entwickelt Radiotechnik und nutzt sie ungerichtet — die Erde selbst reduziert ihre Abstrahlung seit Jahrzehnten."},
+      {v:0.2,  l:"0,2",  t:"Drake 1961", n:"Drakes Originalannahme: Jede fünfte intelligente Art wird technisch nachweisbar."},
+      {v:1.0,  l:"1,0",  t:"Technik folgt zwingend", n:"Jede Intelligenz durchläuft eine elektromagnetische Phase und wird darin sichtbar."}
+    ]
+  },
+  {
+    key:"L", sym:"L", subs:"", name:"Lebensdauer der Sendephase",
+    sub:"Wie lange bleibt eine Zivilisation nachweisbar? Der Faktor mit dem größten Hebel.",
+    unit:"Jahre", def:2,
+    opts:[
+      {v:100,   l:"100",              t:"Selbstzerstörung", n:"Nukleare, ökologische oder technologische Selbstauslöschung kurz nach Erfindung des Radios. Der Kalte Krieg war Drakes ursprüngliche Sorge."},
+      {v:125,   l:"125",              t:"Menschheit bisher", n:"So lange senden wir. Setzt man diesen Wert ein, geht die Gleichung davon aus, dass wir typisch sind — und dass alles Weitere offen ist."},
+      {v:1e3,   l:"1000",             t:"Ein Jahrtausend", n:"Die Zivilisation übersteht ihre technologische Pubertät und bleibt so lange stabil wie die längsten irdischen Hochkulturen."},
+      {v:1e4,   l:"10 000",           t:"Stabile Phase", n:"Energie- und Klimaprobleme sind gelöst; die Zivilisation bleibt technisch, ohne sich auszubreiten."},
+      {v:1e6,   l:"10<sup>6</sup>",   t:"Sagan", n:"Sagans optimistische Annahme: Wer die kritische Phase übersteht, hat keinen Grund mehr, unterzugehen. Dieser Wert allein hebt N um vier Größenordnungen."},
+      {v:1e8,   l:"10<sup>8</sup>",   t:"Postbiologisch", n:"Selbsterhaltende maschinelle Nachfolger, deren Bestand nur noch durch die Sternentwicklung begrenzt ist."}
+    ]
+  }
+];
+
+const PRESETS = [
+  {name:"Green Bank 1961", set:{R:3,fp:0.5,ne:1.0,fl:1.0,fi:1.0,fc:0.2,L:1e4}},
+  {name:"Sagan", set:{R:7,fp:1.0,ne:1.0,fl:1.0,fi:0.1,fc:1.0,L:1e6}},
+  {name:"Modern konservativ", set:{R:1.5,fp:0.9,ne:0.4,fl:0.13,fi:0.01,fc:0.1,L:1e3}},
+  {name:"Rare Earth", set:{R:1.5,fp:0.9,ne:0.01,fl:0.01,fi:1e-9,fc:0.1,L:1e3}},
+  {name:"Wir sind typisch", set:{R:1.5,fp:0.9,ne:0.4,fl:0.13,fi:1e-5,fc:0.1,L:125}}
+];
+
+const state = {};
+PARAMS.forEach(p => { state[p.key] = p.opts[p.def].v; });
+
+/* ============================ Formatierung ============================ */
+const deDec = (v,d) => v.toLocaleString("de-DE",{minimumFractionDigits:0,maximumFractionDigits:d});
+
+function sci(v){
+  const e = Math.floor(Math.log10(Math.abs(v)));
+  const m = v / Math.pow(10,e);
+  const ms = deDec(m,2).replace(/,00$/,"");
+  return ms + "&#183;10<sup>" + e + "</sup>";
+}
+function fmt(v){
+  if(!isFinite(v)) return "&#8734;";
+  const a = Math.abs(v);
+  if(a === 0) return "0";
+  if(a >= 1e5 || a < 0.01) return sci(v);
+  if(a >= 1000) return deDec(v,0);
+  if(a >= 10)   return deDec(v,1);
+  return deDec(v,2);
+}
+function plain(v){
+  const a = Math.abs(v);
+  if(a === 0) return "0";
+  if(a >= 1e5 || a < 0.01){
+    const e = Math.floor(Math.log10(a));
+    return deDec(v/Math.pow(10,e),2) + "·10^" + e;
+  }
+  return deDec(v, a >= 1000 ? 0 : 2);
+}
+function fmtLy(v){
+  if(v >= 1e6) return sci(v) + '<span class="u">Lj</span>';
+  return deDec(Math.round(v),0) + '<span class="u">Lj</span>';
+}
+function fmtYears(v){
+  if(v >= 1e6) return sci(v) + '<span class="u">a</span>';
+  return deDec(Math.round(v),0) + '<span class="u">a</span>';
+}
+
+/* ============================ Geometrie der Galaxis ============================ */
+const R_GAL = 50000, H_GAL = 1000;
+const V_GAL = Math.PI * R_GAL*R_GAL * H_GAL;
+const A_GAL = Math.PI * R_GAL*R_GAL;
+
+function nearestNeighbour(N){
+  if(N <= 0) return Infinity;
+  const d3 = 0.5539 / Math.cbrt(N / V_GAL);          // 3D-Poisson
+  if(d3 <= H_GAL/2) return d3;
+  return 0.5 / Math.sqrt(N / A_GAL);                  // flach: Scheibe wirkt 2D
+}
+function volumeWithin(r){                             // Kugel geschnitten mit Scheibe
+  const h = H_GAL/2;
+  if(r <= h) return 4/3*Math.PI*r*r*r;
+  const hc = r - h;
+  const cap = Math.PI/3 * hc*hc * (3*r - hc);
+  return 4/3*Math.PI*r*r*r - 2*cap;
+}
+function expectedWithin(N, r){
+  if(r >= R_GAL) return N;
+  return N * volumeWithin(r) / V_GAL;
+}
+
+/* ============================ Interpretation ============================ */
+function verdict(N, d){
+  if(N < 1e-6) return {
+    tier:"Signalpegel 00 · Stille",
+    head:"Die Galaxis gehört uns allein",
+    b1:"Unter diesen Annahmen ist die Menschheit nicht selten, sondern statistisch unmöglich — und existiert trotzdem. Genau das ist der interessante Punkt: Ein N weit unter 1 sagt nicht, dass niemand da ist, sondern dass mindestens einer Ihrer Faktoren zu niedrig angesetzt ist.",
+    b2:"Rare-Earth-Szenarien liegen hier. Sie erklären das Schweigen des Himmels elegant — um den Preis, uns selbst zum Wunder zu erklären."
+  };
+  if(N < 0.05) return {
+    tier:"Signalpegel 01 · Einzelfall",
+    head:"Wir sind vermutlich die Einzigen",
+    b1:"Auf die gesamte Milchstraße kommt weniger als eine sendende Zivilisation. Wir wären dann kein Teil einer Gemeinschaft, sondern deren einziger Vertreter — für den gesamten Zeitraum unserer Existenz.",
+    b2:"Der Große Filter läge in diesem Fall hinter uns: Irgendein Schritt auf dem Weg hierher war der unwahrscheinliche, und wir haben ihn bereits genommen."
+  };
+  if(N < 1) return {
+    tier:"Signalpegel 02 · Grenzfall",
+    head:"Weniger als eine — und wir sind sie",
+    b1:"Die Rechnung liefert einen Erwartungswert unter 1. Da wir nachweislich existieren, sitzen wir am äußersten Rand der eigenen Verteilung.",
+    b2:"Für SETI heißt das: Es gibt nichts zu empfangen. Die Suche würde nicht scheitern, weil die Technik zu schwach ist, sondern weil niemand sendet."
+  };
+  if(N < 12) return {
+    tier:"Signalpegel 03 · Vereinzelt",
+    head:"Eine Handvoll, unerreichbar weit auseinander",
+    b1:"Es gibt Nachbarn, aber die Galaxis ist zu groß für sie. Bei rund " + deDec(Math.round(d),0) + " Lichtjahren Abstand ist ein Dialog ausgeschlossen — eine Frage und ihre Antwort überspannen mehr Zeit als die gesamte schriftliche Geschichte der Menschheit.",
+    b2:"Dieses Fenster ist das unbequemste: Wir sind nicht allein, werden es aber nie erfahren."
+  };
+  if(N < 1000) return {
+    tier:"Signalpegel 04 · Verstreut",
+    head:"Bewohnt, aber weiträumig",
+    b1:"Einige Dutzend bis einige Hundert Zivilisationen teilen sich die Scheibe. Statistisch sitzt die nächste jenseits von " + deDec(Math.round(d),0) + " Lichtjahren — hinter dem Horizont heutiger Radioteleskope.",
+    b2:"Gezielte Suchen an sonnenähnlichen Sternen in der Nachbarschaft wären in diesem Szenario aussichtslos. Erfolg hätte nur eine Durchmusterung der gesamten Scheibe."
+  };
+  if(N < 1e6) return {
+    tier:"Signalpegel 05 · Belebt",
+    head:"Eine belebte Galaxis",
+    b1:"Tausende sendende Zivilisationen, die nächste in rund " + deDec(Math.round(d),0) + " Lichtjahren. In diesem Bereich lohnt sich systematisches Zuhören: Die Frage ist nicht mehr ob, sondern bei welcher Frequenz.",
+    b2:"Zugleich wird das Schweigen erklärungsbedürftig. Wenn so viele senden — warum haben wir seit über sechzig Jahren nichts empfangen?"
+  };
+  return {
+    tier:"Signalpegel 06 · Fermi-Alarm",
+    head:"So voll, dass das Schweigen zum Problem wird",
+    b1:"Millionen aktiver Zivilisationen, die nächste in " + deDec(Math.round(d),0) + " Lichtjahren. Bei dieser Dichte hätte die Galaxis längst besiedelt sein müssen: Selbst mit einem Prozent Lichtgeschwindigkeit dauert die vollständige Kolonisation nur wenige Millionen Jahre.",
+    b2:"Genau hier steht Fermis Frage: Wo sind sie denn? Entweder ist einer Ihrer Faktoren viel zu groß — oder unsere Annahme, Ausbreitung sei unvermeidlich, ist falsch."
+  };
+}
+
+/* ============================ Aufbau der Oberfläche ============================ */
+const chain = document.getElementById("chain");
+const eqEl  = document.getElementById("eq");
+
+function symHtml(p){ return p.sym + (p.subs ? "<sub>"+p.subs+"</sub>" : ""); }
+
+// Hero-Gleichung
+(function buildEq(){
+  let html = '<span class="lhs">N =</span>';
+  PARAMS.forEach((p,i) => {
+    if(i) html += '<span class="op">·</span>';
+    html += '<button class="term" data-goto="'+p.key+'" title="'+p.name+'">'
+          + '<span class="s">'+symHtml(p)+'</span>'
+          + '<span class="v" id="eqv-'+p.key+'">—</span></button>';
+  });
+  eqEl.innerHTML = html;
+  eqEl.querySelectorAll(".term").forEach(b => b.addEventListener("click", () => {
+    const c = document.getElementById("card-"+b.dataset.goto);
+    c.scrollIntoView({block:"center"});
+    c.style.borderColor = "var(--phos)";
+    setTimeout(()=>{ c.style.borderColor = ""; }, 900);
+  }));
+})();
+
+// Presets
+(function buildPresets(){
+  const host = document.getElementById("presets");
+  PRESETS.forEach(pr => {
+    const b = document.createElement("button");
+    b.className = "preset";
+    b.textContent = pr.name;
+    b.addEventListener("click", () => {
+      PARAMS.forEach(p => { if(pr.set[p.key] !== undefined) state[p.key] = pr.set[p.key]; });
+      syncChips();
+      update();
+      document.getElementById("chain").scrollIntoView({block:"start"});
+    });
+    host.appendChild(b);
+  });
+})();
+
+// Parameterkarten
+PARAMS.forEach(p => {
+  const card = document.createElement("article");
+  card.className = "card";
+  card.id = "card-" + p.key;
+
+  let chips = "";
+  p.opts.forEach((o,i) => {
+    chips += '<button class="chip" data-key="'+p.key+'" data-i="'+i+'" aria-pressed="false">'
+           + '<b>'+o.l+'</b><span>'+o.t+'</span></button>';
+  });
+
+  card.innerHTML =
+    '<div class="card-head"><span class="sym">'+symHtml(p)+'</span>'
+    + '<div><h2>'+p.name+'</h2><p class="sub">'+p.sub+'</p></div></div>'
+    + '<div class="chips" role="group" aria-label="'+p.name+'">'+chips+'</div>'
+    + '<p class="note" id="note-'+p.key+'"></p>';
+
+  chain.appendChild(card);
+});
+
+chain.addEventListener("click", e => {
+  const chip = e.target.closest(".chip");
+  if(!chip) return;
+  const p = PARAMS.find(x => x.key === chip.dataset.key);
+  state[p.key] = p.opts[+chip.dataset.i].v;
+  syncChips();
+  update();
+});
+
+function syncChips(){
+  PARAMS.forEach(p => {
+    const idx = p.opts.findIndex(o => o.v === state[p.key]);
+    document.querySelectorAll('.chip[data-key="'+p.key+'"]').forEach(c => {
+      c.setAttribute("aria-pressed", (+c.dataset.i === idx) ? "true" : "false");
+    });
+    const o = p.opts[idx];
+    document.getElementById("note-"+p.key).innerHTML =
+      '<span class="tag">'+o.t+'</span>'+o.n;
+    document.getElementById("eqv-"+p.key).innerHTML =
+      o.l + (p.key === "L" ? " a" : (p.key === "R" ? "/a" : ""));
+  });
+}
+
+/* ============================ Berechnung & Ausgabe ============================ */
+function update(){
+  const s = state;
+  const N = s.R * s.fp * s.ne * s.fl * s.fi * s.fc * s.L;
+  const d = nearestNeighbour(N);
+
+  document.getElementById("bigN").innerHTML = fmt(N);
+  document.getElementById("stamp").textContent = "log₁₀ N = " + deDec(Math.log10(N),2);
+
+  const v = verdict(N, isFinite(d) ? d : 0);
+  document.getElementById("tier").textContent = v.tier;
+  document.getElementById("miniN").innerHTML = fmt(N);
+  document.getElementById("miniTier").textContent = v.head;
+  document.getElementById("headline").textContent = v.head;
+  document.getElementById("body1").textContent = v.b1;
+  document.getElementById("body2").textContent = v.b2;
+
+  document.getElementById("calc").innerHTML =
+    "N = " + deDec(s.R,1) + " · " + deDec(s.fp,2) + " · " + deDec(s.ne,2) + " · "
+    + fmt(s.fl) + " · " + fmt(s.fi) + " · " + fmt(s.fc) + " · " + fmt(s.L)
+    + " = <b>" + fmt(N) + "</b>";
+
+  // Kennzahlen
+  const rt   = isFinite(d) ? 2*d : Infinity;
+  const e1000 = expectedWithin(N, 1000);
+  const p100  = 1 - Math.exp(-expectedWithin(N, 100));
+
+  document.getElementById("s-dist").innerHTML = isFinite(d)
+    ? (d > R_GAL*2 ? "&gt; Galaxis" : fmtLy(d)) : "—";
+  document.getElementById("s-rt").innerHTML = isFinite(rt)
+    ? (rt > 2e5 ? sci(rt) + '<span class="u">a</span>' : fmtYears(rt)) : "—";
+  document.getElementById("s-1000").innerHTML = fmt(e1000);
+  document.getElementById("s-p100").innerHTML = p100 < 0.001
+    ? sci(p100*100) + '<span class="u">%</span>'
+    : deDec(p100*100, p100<0.1?2:1) + '<span class="u">%</span>';
+
+  const fermiEl = document.getElementById("fermi");
+  if(!isFinite(d) || d > 5e4){
+    fermiEl.textContent = "Der mittlere Abstand übersteigt den Durchmesser der Scheibe. In diesem Szenario gibt es schlicht keinen Nachbarn.";
+  } else if(d > 1000){
+    fermiEl.innerHTML = "Ein Funkdialog bräuchte " + fmt(2*d) + " Jahre. Beide Seiten müssten länger senden, als es die Menschheit bisher überhaupt gibt.";
+  } else if(d > 125){
+    fermiEl.innerHTML = "Die nächste Zivilisation läge knapp außerhalb unserer Radioblase — nah genug für gezielte Suchen, zu weit für ein Gespräch.";
+  } else {
+    fermiEl.innerHTML = "Der Nachbar läge innerhalb der 125 Lichtjahre, die unsere eigenen Signale bereits durchquert haben. Dass wir nichts hören, wird damit schwer erklärbar.";
+  }
+
+  drawCascade(N);
+  drawGalaxy(N, d);
+}
+
+/* ---------- Kaskade ---------- */
+const CASCADE_ROWS = [
+  {op:"R∗ · L", lbl:"Sterne, die während einer Sendephase entstehen"},
+  {op:"· f<sub>p</sub>", lbl:"davon mit Planetensystem"},
+  {op:"· n<sub>e</sub>", lbl:"habitable Welten darunter"},
+  {op:"· f<sub>l</sub>", lbl:"auf denen Leben beginnt"},
+  {op:"· f<sub>i</sub>", lbl:"die Intelligenz hervorbringen"},
+  {op:"· f<sub>c</sub>", lbl:"die nachweisbar senden  →  N"}
+];
+
+function drawCascade(){
+  const s = state;
+  const vals = [];
+  let acc = s.R * s.L; vals.push(acc);
+  [s.fp, s.ne, s.fl, s.fi, s.fc].forEach(f => { acc *= f; vals.push(acc); });
+
+  const logs = vals.map(v => Math.log10(Math.max(v, 1e-30)));
+  const hi = Math.max.apply(null, logs);
+  const lo = Math.max(Math.min.apply(null, logs), hi - 30);
+  const span = Math.max(hi - lo, 1);
+
+  let html = "";
+  vals.forEach((v,i) => {
+    const w = Math.max(1.5, ((logs[i] - lo) / span) * 100);
+    html += '<div class="crow'+(i === vals.length-1 ? " final" : "")+'">'
+          + '<div class="crow-top"><span class="lbl"><em>'+CASCADE_ROWS[i].op+'</em>'+CASCADE_ROWS[i].lbl+'</span>'
+          + '<span class="val">'+fmt(v)+'</span></div>'
+          + '<div class="bar"><i style="width:'+w.toFixed(2)+'%"></i></div></div>';
+  });
+  document.getElementById("cascade").innerHTML = html;
+}
+
+/* ---------- Galaxienkarte ---------- */
+function mulberry32(a){
+  return function(){
+    a |= 0; a = a + 0x6D2B79F5 | 0;
+    let t = Math.imul(a ^ a >>> 15, 1 | a);
+    t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t;
+    return ((t ^ t >>> 14) >>> 0) / 4294967296;
+  };
+}
+const gal = document.getElementById("galaxy");
+const gctx = gal.getContext("2d");
+let galDims = {w:0,h:0};
+const SOL_ANGLE = 2.42;
+
+function sizeGalaxy(){
+  const dpr = Math.min(window.devicePixelRatio || 1, 2);
+  const w = gal.clientWidth, h = gal.clientHeight;
+  gal.width = Math.round(w*dpr); gal.height = Math.round(h*dpr);
+  gctx.setTransform(dpr,0,0,dpr,0,0);
+  galDims = {w,h};
+}
+
+function drawGalaxy(N, dNN){
+  const {w,h} = galDims;
+  if(!w || !h) return;
+  const cx = w/2, cy = h/2;
+  const scale = (Math.min(w,h)/2 - 12) / 52000;
+
+  gctx.clearRect(0,0,w,h);
+
+  // Hintergrund + Halo
+  let bg = gctx.createRadialGradient(cx,cy,0,cx,cy,Math.min(w,h)/2);
+  bg.addColorStop(0,"rgba(160,107,255,.13)");
+  bg.addColorStop(.55,"rgba(20,28,58,.35)");
+  bg.addColorStop(1,"rgba(5,7,15,0)");
+  gctx.fillStyle = bg; gctx.fillRect(0,0,w,h);
+
+  // Spiralarme
+  const rnd = mulberry32(7);
+  const pitch = Math.tan(0.26);
+  for(let arm=0; arm<4; arm++){
+    const off = arm * Math.PI/2;
+    for(let i=0;i<420;i++){
+      const t = i/420;
+      const r = 3500 + t*46000;
+      const th = off + Math.log(r/3500)/pitch + (rnd()-0.5)*0.30;
+      const rr = r * (1 + (rnd()-0.5)*0.10);
+      const x = cx + rr*scale*Math.cos(th);
+      const y = cy + rr*scale*Math.sin(th)*0.98;
+      gctx.fillStyle = "rgba(190,205,255," + (0.05 + rnd()*0.16) + ")";
+      gctx.fillRect(x, y, 1.1, 1.1);
+    }
+  }
+  // Kern
+  let core = gctx.createRadialGradient(cx,cy,0,cx,cy,9000*scale);
+  core.addColorStop(0,"rgba(255,224,180,.75)");
+  core.addColorStop(1,"rgba(255,180,92,0)");
+  gctx.fillStyle = core;
+  gctx.beginPath(); gctx.arc(cx,cy,9000*scale,0,7); gctx.fill();
+
+  // Sonne
+  const sx = cx + 26000*scale*Math.cos(SOL_ANGLE);
+  const sy = cy + 26000*scale*Math.sin(SOL_ANGLE);
+
+  // Zivilisationen
+  const count = Math.min(Math.round(N), 4000);
+  document.getElementById("capnote").textContent =
+    (Math.round(N) > 4000) ? "4000 von " + plain(N) + " dargestellt" : "";
+  const r2 = mulberry32(1337);
+  gctx.fillStyle = "rgba(124,249,208,.95)";
+  gctx.shadowColor = "rgba(124,249,208,.9)";
+  gctx.shadowBlur = 4;
+  for(let i=0;i<count;i++){
+    let r = -8700 * Math.log(1 - r2()*0.999);
+    if(r > R_GAL){ i--; continue; }
+    const th = r2()*Math.PI*2;
+    gctx.fillRect(cx + r*scale*Math.cos(th) - .9, cy + r*scale*Math.sin(th)*0.98 - .9, 1.9, 1.9);
+  }
+  gctx.shadowBlur = 0;
+
+  // Ring des mittleren Abstands
+  if(isFinite(dNN) && dNN*scale > 3){
+    gctx.strokeStyle = "rgba(160,107,255,.85)";
+    gctx.setLineDash([3,4]); gctx.lineWidth = 1;
+    gctx.beginPath(); gctx.arc(sx, sy, dNN*scale, 0, 7); gctx.stroke();
+    gctx.setLineDash([]);
+  }
+
+  // Sonnenmarkierung
+  gctx.strokeStyle = "rgba(255,180,92,.9)"; gctx.lineWidth = 1;
+  gctx.beginPath();
+  gctx.moveTo(sx-6,sy); gctx.lineTo(sx-2.5,sy);
+  gctx.moveTo(sx+2.5,sy); gctx.lineTo(sx+6,sy);
+  gctx.moveTo(sx,sy-6); gctx.lineTo(sx,sy-2.5);
+  gctx.moveTo(sx,sy+2.5); gctx.lineTo(sx,sy+6);
+  gctx.stroke();
+  gctx.fillStyle = "rgba(255,180,92,1)";
+  gctx.shadowColor = "rgba(255,180,92,.9)"; gctx.shadowBlur = 6;
+  gctx.beginPath(); gctx.arc(sx,sy,1.9,0,7); gctx.fill();
+  gctx.shadowBlur = 0;
+
+  // Maßstab
+  gctx.strokeStyle = "rgba(115,134,173,.7)";
+  gctx.beginPath(); gctx.moveTo(12,h-14); gctx.lineTo(12+20000*scale,h-14); gctx.stroke();
+  gctx.fillStyle = "rgba(115,134,173,.9)";
+  gctx.font = "9px 'JetBrains Mono', monospace";
+  gctx.fillText("20 000 Lj", 12, h-19);
+}
+
+/* ---------- Sternenhimmel ---------- */
+const sky = document.getElementById("sky");
+const sctx = sky.getContext("2d");
+let stars = [], skyW = 0, skyH = 0;
+const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+function seedSky(){
+  const dpr = Math.min(window.devicePixelRatio || 1, 2);
+  skyW = window.innerWidth; skyH = window.innerHeight;
+  sky.width = Math.round(skyW*dpr); sky.height = Math.round(skyH*dpr);
+  sctx.setTransform(dpr,0,0,dpr,0,0);
+  const n = Math.round(skyW*skyH/7000);
+  stars = [];
+  for(let i=0;i<n;i++){
+    stars.push({
+      x: Math.random()*skyW, y: Math.random()*skyH,
+      r: Math.random()*1.1 + 0.25,
+      a: Math.random()*0.6 + 0.15,
+      p: Math.random()*Math.PI*2,
+      s: Math.random()*0.6 + 0.2
+    });
+  }
+}
+function paintSky(t){
+  sctx.clearRect(0,0,skyW,skyH);
+  for(const st of stars){
+    const tw = reduce ? st.a : st.a * (0.65 + 0.35*Math.sin(t*0.0006*st.s + st.p));
+    sctx.fillStyle = "rgba(214,228,255," + tw.toFixed(3) + ")";
+    sctx.beginPath(); sctx.arc(st.x, st.y, st.r, 0, 7); sctx.fill();
+  }
+}
+function loop(t){ paintSky(t); requestAnimationFrame(loop); }
+
+/* ---------- Start ---------- */
+function boot(){
+  seedSky();
+  sizeGalaxy();
+  syncChips();
+  update();
+  if(reduce) paintSky(0); else requestAnimationFrame(loop);
+}
+let rz;
+window.addEventListener("resize", () => {
+  clearTimeout(rz);
+  rz = setTimeout(() => { seedSky(); sizeGalaxy(); update(); }, 150);
+});
+if(document.fonts && document.fonts.ready){ document.fonts.ready.then(() => { sizeGalaxy(); update(); }); }
+boot();
+</script>
+</body>
+</html>

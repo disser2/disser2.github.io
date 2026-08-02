@@ -1,0 +1,1620 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Das Gefangenendilemma — Turnier &amp; Evolution</title>
+<style>
+/* ============================ Tokens ============================ */
+:root{
+  --bg:#080c18; --bg2:#0b1124; --panel:#101833; --panel2:#16204233;
+  --line:rgba(178,196,255,.14); --line-soft:rgba(178,196,255,.07);
+  --ink:#edeade; --ink2:#a9b2d2; --ink3:#737ea6;
+  --c-allc:#34d399; --c-alld:#ff5d5d; --c-tft:#4cc4ff; --c-gtft:#b48cff;
+  --c-grim:#ffb347; --c-random:#8b93b4; --c-pavlov:#ff7ac6;
+  --coop:#34d399; --def:#ff5d5d;
+  --serif:"Palatino Linotype","Book Antiqua",Palatino,Georgia,"Times New Roman",serif;
+  --sans:system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+  --mono:ui-monospace,"SF Mono",SFMono-Regular,Menlo,Consolas,"Liberation Mono",monospace;
+  --r:3px;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  margin:0; background:var(--bg); color:var(--ink);
+  font-family:var(--sans); font-size:16px; line-height:1.62;
+  -webkit-font-smoothing:antialiased;
+  background-image:
+    radial-gradient(900px 500px at 12% -8%, rgba(76,196,255,.10), transparent 65%),
+    radial-gradient(800px 460px at 92% 4%, rgba(180,140,255,.10), transparent 65%);
+  background-repeat:no-repeat;
+}
+h1,h2,h3{font-family:var(--serif); font-weight:400; letter-spacing:-.01em; margin:0}
+p{margin:0 0 1em}
+a{color:var(--c-tft)}
+:focus-visible{outline:2px solid var(--c-tft); outline-offset:2px}
+.wrap{max-width:1180px; margin:0 auto; padding:0 24px}
+.mono{font-family:var(--mono)}
+.num{font-variant-numeric:tabular-nums}
+
+/* ============================ Kopfleiste ============================ */
+.topbar{
+  position:sticky; top:0; z-index:50; backdrop-filter:blur(14px);
+  background:rgba(8,12,24,.82); border-bottom:1px solid var(--line-soft);
+}
+.topbar .wrap{display:flex; align-items:center; gap:22px; height:54px}
+.brand{font-family:var(--mono); font-size:11px; letter-spacing:.22em; text-transform:uppercase; color:var(--ink2); white-space:nowrap}
+.brand b{color:var(--ink); font-weight:600}
+.navlinks{display:flex; gap:2px; margin-left:auto; overflow-x:auto; scrollbar-width:none}
+.navlinks::-webkit-scrollbar{display:none}
+.navlinks a{
+  font-family:var(--mono); font-size:11px; letter-spacing:.12em; text-transform:uppercase;
+  color:var(--ink2); text-decoration:none; padding:7px 11px; border-radius:var(--r); white-space:nowrap;
+}
+.navlinks a:hover{color:var(--ink); background:rgba(178,196,255,.08)}
+
+/* ============================ Hero ============================ */
+.hero{padding:74px 0 64px; border-bottom:1px solid var(--line-soft)}
+.hero-grid{display:grid; grid-template-columns:minmax(0,1.02fr) minmax(0,.98fr); gap:56px; align-items:center}
+.kicker{font-family:var(--mono); font-size:11px; letter-spacing:.26em; text-transform:uppercase; color:var(--c-tft); margin-bottom:20px}
+h1{font-size:clamp(38px,5.6vw,68px); line-height:1.02}
+h1 em{font-style:italic; color:var(--c-tft)}
+.lede{font-size:19px; color:var(--ink2); max-width:44ch; margin-top:22px}
+.hero-meta{display:flex; gap:26px; margin-top:30px; flex-wrap:wrap}
+.hero-meta div{font-family:var(--mono); font-size:11px; letter-spacing:.1em; text-transform:uppercase; color:var(--ink3)}
+.hero-meta b{display:block; font-family:var(--serif); font-size:26px; letter-spacing:0; text-transform:none; color:var(--ink); font-weight:400}
+
+/* ============================ Panels ============================ */
+.panel{background:linear-gradient(180deg,rgba(22,32,66,.55),rgba(16,24,51,.35)); border:1px solid var(--line); border-radius:var(--r); padding:22px}
+.panel-flat{background:rgba(16,24,51,.4); border:1px solid var(--line-soft); border-radius:var(--r); padding:20px}
+.plabel{font-family:var(--mono); font-size:10.5px; letter-spacing:.2em; text-transform:uppercase; color:var(--ink3); margin-bottom:14px; display:flex; align-items:center; gap:10px}
+.plabel::after{content:""; flex:1; height:1px; background:var(--line-soft)}
+
+/* ============================ Sections ============================ */
+section{padding:78px 0; border-bottom:1px solid var(--line-soft)}
+.sechead{display:grid; grid-template-columns:64px minmax(0,1fr); gap:0 24px; margin-bottom:38px}
+.secnum{font-family:var(--mono); font-size:12px; letter-spacing:.1em; color:var(--c-tft); padding-top:14px; border-top:1px solid var(--c-tft)}
+.sechead h2{font-size:clamp(27px,3.4vw,40px); padding-top:8px; border-top:1px solid var(--line); }
+.sechead .lede{margin-top:14px; font-size:17px; max-width:66ch}
+.sechead .sub{grid-column:2}
+
+/* ============================ Controls ============================ */
+.ctlbar{display:flex; flex-wrap:wrap; gap:22px 30px; align-items:flex-end; padding:18px 20px; background:rgba(16,24,51,.45); border:1px solid var(--line-soft); border-radius:var(--r)}
+.ctl{display:flex; flex-direction:column; gap:7px; min-width:0}
+.ctl > span{font-family:var(--mono); font-size:10px; letter-spacing:.16em; text-transform:uppercase; color:var(--ink3); display:flex; gap:8px; align-items:baseline}
+.ctl > span var{font-style:normal; color:var(--ink); font-size:12px; letter-spacing:0}
+input[type=range]{-webkit-appearance:none; appearance:none; width:170px; height:20px; background:transparent; cursor:pointer; margin:0}
+input[type=range]::-webkit-slider-runnable-track{height:2px; background:rgba(178,196,255,.22)}
+input[type=range]::-moz-range-track{height:2px; background:rgba(178,196,255,.22)}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none; width:13px; height:13px; border-radius:50%; background:var(--ink); margin-top:-5.5px; border:0}
+input[type=range]::-moz-range-thumb{width:13px; height:13px; border:0; border-radius:50%; background:var(--ink)}
+select,input[type=number]{
+  font-family:var(--mono); font-size:13px; color:var(--ink); background:#0d1428;
+  border:1px solid var(--line); border-radius:var(--r); padding:7px 9px;
+}
+select{min-width:150px}
+input[type=number]{width:72px; text-align:center}
+button{font-family:var(--mono); font-size:11px; letter-spacing:.14em; text-transform:uppercase; color:var(--ink); background:rgba(178,196,255,.07); border:1px solid var(--line); border-radius:var(--r); padding:9px 15px; cursor:pointer; transition:background .15s,border-color .15s}
+button:hover{background:rgba(178,196,255,.15)}
+button.primary{background:var(--c-tft); color:#04121f; border-color:var(--c-tft); font-weight:700}
+button.primary:hover{background:#7ad3ff}
+button[aria-pressed=true]{background:rgba(76,196,255,.18); border-color:var(--c-tft); color:#dff2ff}
+.seg{display:flex; border:1px solid var(--line); border-radius:var(--r); overflow:hidden; width:max-content}
+.seg button{border:0; border-radius:0; background:transparent}
+.seg button + button{border-left:1px solid var(--line)}
+.switch{display:flex; align-items:center; gap:13px; cursor:pointer; user-select:none}
+.switch input{position:absolute; opacity:0; width:0; height:0}
+.track{width:46px; height:24px; border-radius:12px; background:rgba(178,196,255,.14); border:1px solid var(--line); position:relative; transition:background .18s}
+.track::after{content:""; position:absolute; top:2px; left:2px; width:18px; height:18px; border-radius:50%; background:var(--ink3); transition:transform .18s, background .18s}
+.switch input:checked + .track{background:rgba(52,211,153,.28); border-color:var(--coop)}
+.switch input:checked + .track::after{transform:translateX(22px); background:var(--coop)}
+.switch input:focus-visible + .track{outline:2px solid var(--c-tft); outline-offset:2px}
+.switch b{font-family:var(--mono); font-size:11px; letter-spacing:.14em; text-transform:uppercase; font-weight:500}
+.hint{font-size:13.5px; color:var(--ink3); max-width:70ch}
+
+/* ============================ Auszahlungsmatrix ============================ */
+.mx-layout{display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1fr); gap:44px; align-items:start}
+.mx{display:grid; grid-template-columns:78px 1fr 1fr; grid-template-rows:44px 1fr 1fr; gap:6px}
+.mx-h{font-family:var(--mono); font-size:10.5px; letter-spacing:.14em; text-transform:uppercase; color:var(--ink3); display:flex; align-items:center; justify-content:center; text-align:center}
+.mx-h.row{writing-mode:vertical-rl; transform:rotate(180deg); justify-content:center}
+.mx-h.c{color:var(--coop)} .mx-h.d{color:var(--def)}
+.cell{border:1px solid var(--line); border-radius:var(--r); padding:14px; min-height:104px; display:flex; flex-direction:column; justify-content:space-between; background:rgba(16,24,51,.5)}
+.cell .lab{font-family:var(--mono); font-size:9.5px; letter-spacing:.16em; text-transform:uppercase; color:var(--ink3)}
+.cell .pair{font-family:var(--serif); font-size:30px; line-height:1; display:flex; align-items:baseline; gap:8px}
+.cell .pair i{font-style:normal; font-size:16px; color:var(--ink3)}
+.cell.cc{background:rgba(52,211,153,.10); border-color:rgba(52,211,153,.32)}
+.cell.dd{background:rgba(255,93,93,.08); border-color:rgba(255,93,93,.26)}
+.pay-inputs{display:flex; flex-wrap:wrap; gap:16px}
+.pay-inputs .ctl > span{font-size:11px}
+.badge{display:inline-flex; align-items:center; gap:8px; font-family:var(--mono); font-size:10.5px; letter-spacing:.12em; text-transform:uppercase; padding:6px 11px; border-radius:var(--r); border:1px solid}
+.badge.ok{color:var(--coop); border-color:rgba(52,211,153,.4); background:rgba(52,211,153,.09)}
+.badge.warn{color:var(--c-grim); border-color:rgba(255,179,71,.4); background:rgba(255,179,71,.09)}
+.formula{font-family:var(--mono); font-size:12.5px; color:var(--ink2); line-height:2}
+.formula b{color:var(--ink)}
+
+/* ============================ Strategiekarten ============================ */
+.cards{display:grid; grid-template-columns:repeat(auto-fill,minmax(310px,1fr)); gap:14px}
+.card{border:1px solid var(--line); border-left:2px solid var(--sc); border-radius:var(--r); padding:18px 20px; background:rgba(16,24,51,.42); display:flex; flex-direction:column; gap:11px}
+.card h3{font-size:20px; display:flex; align-items:center; gap:10px}
+.card .abbr{font-family:var(--mono); font-size:10px; letter-spacing:.14em; color:var(--sc); border:1px solid rgba(178,196,255,.3); padding:2px 6px; border-radius:var(--r)}
+.card .abbr{border-color:color-mix(in srgb, var(--sc) 42%, transparent)}
+.card .idea{font-size:14.5px; color:var(--ink); margin:0}
+.card .detail{font-size:13.5px; color:var(--ink2); margin:0}
+.card .tag{font-family:var(--mono); font-size:9.5px; letter-spacing:.16em; text-transform:uppercase; color:var(--ink3)}
+.fp{margin-top:2px}
+.fp-title{font-family:var(--mono); font-size:9.5px; letter-spacing:.14em; text-transform:uppercase; color:var(--ink3); margin-bottom:7px}
+
+/* ============================ Zugband (Lochstreifen) ============================ */
+.tape{display:flex; flex-direction:column; gap:5px}
+.tape-row{display:flex; align-items:center; gap:10px}
+.tape-name{font-family:var(--mono); font-size:10px; letter-spacing:.1em; text-transform:uppercase; width:74px; text-align:right; color:var(--ink2); flex:none; overflow:hidden; text-overflow:ellipsis; white-space:nowrap}
+.lane{display:flex; gap:2px}
+.cellm{width:13px; height:13px; border-radius:1px; border:1px solid; flex:none}
+.cellm.co{background:var(--sc); border-color:var(--sc)}
+.cellm.de{background:rgba(255,255,255,.035); border-color:rgba(178,196,255,.34)}
+.cellm.de{border-color:color-mix(in srgb,var(--sc) 48%, transparent)}
+.cellm.flip{box-shadow:0 0 0 1px var(--bg), 0 0 0 2px var(--c-grim)}
+.tape-block{margin-bottom:16px}
+.tape-block .tick{font-family:var(--mono); font-size:9.5px; color:var(--ink3); margin:0 0 5px 84px; letter-spacing:.1em}
+.legend-inline{display:flex; flex-wrap:wrap; gap:18px; font-family:var(--mono); font-size:10px; letter-spacing:.1em; text-transform:uppercase; color:var(--ink3); margin-top:6px}
+.legend-inline i{display:inline-block; width:11px; height:11px; border:1px solid var(--ink3); border-radius:1px; margin-right:7px; vertical-align:-1px}
+.legend-inline i.f{background:var(--ink2); border-color:var(--ink2)}
+.legend-inline i.n{border-color:var(--c-grim); box-shadow:0 0 0 1px var(--bg),0 0 0 2px var(--c-grim)}
+
+/* ============================ Duell ============================ */
+.duel-grid{display:grid; grid-template-columns:minmax(0,1.5fr) minmax(0,1fr); gap:26px; align-items:start}
+.score-cards{display:grid; gap:10px}
+.score-card{border:1px solid var(--line); border-left:2px solid var(--sc); border-radius:var(--r); padding:14px 16px; background:rgba(16,24,51,.42); display:flex; justify-content:space-between; align-items:baseline; gap:12px}
+.score-card .who{font-family:var(--serif); font-size:17px}
+.score-card .pts{font-family:var(--serif); font-size:30px; line-height:1}
+.score-card .per{font-family:var(--mono); font-size:10px; color:var(--ink3); letter-spacing:.1em; display:block; text-align:right}
+.outcome{font-size:14px; color:var(--ink2); border-top:1px solid var(--line-soft); padding-top:14px; margin-top:4px}
+.outcome b{color:var(--ink)}
+
+/* ============================ Charts ============================ */
+.chartbox{position:relative}
+.chartbox svg{display:block; width:100%; height:auto; overflow:visible}
+.legend{display:flex; flex-wrap:wrap; gap:6px; margin-top:16px}
+.legend button{display:flex; align-items:center; gap:8px; padding:6px 11px; text-transform:none; letter-spacing:.04em; font-size:11.5px; background:transparent}
+.legend button .dot{width:9px; height:9px; border-radius:50%; background:var(--sc); flex:none}
+.legend button[aria-pressed=false]{opacity:.36}
+.tip{
+  position:absolute; pointer-events:none; opacity:0; transition:opacity .12s;
+  background:rgba(8,12,24,.96); border:1px solid var(--line); border-radius:var(--r);
+  padding:10px 12px; font-family:var(--mono); font-size:11.5px; line-height:1.75; z-index:9; min-width:132px;
+}
+.tip .th{color:var(--ink3); letter-spacing:.12em; text-transform:uppercase; font-size:9.5px; margin-bottom:5px}
+.tip .tr{display:flex; justify-content:space-between; gap:16px}
+.tip .tr i{display:inline-block; width:7px; height:7px; border-radius:50%; margin-right:6px}
+.axis text{font-family:var(--mono); font-size:10.5px; fill:var(--ink3)}
+.axis line{stroke:var(--line-soft)}
+.axtitle{font-family:var(--mono); font-size:10px; letter-spacing:.16em; text-transform:uppercase; fill:var(--ink3)}
+
+/* ============================ Rangliste + Heatmap ============================ */
+.result-grid{display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1.05fr); gap:26px; margin-top:22px}
+.rank{display:grid; gap:8px}
+.rank-row{display:grid; grid-template-columns:22px 108px minmax(0,1fr) 58px; align-items:center; gap:12px}
+.rank-row .pos{font-family:var(--mono); font-size:11px; color:var(--ink3); text-align:right}
+.rank-row .nm{font-family:var(--mono); font-size:11.5px; letter-spacing:.06em; overflow:hidden; text-overflow:ellipsis; white-space:nowrap}
+.bar{height:11px; background:rgba(178,196,255,.07); border-radius:1px; overflow:hidden}
+.bar i{display:block; height:100%; background:var(--sc); width:0; transition:width .7s cubic-bezier(.2,.7,.2,1)}
+.rank-row .val{font-family:var(--mono); font-size:12.5px; text-align:right}
+.hm text{font-family:var(--mono); font-size:10px; fill:var(--ink3)}
+.hm .val{font-size:10.5px; fill:#04121f}
+.scalebar{display:flex; align-items:center; gap:11px; font-family:var(--mono); font-size:10px; color:var(--ink3); letter-spacing:.1em; margin-top:12px}
+.scalebar .grad{height:8px; flex:1; border-radius:1px}
+
+/* ============================ Evolution ============================ */
+.evo-off{opacity:.32; pointer-events:none; filter:grayscale(.7)}
+.evo-head{display:flex; flex-wrap:wrap; gap:20px; align-items:center; justify-content:space-between; margin-bottom:22px}
+.presets{display:flex; flex-wrap:wrap; gap:8px}
+.mix{display:grid; gap:9px}
+.mix-row{display:grid; grid-template-columns:104px minmax(0,1fr) 46px; align-items:center; gap:12px}
+.mix-row label{font-family:var(--mono); font-size:11px; letter-spacing:.06em; color:var(--ink2); overflow:hidden; text-overflow:ellipsis; white-space:nowrap}
+.mix-row input[type=range]{width:100%}
+.mix-row .pct{font-family:var(--mono); font-size:11.5px; text-align:right; color:var(--ink)}
+.evo-grid{display:grid; grid-template-columns:300px minmax(0,1fr); gap:26px; align-items:start}
+.playbar{display:flex; align-items:center; gap:14px; margin-top:16px; flex-wrap:wrap}
+.playbar input[type=range]{flex:1; min-width:180px; width:auto}
+.genread{font-family:var(--mono); font-size:11px; color:var(--ink2); letter-spacing:.1em; white-space:nowrap}
+.stackbars{display:grid; gap:6px; margin-top:20px}
+.stackbar-row{display:grid; grid-template-columns:96px minmax(0,1fr) 52px; gap:11px; align-items:center}
+.stackbar-row span{font-family:var(--mono); font-size:10.5px; color:var(--ink2); overflow:hidden; text-overflow:ellipsis; white-space:nowrap}
+.stackbar-row .pv{font-family:var(--mono); font-size:11.5px; text-align:right}
+.story{border-left:2px solid var(--c-tft); padding:4px 0 4px 20px; margin-top:26px; display:grid; gap:12px}
+.story h4{font-family:var(--mono); font-size:10px; letter-spacing:.2em; text-transform:uppercase; color:var(--ink3); margin:0}
+.story p{font-size:15px; margin:0; color:var(--ink2)}
+.story p b{color:var(--ink); font-weight:600}
+
+/* ============================ Didaktik ============================ */
+.two{display:grid; grid-template-columns:repeat(auto-fit,minmax(300px,1fr)); gap:30px}
+.qlist{counter-reset:q; display:grid; gap:14px; padding:0; margin:0; list-style:none}
+.qlist li{display:grid; grid-template-columns:30px minmax(0,1fr); gap:14px; font-size:15px; color:var(--ink2)}
+.qlist li::before{counter-increment:q; content:counter(q,decimal-leading-zero); font-family:var(--mono); font-size:11px; color:var(--c-tft); padding-top:5px}
+.gloss{display:grid; gap:12px}
+.gloss div{display:grid; grid-template-columns:118px minmax(0,1fr); gap:16px; font-size:14.5px; color:var(--ink2); padding-bottom:12px; border-bottom:1px solid var(--line-soft)}
+.gloss b{font-family:var(--mono); font-size:11px; letter-spacing:.08em; color:var(--ink); text-transform:uppercase; padding-top:3px}
+.takeaways{display:grid; gap:0}
+.takeaway{display:grid; grid-template-columns:40px minmax(0,1fr); gap:20px; padding:22px 0; border-top:1px solid var(--line-soft)}
+.takeaway .k{font-family:var(--mono); font-size:11px; color:var(--c-tft); padding-top:6px}
+.takeaway h3{font-size:20px; margin-bottom:7px}
+.takeaway p{font-size:14.5px; color:var(--ink2); margin:0}
+
+footer{padding:44px 0 66px; color:var(--ink3); font-family:var(--mono); font-size:11px; letter-spacing:.1em; display:flex; justify-content:space-between; gap:20px; flex-wrap:wrap}
+
+/* ============================ Responsive ============================ */
+@media (max-width:980px){
+  .hero-grid,.mx-layout,.duel-grid,.result-grid,.evo-grid{grid-template-columns:minmax(0,1fr)}
+  .hero{padding:52px 0 44px} section{padding:56px 0}
+  .sechead{grid-template-columns:44px minmax(0,1fr); gap:0 16px}
+  .tape-name{width:56px; font-size:9px}
+  .cellm{width:11px; height:11px}
+}
+@media (max-width:620px){
+  .wrap{padding:0 16px}
+  .ctlbar{gap:16px 20px}
+  input[type=range]{width:100%; min-width:140px}
+  .cellm{width:9px; height:9px}
+  .tape-block .tick{margin-left:66px}
+  .rank-row{grid-template-columns:18px 78px minmax(0,1fr) 46px; gap:8px}
+}
+@media (prefers-reduced-motion:reduce){
+  *{transition:none !important; animation:none !important}
+  html{scroll-behavior:auto}
+}
+</style>
+</head>
+<body>
+
+<div class="topbar"><div class="wrap">
+  <div class="brand"><b>Gefangenendilemma</b> &nbsp;· &nbsp;Simulationslabor</div>
+  <nav class="navlinks">
+    <a href="#grundlagen">Grundlagen</a>
+    <a href="#strategien">Strategien</a>
+    <a href="#duell">Duell</a>
+    <a href="#turnier">Turnier</a>
+    <a href="#evolution">Evolution</a>
+    <a href="#didaktik">Didaktik</a>
+  </nav>
+</div></div>
+
+<!-- ============================ HERO ============================ -->
+<header class="hero"><div class="wrap hero-grid">
+  <div>
+    <div class="kicker">Interaktive Simulation für die Schulung</div>
+    <h1>Wann lohnt sich <em>Kooperation</em>?</h1>
+    <p class="lede">Sieben denkbar einfache Strategien, ein immer gleiches Spiel — und ein Ergebnis, das kaum jemand vorhersagt. Stellen Sie die Regeln selbst ein und beobachten Sie, welches Verhalten sich durchsetzt.</p>
+    <div class="hero-meta">
+      <div>Strategien<b class="num">7</b></div>
+      <div>Begegnungen je Turnier<b class="num">28</b></div>
+      <div>Runden je Begegnung<b class="num" id="heroRounds">200</b></div>
+    </div>
+  </div>
+  <div class="panel">
+    <div class="plabel">Live-Begegnung <span class="mono" id="heroPair" style="letter-spacing:.06em"></span></div>
+    <div id="heroTape"></div>
+    <div class="legend-inline">
+      <span><i class="f"></i>kooperiert</span>
+      <span><i></i>verrät</span>
+      <span class="num" id="heroScore" style="margin-left:auto; letter-spacing:.08em"></span>
+    </div>
+  </div>
+</div></header>
+
+<!-- ============================ 01 GRUNDLAGEN ============================ -->
+<section id="grundlagen">
+  <div class="wrap">
+    <div class="sechead">
+      <div class="secnum">01</div>
+      <h2>Die Regel, die alles erzeugt</h2>
+      <div class="sub"><p class="lede">Zwei Parteien entscheiden gleichzeitig und ohne Absprache: kooperieren oder verraten. Beide gemeinsam gewinnen am meisten, wenn sie kooperieren — aber jede einzelne gewinnt kurzfristig mehr, wenn sie verrät. Genau dieser Widerspruch ist das Dilemma.</p></div>
+    </div>
+
+    <div class="mx-layout">
+      <div>
+        <div class="plabel">Auszahlungsmatrix — Punkte pro Runde (Zeile / Spalte)</div>
+        <div class="mx" id="mxGrid"></div>
+        <div class="legend-inline"><span>Erste Zahl: Zeilenspieler · Zweite Zahl: Spaltenspieler</span></div>
+      </div>
+      <div>
+        <div class="plabel">Werte anpassen</div>
+        <div class="pay-inputs" id="payInputs"></div>
+        <div id="payCheck" style="margin:20px 0 16px"></div>
+        <div class="formula">
+          <b>T &gt; R &gt; P &gt; S</b> — Verrat lohnt sich einseitig, Kooperation gemeinsam.<br>
+          <b>2R &gt; T + S</b> — Wechselseitiges Ausbeuten bringt weniger als beidseitige Kooperation.
+        </div>
+        <p class="hint" style="margin-top:16px">Beide Bedingungen zusammen machen aus dem Spiel ein echtes Dilemma. Fehlt eine, ist die Antwort trivial — probieren Sie es aus: Setzen Sie <b>T</b> unter <b>R</b>, und Kooperation wird zur schlichten Rechenaufgabe. Alle folgenden Simulationen rechnen mit den hier eingestellten Werten.</p>
+      </div>
+    </div>
+
+    <div class="panel-flat" style="margin-top:34px">
+      <div class="plabel">Der Schatten der Zukunft</div>
+      <p class="hint" style="max-width:88ch">Einmalig gespielt hat das Dilemma nur eine rationale Antwort: verraten. Interessant wird es erst durch <b>Wiederholung</b>. Wer sich wiedersieht, kann belohnen und bestrafen — Vergangenheit wird zur Währung. Alle Strategien in dieser Anwendung nutzen genau eine Information: was bisher geschah.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ============================ 02 STRATEGIEN ============================ -->
+<section id="strategien">
+  <div class="wrap">
+    <div class="sechead">
+      <div class="secnum">02</div>
+      <h2>Sieben Verhaltensweisen</h2>
+      <div class="sub"><p class="lede">Jede Strategie ist eine kurze Regel, keine künstliche Intelligenz. Das Band unter jeder Karte zeigt, wie sie auf einen immer gleichen Testgegner reagiert — so wird das Verhalten unmittelbar sichtbar.</p></div>
+    </div>
+    <div class="cards" id="cards"></div>
+    <div class="legend-inline" style="margin-top:22px">
+      <span><i class="f"></i>gefüllt = kooperiert</span>
+      <span><i></i>leer = verrät</span>
+      <span>Testgegner (obere Reihe) spielt eine feste Folge, damit die Strategien vergleichbar sind</span>
+    </div>
+  </div>
+</section>
+
+<!-- ============================ 03 DUELL ============================ -->
+<section id="duell">
+  <div class="wrap">
+    <div class="sechead">
+      <div class="secnum">03</div>
+      <h2>Zwei Strategien, Zug um Zug</h2>
+      <div class="sub"><p class="lede">Bevor Punkte summiert werden: Schauen Sie sich eine einzelne Begegnung an. Hier entsteht das Bauchgefühl dafür, warum manche Paarungen in Dauerkonflikt kippen und andere nie.</p></div>
+    </div>
+
+    <div class="ctlbar" style="margin-bottom:26px">
+      <label class="ctl"><span>Spielerin A</span><select id="duelA"></select></label>
+      <label class="ctl"><span>Spielerin B</span><select id="duelB"></select></label>
+      <label class="ctl"><span>Runden <var id="duelRoundsOut">60</var></span><input type="range" id="duelRounds" min="20" max="200" step="10" value="60"></label>
+      <label class="ctl"><span>Zitterhand <var id="duelNoiseOut">0 %</var></span><input type="range" id="duelNoise" min="0" max="20" step="1" value="0"></label>
+      <button id="duelReroll">Neu würfeln</button>
+    </div>
+
+    <div class="duel-grid">
+      <div class="panel">
+        <div class="plabel">Zugband</div>
+        <div id="duelTape"></div>
+        <div class="legend-inline">
+          <span><i class="f"></i>kooperiert</span><span><i></i>verrät</span><span><i class="n"></i>Ausrutscher durch Zitterhand</span>
+        </div>
+      </div>
+      <div>
+        <div class="score-cards" id="duelScores"></div>
+        <div class="panel" style="margin-top:14px">
+          <div class="plabel">Punkteverlauf</div>
+          <div class="chartbox" id="duelChartBox"><svg id="duelChart" viewBox="0 0 460 220" aria-label="Kumulierte Punkte beider Spielerinnen"></svg></div>
+        </div>
+        <p class="outcome" id="duelOutcome"></p>
+      </div>
+    </div>
+    <p class="hint" style="margin-top:20px"><b>Zitterhand:</b> Mit dieser Wahrscheinlichkeit wird ein Zug versehentlich falsch ausgeführt — das Missverständnis. Die Gegenseite sieht nur die Handlung, nicht die Absicht. Stellen Sie <b>Tit for Tat gegen Tit for Tat</b> mit 5 % ein und beobachten Sie, wie aus einem einzigen Fehler eine Rachespirale wird.</p>
+  </div>
+</section>
+
+<!-- ============================ 04 TURNIER ============================ -->
+<section id="turnier">
+  <div class="wrap">
+    <div class="sechead">
+      <div class="secnum">04</div>
+      <h2>Jede gegen jede</h2>
+      <div class="sub"><p class="lede">Das Turnier nach Robert Axelrod: Jede Strategie spielt gegen jede andere und gegen ihr eigenes Abbild, über viele Runden und mehrere Durchläufe. Gewertet wird nicht, wer ein Duell gewinnt, sondern wer insgesamt die meisten Punkte sammelt.</p></div>
+    </div>
+
+    <div class="ctlbar">
+      <label class="ctl"><span>Runden je Begegnung <var id="tRoundsOut">200</var></span><input type="range" id="tRounds" min="100" max="1000" step="50" value="200"></label>
+      <label class="ctl"><span>Durchläufe <var id="tRunsOut">10</var></span><input type="range" id="tRuns" min="1" max="25" step="1" value="10"></label>
+      <label class="ctl"><span>Zitterhand <var id="tNoiseOut">0 %</var></span><input type="range" id="tNoise" min="0" max="20" step="1" value="0"></label>
+      <label class="ctl"><span>Nachsicht GTFT <var id="tForgiveOut">30 %</var></span><input type="range" id="tForgive" min="0" max="60" step="5" value="30"></label>
+      <label class="switch"><input type="checkbox" id="tSelf" checked><span class="track"></span><b>Spiel gegen sich selbst</b></label>
+      <button class="primary" id="tRun">Turnier starten</button>
+    </div>
+
+    <div class="panel" style="margin-top:26px">
+      <div class="plabel">
+        Verlauf
+        <span class="seg" style="margin-left:auto">
+          <button id="mAvg" aria-pressed="true">Ø Punkte je Runde</button>
+          <button id="mCum" aria-pressed="false">Kumulierte Punkte</button>
+        </span>
+      </div>
+      <div class="chartbox" id="tourChartBox">
+        <svg id="tourChart" viewBox="0 0 1040 440" aria-label="Punkteverlauf aller Strategien über die Runden"></svg>
+        <div class="tip" id="tourTip"></div>
+      </div>
+      <div class="legend" id="tourLegend"></div>
+    </div>
+
+    <div class="result-grid">
+      <div class="panel-flat">
+        <div class="plabel">Endstand — Ø Punkte je Runde</div>
+        <div class="rank" id="tourRank"></div>
+        <p class="hint" style="margin-top:18px" id="tourNote"></p>
+      </div>
+      <div class="panel-flat">
+        <div class="plabel">Begegnungsmatrix — Zeile erzielt gegen Spalte</div>
+        <div class="chartbox"><svg id="tourHeat" class="hm" viewBox="0 0 560 470" aria-label="Durchschnittliche Punkte pro Runde je Paarung"></svg></div>
+        <div class="scalebar"><span>niedrig</span><div class="grad" id="heatGrad"></div><span>hoch</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================ 05 EVOLUTION ============================ -->
+<section id="evolution">
+  <div class="wrap">
+    <div class="sechead">
+      <div class="secnum">05</div>
+      <h2>Wenn Erfolg sich vermehrt</h2>
+      <div class="sub"><p class="lede">Jetzt werden Punkte nicht mehr nur gezählt. Eine Population aus allen sieben Strategien spielt gegeneinander; wer überdurchschnittlich abschneidet, ist in der nächsten Generation häufiger vertreten. Aus einer Rangliste wird eine Geschichte.</p></div>
+    </div>
+
+    <div class="evo-head">
+      <label class="switch"><input type="checkbox" id="evoOn"><span class="track"></span><b>Evolution aktiv</b></label>
+      <div class="presets" id="evoPresets"></div>
+    </div>
+
+    <div id="evoBody" class="evo-off">
+      <div class="evo-grid">
+        <div>
+          <div class="panel-flat">
+            <div class="plabel">Startpopulation</div>
+            <div class="mix" id="evoMix"></div>
+          </div>
+          <div class="panel-flat" style="margin-top:14px">
+            <div class="plabel">Parameter</div>
+            <div style="display:grid; gap:18px">
+              <label class="ctl"><span>Generationen <var id="evoGensOut">60</var></span><input type="range" id="evoGens" min="20" max="400" step="10" value="60"></label>
+              <label class="ctl"><span>Mutation <var id="evoMutOut">0,0 %</var></span><input type="range" id="evoMut" min="0" max="30" step="1" value="0"></label>
+            </div>
+            <p class="hint" style="margin-top:14px; font-size:12.5px">Mutation lässt in jeder Generation einen kleinen Anteil aller Strategien neu entstehen. Ausgestorbenes kann zurückkehren — und die Geschichte beginnt manchmal von vorn.</p>
+          </div>
+        </div>
+
+        <div class="panel">
+          <div class="plabel">Anteile im Zeitverlauf <span class="genread" id="evoGenRead" style="margin-left:auto"></span></div>
+          <div class="chartbox" id="evoChartBox">
+            <svg id="evoChart" viewBox="0 0 1040 440" aria-label="Anteil jeder Strategie an der Population über die Generationen"></svg>
+            <div class="tip" id="evoTip"></div>
+          </div>
+          <div class="playbar">
+            <button id="evoPlay" class="primary">Abspielen</button>
+            <input type="range" id="evoScrub" min="0" max="60" step="1" value="60">
+            <span class="genread" id="evoScrubRead"></span>
+          </div>
+          <div class="stackbars" id="evoBars"></div>
+        </div>
+      </div>
+
+      <div class="story" id="evoStory"></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================ 06 DIDAKTIK ============================ -->
+<section id="didaktik" style="border-bottom:0">
+  <div class="wrap">
+    <div class="sechead">
+      <div class="secnum">06</div>
+      <h2>Für die Moderation</h2>
+      <div class="sub"><p class="lede">Vier Erkenntnisse, die aus den Simulationen fallen — plus Fragen, mit denen sich die Runde selbst darauf zubewegt.</p></div>
+    </div>
+
+    <div class="takeaways">
+      <div class="takeaway"><div class="k">A</div><div>
+        <h3>Freundlich anfangen zahlt sich aus</h3>
+        <p>Keine der Spitzenstrategien verrät als Erste. Wer zuerst kooperiert, riskiert einmalig wenig und eröffnet dauerhaft viel. In der Rangliste stehen bedingungslose Verräter regelmäßig hinten — obwohl sie kein einzelnes Duell verlieren.</p>
+      </div></div>
+      <div class="takeaway"><div class="k">B</div><div>
+        <h3>Duelle gewinnen und Turniere gewinnen ist nicht dasselbe</h3>
+        <p>In der fehlerfreien Welt schlägt Always Defect jede Gegnerin im direkten Vergleich oder spielt unentschieden. Trotzdem verliert sie das Turnier: Sie verbrennt genau die Beziehungen, aus denen Punkte kommen. Der Vergleichsmaßstab entscheidet über das Ergebnis.</p>
+      </div></div>
+      <div class="takeaway"><div class="k">C</div><div>
+        <h3>Nachsicht ist keine Schwäche, sondern Fehlertoleranz</h3>
+        <p>Ohne Zitterhand gewinnt harte Vergeltung. Sobald Züge falsch ankommen, kippt das Bild: Grim Trigger verliert Beziehungen unwiederbringlich, während Generous Tit for Tat Missverständnisse abfedert. Systeme mit Rauschen brauchen Verzeihen.</p>
+      </div></div>
+      <div class="takeaway"><div class="k">D</div><div>
+        <h3>Ausbeutung ist erfolgreich, bis ihr die Opfer fehlen</h3>
+        <p>In der Evolution steigt Always Defect zuerst steil auf — solange es Naive gibt. Genau dieser Erfolg vernichtet die Grundlage: Sind die Gutgläubigen verdrängt, trifft Verrat nur noch auf Verrat, und die Kurve stürzt ab. Kein Eingriff von außen, nur Dynamik.</p>
+      </div></div>
+    </div>
+
+    <div class="two" style="margin-top:52px">
+      <div>
+        <div class="plabel">Fragen für die Runde</div>
+        <ul class="qlist">
+          <li>Welche Strategie würden Sie spielen, wenn Sie Ihr Gegenüber nie wiedersehen? Und wenn Sie es täglich sehen?</li>
+          <li>Warum genügt Tit for Tat ein Gedächtnis von einer einzigen Runde — und was gewinnt man mit einem längeren?</li>
+          <li>Grim Trigger ist in einer fehlerfreien Welt stark. Welche realen Systeme verhalten sich so, und was kostet das?</li>
+          <li>Ab welcher Fehlerquote lohnt sich Nachsicht? Suchen Sie den Kipppunkt im Turnier.</li>
+          <li>Wer profitiert davon, wenn Absichten sichtbar wären? Wer verliert dadurch?</li>
+          <li>Wo begegnen Ihnen im Arbeitsalltag Auszahlungsmatrizen — und wer legt dort <b>T</b> und <b>R</b> fest?</li>
+        </ul>
+      </div>
+      <div>
+        <div class="plabel">Begriffe</div>
+        <div class="gloss">
+          <div><b>Kooperation</b><span>Der Zug, der beide Seiten gemeinsam am besten stellt — hier abgekürzt mit dem Buchstaben C.</span></div>
+          <div><b>Verrat</b><span>Der einseitig lohnende Zug (D). Er bringt der Abweichenden mehr, kostet die Gegenseite deutlich.</span></div>
+          <div><b>T R P S</b><span>Die vier Auszahlungen: Versuchung, Belohnung, Bestrafung, Verlust (Temptation, Reward, Punishment, Sucker).</span></div>
+          <div><b>Zitterhand</b><span>Wahrscheinlichkeit, dass ein Zug versehentlich anders ausgeführt wird als beabsichtigt.</span></div>
+          <div><b>Runde</b><span>Eine einzelne Entscheidung beider Seiten innerhalb einer Begegnung.</span></div>
+          <div><b>Durchlauf</b><span>Wiederholung des kompletten Turniers mit neuem Zufall, um Ausreißer auszumitteln.</span></div>
+          <div><b>Generation</b><span>Ein Schritt der Evolution: Anteile werden anhand des Erfolgs der letzten Runde neu verteilt.</span></div>
+          <div><b>Replikator&shy;dynamik</b><span>Regel dafür, wie Anteile wachsen: Überdurchschnittlicher Erfolg wird häufiger, unterdurchschnittlicher seltener.</span></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="panel-flat" style="margin-top:44px">
+      <div class="plabel">Vorgeschlagener Ablauf — etwa 45 Minuten</div>
+      <div class="formula" style="line-height:2.2">
+        <b>05 min</b> &nbsp;Abschnitt 01: Matrix erklären, Gruppe entscheiden lassen, wie sie einmalig spielen würde.<br>
+        <b>08 min</b> &nbsp;Abschnitt 02 und 03: Zwei Duelle live spielen, Vorhersagen vorher einsammeln.<br>
+        <b>12 min</b> &nbsp;Abschnitt 04: Turnier ohne Zitterhand, Rangliste diskutieren, dann Zitterhand auf 5 % — Rangliste ändert sich.<br>
+        <b>12 min</b> &nbsp;Abschnitt 05: Evolution mit der Voreinstellung „Naive Mehrheit“ abspielen, Aufstieg und Absturz kommentieren.<br>
+        <b>08 min</b> &nbsp;Abschnitt 06: Übertragung auf den eigenen Arbeitskontext.
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer><div class="wrap" style="display:flex; justify-content:space-between; gap:20px; flex-wrap:wrap; width:100%">
+  <span>Iteriertes Gefangenendilemma · Round-Robin-Turnier &amp; Replikatordynamik</span>
+  <span>Alle Berechnungen laufen lokal im Browser</span>
+</div></footer>
+
+<script>
+/* ==========================================================================
+   Iteriertes Gefangenendilemma – Simulationskern
+   Reines Rechenmodul, keine DOM-Zugriffe.
+   ========================================================================== */
+
+var C = 0, D = 1;
+
+/* Deterministischer PRNG (mulberry32) – reproduzierbare Läufe */
+function mulberry32(a) {
+  return function () {
+    a |= 0; a = (a + 0x6D2B79F5) | 0;
+    var t = Math.imul(a ^ (a >>> 15), 1 | a);
+    t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+  };
+}
+
+var STRATEGIES = [
+  {
+    key: 'allc', name: 'Always Cooperate', abbr: 'ALLC', color: '#34d399',
+    tag: 'bedingungslos',
+    idea: 'Kooperiert immer – egal was passiert.',
+    detail: 'Die vertrauensvolle Naive. Gegen andere Kooperative erzielt sie das Maximum, gegen Ausbeuter verliert sie alles. Sie bestraft nie und lernt nie.'
+  },
+  {
+    key: 'alld', name: 'Always Defect', abbr: 'ALLD', color: '#ff5d5d',
+    tag: 'bedingungslos',
+    idea: 'Verrät immer – egal was passiert.',
+    detail: 'Der reine Egoist. In jedem einzelnen Duell nie zu schlagen, aber sie zerstört jede Beziehung, aus der sie selbst Nutzen ziehen könnte.'
+  },
+  {
+    key: 'tft', name: 'Tit for Tat', abbr: 'TFT', color: '#4cc4ff',
+    tag: 'reaktiv',
+    idea: 'Startet freundlich, spiegelt dann den letzten Zug des Gegners.',
+    detail: 'Axelrods Turniersiegerin von 1980. Freundlich, sofort vergeltend, sofort verzeihend, vollkommen durchschaubar – vier Eigenschaften, die erfolgreiche Strategien teilen.'
+  },
+  {
+    key: 'gtft', name: 'Generous Tit for Tat', abbr: 'GTFT', color: '#b48cff',
+    tag: 'reaktiv',
+    idea: 'Wie Tit for Tat, verzeiht einen Verrat aber manchmal trotzdem.',
+    detail: 'Bricht Rachespiralen auf. Wenn Züge durch Rauschen verfälscht werden, ist genau diese Nachsicht der Unterschied zwischen Dauerkonflikt und Erholung.'
+  },
+  {
+    key: 'grim', name: 'Grim Trigger', abbr: 'GRIM', color: '#ffb347',
+    tag: 'unversöhnlich',
+    idea: 'Kooperiert – bis zum ersten Verrat. Danach nie wieder.',
+    detail: 'Maximale Abschreckung, null Nachsicht. Gegen saubere Partner perfekt, aber ein einziger Ausrutscher kostet die Beziehung für immer.'
+  },
+  {
+    key: 'random', name: 'Random', abbr: 'RAND', color: '#8b93b4',
+    tag: 'unberechenbar',
+    idea: 'Wirft in jeder Runde eine Münze.',
+    detail: 'Die Kontrollgruppe. Nicht lesbar, nicht erziehbar – und deshalb für jede reaktive Strategie ein teurer Partner.'
+  },
+  {
+    key: 'pavlov', name: 'Pavlov', abbr: 'PAV', color: '#ff7ac6',
+    tag: 'lernend',
+    idea: 'Win-Stay, Lose-Shift: Erfolg wiederholen, Misserfolg wechseln.',
+    detail: 'Bewertet nur das eigene Ergebnis. War die letzte Runde gut (Gegner kooperierte), bleibt sie beim Zug; war sie schlecht, wechselt sie. Sie testet Ausbeuter aus – und findet Kooperation oft von selbst.'
+  }
+];
+
+var KEYS = STRATEGIES.map(function (s) { return s.key; });
+var BYKEY = {};
+STRATEGIES.forEach(function (s, i) { s.index = i; BYKEY[s.key] = s; });
+
+/* Strategie-Fabriken: erzeugen einen Spieler mit eigenem Gedächtnis.
+   move(myHistory, oppHistory) -> C | D   (Historien enthalten ausgeführte Züge) */
+function makePlayer(key, rng, opts) {
+  var forgive = (opts && opts.forgive != null) ? opts.forgive : 0.3;
+  switch (key) {
+    case 'allc': return { move: function () { return C; } };
+    case 'alld': return { move: function () { return D; } };
+    case 'tft': return { move: function (m, o) { return o.length ? o[o.length - 1] : C; } };
+    case 'gtft': return { move: function (m, o) {
+        if (!o.length) return C;
+        if (o[o.length - 1] === C) return C;
+        return rng() < forgive ? C : D;
+      } };
+    case 'grim': {
+      var triggered = false;
+      return { move: function (m, o) {
+        if (o.length && o[o.length - 1] === D) triggered = true;
+        return triggered ? D : C;
+      } };
+    }
+    case 'random': return { move: function () { return rng() < 0.5 ? C : D; } };
+    case 'pavlov': return { move: function (m, o) {
+        if (!m.length) return C;
+        var win = o[o.length - 1] === C;          /* eigener Payoff war R oder T */
+        return win ? m[m.length - 1] : (1 - m[m.length - 1]);
+      } };
+  }
+  throw new Error('unbekannte Strategie: ' + key);
+}
+
+function payoffOf(a, b, p) {
+  if (a === C) return b === C ? p.R : p.S;
+  return b === C ? p.T : p.P;
+}
+
+/* Ein Match. accA/accB (optional) sind Float64Array(rounds) und werden
+   rundenweise aufaddiert. keepMoves=true liefert die Zugfolgen zurück. */
+function playMatch(keyA, keyB, cfg, rng, accA, accB, keepMoves) {
+  var rounds = cfg.rounds, noise = cfg.noise, p = cfg.payoff;
+  var A = makePlayer(keyA, rng, cfg), B = makePlayer(keyB, rng, cfg);
+  var hA = [], hB = [];
+  var sumA = 0, sumB = 0;
+  var mvA = keepMoves ? [] : null, mvB = keepMoves ? [] : null;
+  var scA = keepMoves ? [] : null, scB = keepMoves ? [] : null;
+  var errA = keepMoves ? [] : null, errB = keepMoves ? [] : null;
+
+  for (var t = 0; t < rounds; t++) {
+    var a = A.move(hA, hB), b = B.move(hB, hA);
+    var fa = false, fb = false;
+    if (noise > 0) {
+      if (rng() < noise) { a = 1 - a; fa = true; }
+      if (rng() < noise) { b = 1 - b; fb = true; }
+    }
+    var pa = payoffOf(a, b, p), pb = payoffOf(b, a, p);
+    sumA += pa; sumB += pb;
+    if (accA) accA[t] += pa;
+    if (accB) accB[t] += pb;
+    hA.push(a); hB.push(b);
+    if (keepMoves) { mvA.push(a); mvB.push(b); scA.push(sumA); scB.push(sumB); errA.push(fa); errB.push(fb); }
+  }
+  return { sumA: sumA, sumB: sumB, movesA: mvA, movesB: mvB, cumA: scA, cumB: scB, errA: errA, errB: errB };
+}
+
+/* Round-Robin-Turnier über alle Strategien.
+   cfg = {rounds, runs, noise, payoff:{T,R,P,S}, selfPlay, forgive, seed} */
+function runTournament(cfg) {
+  var n = KEYS.length, rounds = cfg.rounds;
+  var rng = mulberry32(cfg.seed || 12345);
+  var perRound = [];               /* perRound[i][t] = Summe aller Payoffs in Runde t */
+  var matches = new Array(n).fill(0);
+  var mSum = [], mCnt = [];
+  for (var i = 0; i < n; i++) {
+    perRound.push(new Float64Array(rounds));
+    mSum.push(new Float64Array(n));
+    mCnt.push(new Float64Array(n));
+  }
+
+  for (i = 0; i < n; i++) {
+    for (var j = i; j < n; j++) {
+      if (i === j && !cfg.selfPlay) continue;
+      for (var r = 0; r < cfg.runs; r++) {
+        var res = playMatch(KEYS[i], KEYS[j], cfg, rng, perRound[i], perRound[j], false);
+        if (i === j) {
+          /* Selbstspiel: die Strategie bestreitet beide Seiten */
+          matches[i] += 2;
+          mSum[i][i] += res.sumA + res.sumB; mCnt[i][i] += 2;
+        } else {
+          matches[i] += 1; matches[j] += 1;
+          mSum[i][j] += res.sumA; mCnt[i][j] += 1;
+          mSum[j][i] += res.sumB; mCnt[j][i] += 1;
+        }
+      }
+    }
+  }
+
+  /* laufender Durchschnitt und Kumulativwerte je Strategie */
+  var avgCurve = [], cumCurve = [], finalAvg = new Array(n);
+  for (i = 0; i < n; i++) {
+    var acc = 0, av = new Float64Array(rounds), cu = new Float64Array(rounds);
+    for (var t = 0; t < rounds; t++) {
+      acc += perRound[i][t] / matches[i];
+      cu[t] = acc;
+      av[t] = acc / (t + 1);
+    }
+    avgCurve.push(av); cumCurve.push(cu);
+    finalAvg[i] = av[rounds - 1];
+  }
+
+  /* Payoff-Matrix: mittlerer Punktwert pro Runde von i gegen j */
+  var matrix = [];
+  for (i = 0; i < n; i++) {
+    var row = new Float64Array(n);
+    for (j = 0; j < n; j++) {
+      row[j] = mCnt[i][j] > 0 ? (mSum[i][j] / mCnt[i][j]) / rounds : 0;
+    }
+    matrix.push(row);
+  }
+  /* fehlende Diagonale (ohne Selbstspiel) analytisch nachziehen */
+  if (!cfg.selfPlay) {
+    var rng2 = mulberry32((cfg.seed || 12345) + 7);
+    for (i = 0; i < n; i++) {
+      var s = 0;
+      for (r = 0; r < cfg.runs; r++) {
+        var rr = playMatch(KEYS[i], KEYS[i], cfg, rng2, null, null, false);
+        s += (rr.sumA + rr.sumB) / 2;
+      }
+      matrix[i][i] = s / cfg.runs / rounds;
+    }
+  }
+
+  var order = finalAvg.map(function (v, k) { return k; })
+    .sort(function (a, b) { return finalAvg[b] - finalAvg[a]; });
+
+  return { avgCurve: avgCurve, cumCurve: cumCurve, finalAvg: finalAvg, matrix: matrix, order: order, cfg: cfg };
+}
+
+/* Replikatordynamik auf der Turniermatrix.
+   x0 = Startanteile (Summe 1), mutation = kleiner Zufluss pro Generation */
+function runEvolution(matrix, x0, generations, mutation) {
+  var n = x0.length;
+  var x = x0.slice();
+  var hist = [x.slice()];
+  var fitHist = [];
+  for (var g = 0; g < generations; g++) {
+    var f = new Array(n), mean = 0;
+    for (var i = 0; i < n; i++) {
+      var s = 0;
+      for (var j = 0; j < n; j++) s += x[j] * matrix[i][j];
+      f[i] = s; mean += x[i] * s;
+    }
+    fitHist.push({ f: f.slice(), mean: mean });
+    var nx = new Array(n), tot = 0;
+    for (i = 0; i < n; i++) {
+      var v = mean > 0 ? x[i] * f[i] / mean : x[i];
+      v = (1 - mutation) * v + mutation / n;
+      if (v < 1e-9) v = 0;
+      nx[i] = v; tot += v;
+    }
+    for (i = 0; i < n; i++) nx[i] = tot > 0 ? nx[i] / tot : 1 / n;
+    x = nx;
+    hist.push(x.slice());
+  }
+  return { shares: hist, fitness: fitHist };
+}
+
+
+/* =====================================================================
+   Formatierung und kleine Helfer
+   ===================================================================== */
+var $ = function (s) { return document.querySelector(s); };
+var reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+function fmt(v, d) { return v.toFixed(d == null ? 2 : d).replace('.', ','); }
+function fmtn(v) { return Number.isInteger(v) ? String(v) : fmt(v, 1); }
+function pct(v, d) { return fmt(v * 100, d == null ? 1 : d) + ' %'; }
+function esc(s) { return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;'); }
+function el(tag, cls, html) {
+  var e = document.createElement(tag);
+  if (cls) e.className = cls;
+  if (html != null) e.innerHTML = html;
+  return e;
+}
+function svgNS(tag, attrs) {
+  var e = document.createElementNS('http://www.w3.org/2000/svg', tag);
+  for (var k in attrs) e.setAttribute(k, attrs[k]);
+  return e;
+}
+
+/* =====================================================================
+   Zustand
+   ===================================================================== */
+var state = {
+  payoff: { T: 5, R: 3, P: 1, S: 0 },
+  rounds: 200, runs: 10, noise: 0, forgive: 0.3, selfPlay: true, seed: 1234,
+  metric: 'avg',
+  hidden: {},
+  tour: null,
+  evoOn: false, gens: 60, mutation: 0,
+  mix: [40, 20, 10, 10, 5, 5, 10],
+  evo: null, playhead: 60, playing: false, rafId: 0
+};
+
+/* =====================================================================
+   01 · Auszahlungsmatrix
+   ===================================================================== */
+function renderMatrix() {
+  var p = state.payoff, g = $('#mxGrid');
+  g.innerHTML =
+    '<div></div>' +
+    '<div class="mx-h c">B kooperiert</div><div class="mx-h d">B verrät</div>' +
+    '<div class="mx-h row c">A kooperiert</div>' +
+    cell('cc', 'Belohnung · R', p.R, p.R) +
+    cell('cd', 'Verlust · S / Versuchung · T', p.S, p.T) +
+    '<div class="mx-h row d">A verrät</div>' +
+    cell('dc', 'Versuchung · T / Verlust · S', p.T, p.S) +
+    cell('dd', 'Bestrafung · P', p.P, p.P);
+
+  function cell(k, lab, a, b) {
+    return '<div class="cell ' + k + '"><div class="lab">' + lab + '</div>' +
+      '<div class="pair num">' + fmtn(a) + ' <i>/</i> ' + fmtn(b) + '</div></div>';
+  }
+
+  var ok1 = p.T > p.R && p.R > p.P && p.P > p.S;
+  var ok2 = 2 * p.R > p.T + p.S;
+  var box = $('#payCheck'), out = '';
+  if (ok1 && ok2) {
+    out = '<span class="badge ok">✓ echtes Dilemma</span>';
+  } else {
+    out = '<span class="badge warn">! kein Dilemma</span> <span class="hint" style="display:block; margin-top:10px">' +
+      (!ok1 ? 'Die Ordnung T &gt; R &gt; P &gt; S ist verletzt. ' : '') +
+      (!ok2 ? 'Wechselseitige Ausbeutung bringt hier mehr als beidseitige Kooperation (2R ≤ T+S). ' : '') +
+      'Die Simulation rechnet weiter — beobachten Sie, wie eindeutig das Ergebnis wird.</span>';
+  }
+  box.innerHTML = out;
+}
+
+function renderPayInputs() {
+  var defs = [
+    ['T', 'Versuchung', 'einseitiger Verrat'],
+    ['R', 'Belohnung', 'beide kooperieren'],
+    ['P', 'Bestrafung', 'beide verraten'],
+    ['S', 'Verlust', 'einseitig ausgebeutet']
+  ];
+  var host = $('#payInputs');
+  defs.forEach(function (d) {
+    var l = el('label', 'ctl');
+    l.innerHTML = '<span>' + d[0] + ' — ' + d[1] + '</span>';
+    var inp = el('input');
+    inp.type = 'number'; inp.step = '1'; inp.min = '-5'; inp.max = '20';
+    inp.value = state.payoff[d[0]];
+    inp.setAttribute('aria-label', d[1] + ' (' + d[2] + ')');
+    inp.addEventListener('input', function () {
+      var v = parseFloat(inp.value);
+      if (isNaN(v)) return;
+      state.payoff[d[0]] = v;
+      renderMatrix(); renderCards(); runDuel(); scheduleTournament();
+    });
+    l.appendChild(inp);
+    host.appendChild(l);
+  });
+}
+
+/* =====================================================================
+   02 · Strategiekarten mit Verhaltensband
+   ===================================================================== */
+/* Fester Testgegner: erst freundlich, dann ein Verrat, später eine Serie */
+var PROBE = [0,0,1,0,0,1,1,0,0,0,1,0,0,1,1,1,0,0,0,0,1,0,0,0];
+
+function laneHTML(moves, color, flips, offset) {
+  var off = offset || 0;
+  var h = '<div class="lane" style="--sc:' + color + '">';
+  for (var i = 0; i < moves.length; i++) {
+    h += '<div class="cellm ' + (moves[i] === 0 ? 'co' : 'de') + (flips && flips[i] ? ' flip' : '') +
+      '" title="Runde ' + (off + i + 1) + ': ' + (moves[i] === 0 ? 'kooperiert' : 'verrät') +
+      (flips && flips[i] ? ' (Ausrutscher)' : '') + '"></div>';
+  }
+  return h + '</div>';
+}
+
+function probeResponse(key) {
+  var rng = mulberry32(99);
+  var pl = makePlayer(key, rng, { forgive: state.forgive });
+  var mine = [], theirs = [];
+  for (var t = 0; t < PROBE.length; t++) {
+    var m = pl.move(mine, theirs);
+    mine.push(m); theirs.push(PROBE[t]);
+  }
+  return mine;
+}
+
+function renderCards() {
+  var host = $('#cards');
+  host.innerHTML = '';
+  STRATEGIES.forEach(function (s) {
+    var c = el('div', 'card');
+    c.style.setProperty('--sc', s.color);
+    var resp = probeResponse(s.key);
+    c.innerHTML =
+      '<div class="tag">' + esc(s.tag) + '</div>' +
+      '<h3>' + esc(s.name) + ' <span class="abbr">' + s.abbr + '</span></h3>' +
+      '<p class="idea">' + esc(s.idea) + '</p>' +
+      '<p class="detail">' + esc(s.detail) + '</p>' +
+      '<div class="fp"><div class="fp-title">Reaktion auf den Testgegner</div>' +
+        '<div class="tape">' +
+          '<div class="tape-row"><span class="tape-name">Testgegner</span>' + laneHTML(PROBE, '#8b93b4') + '</div>' +
+          '<div class="tape-row"><span class="tape-name">' + s.abbr + '</span>' + laneHTML(resp, s.color) + '</div>' +
+        '</div></div>';
+    host.appendChild(c);
+  });
+}
+
+/* =====================================================================
+   Hero · Endlos laufende Beispielbegegnung
+   ===================================================================== */
+var heroPairs = [['tft', 'alld'], ['allc', 'alld'], ['tft', 'tft'], ['pavlov', 'grim'], ['gtft', 'random']];
+var heroIdx = 0;
+function heroCycle() {
+  var pair = heroPairs[heroIdx % heroPairs.length];
+  var A = BYKEY[pair[0]], B = BYKEY[pair[1]];
+  var cfg = { rounds: 26, noise: pair[0] === pair[1] ? 0.05 : 0, payoff: state.payoff, forgive: state.forgive };
+  var res = playMatch(pair[0], pair[1], cfg, mulberry32(7000 + heroIdx * 31), null, null, true);
+  $('#heroPair').textContent = A.abbr + ' vs. ' + B.abbr;
+  var n = reduceMotion ? cfg.rounds : 0;
+
+  function draw(k) {
+    $('#heroTape').innerHTML =
+      '<div class="tape">' +
+        '<div class="tape-row"><span class="tape-name">' + A.abbr + '</span>' + laneHTML(res.movesA.slice(0, k), A.color, res.errA) + '</div>' +
+        '<div class="tape-row"><span class="tape-name">' + B.abbr + '</span>' + laneHTML(res.movesB.slice(0, k), B.color, res.errB) + '</div>' +
+      '</div>';
+    var i = Math.max(0, k - 1);
+    $('#heroScore').textContent = k ? (res.cumA[i] + ' : ' + res.cumB[i] + ' Punkte') : '';
+  }
+
+  if (reduceMotion) { draw(cfg.rounds); heroIdx++; setTimeout(heroCycle, 6000); return; }
+  var k = 0;
+  (function step() {
+    draw(++k);
+    if (k < cfg.rounds) setTimeout(step, 130);
+    else { heroIdx++; setTimeout(heroCycle, 2600); }
+  })();
+}
+
+/* =====================================================================
+   03 · Duell
+   ===================================================================== */
+var duelSeed = 4711;
+function fillSelect(sel, val) {
+  STRATEGIES.forEach(function (s) {
+    var o = el('option'); o.value = s.key; o.textContent = s.name;
+    if (s.key === val) o.selected = true;
+    sel.appendChild(o);
+  });
+}
+
+function runDuel() {
+  var ka = $('#duelA').value, kb = $('#duelB').value;
+  var rounds = +$('#duelRounds').value, noise = +$('#duelNoise').value / 100;
+  var A = BYKEY[ka], B = BYKEY[kb];
+  var cfg = { rounds: rounds, noise: noise, payoff: state.payoff, forgive: state.forgive };
+  var r = playMatch(ka, kb, cfg, mulberry32(duelSeed), null, null, true);
+
+  /* Zugband in Blöcken von 40 Runden, damit die Spuren untereinander ausgerichtet bleiben */
+  var per = 40, host = $('#duelTape'), h = '';
+  for (var s0 = 0; s0 < rounds; s0 += per) {
+    var e0 = Math.min(rounds, s0 + per);
+    h += '<div class="tape-block"><div class="tick">Runde ' + (s0 + 1) + '–' + e0 + '</div><div class="tape">' +
+      '<div class="tape-row"><span class="tape-name">' + A.abbr + '</span>' + laneHTML(r.movesA.slice(s0, e0), A.color, r.errA.slice(s0, e0), s0) + '</div>' +
+      '<div class="tape-row"><span class="tape-name">' + B.abbr + '</span>' + laneHTML(r.movesB.slice(s0, e0), B.color, r.errB.slice(s0, e0), s0) + '</div>' +
+      '</div></div>';
+  }
+  host.innerHTML = h;
+
+  /* Punktekarten */
+  var sc = $('#duelScores');
+  sc.innerHTML = [[A, r.sumA], [B, r.sumB]].map(function (x) {
+    return '<div class="score-card" style="--sc:' + x[0].color + '">' +
+      '<span class="who">' + esc(x[0].name) + '</span>' +
+      '<span><span class="pts num">' + x[1] + '</span><span class="per num">' + fmt(x[1] / rounds) + ' je Runde</span></span></div>';
+  }).join('');
+
+  /* Verlaufskurve */
+  duelChart(r, A, B, rounds);
+
+  /* Auswertung in Worten */
+  var both = 0, exA = 0, exB = 0, none = 0;
+  for (var t = 0; t < rounds; t++) {
+    var a = r.movesA[t], b = r.movesB[t];
+    if (a === 0 && b === 0) both++; else if (a === 1 && b === 1) none++;
+    else if (a === 1) exA++; else exB++;
+  }
+  var lead = r.sumA === r.sumB ? 'Gleichstand' :
+    (r.sumA > r.sumB ? A.name + ' führt mit ' + (r.sumA - r.sumB) + ' Punkten' : B.name + ' führt mit ' + (r.sumB - r.sumA) + ' Punkten');
+  $('#duelOutcome').innerHTML =
+    '<b>' + lead + '.</b> Beidseitige Kooperation in <b>' + pct(both / rounds, 0) + '</b> der Runden, ' +
+    'beidseitiger Verrat in <b>' + pct(none / rounds, 0) + '</b>, einseitige Ausbeutung in <b>' + pct((exA + exB) / rounds, 0) + '</b>. ' +
+    'Gemeinsam erzielt: <b>' + (r.sumA + r.sumB) + '</b> von maximal ' + (2 * state.payoff.R * rounds) + ' möglichen Punkten.';
+}
+
+function duelChart(r, A, B, rounds) {
+  var W = 460, H = 220, m = { t: 14, r: 12, b: 30, l: 42 };
+  var iw = W - m.l - m.r, ih = H - m.t - m.b;
+  var max = Math.max(r.cumA[rounds - 1], r.cumB[rounds - 1], 1);
+  var x = function (i) { return m.l + (rounds < 2 ? 0 : i / (rounds - 1) * iw); };
+  var y = function (v) { return m.t + ih - v / max * ih; };
+  var s = '';
+  /* Gitter */
+  for (var g = 0; g <= 4; g++) {
+    var vv = max * g / 4, yy = y(vv);
+    s += '<line x1="' + m.l + '" y1="' + yy + '" x2="' + (W - m.r) + '" y2="' + yy + '" stroke="rgba(178,196,255,.08)"/>';
+    s += '<text x="' + (m.l - 8) + '" y="' + (yy + 3.5) + '" text-anchor="end" font-family="ui-monospace,monospace" font-size="9.5" fill="#737ea6">' + Math.round(vv) + '</text>';
+  }
+  s += '<text x="' + m.l + '" y="' + (H - 8) + '" font-family="ui-monospace,monospace" font-size="9.5" fill="#737ea6">Runde 1</text>';
+  s += '<text x="' + (W - m.r) + '" y="' + (H - 8) + '" text-anchor="end" font-family="ui-monospace,monospace" font-size="9.5" fill="#737ea6">' + rounds + '</text>';
+  [[r.cumA, A.color], [r.cumB, B.color]].forEach(function (ser) {
+    var d = '';
+    for (var i = 0; i < rounds; i++) d += (i ? 'L' : 'M') + x(i).toFixed(1) + ' ' + y(ser[0][i]).toFixed(1);
+    s += '<path d="' + d + '" fill="none" stroke="' + ser[1] + '" stroke-width="2" stroke-linejoin="round"/>';
+  });
+  $('#duelChart').innerHTML = s;
+}
+
+/* =====================================================================
+   04 · Turnier
+   ===================================================================== */
+var tourTimer = 0;
+function scheduleTournament() {
+  clearTimeout(tourTimer);
+  tourTimer = setTimeout(runTournamentUI, 120);
+}
+
+function runTournamentUI() {
+  var btn = $('#tRun');
+  btn.textContent = 'berechnet …'; btn.disabled = true;
+  setTimeout(function () {
+    state.tour = runTournament({
+      rounds: state.rounds, runs: state.runs, noise: state.noise,
+      payoff: state.payoff, selfPlay: state.selfPlay, forgive: state.forgive, seed: state.seed
+    });
+    renderTournament();
+    recomputeEvolution(state.evoOn);
+    btn.textContent = 'Turnier starten'; btn.disabled = false;
+  }, reduceMotion ? 0 : 30);
+}
+
+function renderTournament() {
+  tourChart();
+  renderRank();
+  renderHeat();
+  var T = state.tour, o = T.order;
+  var best = STRATEGIES[o[0]], worst = STRATEGIES[o[o.length - 1]];
+  var alldRank = o.indexOf(BYKEY.alld.index) + 1;
+  /* Verliert Always Defect tatsächlich kein Duell? Direktvergleich prüfen. */
+  var ai = BYKEY.alld.index, lost = 0;
+  for (var q = 0; q < STRATEGIES.length; q++) if (q !== ai && T.matrix[ai][q] < T.matrix[q][ai] - 1e-9) lost++;
+  var duelClaim = lost === 0
+    ? 'und verliert dabei kein einziges Duell'
+    : 'und verliert dabei nur ' + lost + ' von ' + (STRATEGIES.length - 1) + ' Direktvergleichen';
+  $('#tourNote').innerHTML =
+    '<b>' + esc(best.name) + '</b> führt mit ' + fmt(T.finalAvg[o[0]]) + ' Punkten je Runde, ' +
+    '<b>' + esc(worst.name) + '</b> schließt mit ' + fmt(T.finalAvg[o[o.length - 1]]) + ' ab. ' +
+    'Always Defect belegt Platz <b>' + alldRank + ' von ' + o.length + '</b> — ' + duelClaim + '. ' +
+    'Zum Vergleich: Dauerhafte gegenseitige Kooperation bringt ' + fmt(state.payoff.R) + ' Punkte je Runde, dauerhafter Konflikt ' + fmt(state.payoff.P) + '.';
+}
+
+/* --- Hauptverlaufsdiagramm --- */
+var tourGeom = null;
+function isCompact() { return window.innerWidth < 760; }
+
+function tourChart() {
+  var T = state.tour, rounds = state.rounds;
+  var series = state.metric === 'avg' ? T.avgCurve : T.cumCurve;
+  var compact = isCompact(), K = compact ? 2.3 : 1;
+  var W = 1040, H = compact ? 560 : 440;
+  var m = compact ? { t: 20, r: 26, b: 88, l: 122 } : { t: 22, r: 168, b: 46, l: 62 };
+  var iw = W - m.l - m.r, ih = H - m.t - m.b;
+  var f1 = (10.5 * K).toFixed(1), f2 = (9.5 * K).toFixed(1), f3 = (10 * K).toFixed(1);
+
+  var vis = STRATEGIES.filter(function (s) { return !state.hidden[s.key]; });
+  var max = 0, min = Infinity;
+  vis.forEach(function (s) {
+    var arr = series[s.index];
+    for (var i = 0; i < rounds; i++) { if (arr[i] > max) max = arr[i]; if (arr[i] < min) min = arr[i]; }
+  });
+  if (!vis.length) { max = 1; min = 0; }
+  if (state.metric === 'avg') {
+    min = Math.max(0, Math.floor(min * 2) / 2 - 0.25); max = Math.ceil(max * 2) / 2 + 0.25;
+  } else { min = 0; max = max * 1.04; }
+  if (max - min < .5) max = min + .5;
+
+  var x = function (i) { return m.l + (rounds < 2 ? 0 : i / (rounds - 1) * iw); };
+  var y = function (v) { return m.t + ih - (v - min) / (max - min) * ih; };
+  tourGeom = { x: x, y: y, m: m, iw: iw, ih: ih, W: W, H: H, min: min, max: max, series: series, rounds: rounds };
+
+  var s = '', g, v, yy;
+  for (g = 0; g <= 5; g++) {
+    v = min + (max - min) * g / 5; yy = y(v);
+    s += '<line x1="' + m.l + '" y1="' + yy.toFixed(1) + '" x2="' + (W - m.r) + '" y2="' + yy.toFixed(1) + '" stroke="rgba(178,196,255,.07)"/>';
+    s += '<text x="' + (m.l - 10 * K) + '" y="' + (yy + 3.5 * K).toFixed(1) + '" text-anchor="end" font-family="ui-monospace,monospace" font-size="' + f1 + '" fill="#737ea6">' + fmt(v, state.metric === 'avg' ? 2 : 0) + '</text>';
+  }
+  if (state.metric === 'avg') {
+    [[state.payoff.R, 'beidseitige Kooperation'], [state.payoff.P, 'beidseitiger Verrat']].forEach(function (ref) {
+      if (ref[0] < min || ref[0] > max) return;
+      var yr = y(ref[0]);
+      s += '<line x1="' + m.l + '" y1="' + yr.toFixed(1) + '" x2="' + (W - m.r) + '" y2="' + yr.toFixed(1) + '" stroke="rgba(237,234,222,.24)" stroke-dasharray="2 5"/>';
+      s += '<text x="' + (W - m.r - 6) + '" y="' + (yr - 6 * K).toFixed(1) + '" text-anchor="end" font-family="ui-monospace,monospace" font-size="' + f2 + '" fill="rgba(237,234,222,.45)">' + ref[1] + '</text>';
+    });
+  }
+  (compact ? [0, .5, 1] : [0, .25, .5, .75, 1]).forEach(function (f) {
+    var i = Math.round(f * (rounds - 1));
+    s += '<text x="' + x(i).toFixed(1) + '" y="' + (m.t + ih + 22 * K) + '" text-anchor="middle" font-family="ui-monospace,monospace" font-size="' + f1 + '" fill="#737ea6">' + (i + 1) + '</text>';
+  });
+  s += '<line x1="' + m.l + '" y1="' + (m.t + ih) + '" x2="' + (W - m.r) + '" y2="' + (m.t + ih) + '" stroke="rgba(178,196,255,.16)"/>';
+  s += '<text class="axtitle" style="font-size:' + f3 + 'px" x="' + (m.l + iw / 2) + '" y="' + (H - 4) + '" text-anchor="middle">Simulationsrunde</text>';
+  s += '<text class="axtitle" style="font-size:' + f3 + 'px" transform="translate(' + (14 * K) + ',' + (m.t + ih / 2) + ') rotate(-90)" text-anchor="middle">' +
+    (state.metric === 'avg' ? 'Ø Punkte je Runde' : 'Kumulierte Punkte') + '</text>';
+
+  var labels = [];
+  vis.forEach(function (st) {
+    var arr = series[st.index], d = '';
+    var step = Math.max(1, Math.floor(rounds / 900));
+    for (var i = 0; i < rounds; i += step) d += (i ? 'L' : 'M') + x(i).toFixed(1) + ' ' + y(arr[i]).toFixed(1);
+    d += 'L' + x(rounds - 1).toFixed(1) + ' ' + y(arr[rounds - 1]).toFixed(1);
+    s += '<path d="' + d + '" fill="none" stroke="' + st.color + '" stroke-width="' + (compact ? 3.6 : 2.1) + '" stroke-linejoin="round" stroke-linecap="round" opacity=".95"/>';
+    labels.push({ st: st, y: y(arr[rounds - 1]), v: arr[rounds - 1] });
+  });
+  if (!compact) {
+    labels.sort(function (a2, b2) { return a2.y - b2.y; });
+    for (var i2 = 1; i2 < labels.length; i2++) if (labels[i2].y - labels[i2 - 1].y < 16) labels[i2].y = labels[i2 - 1].y + 16;
+    labels.forEach(function (L) {
+      var xe = W - m.r;
+      s += '<line x1="' + xe + '" y1="' + y(L.v).toFixed(1) + '" x2="' + (xe + 12) + '" y2="' + L.y.toFixed(1) + '" stroke="' + L.st.color + '" stroke-width="1" opacity=".5"/>';
+      s += '<circle cx="' + xe + '" cy="' + y(L.v).toFixed(1) + '" r="2.6" fill="' + L.st.color + '"/>';
+      s += '<text x="' + (xe + 17) + '" y="' + (L.y + 3.5).toFixed(1) + '" font-family="ui-monospace,monospace" font-size="11" fill="' + L.st.color + '">' + L.st.abbr +
+        ' <tspan fill="#a9b2d2">' + fmt(L.v, state.metric === 'avg' ? 2 : 0) + '</tspan></text>';
+    });
+  } else {
+    labels.forEach(function (L) {
+      s += '<circle cx="' + (W - m.r) + '" cy="' + y(L.v).toFixed(1) + '" r="' + (3 * K) + '" fill="' + L.st.color + '"/>';
+    });
+  }
+  s += '<line id="tourCross" x1="0" y1="' + m.t + '" x2="0" y2="' + (m.t + ih) + '" stroke="rgba(237,234,222,.35)" stroke-width="1" opacity="0"/>';
+  $('#tourChart').setAttribute('viewBox', '0 0 ' + W + ' ' + H);
+  $('#tourChart').innerHTML = s;
+  renderLegend();
+}
+
+function renderLegend() {
+  var host = $('#tourLegend');
+  host.innerHTML = '';
+  STRATEGIES.forEach(function (s) {
+    var b = el('button');
+    b.style.setProperty('--sc', s.color);
+    b.setAttribute('aria-pressed', state.hidden[s.key] ? 'false' : 'true');
+    b.innerHTML = '<span class="dot"></span>' + esc(s.name);
+    b.addEventListener('click', function () {
+      state.hidden[s.key] = !state.hidden[s.key];
+      tourChart();
+    });
+    host.appendChild(b);
+  });
+}
+
+/* Tooltip mit Fadenkreuz */
+function bindTourTip() {
+  var box = $('#tourChartBox'), svg = $('#tourChart'), tip = $('#tourTip');
+  function move(ev) {
+    if (!tourGeom || !state.tour) return;
+    var r = svg.getBoundingClientRect(), sc = r.width / tourGeom.W;
+    var px = (ev.clientX - r.left) / sc;
+    var g = tourGeom;
+    var f = (px - g.m.l) / g.iw;
+    if (f < -0.02 || f > 1.02) { hide(); return; }
+    f = Math.min(1, Math.max(0, f));
+    var i = Math.round(f * (g.rounds - 1));
+    var cross = document.getElementById('tourCross');
+    if (cross) { cross.setAttribute('x1', g.x(i)); cross.setAttribute('x2', g.x(i)); cross.setAttribute('opacity', '1'); }
+    var rows = STRATEGIES.filter(function (s) { return !state.hidden[s.key]; })
+      .map(function (s) { return { s: s, v: g.series[s.index][i] }; })
+      .sort(function (a, b) { return b.v - a.v; });
+    tip.innerHTML = '<div class="th">Runde ' + (i + 1) + '</div>' + rows.map(function (r2) {
+      return '<div class="tr"><span><i style="background:' + r2.s.color + '"></i>' + r2.s.abbr + '</span><span>' + fmt(r2.v, state.metric === 'avg' ? 2 : 0) + '</span></div>';
+    }).join('');
+    tip.style.opacity = '1';
+    var bw = box.clientWidth, tw = tip.offsetWidth, left = g.x(i) * sc + 18;
+    if (left + tw > bw) left = g.x(i) * sc - tw - 18;
+    tip.style.left = Math.max(0, left) + 'px';
+    tip.style.top = Math.max(0, Math.min(box.clientHeight - tip.offsetHeight, (ev.clientY - r.top) - tip.offsetHeight / 2)) + 'px';
+  }
+  function hide() {
+    tip.style.opacity = '0';
+    var cross = document.getElementById('tourCross');
+    if (cross) cross.setAttribute('opacity', '0');
+  }
+  box.addEventListener('mousemove', move);
+  box.addEventListener('mouseleave', hide);
+  box.addEventListener('touchmove', function (e) { if (e.touches[0]) move(e.touches[0]); }, { passive: true });
+}
+
+/* --- Rangliste --- */
+function renderRank() {
+  var T = state.tour, host = $('#tourRank');
+  var max = Math.max.apply(null, Array.prototype.slice.call(T.finalAvg));
+  host.innerHTML = T.order.map(function (i, r) {
+    var s = STRATEGIES[i];
+    return '<div class="rank-row" style="--sc:' + s.color + '">' +
+      '<span class="pos num">' + (r + 1) + '</span>' +
+      '<span class="nm">' + s.name.toUpperCase() + '</span>' +
+      '<span class="bar"><i data-w="' + (T.finalAvg[i] / max * 100) + '"></i></span>' +
+      '<span class="val num">' + fmt(T.finalAvg[i]) + '</span></div>';
+  }).join('');
+  requestAnimationFrame(function () {
+    host.querySelectorAll('.bar i').forEach(function (b) { b.style.width = b.dataset.w + '%'; });
+  });
+}
+
+/* --- Begegnungsmatrix als Heatmap --- */
+var VIRIDIS = [[68,1,84],[59,82,139],[33,145,140],[94,201,98],[253,231,37]];
+function heatColor(t) {
+  t = Math.min(1, Math.max(0, t));
+  var p = t * (VIRIDIS.length - 1), i = Math.min(VIRIDIS.length - 2, Math.floor(p)), f = p - i;
+  var a = VIRIDIS[i], b = VIRIDIS[i + 1];
+  return 'rgb(' + Math.round(a[0] + (b[0] - a[0]) * f) + ',' + Math.round(a[1] + (b[1] - a[1]) * f) + ',' + Math.round(a[2] + (b[2] - a[2]) * f) + ')';
+}
+function renderHeat() {
+  var T = state.tour, n = STRATEGIES.length;
+  var K = isCompact() ? 1.7 : 1;
+  var W = 560, H = 470, pad = { l: 74 * K, t: 74 * K, r: 8, b: 8 };
+  var fh = (10 * K).toFixed(1), fv = (10.5 * K).toFixed(1);
+  var cw = (W - pad.l - pad.r) / n, ch = (H - pad.t - pad.b) / n;
+  var lo = Infinity, hi = -Infinity;
+  for (var i = 0; i < n; i++) for (var j = 0; j < n; j++) { var v = T.matrix[i][j]; if (v < lo) lo = v; if (v > hi) hi = v; }
+  if (hi - lo < 1e-9) hi = lo + 1;
+  var s = '';
+  for (i = 0; i < n; i++) {
+    s += '<text style="font-size:' + fh + 'px" x="' + (pad.l - 9) + '" y="' + (pad.t + i * ch + ch / 2 + 3.5 * K) + '" text-anchor="end" fill="' + STRATEGIES[i].color + '">' + STRATEGIES[i].abbr + '</text>';
+    s += '<text style="font-size:' + fh + 'px" transform="translate(' + (pad.l + i * cw + cw / 2) + ',' + (pad.t - 9) + ') rotate(-90)" fill="' + STRATEGIES[i].color + '">' + STRATEGIES[i].abbr + '</text>';
+    for (j = 0; j < n; j++) {
+      var val = T.matrix[i][j], t = (val - lo) / (hi - lo);
+      s += '<rect x="' + (pad.l + j * cw + 1) + '" y="' + (pad.t + i * ch + 1) + '" width="' + (cw - 2) + '" height="' + (ch - 2) + '" rx="1" fill="' + heatColor(t) + '"' +
+        (i === j ? ' stroke="rgba(237,234,222,.5)" stroke-width="1"' : '') + '>' +
+        '<title>' + STRATEGIES[i].abbr + ' gegen ' + STRATEGIES[j].abbr + ': ' + fmt(val) + ' Punkte je Runde</title></rect>';
+      s += '<text class="val" style="font-size:' + fv + 'px" x="' + (pad.l + j * cw + cw / 2) + '" y="' + (pad.t + i * ch + ch / 2 + 3.5 * K) + '" text-anchor="middle" fill="' + (t > .55 ? '#04121f' : '#e9ecff') + '">' + fmt(val, 1) + '</text>';
+    }
+  }
+  s += '<text class="axtitle" style="font-size:' + fh + 'px" x="' + pad.l + '" y="' + (18 * K) + '" fill="#737ea6">Zeile erzielt gegen Spalte — Ø Punkte je Runde</text>';
+  $('#tourHeat').innerHTML = s;
+  var stops = [];
+  for (var k = 0; k <= 10; k++) stops.push(heatColor(k / 10) + ' ' + (k * 10) + '%');
+  $('#heatGrad').style.background = 'linear-gradient(90deg,' + stops.join(',') + ')';
+  $('#heatGrad').previousElementSibling.textContent = fmt(lo, 1);
+  $('#heatGrad').nextElementSibling.textContent = fmt(hi, 1);
+}
+
+/* =====================================================================
+   05 · Evolution
+   ===================================================================== */
+var PRESETS = [
+  { name: 'Naive Mehrheit', mix: [40, 20, 10, 10, 5, 5, 10], gens: 60, mut: 0, noise: null },
+  { name: 'Gleichverteilt', mix: [1, 1, 1, 1, 1, 1, 1], gens: 80, mut: 0, noise: null },
+  { name: 'Zynische Welt', mix: [5, 70, 5, 5, 5, 5, 5], gens: 80, mut: 0, noise: null },
+  { name: 'Welt mit Fehlern', mix: [1, 1, 1, 1, 1, 1, 1], gens: 200, mut: 0, noise: 5 },
+  { name: 'Mit Mutation', mix: [1, 1, 1, 1, 1, 1, 1], gens: 300, mut: 2, noise: 3 }
+];
+
+function renderPresets() {
+  var host = $('#evoPresets');
+  PRESETS.forEach(function (p, k) {
+    var b = el('button', null, esc(p.name));
+    b.addEventListener('click', function () {
+      state.mix = p.mix.slice(); state.gens = p.gens; state.mutation = p.mut / 100;
+      $('#evoGens').value = p.gens; $('#evoGensOut').textContent = p.gens;
+      $('#evoMut').value = p.mut; $('#evoMutOut').textContent = fmt(p.mut, 1) + ' %';
+      renderMix();
+      if (!state.evoOn) { $('#evoOn').checked = true; state.evoOn = true; $('#evoBody').classList.remove('evo-off'); }
+      if (p.noise != null && p.noise / 100 !== state.noise) {
+        state.noise = p.noise / 100;
+        $('#tNoise').value = p.noise; $('#tNoiseOut').textContent = p.noise + ' %';
+        runTournamentUI();
+      } else {
+        recomputeEvolution(true);
+      }
+      host.querySelectorAll('button').forEach(function (x, xi) { x.setAttribute('aria-pressed', xi === k ? 'true' : 'false'); });
+    });
+    b.setAttribute('aria-pressed', k === 0 ? 'true' : 'false');
+    host.appendChild(b);
+  });
+}
+
+function normMix() {
+  var sum = state.mix.reduce(function (a, b) { return a + b; }, 0);
+  if (sum <= 0) return STRATEGIES.map(function () { return 1 / STRATEGIES.length; });
+  return state.mix.map(function (v) { return v / sum; });
+}
+
+function renderMix() {
+  var host = $('#evoMix'), x = normMix();
+  host.innerHTML = '';
+  STRATEGIES.forEach(function (s, i) {
+    var row = el('div', 'mix-row');
+    var id = 'mix_' + s.key;
+    row.innerHTML = '<label for="' + id + '" style="color:' + s.color + '">' + s.abbr + '</label>';
+    var inp = el('input'); inp.type = 'range'; inp.min = '0'; inp.max = '100'; inp.step = '1';
+    inp.value = state.mix[i]; inp.id = id;
+    inp.addEventListener('input', function () {
+      state.mix[i] = +inp.value;
+      $('#evoPresets').querySelectorAll('button').forEach(function (x2) { x2.setAttribute('aria-pressed', 'false'); });
+      renderMixValues(); recomputeEvolution(true);
+    });
+    row.appendChild(inp);
+    row.appendChild(el('span', 'pct', pct(x[i], 0)));
+    host.appendChild(row);
+  });
+}
+function renderMixValues() {
+  var x = normMix();
+  $('#evoMix').querySelectorAll('.pct').forEach(function (e, i) { e.textContent = pct(x[i], 0); });
+}
+
+function toggleEvo(on) {
+  state.evoOn = on;
+  $('#evoBody').classList.toggle('evo-off', !on);
+  if (!on) { stopPlay(); return; }
+  if (!state.tour) runTournamentUI();
+  else if (!state.evo) recomputeEvolution(true);
+  else startPlay();
+}
+
+function recomputeEvolution(autoplay) {
+  if (!state.tour) return;
+  stopPlay();
+  state.evo = runEvolution(state.tour.matrix, normMix(), state.gens, state.mutation);
+  var G = state.evo.shares.length - 1;
+  $('#evoScrub').max = G;
+  state.playhead = G;
+  $('#evoScrub').value = G;
+  evoChart(G);
+  renderStory();
+  if (autoplay && !reduceMotion) startPlay();
+  else { updateScrubRead(); renderEvoBars(state.playhead); }
+}
+
+/* --- Gestapelte Flächen --- */
+var evoGeom = null;
+function evoChart(upto) {
+  if (!state.evo) return;
+  var sh = state.evo.shares, G = sh.length - 1;
+  if (G < 1) return;
+  upto = Math.max(0, Math.min(G, Math.round(upto || 0)));
+  var compact = isCompact(), K = compact ? 2.3 : 1;
+  var W = 1040, H = compact ? 540 : 440;
+  var m = compact ? { t: 18, r: 22, b: 84, l: 116 } : { t: 20, r: 118, b: 46, l: 54 };
+  var iw = W - m.l - m.r, ih = H - m.t - m.b;
+  var f1 = (10.5 * K).toFixed(1), f3 = (10 * K).toFixed(1);
+  var x = function (g) { return m.l + (G < 1 ? 0 : g / G * iw); };
+  var y = function (v) { return m.t + ih - v * ih; };
+  evoGeom = { x: x, y: y, m: m, iw: iw, ih: ih, W: W, G: G };
+
+  var n = STRATEGIES.length, s = '', g, i, yy;
+  for (var q = 0; q <= 4; q++) {
+    yy = y(q / 4);
+    s += '<line x1="' + m.l + '" y1="' + yy + '" x2="' + (W - m.r) + '" y2="' + yy + '" stroke="rgba(178,196,255,.08)"/>';
+    s += '<text x="' + (m.l - 10 * K) + '" y="' + (yy + 3.5 * K) + '" text-anchor="end" font-family="ui-monospace,monospace" font-size="' + f1 + '" fill="#737ea6">' + (q * 25) + '%</text>';
+  }
+  var lim = Math.max(1, upto);
+  var base = new Array(lim + 1).fill(0);
+  for (i = n - 1; i >= 0; i--) {
+    var top = [];
+    for (g = 0; g <= lim; g++) top.push(base[g] + sh[g][i]);
+    var d = 'M' + x(0).toFixed(1) + ' ' + y(base[0]).toFixed(1);
+    for (g = 0; g <= lim; g++) d += 'L' + x(g).toFixed(1) + ' ' + y(top[g]).toFixed(1);
+    for (g = lim; g >= 0; g--) d += 'L' + x(g).toFixed(1) + ' ' + y(base[g]).toFixed(1);
+    s += '<path d="' + d + 'Z" fill="' + STRATEGIES[i].color + '" opacity=".82"/>';
+    var dl = '';
+    for (g = 0; g <= lim; g++) dl += (g ? 'L' : 'M') + x(g).toFixed(1) + ' ' + y(top[g]).toFixed(1);
+    s += '<path d="' + dl + '" fill="none" stroke="rgba(8,12,24,.75)" stroke-width="1"/>';
+    base = top;
+  }
+  (compact ? [0, .5, 1] : [0, .25, .5, .75, 1]).forEach(function (f) {
+    var g2 = Math.round(f * G);
+    s += '<text x="' + x(g2).toFixed(1) + '" y="' + (m.t + ih + 22 * K) + '" text-anchor="middle" font-family="ui-monospace,monospace" font-size="' + f1 + '" fill="#737ea6">' + g2 + '</text>';
+  });
+  s += '<line x1="' + m.l + '" y1="' + (m.t + ih) + '" x2="' + (W - m.r) + '" y2="' + (m.t + ih) + '" stroke="rgba(178,196,255,.16)"/>';
+  s += '<text class="axtitle" style="font-size:' + f3 + 'px" x="' + (m.l + iw / 2) + '" y="' + (H - 4) + '" text-anchor="middle">Generation</text>';
+  s += '<text class="axtitle" style="font-size:' + f3 + 'px" transform="translate(' + (14 * K) + ',' + (m.t + ih / 2) + ') rotate(-90)" text-anchor="middle">Anteil der Population</text>';
+  s += '<line x1="' + x(lim).toFixed(1) + '" y1="' + m.t + '" x2="' + x(lim).toFixed(1) + '" y2="' + (m.t + ih) + '" stroke="rgba(237,234,222,.55)" stroke-width="1"/>';
+
+  if (!compact) {
+    var cur = sh[lim], acc = 0, labs = [];
+    for (i = n - 1; i >= 0; i--) { acc += cur[i]; if (cur[i] > 0.035) labs.push({ st: STRATEGIES[i], y: y(acc - cur[i] / 2), v: cur[i] }); }
+    labs.sort(function (a2, b2) { return a2.y - b2.y; });
+    for (i = 1; i < labs.length; i++) if (labs[i].y - labs[i - 1].y < 15) labs[i].y = labs[i - 1].y + 15;
+    labs.forEach(function (L) {
+      s += '<text x="' + (W - m.r + 10) + '" y="' + (L.y + 3.5).toFixed(1) + '" font-family="ui-monospace,monospace" font-size="11" fill="' + L.st.color + '">' + L.st.abbr +
+        ' <tspan fill="#a9b2d2">' + pct(L.v, 0) + '</tspan></text>';
+    });
+  }
+  $('#evoChart').setAttribute('viewBox', '0 0 ' + W + ' ' + H);
+  $('#evoChart').innerHTML = s;
+  $('#evoGenRead').textContent = 'Generation ' + lim + ' von ' + G;
+}
+
+function renderEvoBars(g) {
+  if (!state.evo) return;
+  var sh = state.evo.shares;
+  var cur = sh[Math.max(0, Math.min(sh.length - 1, Math.round(g || 0)))];
+  var host = $('#evoBars');
+  if (host.children.length !== STRATEGIES.length) {
+    host.innerHTML = STRATEGIES.map(function (s) {
+      return '<div class="stackbar-row" style="--sc:' + s.color + '"><span style="color:' + s.color + '">' + s.abbr + '</span>' +
+        '<span class="bar"><i></i></span><span class="pv num"></span></div>';
+    }).join('');
+  }
+  host.querySelectorAll('.stackbar-row').forEach(function (row, i) {
+    row.querySelector('.bar i').style.transition = 'none';
+    row.querySelector('.bar i').style.width = (cur[i] * 100) + '%';
+    row.querySelector('.pv').textContent = pct(cur[i], 1);
+    row.style.opacity = cur[i] < 0.002 ? .38 : 1;
+  });
+}
+
+function updateScrubRead() {
+  var G = state.evo ? state.evo.shares.length - 1 : state.gens;
+  $('#evoScrubRead').textContent = 'Gen. ' + state.playhead + ' / ' + G;
+}
+
+/* Abspielen */
+function startPlay() {
+  stopPlay();
+  if (reduceMotion) {
+    var Gr = state.evo.shares.length - 1;
+    state.playhead = Gr; $('#evoScrub').value = Gr;
+    evoChart(Gr); renderEvoBars(Gr); updateScrubRead(); return;
+  }
+  state.playing = true;
+  $('#evoPlay').textContent = 'Pause';
+  var G = state.evo.shares.length - 1;
+  var t0 = null, dur = Math.min(9000, Math.max(3200, G * 55));
+  function frame(ts) {
+    if (!state.playing || !state.evo) return;
+    if (t0 == null) t0 = ts;
+    var f = Math.min(1, (ts - t0) / dur);
+    var g = Math.round(f * G);
+    state.playhead = g; $('#evoScrub').value = g;
+    evoChart(g); renderEvoBars(g); updateScrubRead();
+    if (f < 1) state.rafId = requestAnimationFrame(frame);
+    else { state.playing = false; $('#evoPlay').textContent = 'Erneut abspielen'; }
+  }
+  state.rafId = requestAnimationFrame(frame);
+}
+function stopPlay() {
+  state.playing = false;
+  cancelAnimationFrame(state.rafId);
+  $('#evoPlay').textContent = 'Abspielen';
+}
+
+/* Automatische Auswertung in Worten */
+function renderStory() {
+  if (!state.evo) return;
+  var sh = state.evo.shares, G = sh.length - 1, n = STRATEGIES.length, g, i;
+
+  var finals = STRATEGIES.map(function (s2, k) { return { s: s2, v: sh[G][k] }; })
+    .sort(function (a, b) { return b.v - a.v; });
+
+  /* Führungswechsel: wer stellt in welcher Generation den größten Anteil? */
+  var seq = [];
+  for (g = 0; g <= G; g++) {
+    var bi = 0;
+    for (i = 1; i < n; i++) if (sh[g][i] > sh[g][bi]) bi = i;
+    if (!seq.length || seq[seq.length - 1].i !== bi) seq.push({ i: bi, at: g });
+  }
+
+  /* Bogen von Always Defect */
+  var ai = BYKEY.alld.index, apk = -1, apg = 0;
+  for (g = 0; g <= G; g++) if (sh[g][ai] > apk) { apk = sh[g][ai]; apg = g; }
+
+  /* Aussterben */
+  var gone = [];
+  for (i = 0; i < n; i++) {
+    if (sh[0][i] < 0.005) continue;
+    for (g = 1; g <= G; g++) if (sh[g][i] < 0.005) { gone.push({ s: STRATEGIES[i], at: g }); break; }
+  }
+  gone.sort(function (a, b) { return a.at - b.at; });
+
+  var parts = [];
+  parts.push('<p><b>Endstand:</b> Nach ' + G + ' Generationen stellt <b>' + esc(finals[0].s.name) + '</b> ' + pct(finals[0].v, 0) +
+    ' der Population' + (finals[1] && finals[1].v > 0.04 ? ', gefolgt von ' + esc(finals[1].s.name) + ' mit ' + pct(finals[1].v, 0) : '') + '.</p>');
+
+  if (seq.length > 1) {
+    /* Bei nahezu gleichen Startanteilen ist der Spitzenplatz in Generation 0 nicht aussagekräftig */
+    var s0 = sh[0].slice().sort(function (a, b) { return b - a; });
+    var tie0 = (s0[0] - s0[1]) < 0.01;
+    var chain = seq.slice(-5).map(function (q) {
+      if (q.at === 0) return tie0 ? '<b>Gleichstand</b>' : '<b style="color:' + STRATEGIES[q.i].color + '">' + STRATEGIES[q.i].abbr + '</b> (Start)';
+      return '<b style="color:' + STRATEGIES[q.i].color + '">' + STRATEGIES[q.i].abbr + '</b> ab Gen. ' + q.at;
+    }).join(' &nbsp;→&nbsp; ');
+    parts.push('<p><b>Führungswechsel:</b> ' + chain + '. Die stärkste Strategie hängt davon ab, wer sonst noch in der Population ist — der Vorteil ist nie absolut, sondern immer relativ zur Umgebung.</p>');
+  }
+
+  if (apk > sh[0][ai] * 1.15 && sh[G][ai] < apk * 0.55) {
+    parts.push('<p><b>Aufstieg und Absturz:</b> Always Defect wächst bis Generation ' + apg + ' auf ' + pct(apk, 0) +
+      ' — und fällt danach auf ' + pct(sh[G][ai], 0) + '. Der eigene Erfolg entzieht dieser Strategie die Grundlage: Wen sie ausbeuten könnte, hat sie selbst verdrängt. Am Ende trifft Verrat nur noch auf Verrat.</p>');
+  } else if (sh[G][ai] > 0.3) {
+    parts.push('<p><b>Verrat setzt sich durch:</b> Always Defect hält am Ende ' + pct(sh[G][ai], 0) +
+      ' der Population. Unter diesen Bedingungen findet Kooperation keinen Halt — prüfen Sie die Auszahlungswerte und die Zitterhand.</p>');
+  }
+
+  if (gone.length) {
+    parts.push('<p><b>Ausgestorben:</b> ' + gone.map(function (q) { return '<b style="color:' + q.s.color + '">' + q.s.abbr + '</b> (Gen. ' + q.at + ')'; }).join(', ') +
+      '. Unter 0,5 % Anteil gilt eine Strategie hier als verschwunden' + (state.mutation > 0 ? ' — durch Mutation kann sie zurückkehren.' : '.') + '</p>');
+  }
+
+  var friendly = ['allc', 'tft', 'gtft', 'grim', 'pavlov'];
+  var c0 = 0, c1 = 0;
+  friendly.forEach(function (k) { c0 += sh[0][BYKEY[k].index]; c1 += sh[G][BYKEY[k].index]; });
+  parts.push('<p><b>Kooperationsbereite Strategien</b> — alle außer Always Defect und Random — halten am Ende ' + pct(c1, 0) +
+    ' der Population, zu Beginn waren es ' + pct(c0, 0) + '.' +
+    (state.noise > 0 ? ' Bei ' + pct(state.noise, 0) + ' Zitterhand wird Nachsicht wertvoller als harte Vergeltung.' : '') + '</p>');
+
+  $('#evoStory').innerHTML = '<h4>Was ist passiert?</h4>' + parts.join('');
+}
+
+/* =====================================================================
+   Verdrahtung
+   ===================================================================== */
+function bindRange(id, outId, fn, format) {
+  var inp = $('#' + id), out = $('#' + outId);
+  inp.addEventListener('input', function () {
+    var v = +inp.value;
+    out.textContent = format ? format(v) : v;
+    fn(v);
+  });
+}
+
+function init() {
+  /* 01 */
+  renderPayInputs(); renderMatrix();
+  /* 02 */
+  renderCards();
+  /* 03 */
+  fillSelect($('#duelA'), 'tft'); fillSelect($('#duelB'), 'alld');
+  $('#duelA').addEventListener('change', runDuel);
+  $('#duelB').addEventListener('change', runDuel);
+  bindRange('duelRounds', 'duelRoundsOut', runDuel);
+  bindRange('duelNoise', 'duelNoiseOut', runDuel, function (v) { return v + ' %'; });
+  $('#duelReroll').addEventListener('click', function () { duelSeed = (duelSeed * 7919 + 13) % 2147483647; runDuel(); });
+  runDuel();
+
+  /* 04 */
+  bindRange('tRounds', 'tRoundsOut', function (v) { state.rounds = v; $('#heroRounds').textContent = v; scheduleTournament(); });
+  bindRange('tRuns', 'tRunsOut', function (v) { state.runs = v; scheduleTournament(); });
+  bindRange('tNoise', 'tNoiseOut', function (v) { state.noise = v / 100; scheduleTournament(); }, function (v) { return v + ' %'; });
+  bindRange('tForgive', 'tForgiveOut', function (v) { state.forgive = v / 100; renderCards(); runDuel(); scheduleTournament(); }, function (v) { return v + ' %'; });
+  $('#tSelf').addEventListener('change', function () { state.selfPlay = this.checked; scheduleTournament(); });
+  $('#tRun').addEventListener('click', runTournamentUI);
+  $('#mAvg').addEventListener('click', function () { state.metric = 'avg'; this.setAttribute('aria-pressed', 'true'); $('#mCum').setAttribute('aria-pressed', 'false'); tourChart(); });
+  $('#mCum').addEventListener('click', function () { state.metric = 'cum'; this.setAttribute('aria-pressed', 'true'); $('#mAvg').setAttribute('aria-pressed', 'false'); tourChart(); });
+  bindTourTip();
+
+  /* 05 */
+  renderPresets(); renderMix();
+  $('#evoOn').addEventListener('change', function () { toggleEvo(this.checked); });
+  bindRange('evoGens', 'evoGensOut', function (v) { state.gens = v; recomputeEvolution(false); });
+  bindRange('evoMut', 'evoMutOut', function (v) { state.mutation = v / 100; recomputeEvolution(false); }, function (v) { return fmt(v, 1) + ' %'; });
+  $('#evoPlay').addEventListener('click', function () {
+    if (state.playing) stopPlay(); else startPlay();
+  });
+  $('#evoScrub').addEventListener('input', function () {
+    stopPlay(); state.playhead = +this.value;
+    evoChart(state.playhead); renderEvoBars(state.playhead); updateScrubRead();
+  });
+
+  /* Start */
+  runTournamentUI();
+  heroCycle();
+  var lastW = window.innerWidth, rsT = 0;
+  window.addEventListener('resize', function () {
+    if (window.innerWidth === lastW) return;
+    lastW = window.innerWidth;
+    clearTimeout(rsT);
+    rsT = setTimeout(function () {
+      if (state.tour) { tourChart(); renderHeat(); }
+      if (state.evo && !state.playing) evoChart(state.playhead);
+    }, 160);
+  });
+}
+init();
+</script>
+</body>
+</html>

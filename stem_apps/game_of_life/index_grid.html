@@ -1,0 +1,562 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Conway's Game of Life</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 20px;
+        }
+
+        .container {
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            max-width: 100%;
+        }
+
+        h1 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 10px;
+            font-size: 2em;
+        }
+
+        .subtitle {
+            text-align: center;
+            color: #666;
+            margin-bottom: 25px;
+            font-size: 0.9em;
+        }
+
+        #controls {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-bottom: 20px;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 10px;
+        }
+
+        .control-group {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        label {
+            font-weight: 600;
+            color: #555;
+            font-size: 0.9em;
+        }
+
+        select, input[type="range"] {
+            padding: 8px 12px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 14px;
+            background: white;
+            cursor: pointer;
+            transition: border-color 0.3s;
+        }
+
+        select:hover, select:focus {
+            border-color: #667eea;
+            outline: none;
+        }
+
+        input[type="range"] {
+            width: 120px;
+        }
+
+        button {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        button:active {
+            transform: translateY(0);
+        }
+
+        #startBtn {
+            background: #4caf50;
+            color: white;
+        }
+
+        #startBtn:hover {
+            background: #45a049;
+        }
+
+        #pauseBtn {
+            background: #ff9800;
+            color: white;
+        }
+
+        #pauseBtn:hover {
+            background: #e68900;
+        }
+
+        #resetBtn {
+            background: #f44336;
+            color: white;
+        }
+
+        #resetBtn:hover {
+            background: #da190b;
+        }
+
+        #clearBtn {
+            background: #9e9e9e;
+            color: white;
+        }
+
+        #clearBtn:hover {
+            background: #757575;
+        }
+
+        #randomBtn {
+            background: #2196f3;
+            color: white;
+        }
+
+        #randomBtn:hover {
+            background: #0b7dda;
+        }
+
+        .info-bar {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            margin-bottom: 20px;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 10px;
+        }
+
+        .info-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .info-label {
+            font-size: 0.8em;
+            color: #666;
+            margin-bottom: 5px;
+        }
+
+        .info-value {
+            font-size: 1.2em;
+            font-weight: bold;
+            color: #333;
+        }
+
+        #gridContainer {
+            display: flex;
+            justify-content: center;
+            padding: 20px;
+            background: #f0f0f0;
+            border-radius: 10px;
+        }
+
+        #grid {
+            display: grid;
+            gap: 1px;
+            background-color: #ccc;
+            border: 2px solid #999;
+            border-radius: 5px;
+            overflow: hidden;
+        }
+
+        .cell {
+            width: 20px;
+            height: 20px;
+            background-color: #ffffff;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+
+        .cell:hover {
+            background-color: #e0e0e0;
+        }
+
+        .cell.alive {
+            background-color: #667eea;
+            animation: pulse 0.3s ease;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(0.8); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+
+        .instructions {
+            margin-top: 20px;
+            padding: 15px;
+            background: #e3f2fd;
+            border-radius: 10px;
+            border-left: 4px solid #2196f3;
+        }
+
+        .instructions h3 {
+            color: #1976d2;
+            margin-bottom: 8px;
+            font-size: 1em;
+        }
+
+        .instructions ul {
+            list-style-position: inside;
+            color: #555;
+            font-size: 0.9em;
+            line-height: 1.6;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 15px;
+            }
+
+            h1 {
+                font-size: 1.5em;
+            }
+
+            #controls {
+                flex-direction: column;
+                gap: 10px;
+            }
+
+            .control-group {
+                width: 100%;
+                justify-content: space-between;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎮 Conway's Game of Life</h1>
+        <p class="subtitle">Click cells to toggle them, or use patterns to start</p>
+
+        <div id="controls">
+            <div class="control-group">
+                <label for="gridSize">Grid Size:</label>
+                <select id="gridSize">
+                    <option value="10">10×10</option>
+                    <option value="15">15×15</option>
+                    <option value="20" selected>20×20</option>
+                    <option value="25">25×25</option>
+                    <option value="30">30×30</option>
+                    <option value="40">40×40</option>
+                </select>
+            </div>
+
+            <div class="control-group">
+                <label for="speed">Speed:</label>
+                <input type="range" id="speed" min="50" max="1000" step="50" value="500">
+                <span id="speedValue">500ms</span>
+            </div>
+
+            <button id="startBtn" onclick="startGrid()">Start</button>
+            <button id="pauseBtn" onclick="togglePause()">Pause</button>
+            <button id="resetBtn" onclick="resetGrid()">Reset</button>
+            <button id="clearBtn" onclick="clearGrid()">Clear</button>
+            <button id="randomBtn" onclick="randomPattern()">Random</button>
+        </div>
+
+        <div class="info-bar">
+            <div class="info-item">
+                <span class="info-label">Generation</span>
+                <span class="info-value" id="generation">0</span>
+            </div>
+            <div class="info-item">
+                <span class="info-label">Living Cells</span>
+                <span class="info-value" id="livingCells">0</span>
+            </div>
+            <div class="info-item">
+                <span class="info-label">Status</span>
+                <span class="info-value" id="status">Stopped</span>
+            </div>
+        </div>
+
+        <div id="gridContainer">
+            <div id="grid"></div>
+        </div>
+
+        <div class="instructions">
+            <h3>📝 How to Play:</h3>
+            <ul>
+                <li>Click cells to toggle them alive/dead</li>
+                <li>Use "Random" to generate a random pattern</li>
+                <li>Press "Start" to begin the simulation</li>
+                <li>Rules: A cell survives with 2-3 neighbors, dead cells become alive with exactly 3 neighbors</li>
+            </ul>
+        </div>
+    </div>
+
+    <script>
+        let gridSize = 20;
+        let grid = [];
+        let interval = null;
+        let isPaused = false;
+        let isRunning = false;
+        let generation = 0;
+        let speed = 500;
+
+        // Initialize speed control
+        const speedSlider = document.getElementById('speed');
+        const speedValue = document.getElementById('speedValue');
+        
+        speedSlider.addEventListener('input', function() {
+            speed = parseInt(this.value);
+            speedValue.textContent = speed + 'ms';
+            if (isRunning && !isPaused) {
+                clearInterval(interval);
+                interval = setInterval(updateGrid, speed);
+            }
+        });
+
+        // Initialize grid on load
+        window.onload = function() {
+            initializeEmptyGrid();
+            updateInfo();
+        };
+
+        function initializeEmptyGrid() {
+            gridSize = parseInt(document.getElementById('gridSize').value);
+            grid = createGrid(gridSize);
+            generation = 0;
+            renderGrid();
+            updateInfo();
+        }
+
+        function createGrid(size) {
+            return Array.from({ length: size }, () => Array(size).fill(0));
+        }
+
+        function setInitialConfiguration() {
+            // Generate patterns that scale with grid size
+            const centerX = Math.floor(gridSize / 2);
+            const centerY = Math.floor(gridSize / 2);
+            
+            // Glider pattern
+            const glider = [
+                [centerY - 1, centerX],
+                [centerY, centerX + 1],
+                [centerY + 1, centerX - 1],
+                [centerY + 1, centerX],
+                [centerY + 1, centerX + 1]
+            ];
+
+            // Blinker pattern
+            const blinker = [
+                [centerY, centerX - 1],
+                [centerY, centerX],
+                [centerY, centerX + 1]
+            ];
+
+            // Random selection of pattern
+            const patterns = [glider, blinker];
+            const selectedPattern = patterns[Math.floor(Math.random() * patterns.length)];
+
+            selectedPattern.forEach(([row, col]) => {
+                if (row >= 0 && row < gridSize && col >= 0 && col < gridSize) {
+                    grid[row][col] = 1;
+                }
+            });
+        }
+
+        function renderGrid() {
+            const gridContainer = document.getElementById('grid');
+            gridContainer.style.gridTemplateColumns = `repeat(${gridSize}, 20px)`;
+            gridContainer.innerHTML = '';
+            
+            for (let row = 0; row < gridSize; row++) {
+                for (let col = 0; col < gridSize; col++) {
+                    const cell = document.createElement('div');
+                    cell.className = 'cell';
+                    if (grid[row][col] === 1) {
+                        cell.classList.add('alive');
+                    }
+                    cell.dataset.row = row;
+                    cell.dataset.col = col;
+                    cell.addEventListener('click', toggleCell);
+                    gridContainer.appendChild(cell);
+                }
+            }
+            updateInfo();
+        }
+
+        function toggleCell(event) {
+            if (isRunning) return; // Prevent editing while running
+            
+            const row = parseInt(event.target.dataset.row);
+            const col = parseInt(event.target.dataset.col);
+            grid[row][col] = grid[row][col] ? 0 : 1;
+            event.target.classList.toggle('alive');
+            updateInfo();
+        }
+
+        function startGrid() {
+            if (isRunning) return;
+            
+            // If grid is empty, set initial configuration
+            if (countLivingCells() === 0) {
+                setInitialConfiguration();
+                renderGrid();
+            }
+            
+            isRunning = true;
+            isPaused = false;
+            interval = setInterval(updateGrid, speed);
+            updateInfo();
+        }
+
+        function togglePause() {
+            if (!isRunning) {
+                startGrid();
+                return;
+            }
+            
+            isPaused = !isPaused;
+            const pauseBtn = document.getElementById('pauseBtn');
+            
+            if (isPaused) {
+                clearInterval(interval);
+                pauseBtn.textContent = 'Resume';
+            } else {
+                interval = setInterval(updateGrid, speed);
+                pauseBtn.textContent = 'Pause';
+            }
+            updateInfo();
+        }
+
+        function resetGrid() {
+            clearInterval(interval);
+            isRunning = false;
+            isPaused = false;
+            generation = 0;
+            document.getElementById('pauseBtn').textContent = 'Pause';
+            initializeEmptyGrid();
+        }
+
+        function clearGrid() {
+            grid = createGrid(gridSize);
+            generation = 0;
+            renderGrid();
+        }
+
+        function randomPattern() {
+            grid = createGrid(gridSize);
+            for (let row = 0; row < gridSize; row++) {
+                for (let col = 0; col < gridSize; col++) {
+                    grid[row][col] = Math.random() < 0.3 ? 1 : 0;
+                }
+            }
+            renderGrid();
+        }
+
+        function updateGrid() {
+            if (isPaused) return;
+            
+            const newGrid = createGrid(gridSize);
+            
+            for (let row = 0; row < gridSize; row++) {
+                for (let col = 0; col < gridSize; col++) {
+                    const aliveNeighbors = countAliveNeighbors(row, col);
+                    
+                    if (grid[row][col] === 1) {
+                        // Cell is alive
+                        if (aliveNeighbors === 2 || aliveNeighbors === 3) {
+                            newGrid[row][col] = 1;
+                        }
+                    } else {
+                        // Cell is dead
+                        if (aliveNeighbors === 3) {
+                            newGrid[row][col] = 1;
+                        }
+                    }
+                }
+            }
+            
+            grid = newGrid;
+            generation++;
+            renderGrid();
+        }
+
+        function countAliveNeighbors(row, col) {
+            let count = 0;
+            for (let i = -1; i <= 1; i++) {
+                for (let j = -1; j <= 1; j++) {
+                    if (i === 0 && j === 0) continue;
+                    
+                    const newRow = (row + i + gridSize) % gridSize;
+                    const newCol = (col + j + gridSize) % gridSize;
+                    count += grid[newRow][newCol];
+                }
+            }
+            return count;
+        }
+
+        function countLivingCells() {
+            let count = 0;
+            for (let row = 0; row < gridSize; row++) {
+                for (let col = 0; col < gridSize; col++) {
+                    count += grid[row][col];
+                }
+            }
+            return count;
+        }
+
+        function updateInfo() {
+            document.getElementById('generation').textContent = generation;
+            document.getElementById('livingCells').textContent = countLivingCells();
+            
+            let status = 'Stopped';
+            if (isRunning && isPaused) {
+                status = 'Paused';
+            } else if (isRunning) {
+                status = 'Running';
+            }
+            document.getElementById('status').textContent = status;
+        }
+
+        // Update grid size on change
+        document.getElementById('gridSize').addEventListener('change', function() {
+            if (!isRunning) {
+                resetGrid();
+            }
+        });
+    </script>
+</body>
+</html>

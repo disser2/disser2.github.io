@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Double Pendulum</title>
+<style>
+  :root {
+    --bg: #07090f;
+    --panel: rgba(18, 22, 34, 0.85);
+    --accent1: #00e5ff;
+    --accent2: #ff2bd6;
+    --text: #cdd6f4;
+    --muted: #6c7393;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--text);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    display: flex;
+    min-height: 100vh;
+    overflow: hidden;
+  }
+  #stage { flex: 1; position: relative; }
+  canvas { display: block; width: 100%; height: 100vh; }
+  #panel {
+    width: 280px;
+    padding: 22px 20px;
+    background: var(--panel);
+    backdrop-filter: blur(12px);
+    border-left: 1px solid rgba(255,255,255,0.06);
+    overflow-y: auto;
+    z-index: 10;
+  }
+  h1 {
+    font-size: 16px;
+    font-weight: 600;
+    margin: 0 0 4px;
+    letter-spacing: 0.5px;
+  }
+  .sub { font-size: 11px; color: var(--muted); margin-bottom: 22px; }
+  .group { margin-bottom: 18px; }
+  .group label {
+    display: flex;
+    justify-content: space-between;
+    font-size: 12px;
+    margin-bottom: 6px;
+    color: var(--text);
+  }
+  .group label span:last-child { color: var(--accent1); font-variant-numeric: tabular-nums; }
+  input[type=range] {
+    width: 100%;
+    -webkit-appearance: none;
+    height: 4px;
+    border-radius: 4px;
+    background: rgba(255,255,255,0.1);
+    outline: none;
+  }
+  input[type=range]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 14px; height: 14px;
+    border-radius: 50%;
+    background: var(--accent1);
+    cursor: pointer;
+    box-shadow: 0 0 8px var(--accent1);
+  }
+  input[type=range]::-moz-range-thumb {
+    width: 14px; height: 14px; border: none;
+    border-radius: 50%;
+    background: var(--accent1);
+    cursor: pointer;
+    box-shadow: 0 0 8px var(--accent1);
+  }
+  .btns { display: flex; gap: 8px; margin-top: 8px; }
+  button {
+    flex: 1;
+    padding: 9px 0;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--text);
+    background: rgba(255,255,255,0.06);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 8px;
+    cursor: pointer;
+    transition: 0.15s;
+  }
+  button:hover { background: rgba(255,255,255,0.12); }
+  button.active { background: var(--accent2); color: #fff; box-shadow: 0 0 12px var(--accent2); border-color: var(--accent2); }
+  .hint { font-size: 10px; color: var(--muted); margin-top: 18px; line-height: 1.5; }
+</style>
+</head>
+<body>
+<div id="stage"><canvas id="c"></canvas></div>
+<div id="panel">
+  <h1>Double Pendulum</h1>
+  <div class="sub">Drag a bob to set the base angle · press Play to release the swarm</div>
+
+  <div class="group">
+    <label>Anzahl Pendel <span id="nv">1</span></label>
+    <input type="range" id="n" min="1" max="30" value="1">
+  </div>
+  <div class="group">
+    <label>Winkel-Abstand <span id="spreadv">0.0100</span></label>
+    <input type="range" id="spread" min="0" max="0.05" step="0.0005" value="0.01">
+  </div>
+  <div class="group">
+    <label>Mass 1 <span id="m1v">10</span></label>
+    <input type="range" id="m1" min="1" max="40" value="10">
+  </div>
+  <div class="group">
+    <label>Mass 2 <span id="m2v">10</span></label>
+    <input type="range" id="m2" min="1" max="40" value="10">
+  </div>
+  <div class="group">
+    <label>Length 1 <span id="l1v">150</span></label>
+    <input type="range" id="l1" min="50" max="220" value="150">
+  </div>
+  <div class="group">
+    <label>Length 2 <span id="l2v">150</span></label>
+    <input type="range" id="l2" min="50" max="220" value="150">
+  </div>
+  <div class="group">
+    <label>Gravity <span id="gv">1.00</span></label>
+    <input type="range" id="g" min="0" max="3" step="0.01" value="1">
+  </div>
+  <div class="group">
+    <label>Damping <span id="dv">1.000</span></label>
+    <input type="range" id="d" min="0.98" max="1" step="0.0005" value="1">
+  </div>
+  <div class="group">
+    <label>Speed <span id="sv">1.0×</span></label>
+    <input type="range" id="s" min="0.2" max="3" step="0.1" value="1">
+  </div>
+
+  <div class="btns">
+    <button id="pause">Play</button>
+    <button id="reset">Reset</button>
+  </div>
+
+  <div class="hint">Mehrere gekoppelte Pendel starten mit minimal unterschiedlichen Startwinkeln (linearer Abstand). Sie laufen zunächst deckungsgleich und divergieren dann chaotisch. Ziehe einen leuchtenden Massepunkt, um den Basiswinkel neu zu setzen.</div>
+</div>
+
+<script>
+const canvas = document.getElementById('c');
+const ctx = canvas.getContext('2d');
+const stage = document.getElementById('stage');
+
+let W, H, ox, oy;
+function resize() {
+  const r = stage.getBoundingClientRect();
+  W = canvas.width = r.width * devicePixelRatio;
+  H = canvas.height = r.height * devicePixelRatio;
+  ctx.setTransform(devicePixelRatio,0,0,devicePixelRatio,0,0);
+  ox = r.width / 2;
+  oy = r.height * 0.32;
+  clearTrails();
+}
+window.addEventListener('resize', resize);
+
+const P = { n:1, spread:0.01, m1:10, m2:10, l1:150, l2:150, g:1, d:1, s:1 };
+let running = false;   // starts paused; "Play" releases the swarm
+const MAX_TRAIL = 900;
+
+// base angles (what dragging edits / reset returns to)
+let baseA1, baseA2;
+function initBase(){ baseA1 = Math.PI/2 + 0.4; baseA2 = Math.PI/2 + 0.41; }
+initBase();
+
+// swarm of pendulums
+let pends = [];
+function buildPends(){
+  pends = [];
+  const count = P.n;
+  for (let k=0;k<count;k++){
+    // linear offset applied to the inner angle
+    const off = k * P.spread;
+    pends.push({
+      a1: baseA1 + off,
+      a2: baseA2 + off,
+      v1: 0, v2: 0,
+      hue: count === 1 ? 190 : (k/(count-1))*300, // rainbow spread
+      trail: []
+    });
+  }
+}
+function clearTrails(){ for (const p of pends) p.trail.length = 0; }
+buildPends();
+
+// controls
+const bind = (id, key, fmt, fn) => {
+  const el = document.getElementById(id);
+  const out = document.getElementById(id+'v');
+  el.addEventListener('input', () => {
+    P[key] = parseFloat(el.value);
+    out.textContent = fmt(P[key]);
+    if (fn) fn();
+  });
+};
+bind('n','n',v=>v|0,()=>{ buildPends(); });
+bind('spread','spread',v=>v.toFixed(4),()=>{ buildPends(); });
+bind('m1','m1',v=>v); bind('m2','m2',v=>v);
+bind('l1','l1',v=>v,clearTrails); bind('l2','l2',v=>v,clearTrails);
+bind('g','g',v=>v.toFixed(2));
+bind('d','d',v=>v.toFixed(3));
+bind('s','s',v=>v.toFixed(1)+'×');
+
+document.getElementById('pause').addEventListener('click', e=>{
+  running = !running;
+  e.target.textContent = running ? 'Pause' : 'Play';
+  e.target.classList.toggle('active', running);
+});
+document.getElementById('reset').addEventListener('click', ()=>{
+  initBase();
+  running = false;
+  const b = document.getElementById('pause');
+  b.textContent = 'Play';
+  b.classList.remove('active');
+  buildPends();
+});
+
+// dragging (edits the base angles; swarm rebuilds around them)
+let dragging = 0;
+function bobPos(a1,a2){
+  const x1 = ox + P.l1*Math.sin(a1);
+  const y1 = oy + P.l1*Math.cos(a1);
+  const x2 = x1 + P.l2*Math.sin(a2);
+  const y2 = y1 + P.l2*Math.cos(a2);
+  return {x1,y1,x2,y2};
+}
+canvas.addEventListener('pointerdown', e=>{
+  const r = canvas.getBoundingClientRect();
+  const mx = e.clientX - r.left, my = e.clientY - r.top;
+  const {x1,y1,x2,y2} = bobPos(baseA1, baseA2);
+  if (Math.hypot(mx-x2,my-y2) < 24) dragging = 2;
+  else if (Math.hypot(mx-x1,my-y1) < 24) dragging = 1;
+});
+window.addEventListener('pointermove', e=>{
+  if (!dragging) return;
+  const r = canvas.getBoundingClientRect();
+  const mx = e.clientX - r.left, my = e.clientY - r.top;
+  if (dragging === 1){
+    baseA1 = Math.atan2(mx-ox, my-oy);
+  } else {
+    const x1 = ox + P.l1*Math.sin(baseA1);
+    const y1 = oy + P.l1*Math.cos(baseA1);
+    baseA2 = Math.atan2(mx-x1, my-y1);
+  }
+  buildPends();
+});
+window.addEventListener('pointerup', ()=> dragging = 0);
+
+// physics (Lagrangian) — operates on one pendulum object
+function step(p, dt){
+  const {m1,m2,l1,l2,g} = P;
+  const G = g * 0.6;
+  const {a1,a2,v1,v2} = p;
+  const num1 = -G*(2*m1+m2)*Math.sin(a1);
+  const num2 = -m2*G*Math.sin(a1-2*a2);
+  const num3 = -2*Math.sin(a1-a2)*m2*(v2*v2*l2 + v1*v1*l1*Math.cos(a1-a2));
+  const den1 = l1*(2*m1+m2-m2*Math.cos(2*a1-2*a2));
+  const acc1 = (num1+num2+num3)/den1;
+
+  const num4 = 2*Math.sin(a1-a2);
+  const num5 = v1*v1*l1*(m1+m2);
+  const num6 = G*(m1+m2)*Math.cos(a1);
+  const num7 = v2*v2*l2*m2*Math.cos(a1-a2);
+  const den2 = l2*(2*m1+m2-m2*Math.cos(2*a1-2*a2));
+  const acc2 = (num4*(num5+num6+num7))/den2;
+
+  p.v1 += acc1*dt; p.v2 += acc2*dt;
+  p.v1 *= P.d; p.v2 *= P.d;
+  p.a1 += p.v1*dt; p.a2 += p.v2*dt;
+}
+
+function frame(){
+  // fade background for trail decay
+  ctx.fillStyle = 'rgba(7,9,15,0.12)';
+  ctx.fillRect(0,0,W,H);
+
+  if (running && !dragging){
+    const sub = 6;
+    for (const p of pends){
+      for (let i=0;i<sub;i++) step(p, 0.18 * P.s / sub);
+    }
+  }
+
+  // update trails
+  for (const p of pends){
+    const {x1,y1,x2,y2} = bobPos(p.a1, p.a2);
+    p.px1=x1; p.py1=y1; p.px2=x2; p.py2=y2;
+    p.trail.push({x2,y2});
+    if (p.trail.length > MAX_TRAIL) p.trail.shift();
+  }
+
+  // draw trails (outer bob, rainbow per pendulum)
+  for (const p of pends){
+    const t = p.trail, n = t.length;
+    ctx.lineWidth = 2;
+    ctx.lineCap = 'round';
+    for (let i=1;i<n;i++){
+      const a = (i/n)*0.85;
+      ctx.strokeStyle = `hsla(${p.hue},100%,60%,${a})`;
+      ctx.beginPath(); ctx.moveTo(t[i-1].x2,t[i-1].y2); ctx.lineTo(t[i].x2,t[i].y2); ctx.stroke();
+    }
+  }
+
+  // rods + bobs per pendulum
+  for (const p of pends){
+    const col = `hsl(${p.hue},100%,60%)`;
+    ctx.lineWidth = pends.length > 8 ? 1.5 : 3;
+    ctx.strokeStyle = `hsla(${p.hue},70%,70%,${pends.length>8?0.4:0.55})`;
+    ctx.beginPath(); ctx.moveTo(ox,oy); ctx.lineTo(p.px1,p.py1); ctx.lineTo(p.px2,p.py2); ctx.stroke();
+
+    drawBob(p.px1,p.py1, 5+P.m1*0.28, col);
+    drawBob(p.px2,p.py2, 5+P.m2*0.28, col);
+  }
+
+  // pivot
+  ctx.fillStyle = '#cdd6f4';
+  ctx.beginPath(); ctx.arc(ox,oy,4,0,7); ctx.fill();
+
+  requestAnimationFrame(frame);
+}
+function drawBob(x,y,rad,col){
+  ctx.save();
+  ctx.shadowBlur = 18; ctx.shadowColor = col;
+  ctx.fillStyle = col;
+  ctx.beginPath(); ctx.arc(x,y,rad,0,7); ctx.fill();
+  ctx.restore();
+}
+
+resize();
+frame();
+</script>
+</body>
+</html>

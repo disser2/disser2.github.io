@@ -1,0 +1,662 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Abelian Sandpile Model</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background-color: #f5f5f5;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        h1 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 30px;
+        }
+
+        .controls {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 20px;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .control-group {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        button {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: background-color 0.3s;
+        }
+
+        .primary-btn {
+            background-color: #4CAF50;
+            color: white;
+        }
+
+        .primary-btn:hover {
+            background-color: #45a049;
+        }
+
+        .secondary-btn {
+            background-color: #2196F3;
+            color: white;
+        }
+
+        .secondary-btn:hover {
+            background-color: #1976D2;
+        }
+
+        .danger-btn {
+            background-color: #f44336;
+            color: white;
+        }
+
+        .danger-btn:hover {
+            background-color: #d32f2f;
+        }
+
+        select {
+            padding: 5px;
+            border: 1px solid #ddd;
+            border-radius: 3px;
+            font-size: 14px;
+        }
+
+        .grid-container {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            margin: 20px 0;
+            flex-wrap: wrap;
+        }
+
+        .view-section {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .view-title {
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 5px;
+        }
+
+        #isometricCanvas {
+            border: 2px solid #333;
+            border-radius: 5px;
+            background: linear-gradient(135deg, #f0f8ff, #e6f3ff);
+            cursor: pointer;
+        }
+
+        .grid {
+            display: grid;
+            gap: 1px;
+            background-color: #333;
+            border: 2px solid #333;
+            border-radius: 5px;
+        }
+
+        .cell {
+            width: 20px;
+            height: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-size: 10px;
+            font-weight: bold;
+            transition: all 0.2s ease;
+            border-radius: 2px;
+        }
+
+        .cell:hover {
+            transform: scale(1.1);
+            z-index: 10;
+            position: relative;
+        }
+
+        /* Color coding for grain counts */
+        .grains-0 { background-color: #f8f8f8; color: #ccc; }
+        .grains-1 { background-color: #fff3cd; color: #856404; }
+        .grains-2 { background-color: #ffeaa7; color: #b8860b; }
+        .grains-3 { background-color: #fd79a8; color: #8b0000; }
+        .grains-4plus { background-color: #e84393; color: white; animation: pulse 0.5s infinite; }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+
+        .toppling {
+            background-color: #ff6b6b !important;
+            animation: topple 0.3s ease-in-out;
+        }
+
+        @keyframes topple {
+            0% { transform: scale(1) rotate(0deg); }
+            25% { transform: scale(1.2) rotate(5deg); }
+            75% { transform: scale(1.2) rotate(-5deg); }
+            100% { transform: scale(1) rotate(0deg); }
+        }
+
+        .status {
+            text-align: center;
+            margin: 10px 0;
+            font-weight: bold;
+        }
+
+        .info {
+            margin-top: 20px;
+            padding: 15px;
+            background-color: #e3f2fd;
+            border-radius: 5px;
+            font-size: 14px;
+        }
+
+        .info h3 {
+            margin-top: 0;
+            color: #1565c0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Abelian Sandpile Model</h1>
+        
+        <div class="controls">
+            <div class="control-group">
+                <label for="gridSize">Grid Size:</label>
+                <select id="gridSize">
+                    <option value="10">10×10</option>
+                    <option value="20" selected>20×20</option>
+                    <option value="30">30×30</option>
+                </select>
+            </div>
+            
+            <button id="randomizeBtn" class="secondary-btn">Randomize Distribution</button>
+            <button id="addRandomGrainBtn" class="primary-btn">Add Random Grain</button>
+            <button id="resetBtn" class="danger-btn">Reset Grid</button>
+            <button id="startBtn" class="primary-btn">Start Adding</button>
+            <button id="pauseBtn" class="danger-btn" style="display: none;">Pause</button>
+        </div>
+
+        <div class="status" id="status">Click on cells to add grains, or use the controls above</div>
+
+        <div class="grid-container">
+            <div class="view-section">
+                <div class="view-title">2D Grid View</div>
+                <div id="grid" class="grid"></div>
+            </div>
+            <div class="view-section">
+                <div class="view-title">2.5D Isometric View</div>
+                <canvas id="isometricCanvas" width="400" height="400"></canvas>
+            </div>
+        </div>
+
+        <div class="info">
+            <h3>How it works:</h3>
+            <p><strong>Colors:</strong> Light gray (0), Yellow (1), Orange (2), Pink (3), Red (4+)</p>
+            <p><strong>Toppling Rule:</strong> When a cell reaches 4 or more grains, it topples and gives 1 grain to each of its 4 neighbors.</p>
+            <p><strong>Interactions:</strong> Click any cell to add 1 grain. Use "Start Adding" to continuously add random grains.</p>
+        </div>
+    </div>
+
+    <script>
+        class SandpileModel {
+            constructor(size = 20) {
+                this.size = size;
+                this.grid = [];
+                this.isRunning = false;
+                this.animationId = null;
+                this.toppleQueue = [];
+                this.init();
+            }
+
+            init() {
+                // Initialize grid with zeros
+                this.grid = Array(this.size).fill().map(() => Array(this.size).fill(0));
+                this.createRandomDistribution();
+                this.render();
+            }
+
+            createRandomDistribution() {
+                for (let i = 0; i < this.size; i++) {
+                    for (let j = 0; j < this.size; j++) {
+                        // Random distribution with bias toward lower numbers
+                        this.grid[i][j] = Math.floor(Math.random() * 4);
+                    }
+                }
+            }
+
+            addGrain(row, col) {
+                if (row >= 0 && row < this.size && col >= 0 && col < this.size) {
+                    this.grid[row][col]++;
+                    this.checkAndTopple();
+                    this.render();
+                }
+            }
+
+            addRandomGrain() {
+                const row = Math.floor(Math.random() * this.size);
+                const col = Math.floor(Math.random() * this.size);
+                this.addGrain(row, col);
+            }
+
+            checkAndTopple() {
+                let hasToppled = false;
+                const toTopple = [];
+
+                // Find cells that need to topple
+                for (let i = 0; i < this.size; i++) {
+                    for (let j = 0; j < this.size; j++) {
+                        if (this.grid[i][j] >= 4) {
+                            toTopple.push([i, j]);
+                        }
+                    }
+                }
+
+                if (toTopple.length > 0) {
+                    hasToppled = true;
+                    
+                    // Animate toppling cells
+                    toTopple.forEach(([i, j]) => {
+                        const cell = document.querySelector(`[data-row="${i}"][data-col="${j}"]`);
+                        if (cell) {
+                            cell.classList.add('toppling');
+                            setTimeout(() => cell.classList.remove('toppling'), 300);
+                        }
+                    });
+
+                    setTimeout(() => {
+                        // Perform toppling after animation
+                        toTopple.forEach(([i, j]) => {
+                            this.grid[i][j] -= 4;
+                            
+                            // Distribute to neighbors
+                            const neighbors = [
+                                [i-1, j], [i+1, j], [i, j-1], [i, j+1]
+                            ];
+                            
+                            neighbors.forEach(([ni, nj]) => {
+                                if (ni >= 0 && ni < this.size && nj >= 0 && nj < this.size) {
+                                    this.grid[ni][nj]++;
+                                }
+                            });
+                        });
+
+                        this.render();
+                        // Check for more toppling recursively
+                        if (this.hasTopplableCells()) {
+                            setTimeout(() => this.checkAndTopple(), 200);
+                        }
+                    }, 300);
+                }
+
+                return hasToppled;
+            }
+
+            hasTopplableCells() {
+                for (let i = 0; i < this.size; i++) {
+                    for (let j = 0; j < this.size; j++) {
+                        if (this.grid[i][j] >= 4) {
+                            return true;
+                        }
+                    }
+                }
+                return false;
+            }
+
+            reset() {
+                this.grid = Array(this.size).fill().map(() => Array(this.size).fill(0));
+                this.render();
+            }
+
+            setSize(newSize) {
+                this.size = newSize;
+                this.init();
+            }
+
+            render() {
+                const gridElement = document.getElementById('grid');
+                gridElement.style.gridTemplateColumns = `repeat(${this.size}, 20px)`;
+                gridElement.innerHTML = '';
+
+                for (let i = 0; i < this.size; i++) {
+                    for (let j = 0; j < this.size; j++) {
+                        const cell = document.createElement('div');
+                        cell.className = 'cell';
+                        cell.dataset.row = i;
+                        cell.dataset.col = j;
+                        
+                        const grains = this.grid[i][j];
+                        cell.textContent = grains || '';
+                        
+                        // Apply color based on grain count
+                        if (grains >= 4) {
+                            cell.classList.add('grains-4plus');
+                        } else {
+                            cell.classList.add(`grains-${grains}`);
+                        }
+
+                        cell.addEventListener('click', () => {
+                            this.addGrain(i, j);
+                        });
+
+                        gridElement.appendChild(cell);
+                    }
+                }
+
+                // Also render the isometric view
+                if (window.isometricRenderer) {
+                    window.isometricRenderer.render();
+                }
+            }
+
+            start() {
+                this.isRunning = true;
+                this.autoAdd();
+            }
+
+            pause() {
+                this.isRunning = false;
+                if (this.animationId) {
+                    clearTimeout(this.animationId);
+                }
+            }
+
+            autoAdd() {
+                if (this.isRunning) {
+                    this.addRandomGrain();
+                    this.animationId = setTimeout(() => this.autoAdd(), 500);
+                }
+            }
+        }
+
+        class IsometricRenderer {
+            constructor(canvas, sandpile) {
+                this.canvas = canvas;
+                this.ctx = canvas.getContext('2d');
+                this.sandpile = sandpile;
+                this.scale = 8;
+                this.maxHeight = 40;
+                
+                // Isometric projection angles
+                this.cos30 = Math.cos(Math.PI / 6);  // cos(30°)
+                this.sin30 = Math.sin(Math.PI / 6);  // sin(30°)
+                
+                // Add click handler for interaction
+                this.canvas.addEventListener('click', (e) => {
+                    this.handleClick(e);
+                });
+            }
+
+            // Convert 2D grid coordinates to isometric screen coordinates
+            toIsometric(x, y, z = 0) {
+                const isoX = (x - y) * this.cos30 * this.scale;
+                const isoY = (x + y) * this.sin30 * this.scale - z;
+                return { x: isoX, y: isoY };
+            }
+
+            // Convert screen coordinates back to grid coordinates (for click handling)
+            fromIsometric(screenX, screenY) {
+                const centerX = this.canvas.width / 2;
+                const centerY = this.canvas.height / 2;
+                
+                const x = screenX - centerX;
+                const y = screenY - centerY;
+                
+                const gridX = Math.round((x / (this.cos30 * this.scale) + y / (this.sin30 * this.scale)) / 2);
+                const gridY = Math.round((y / (this.sin30 * this.scale) - x / (this.cos30 * this.scale)) / 2);
+                
+                return { x: gridX, y: gridY };
+            }
+
+            // Get color for grain count (matching the 2D grid colors)
+            getGrainColor(grains) {
+                if (grains === 0) return '#f8f8f8';
+                if (grains === 1) return '#fff3cd';
+                if (grains === 2) return '#ffeaa7';
+                if (grains === 3) return '#fd79a8';
+                return '#e84393'; // 4+
+            }
+
+            // Draw a 3D bar (cube) with square base in isometric projection
+            drawBar(gridX, gridY, height, color) {
+                if (height <= 0) return;
+
+                const centerX = this.canvas.width / 2;
+                const centerY = this.canvas.height / 2;
+                
+                // Calculate the four corners of the square base in isometric projection
+                const topLeft = this.toIsometric(gridX, gridY);
+                const topRight = this.toIsometric(gridX + 1, gridY);
+                const bottomLeft = this.toIsometric(gridX, gridY + 1);
+                const bottomRight = this.toIsometric(gridX + 1, gridY + 1);
+                
+                // Apply center offset and get base coordinates
+                const basePoints = [
+                    { x: centerX + topLeft.x, y: centerY + topLeft.y },
+                    { x: centerX + topRight.x, y: centerY + topRight.y },
+                    { x: centerX + bottomRight.x, y: centerY + bottomRight.y },
+                    { x: centerX + bottomLeft.x, y: centerY + bottomLeft.y }
+                ];
+                
+                // Calculate top face points (elevated by height)
+                const topPoints = [
+                    { x: centerX + topLeft.x, y: centerY + topLeft.y - height },
+                    { x: centerX + topRight.x, y: centerY + topRight.y - height },
+                    { x: centerX + bottomRight.x, y: centerY + bottomRight.y - height },
+                    { x: centerX + bottomLeft.x, y: centerY + bottomLeft.y - height }
+                ];
+
+                this.ctx.strokeStyle = '#333';
+                this.ctx.lineWidth = 0.5;
+
+                // Draw visible faces of the cube
+                // Left face (darker)
+                const darkerColor = this.darkenColor(color, 0.3);
+                this.ctx.fillStyle = darkerColor;
+                this.ctx.beginPath();
+                this.ctx.moveTo(basePoints[0].x, basePoints[0].y);
+                this.ctx.lineTo(basePoints[3].x, basePoints[3].y);
+                this.ctx.lineTo(topPoints[3].x, topPoints[3].y);
+                this.ctx.lineTo(topPoints[0].x, topPoints[0].y);
+                this.ctx.closePath();
+                this.ctx.fill();
+                this.ctx.stroke();
+
+                // Right face (medium)
+                this.ctx.fillStyle = color;
+                this.ctx.beginPath();
+                this.ctx.moveTo(basePoints[1].x, basePoints[1].y);
+                this.ctx.lineTo(basePoints[2].x, basePoints[2].y);
+                this.ctx.lineTo(topPoints[2].x, topPoints[2].y);
+                this.ctx.lineTo(topPoints[1].x, topPoints[1].y);
+                this.ctx.closePath();
+                this.ctx.fill();
+                this.ctx.stroke();
+
+                // Top face (lighter) - square base visible from top
+                const lighterColor = this.lightenColor(color, 0.2);
+                this.ctx.fillStyle = lighterColor;
+                this.ctx.beginPath();
+                this.ctx.moveTo(topPoints[0].x, topPoints[0].y);
+                this.ctx.lineTo(topPoints[1].x, topPoints[1].y);
+                this.ctx.lineTo(topPoints[2].x, topPoints[2].y);
+                this.ctx.lineTo(topPoints[3].x, topPoints[3].y);
+                this.ctx.closePath();
+                this.ctx.fill();
+                this.ctx.stroke();
+            }
+
+            // Helper function to darken a color
+            darkenColor(color, factor) {
+                const hex = color.replace('#', '');
+                const r = Math.floor(parseInt(hex.substr(0, 2), 16) * (1 - factor));
+                const g = Math.floor(parseInt(hex.substr(2, 2), 16) * (1 - factor));
+                const b = Math.floor(parseInt(hex.substr(4, 2), 16) * (1 - factor));
+                return `rgb(${r}, ${g}, ${b})`;
+            }
+
+            // Helper function to lighten a color
+            lightenColor(color, factor) {
+                const hex = color.replace('#', '');
+                const r = Math.min(255, Math.floor(parseInt(hex.substr(0, 2), 16) * (1 + factor)));
+                const g = Math.min(255, Math.floor(parseInt(hex.substr(2, 2), 16) * (1 + factor)));
+                const b = Math.min(255, Math.floor(parseInt(hex.substr(4, 2), 16) * (1 + factor)));
+                return `rgb(${r}, ${g}, ${b})`;
+            }
+
+            // Handle canvas clicks
+            handleClick(event) {
+                const rect = this.canvas.getBoundingClientRect();
+                const x = event.clientX - rect.left;
+                const y = event.clientY - rect.top;
+                
+                const gridPos = this.fromIsometric(x, y);
+                
+                // Add grain if click is within valid grid bounds
+                if (gridPos.x >= 0 && gridPos.x < this.sandpile.size && 
+                    gridPos.y >= 0 && gridPos.y < this.sandpile.size) {
+                    this.sandpile.addGrain(gridPos.y, gridPos.x); // Note: swap for proper mapping
+                }
+            }
+
+            // Render the entire isometric view
+            render() {
+                // Clear canvas
+                this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+                
+                // Calculate scale based on grid size to fit in canvas
+                this.scale = Math.min(400 / (this.sandpile.size * 2), 12);
+                
+                // Draw bars from back to front for proper depth sorting
+                for (let i = this.sandpile.size - 1; i >= 0; i--) {
+                    for (let j = 0; j < this.sandpile.size; j++) {
+                        const grains = this.sandpile.grid[i][j];
+                        if (grains > 0) {
+                            const height = grains * (this.maxHeight / 10); // Scale height
+                            const color = this.getGrainColor(grains);
+                            this.drawBar(j, i, height, color);
+                        }
+                    }
+                }
+
+                // Draw grid base for reference
+                this.drawGridBase();
+            }
+
+            // Draw base grid lines for reference
+            drawGridBase() {
+                this.ctx.strokeStyle = '#ddd';
+                this.ctx.lineWidth = 0.5;
+                
+                const centerX = this.canvas.width / 2;
+                const centerY = this.canvas.height / 2;
+                
+                // Draw grid lines
+                for (let i = 0; i <= this.sandpile.size; i++) {
+                    // Horizontal lines
+                    const start = this.toIsometric(0, i);
+                    const end = this.toIsometric(this.sandpile.size, i);
+                    
+                    this.ctx.beginPath();
+                    this.ctx.moveTo(centerX + start.x, centerY + start.y);
+                    this.ctx.lineTo(centerX + end.x, centerY + end.y);
+                    this.ctx.stroke();
+                    
+                    // Vertical lines
+                    const vStart = this.toIsometric(i, 0);
+                    const vEnd = this.toIsometric(i, this.sandpile.size);
+                    
+                    this.ctx.beginPath();
+                    this.ctx.moveTo(centerX + vStart.x, centerY + vStart.y);
+                    this.ctx.lineTo(centerX + vEnd.x, centerY + vEnd.y);
+                    this.ctx.stroke();
+                }
+            }
+        }
+
+        // Initialize the application
+        let sandpile = new SandpileModel(20);
+        let isometricRenderer = new IsometricRenderer(document.getElementById('isometricCanvas'), sandpile);
+        
+        // Make isometric renderer globally available
+        window.isometricRenderer = isometricRenderer;
+
+        // Event listeners
+        document.getElementById('gridSize').addEventListener('change', (e) => {
+            const newSize = parseInt(e.target.value);
+            sandpile.setSize(newSize);
+            updateStatus(`Grid resized to ${newSize}×${newSize}`);
+        });
+
+        document.getElementById('randomizeBtn').addEventListener('click', () => {
+            sandpile.createRandomDistribution();
+            sandpile.render();
+            updateStatus('New random distribution generated');
+        });
+
+        document.getElementById('addRandomGrainBtn').addEventListener('click', () => {
+            sandpile.addRandomGrain();
+            updateStatus('Added grain to random pile');
+        });
+
+        document.getElementById('resetBtn').addEventListener('click', () => {
+            sandpile.pause();
+            sandpile.reset();
+            updateStatus('Grid reset');
+            toggleButtons(false);
+        });
+
+        document.getElementById('startBtn').addEventListener('click', () => {
+            sandpile.start();
+            updateStatus('Auto-adding grains... Click Pause to stop');
+            toggleButtons(true);
+        });
+
+        document.getElementById('pauseBtn').addEventListener('click', () => {
+            sandpile.pause();
+            updateStatus('Paused auto-adding');
+            toggleButtons(false);
+        });
+
+        function updateStatus(message) {
+            document.getElementById('status').textContent = message;
+        }
+
+        function toggleButtons(isRunning) {
+            document.getElementById('startBtn').style.display = isRunning ? 'none' : 'inline-block';
+            document.getElementById('pauseBtn').style.display = isRunning ? 'inline-block' : 'none';
+        }
+
+        // Initial status
+        updateStatus('Sandpile initialized with random distribution. Click cells or use controls!');
+    </script>
+</body>
+</html>

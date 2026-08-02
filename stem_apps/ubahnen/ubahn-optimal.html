@@ -1,0 +1,1210 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Optimale U-Bahn-Linien in der Ebene</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Familjen+Grotesk:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ink:#0D1120;
+  --ink2:#141A2E;
+  --panel:#181F36;
+  --rule:#2B3455;
+  --rule2:#3B4670;
+  --paper:#E9ECF6;
+  --muted:#8C96B8;
+  --dim:#5C6791;
+  --L1:#E4572E;
+  --L2:#F2B134;
+  --L3:#25C4B0;
+  --L4:#4C7DF0;
+  --L5:#C74E9E;
+  --L6:#7ACB6B;
+  --L7:#9B7BE8;
+  --L8:#E9ECF6;
+  --ok:#25C4B0;
+  --warn:#F2B134;
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{
+  background:var(--ink);
+  color:var(--paper);
+  font-family:"IBM Plex Sans",system-ui,-apple-system,"Segoe UI",sans-serif;
+  font-size:15px; line-height:1.55;
+  -webkit-font-smoothing:antialiased;
+}
+.wrap{max-width:1240px;margin:0 auto;padding:0 18px 80px}
+
+/* ---------- header ---------- */
+header{padding:34px 0 10px}
+.eyebrow{
+  font-family:"IBM Plex Mono",monospace;font-size:11px;letter-spacing:.16em;
+  text-transform:uppercase;color:var(--dim);margin:0 0 14px
+}
+h1{
+  font-family:"Familjen Grotesk",system-ui,sans-serif;
+  font-weight:700;font-size:clamp(28px,5.2vw,52px);line-height:1.02;
+  letter-spacing:-.022em;margin:0 0 14px;max-width:17ch
+}
+h1 em{font-style:normal;color:var(--L3)}
+.thesis{max-width:62ch;color:var(--muted);font-size:16px;margin:0}
+.thesis b{color:var(--paper);font-weight:600}
+
+/* line strip under header */
+.strip{display:flex;height:5px;margin:26px 0 0;border-radius:3px;overflow:hidden}
+.strip i{flex:1}
+
+/* ---------- tabs ---------- */
+nav.tabs{display:flex;gap:2px;margin:26px 0 22px;flex-wrap:wrap}
+nav.tabs button{
+  background:none;border:0;border-bottom:3px solid transparent;
+  color:var(--dim);font-family:"Familjen Grotesk",sans-serif;font-weight:600;font-size:15px;
+  padding:9px 15px 8px;cursor:pointer;letter-spacing:.01em;
+}
+nav.tabs button:hover{color:var(--paper)}
+nav.tabs button[aria-selected="true"]{color:var(--paper);border-bottom-color:var(--L3)}
+nav.tabs button:focus-visible{outline:2px solid var(--L4);outline-offset:2px;border-radius:3px}
+
+.tabpanel{display:none}
+.tabpanel.on{display:block}
+
+/* ---------- layout ---------- */
+.grid{display:grid;grid-template-columns:minmax(0,1fr) 290px;gap:20px;align-items:start}
+@media(max-width:900px){.grid{grid-template-columns:1fr}}
+
+.card{
+  background:var(--ink2);border:1px solid var(--rule);border-radius:12px;overflow:hidden
+}
+.card h3{
+  margin:0;padding:12px 16px;font-family:"Familjen Grotesk",sans-serif;font-size:12px;
+  letter-spacing:.13em;text-transform:uppercase;color:var(--muted);font-weight:600;
+  border-bottom:1px solid var(--rule);background:var(--panel)
+}
+.cardbody{padding:16px}
+
+canvas{display:block;width:100%}
+#net{aspect-ratio:1/0.82;background:var(--ink2)}
+
+/* ---------- controls ---------- */
+.ctl{margin-bottom:18px}
+.ctl:last-child{margin-bottom:0}
+.ctl label,.ctl .lab{
+  display:flex;justify-content:space-between;align-items:baseline;
+  font-family:"IBM Plex Mono",monospace;font-size:10.5px;letter-spacing:.11em;
+  text-transform:uppercase;color:var(--dim);margin-bottom:7px
+}
+.ctl .val{color:var(--L3);letter-spacing:.02em;font-size:12px}
+input[type=range]{
+  -webkit-appearance:none;appearance:none;width:100%;height:3px;background:var(--rule2);
+  border-radius:2px;outline:none;margin:4px 0
+}
+input[type=range]::-webkit-slider-thumb{
+  -webkit-appearance:none;width:15px;height:15px;border-radius:50%;
+  background:var(--paper);border:3px solid var(--ink2);box-shadow:0 0 0 1.5px var(--L3);cursor:pointer
+}
+input[type=range]::-moz-range-thumb{
+  width:15px;height:15px;border-radius:50%;background:var(--paper);
+  border:3px solid var(--ink2);box-shadow:0 0 0 1.5px var(--L3);cursor:pointer
+}
+input[type=range]:focus-visible{box-shadow:0 0 0 2px var(--L4)}
+.seg{display:flex;flex-wrap:wrap;gap:5px}
+.seg button{
+  flex:1 1 auto;background:var(--panel);border:1px solid var(--rule);color:var(--muted);
+  font-family:"IBM Plex Sans",sans-serif;font-size:12.5px;padding:6px 9px;border-radius:6px;cursor:pointer
+}
+.seg button:hover{border-color:var(--rule2);color:var(--paper)}
+.seg button[aria-pressed="true"]{background:var(--L3);border-color:var(--L3);color:#08121A;font-weight:600}
+.seg button:focus-visible{outline:2px solid var(--L4);outline-offset:1px}
+.presets button{flex:1 1 46%;text-align:left}
+.presets button[aria-pressed="true"]{background:var(--L4);border-color:var(--L4);color:#fff}
+.chk{display:flex;align-items:center;gap:9px;font-size:13px;color:var(--muted);margin-bottom:8px;cursor:pointer}
+.chk input{accent-color:var(--L3);width:15px;height:15px}
+.ghost{
+  width:100%;background:none;border:1px solid var(--rule2);color:var(--paper);
+  padding:9px;border-radius:7px;cursor:pointer;font-family:"IBM Plex Sans",sans-serif;font-size:13px
+}
+.ghost:hover{background:var(--panel)}
+.ghost:focus-visible{outline:2px solid var(--L4)}
+
+/* ---------- metric tiles ---------- */
+.tiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(112px,1fr));gap:1px;background:var(--rule)}
+.tile{background:var(--ink2);padding:13px 14px}
+.tile .k{
+  font-family:"IBM Plex Mono",monospace;font-size:9.5px;letter-spacing:.1em;
+  text-transform:uppercase;color:var(--dim);display:block;margin-bottom:5px;white-space:nowrap;
+  overflow:hidden;text-overflow:ellipsis
+}
+.tile .v{font-family:"Familjen Grotesk",sans-serif;font-size:23px;font-weight:600;letter-spacing:-.01em}
+.tile .u{font-size:11px;color:var(--dim);margin-left:3px;font-weight:400}
+.tile.hi .v{color:var(--L3)}
+.tile.warnv .v{color:var(--L1)}
+
+/* ---------- legend ---------- */
+.legend{
+  display:flex;gap:16px;flex-wrap:wrap;padding:11px 16px;border-top:1px solid var(--rule);
+  font-size:12px;color:var(--dim);font-family:"IBM Plex Mono",monospace;letter-spacing:.03em
+}
+.legend span{display:flex;align-items:center;gap:6px}
+.dot{width:9px;height:9px;border-radius:50%;background:var(--paper);display:inline-block}
+.bar{width:16px;height:3px;border-radius:2px;display:inline-block}
+
+/* ---------- prose ---------- */
+.prose{max-width:74ch}
+.prose h2{
+  font-family:"Familjen Grotesk",sans-serif;font-size:clamp(20px,3vw,27px);font-weight:600;
+  letter-spacing:-.015em;margin:38px 0 12px;line-height:1.15
+}
+.prose h2 .num{
+  font-family:"IBM Plex Mono",monospace;font-size:12px;color:var(--L3);
+  display:block;letter-spacing:.14em;margin-bottom:6px;font-weight:400
+}
+.prose p{color:#C3CADF;margin:0 0 14px}
+.prose ul{color:#C3CADF;padding-left:20px;margin:0 0 14px}
+.prose li{margin-bottom:7px}
+.prose b,.prose strong{color:var(--paper);font-weight:600}
+.prose code,.mono{font-family:"IBM Plex Mono",monospace;font-size:.9em;color:var(--L2)}
+.pull{
+  border-left:3px solid var(--L3);padding:2px 0 2px 16px;margin:22px 0;
+  font-family:"Familjen Grotesk",sans-serif;font-size:18px;line-height:1.35;color:var(--paper)
+}
+.note{
+  border:1px solid var(--rule);border-radius:10px;padding:14px 16px;margin:26px 0 0;
+  font-size:13px;color:var(--muted)
+}
+.reflist{font-size:12.5px;color:var(--dim);font-family:"IBM Plex Mono",monospace;line-height:1.75}
+.reflist li{margin-bottom:2px}
+
+/* ---------- scaling tab ---------- */
+.charts2{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+@media(max-width:820px){.charts2{grid-template-columns:1fr}}
+.progress{height:3px;background:var(--rule);border-radius:2px;overflow:hidden;margin-top:10px}
+.progress i{display:block;height:100%;background:var(--L3);width:0%;transition:width .15s}
+.busy{font-family:"IBM Plex Mono",monospace;font-size:11px;color:var(--dim);letter-spacing:.08em}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header>
+  <p class="eyebrow">Geometrische Netzoptimierung · im Vergleich zu Expander-Graphen</p>
+  <h1>Optimale U-Bahn-Linien in der <em>Ebene</em></h1>
+  <p class="thesis">In abstrakten Graphen heißt „dünn und trotzdem gut vernetzt“ <b>Expander</b>. In der Ebene ist das <b>beweisbar unmöglich</b>. Was stattdessen optimal ist — und wo die Expansion sich doch noch versteckt.</p>
+  <div class="strip">
+    <i style="background:var(--L1)"></i><i style="background:var(--L2)"></i><i style="background:var(--L3)"></i>
+    <i style="background:var(--L4)"></i><i style="background:var(--L5)"></i><i style="background:var(--L6)"></i>
+    <i style="background:var(--L7)"></i>
+  </div>
+</header>
+
+<nav class="tabs" role="tablist">
+  <button role="tab" id="t-net" aria-selected="true" aria-controls="p-net">Netz bauen</button>
+  <button role="tab" id="t-scale" aria-selected="false" aria-controls="p-scale">Skalierung</button>
+  <button role="tab" id="t-theory" aria-selected="false" aria-controls="p-theory">Theorie</button>
+</nav>
+
+<!-- ============ TAB 1 ============ -->
+<section class="tabpanel on" id="p-net" role="tabpanel" aria-labelledby="t-net">
+<div class="grid">
+
+  <div style="display:flex;flex-direction:column;gap:20px;min-width:0">
+    <div class="card">
+      <canvas id="net"></canvas>
+      <div class="legend">
+        <span><i class="dot"></i>Station (Größe ∝ Nachfrage)</span>
+        <span><i class="dot" style="background:none;border:2px solid var(--paper);width:11px;height:11px"></i>Umsteigepunkt</span>
+        <span><i class="bar" style="background:var(--L3)"></i>Linie (Kantenfärbung)</span>
+        <span id="growing" class="busy" style="display:none">baut …</span>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3>Kennzahlen des Gleisnetzes</h3>
+      <div class="tiles" id="tiles"></div>
+    </div>
+
+    <div class="charts2">
+      <div class="card">
+        <h3>Pareto-Front: Länge gegen Umwegfaktor</h3>
+        <canvas id="pareto" style="aspect-ratio:1/0.78"></canvas>
+      </div>
+      <div class="card">
+        <h3>Transfergraph der Linien</h3>
+        <canvas id="lg" style="aspect-ratio:1/0.78"></canvas>
+      </div>
+    </div>
+  </div>
+
+  <aside style="display:flex;flex-direction:column;gap:20px">
+    <div class="card">
+      <h3>Stadt</h3>
+      <div class="cardbody">
+        <div class="ctl">
+          <span class="lab">Nachfragedichte</span>
+          <div class="seg" id="segDensity">
+            <button data-v="mono" aria-pressed="true">monozentrisch</button>
+            <button data-v="uni" aria-pressed="false">homogen</button>
+            <button data-v="poly" aria-pressed="false">polyzentrisch</button>
+          </div>
+        </div>
+        <div class="ctl">
+          <label for="sN">Stationen <span class="val" id="vN">60</span></label>
+          <input type="range" id="sN" min="30" max="110" step="2" value="60">
+        </div>
+        <div class="ctl">
+          <label for="sB">Zentrumsorientierung β <span class="val" id="vB">0,60</span></label>
+          <input type="range" id="sB" min="0" max="1" step="0.05" value="0.6">
+        </div>
+        <button class="ghost" id="reseed">Neue Stadt würfeln</button>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3>Netz</h3>
+      <div class="cardbody">
+        <div class="ctl">
+          <span class="lab">Bauprinzip</span>
+          <div class="seg presets" id="segPreset">
+            <button data-v="greedy" aria-pressed="true">Greedy-Optimum</button>
+            <button data-v="mst" aria-pressed="false">Minimalbaum</button>
+            <button data-v="radial" aria-pressed="false">Radial</button>
+            <button data-v="ring" aria-pressed="false">Radial + Ring</button>
+            <button data-v="grid" aria-pressed="false">Gitter</button>
+            <button data-v="delaunay" aria-pressed="false">Delaunay</button>
+            <button data-v="reg3" aria-pressed="false">3-regulär zufällig</button>
+          </div>
+        </div>
+        <div class="ctl" id="budgetCtl">
+          <label for="sBud">Baubudget L / L<sub>MST</sub> <span class="val" id="vBud">1,60</span></label>
+          <input type="range" id="sBud" min="1" max="2.6" step="0.02" value="1.6">
+        </div>
+        <div class="ctl">
+          <span class="lab">Darstellung</span>
+          <label class="chk"><input type="checkbox" id="cLines" checked>Linien einfärben</label>
+          <label class="chk"><input type="checkbox" id="cLoad" checked>Kantenstärke ∝ Fahrgastlast</label>
+          <label class="chk"><input type="checkbox" id="cDens" checked>Dichte im Hintergrund</label>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3>Ablesehilfe</h3>
+      <div class="cardbody" style="font-size:13px;color:var(--muted)">
+        <p style="margin:0 0 10px"><b style="color:var(--paper)">Umwegfaktor</b> = mittlere nachfragegewichtete Netzdistanz geteilt durch Luftlinie. 1,00 wäre perfekt.</p>
+        <p style="margin:0 0 10px"><b style="color:var(--paper)">λ₂</b> ist die Spektrallücke des normierten Laplace-Operators. Eine Expander-Familie hält λ₂ ≥ const; alle ebenen Netze lassen λ₂ auf null fallen.</p>
+        <p style="margin:0"><b style="color:var(--paper)">Umstiege</b> = Durchmesser des Transfergraphen. Genau hier lebt die Expansion doch noch.</p>
+      </div>
+    </div>
+  </aside>
+</div>
+</section>
+
+<!-- ============ TAB 2 ============ -->
+<section class="tabpanel" id="p-scale" role="tabpanel" aria-labelledby="t-scale">
+  <div class="prose" style="margin-bottom:22px">
+    <p>Das Experiment lässt die Stadt wachsen und misst für jede Größe zwei Netze auf <em>denselben</em> Stationen: die Delaunay-Triangulierung als bestmögliches ebenes Netz und einen zufälligen 3-regulären Graphen als Stellvertreter für einen Expander. Die Frage ist, was mit Spektrallücke und Gleislänge passiert.</p>
+  </div>
+  <div class="card" style="margin-bottom:20px">
+    <div class="cardbody" style="display:flex;gap:14px;align-items:center;flex-wrap:wrap">
+      <button class="ghost" id="runScale" style="width:auto;padding:9px 18px">Experiment starten</button>
+      <span class="busy" id="scaleStatus">n = 24 … 220, je 3 Wiederholungen</span>
+      <div class="progress" style="flex:1 1 160px"><i id="scaleBar"></i></div>
+    </div>
+  </div>
+  <div class="charts2">
+    <div class="card">
+      <h3>Spektrallücke λ₂ gegen n (log–log)</h3>
+      <canvas id="chLam" style="aspect-ratio:1/0.75"></canvas>
+      <div class="legend">
+        <span><i class="bar" style="background:var(--L3)"></i>Delaunay (eben)</span>
+        <span><i class="bar" style="background:var(--L1)"></i>3-regulär (Expander)</span>
+      </div>
+    </div>
+    <div class="card">
+      <h3>Gesamte Gleislänge gegen n</h3>
+      <canvas id="chLen" style="aspect-ratio:1/0.75"></canvas>
+      <div class="legend">
+        <span><i class="bar" style="background:var(--L3)"></i>Delaunay</span>
+        <span><i class="bar" style="background:var(--L1)"></i>3-regulär</span>
+        <span><i class="bar" style="background:var(--dim)"></i>Minimalbaum</span>
+      </div>
+    </div>
+  </div>
+  <div class="prose">
+    <p style="margin-top:22px">Erwartung: λ₂ des ebenen Netzes fällt wie eine Potenz von n, λ₂ des 3-regulären Graphen bleibt auf einem Plateau. Umgekehrt wächst die Gleislänge des ebenen Netzes wie √n (Stationen mal typischer Nachbarabstand), die des Expanders dagegen linear in n, weil seine Kanten typische Stadtdurchmesser überbrücken müssen. Genau dieser Scherenschnitt ist der Grund, warum keine reale Stadt einen Expander baut.</p>
+  </div>
+</section>
+
+<!-- ============ TAB 3 ============ -->
+<section class="tabpanel" id="p-theory" role="tabpanel" aria-labelledby="t-theory">
+<div class="prose">
+
+  <h2><span class="num">01</span>Warum es in der Ebene keine Expander gibt</h2>
+  <p>Eine Familie von Graphen mit beschränktem Grad heißt Expander, wenn die Cheeger-Konstante <span class="mono">h(G) = min |∂S| / |S|</span> über <span class="mono">|S| ≤ n/2</span> nach unten durch eine Konstante beschränkt bleibt. Solche Graphen haben logarithmischen Durchmesser, hohe Robustheit und schnelle Mischzeiten — genau das, was man sich von einem Verkehrsnetz wünscht.</p>
+  <p>Das Problem: Ein Gleisnetz ist im Wesentlichen <b>planar</b> (Kreuzungen sind teuer und ändern nichts an der Größenordnung), und der Separatorsatz von Lipton und Tarjan garantiert in jedem planaren Graphen eine Knotenmenge der Größe <span class="mono">O(√n)</span>, deren Entfernung den Graphen in Teile mit höchstens <span class="mono">2n/3</span> Knoten zerlegt. Bei beschränktem Grad folgt daraus sofort</p>
+  <p class="pull">h(G) = O(1/√n) → 0.<br>Planare Graphen bilden nie eine Expander-Familie.</p>
+  <p>Über Cheeger (<span class="mono">h²/2 ≤ λ₂ ≤ 2h</span>) kollabiert damit auch die Spektrallücke, und der Durchmesser in Stationen wächst wie <span class="mono">Ω(√n)</span> statt <span class="mono">O(log n)</span>. Planarität ist dabei nicht einmal nötig: Sobald Kantenlängen und Grad beschränkt sind, erzwingt schon die Geometrie √n-Separatoren. Ein Expander hat Bisektionsweite <span class="mono">Θ(n)</span>; nach dem klassischen VLSI-Argument von Thompson und Leighton braucht seine Einbettung in die Ebene deshalb superlineare Gesamtdrahtlänge. Übersetzt: Ein U-Bahn-Expander wäre nicht langsam, sondern unbezahlbar.</p>
+
+  <h2><span class="num">02</span>Das richtige Optimalitätskriterium</h2>
+  <p>Wenn Expansion unerreichbar ist, muss man das Kriterium wechseln. Sinnvoll ist ein Zwei-Ziel-Problem über einer Nachfragematrix <span class="mono">w<sub>ij</sub></span>:</p>
+  <ul>
+    <li><b>Kosten</b> <span class="mono">L(G) = Σ ℓ(e)</span> — die gebaute Gleislänge.</li>
+    <li><b>Nutzen</b> <span class="mono">T(G) = Σ w<sub>ij</sub> d<sub>G</sub>(i,j) / Σ w<sub>ij</sub></span> — die mittlere Reiseweite.</li>
+  </ul>
+  <p>Die beiden Extrempunkte sind uninteressant: Minimiert man nur L, landet man beim Steiner-Baum mit unbeschränktem Umwegfaktor; minimiert man nur T, will man den vollständigen Graphen. Interessant ist die Pareto-Front dazwischen, und die hat eine bemerkenswerte Form: Sie fällt anfangs extrem steil. Die ersten Zusatzkanten über den Minimalbaum hinaus kaufen fast die gesamte Verbesserung.</p>
+  <p>Das planare Gegenstück zum Expander ist der <b>geometrische Spanner</b>: ein dünner Graph, dessen Wegdistanzen die euklidischen Distanzen nur um einen konstanten Faktor t verzerren. Hier ist die Lage erfreulich — die Delaunay-Triangulierung ist ein planarer Spanner mit <span class="mono">t ≤ 1,998</span> bei nur <span class="mono">O(n)</span> Kanten. Man verliert also den logarithmischen Durchmesser, rettet aber die Distanzen bis auf einen Faktor unter zwei.</p>
+  <p>Noch schärfer ist das Resultat von Aldous und Kendall: Für jedes ε gibt es ein Netz der Länge <span class="mono">(1+ε)</span> mal Steinerlänge, dessen mittlere Exzess-Weglänge nur <span class="mono">O(log(1/ε))</span> beträgt — konstruiert über einen Poisson-Linienprozess, also über ein selbstähnliches Bündel langer Geraden. Effizienz kostet in der Ebene fast nichts, solange man bereit ist, wenige sehr lange Achsen zu bauen. Das ist die mathematische Rechtfertigung für Expresslinien.</p>
+
+  <h2><span class="num">03</span>Wie das Optimum konkret aussieht</h2>
+  <p>Setzt man das Zwei-Ziel-Problem numerisch an (Gastner und Newman haben genau das getan), entstehen je nach Nachfragefeld drei stabile Formen:</p>
+  <ul>
+    <li><b>Monozentrische Nachfrage → radial plus Ring.</b> Die Radialen bedienen den Zentrumsverkehr, aber ohne Ring muss jede Tangentialfahrt durch die Mitte. Das Optimum legt genau ein bis zwei Ringe bei etwa <span class="mono">0,5</span> bis <span class="mono">0,6</span> des Stadtradius an — dort, wo das Produkt aus Tangentialnachfrage und eingespartem Umweg maximal wird.</li>
+    <li><b>Homogene Nachfrage → Gitter beziehungsweise Delaunay-artiges Netz.</b> Kein Punkt verdient Vorrang, das Optimum wird isotrop.</li>
+    <li><b>Realistische, abfallende Dichte → Kern plus Äste.</b> Innen ein vermaschter Kern, außen billige Bäume. Genau das findet man empirisch: Roth und Kollegen zeigen, dass gewachsene Metronetze weltweit gegen dieselbe Form konvergieren, mit etwa doppelt so vielen Ast- wie Kernstationen und einem Kernradius von rund der Hälfte der Gesamtausdehnung.</li>
+  </ul>
+  <p>Daganzo kommt analytisch zum selben Hybrid: Gitter im Kern, radial in der Peripherie. Die Visualisierung zeigt das direkt — schieb β nach oben und beobachte, wie der Greedy-Algorithmus zuerst Radialen und dann tangentiale Sehnen baut.</p>
+
+  <h2><span class="num">04</span>Die Pointe: Die Expansion lebt eine Ebene höher</h2>
+  <p>Der Gleisgraph kann kein Expander sein. Der <b>Transfergraph</b> aber schon — und der ist es, der zählt. Seine Knoten sind Linien, seine Kanten gemeinsame Stationen. Er ist nicht in die Ebene eingebettet, denn eine Linie ist ein langer Pfad und kann Punkte verbinden, die geometrisch weit auseinanderliegen.</p>
+  <p class="pull">Der Preis der Ebene wird in Stationen bezahlt, nicht in Umstiegen.</p>
+  <p>Deshalb braucht man in Paris, Tokio oder Moskau fast nie mehr als zwei bis drei Umstiege, obwohl der Gleisgraph einen Durchmesser von vielen Dutzend Stationen hat. Das eigentliche Designproblem einer U-Bahn ist damit nicht der Graph, sondern die <b>Überdeckung des Graphen durch Pfade</b>: Wähle wenige lange Linien so, dass ihr Schnittmuster klein-durchmessrig wird. Die Visualisierung zerlegt das gebaute Netz in Linien (jeweils möglichst geradlinig fortgesetzt, wie in der Praxis) und zeigt daneben den resultierenden Transfergraphen samt Durchmesser und Spektrallücke. Vergleiche die beiden λ₂-Werte — sie unterscheiden sich typischerweise um eine bis zwei Größenordnungen.</p>
+  <p>Verwandt ist der Begriff der <em>Highway Dimension</em> von Abraham und Koautoren: Reale Verkehrsnetze haben die Eigenschaft, dass alle hinreichend langen kürzesten Wege durch wenige Knoten laufen. Das ist die algorithmische Formulierung derselben Hierarchie — und der Grund, warum Contraction Hierarchies auf Straßennetzen so absurd gut funktionieren und auf Expandern gar nicht.</p>
+
+  <h2><span class="num">05</span>Was im Modell fehlt</h2>
+  <p>Die Simulation vereinfacht bewusst: Nachfrage sitzt nur an Stationen (kein Zugangsweg), Umsteigezeiten gehen nicht in die Reiseweite ein, Taktfolge und Kapazität fehlen, und die Nachfrage ist exogen — in Wahrheit erzeugt das Netz die Siedlungsdichte, die es dann bedient. Wer das mitmodelliert, landet bei Netzwachstumsmodellen mit Rückkopplung, in denen die Ringe von selbst entstehen.</p>
+
+  <div class="note">
+    <b style="color:var(--paper)">Hinweis zu den Quellen:</b> Ich habe keinen Zugriff auf eine Literaturdatenbank und kann Zitate nicht verifizieren — bitte gegenprüfen, bevor du etwas davon weiterverwendest.
+    <ul class="reflist" style="margin:10px 0 0;padding-left:18px">
+      <li>Lipton, Tarjan (1979): A separator theorem for planar graphs</li>
+      <li>Thompson (1980) / Leighton (1983): VLSI-Flächenschranken über Bisektionsweite</li>
+      <li>Xia (2013): The stretch factor of the Delaunay triangulation is less than 1.998</li>
+      <li>Aldous, Kendall (2008): Short-length routes in low-cost networks via Poisson line patterns</li>
+      <li>Gastner, Newman (2006): Optimal design of spatial distribution networks</li>
+      <li>Roth, Kang, Batty, Barthelemy (2012): A long-time limit for world subway networks</li>
+      <li>Daganzo (2010): Structure of competitive transit networks</li>
+      <li>Barthelemy (2011): Spatial networks, Physics Reports</li>
+      <li>Abraham, Fiat, Goldberg, Werneck (2010): Highway dimension, shortest paths, and provably efficient algorithms</li>
+    </ul>
+  </div>
+</div>
+</section>
+
+</div>
+
+<script>
+"use strict";
+/* ===================================================================
+   0. Hilfsmittel
+=================================================================== */
+const REDUCED = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+const LINECOLS = ['#E4572E','#F2B134','#25C4B0','#4C7DF0','#C74E9E','#7ACB6B','#9B7BE8','#E9ECF6','#F07D68','#5FD3C4'];
+const CSSV = k => getComputedStyle(document.documentElement).getPropertyValue(k).trim();
+
+function mulberry32(a){return function(){a|=0;a=a+0x6D2B79F5|0;let t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296;};}
+const fmt=(x,d=2)=>(!isFinite(x)?'∞':x.toLocaleString('de-DE',{minimumFractionDigits:d,maximumFractionDigits:d}));
+const fmtE=x=>{if(!isFinite(x)||x<=0)return '0';const e=Math.floor(Math.log10(x));const m=x/Math.pow(10,e);return m.toFixed(1).replace('.',',')+'·10'+sup(e);};
+function sup(n){const m={'-':'⁻','0':'⁰','1':'¹','2':'²','3':'³','4':'⁴','5':'⁵','6':'⁶','7':'⁷','8':'⁸','9':'⁹'};return String(n).split('').map(c=>m[c]||c).join('');}
+
+/* Binärer Min-Heap für Dijkstra */
+class Heap{
+  constructor(){this.k=[];this.v=[];}
+  get size(){return this.k.length;}
+  push(key,val){this.k.push(key);this.v.push(val);let i=this.k.length-1;
+    while(i>0){const p=(i-1)>>1;if(this.k[p]<=this.k[i])break;this.sw(i,p);i=p;}}
+  pop(){const rv=this.v[0],n=this.k.length-1;this.sw(0,n);this.k.pop();this.v.pop();
+    let i=0;for(;;){const l=2*i+1,r=l+1;let s=i;
+      if(l<n&&this.k[l]<this.k[s])s=l; if(r<n&&this.k[r]<this.k[s])s=r;
+      if(s===i)break;this.sw(i,s);i=s;}
+    return rv;}
+  sw(i,j){let t=this.k[i];this.k[i]=this.k[j];this.k[j]=t;t=this.v[i];this.v[i]=this.v[j];this.v[j]=t;}
+}
+
+/* ===================================================================
+   1. Stadt erzeugen
+=================================================================== */
+function samplePoints(n,kind,seed){
+  const rnd=mulberry32(seed*2654435761>>>0);
+  const pts=[];
+  const centers=[[0,0],[0.46,0.38],[-0.44,0.32],[0.06,-0.52]];
+  let guard=0;
+  while(pts.length<n && guard++<n*400){
+    let x,y;
+    if(kind==='uni'){
+      const r=Math.sqrt(rnd()),t=rnd()*2*Math.PI; x=r*Math.cos(t); y=r*Math.sin(t);
+    }else if(kind==='mono'){
+      const r0=0.30, r=r0*(-Math.log(1e-12+rnd())-Math.log(1e-12+rnd()));
+      if(r>1.0) continue;
+      const t=rnd()*2*Math.PI; x=r*Math.cos(t); y=r*Math.sin(t);
+    }else{
+      const c=centers[Math.floor(rnd()*4)];
+      const g=()=>{const u=1e-12+rnd(),v=rnd();return Math.sqrt(-2*Math.log(u))*Math.cos(2*Math.PI*v);};
+      x=c[0]+0.20*g(); y=c[1]+0.20*g();
+      if(x*x+y*y>1.0) continue;
+    }
+    // Mindestabstand, damit keine Doppelstationen entstehen
+    let ok=true;
+    for(const p of pts){const dx=p.x-x,dy=p.y-y;if(dx*dx+dy*dy<0.0016){ok=false;break;}}
+    if(ok) pts.push({x,y});
+  }
+  return pts;
+}
+
+function buildDemand(pts,beta){
+  const n=pts.length, p=new Float64Array(n);
+  for(let i=0;i<n;i++){
+    const r=Math.hypot(pts[i].x,pts[i].y);
+    p[i]=1+beta*5*Math.exp(-r/0.28);
+  }
+  const W=new Float64Array(n*n);
+  let sw=0, se=0;
+  for(let i=0;i<n;i++)for(let j=i+1;j<n;j++){
+    const w=p[i]*p[j]; W[i*n+j]=w; sw+=w;
+    se+=w*Math.hypot(pts[i].x-pts[j].x,pts[i].y-pts[j].y);
+  }
+  return {p,W,sumW:sw,Teuc:se/sw};
+}
+
+/* ===================================================================
+   2. Netz-Bauprinzipien
+=================================================================== */
+const key=(u,v)=>u<v?u+','+v:v+','+u;
+const dist=(pts,u,v)=>Math.hypot(pts[u].x-pts[v].x,pts[u].y-pts[v].y);
+
+function mst(pts){
+  const n=pts.length, inT=new Uint8Array(n), best=new Float64Array(n).fill(Infinity), from=new Int32Array(n).fill(-1);
+  const E=[]; best[0]=0;
+  for(let it=0;it<n;it++){
+    let b=-1,bv=Infinity;
+    for(let i=0;i<n;i++) if(!inT[i]&&best[i]<bv){bv=best[i];b=i;}
+    if(b<0)break; inT[b]=1;
+    if(from[b]>=0) E.push({u:from[b],v:b});
+    for(let i=0;i<n;i++) if(!inT[i]){const d=dist(pts,b,i); if(d<best[i]){best[i]=d;from[i]=b;}}
+  }
+  return E;
+}
+
+function circum(a,b,c){
+  const d=2*(a[0]*(b[1]-c[1])+b[0]*(c[1]-a[1])+c[0]*(a[1]-b[1]));
+  if(Math.abs(d)<1e-14) return null;
+  const A=a[0]*a[0]+a[1]*a[1],B=b[0]*b[0]+b[1]*b[1],C=c[0]*c[0]+c[1]*c[1];
+  const ux=(A*(b[1]-c[1])+B*(c[1]-a[1])+C*(a[1]-b[1]))/d;
+  const uy=(A*(c[0]-b[0])+B*(a[0]-c[0])+C*(b[0]-a[0]))/d;
+  return {x:ux,y:uy,r2:(a[0]-ux)**2+(a[1]-uy)**2};
+}
+function delaunay(pts){
+  const N=pts.length, P=pts.map(p=>[p.x,p.y]);
+  P.push([-60,-40],[60,-40],[0,70]);
+  let tris=[[N,N+1,N+2]];
+  for(let i=0;i<N;i++){
+    const good=[],cnt=new Map();
+    for(const t of tris){
+      const cc=circum(P[t[0]],P[t[1]],P[t[2]]);
+      const bad=cc && ((P[i][0]-cc.x)**2+(P[i][1]-cc.y)**2) < cc.r2*(1+1e-12);
+      if(!bad){good.push(t);continue;}
+      for(const e of [[t[0],t[1]],[t[1],t[2]],[t[2],t[0]]]){
+        const k=key(e[0],e[1]); cnt.set(k,(cnt.get(k)||0)+1);
+      }
+    }
+    tris=good;
+    for(const [k,c] of cnt) if(c===1){const [a,b]=k.split(',').map(Number); tris.push([a,b,i]);}
+  }
+  const s=new Set();
+  for(const t of tris){
+    if(t[0]>=N||t[1]>=N||t[2]>=N) continue;
+    for(const e of [[t[0],t[1]],[t[1],t[2]],[t[2],t[0]]]) s.add(key(e[0],e[1]));
+  }
+  return [...s].map(k=>{const [u,v]=k.split(',').map(Number);return {u,v};});
+}
+
+function radialTree(pts){
+  const n=pts.length;
+  const r=pts.map(p=>Math.hypot(p.x,p.y));
+  const ord=[...Array(n).keys()].sort((a,b)=>r[a]-r[b]);
+  const E=[];
+  for(let k=1;k<n;k++){
+    const i=ord[k]; let b=-1,bv=Infinity;
+    for(let m=0;m<k;m++){const j=ord[m]; const d=dist(pts,i,j); if(d<bv){bv=d;b=j;}}
+    E.push({u:i,v:b});
+  }
+  return E;
+}
+function radialRing(pts){
+  const E=radialTree(pts), n=pts.length;
+  const band=[];
+  for(let i=0;i<n;i++){const r=Math.hypot(pts[i].x,pts[i].y); if(r>0.28&&r<0.62) band.push(i);}
+  band.sort((a,b)=>Math.atan2(pts[a].y,pts[a].x)-Math.atan2(pts[b].y,pts[b].x));
+  const s=new Set(E.map(e=>key(e.u,e.v)));
+  for(let i=0;i<band.length;i++){
+    const u=band[i],v=band[(i+1)%band.length];
+    if(band.length>2 && !s.has(key(u,v))){s.add(key(u,v));E.push({u,v});}
+  }
+  return E;
+}
+function coneGraph(pts,k){
+  const n=pts.length, s=new Set(), E=[];
+  for(let i=0;i<n;i++){
+    const best=new Array(k).fill(-1), bv=new Array(k).fill(Infinity);
+    for(let j=0;j<n;j++){
+      if(i===j) continue;
+      const a=Math.atan2(pts[j].y-pts[i].y,pts[j].x-pts[i].x);
+      const c=Math.floor(((a+Math.PI)/(2*Math.PI))*k)%k;
+      const d=dist(pts,i,j);
+      if(d<bv[c]){bv[c]=d;best[c]=j;}
+    }
+    for(const j of best) if(j>=0 && !s.has(key(i,j))){s.add(key(i,j));E.push({u:i,v:j});}
+  }
+  return E;
+}
+function random3reg(n,seed){
+  const rnd=mulberry32((seed*97+13)>>>0);
+  for(let att=0;att<300;att++){
+    const stubs=[];
+    for(let i=0;i<n;i++) for(let d=0;d<3;d++) stubs.push(i);
+    if(stubs.length%2) stubs.push(0);   // ungerades n: ein Knoten bekommt Grad 4
+    for(let i=stubs.length-1;i>0;i--){const j=Math.floor(rnd()*(i+1));[stubs[i],stubs[j]]=[stubs[j],stubs[i]];}
+    const s=new Set(); let ok=true;
+    for(let i=0;i<stubs.length;i+=2){
+      const u=stubs[i],v=stubs[i+1];
+      if(u===v||s.has(key(u,v))){ok=false;break;}
+      s.add(key(u,v));
+    }
+    if(!ok) continue;
+    const E=[...s].map(k=>{const [u,v]=k.split(',').map(Number);return {u,v};});
+    if(connected(n,E)) return E;
+  }
+  return null;
+}
+function connected(n,E){
+  const adj=Array.from({length:n},()=>[]);
+  for(const e of E){adj[e.u].push(e.v);adj[e.v].push(e.u);}
+  const seen=new Uint8Array(n); const st=[0]; seen[0]=1; let c=1;
+  while(st.length){const u=st.pop(); for(const v of adj[u]) if(!seen[v]){seen[v]=1;c++;st.push(v);}}
+  return c===n;
+}
+
+/* ===================================================================
+   3. Metrik
+=================================================================== */
+function adjacency(n,E,pts){
+  const adj=Array.from({length:n},()=>[]);
+  E.forEach((e,idx)=>{
+    const w=dist(pts,e.u,e.v);
+    adj[e.u].push({t:e.v,w,idx}); adj[e.v].push({t:e.u,w,idx});
+  });
+  return adj;
+}
+/* Alle-Paare-kürzeste-Wege; optional Kantenlasten */
+function apsp(n,adj,W,collectLoad,mEdges){
+  const D=new Float64Array(n*n).fill(Infinity);
+  const load = collectLoad ? new Float64Array(mEdges) : null;
+  const prev=new Int32Array(n), pe=new Int32Array(n);
+  for(let s=0;s<n;s++){
+    const d=new Float64Array(n).fill(Infinity); d[s]=0;
+    prev.fill(-1); pe.fill(-1);
+    const done=new Uint8Array(n), h=new Heap(); h.push(0,s);
+    while(h.size){
+      const u=h.pop(); if(done[u])continue; done[u]=1;
+      for(const a of adj[u]){
+        const nd=d[u]+a.w;
+        if(nd<d[a.t]-1e-12){d[a.t]=nd;prev[a.t]=u;pe[a.t]=a.idx;h.push(nd,a.t);}
+      }
+    }
+    for(let j=0;j<n;j++) D[s*n+j]=d[j];
+    if(collectLoad){
+      for(let j=s+1;j<n;j++){
+        const w=W[s*n+j]; if(!(w>0)||!isFinite(d[j]))continue;
+        let c=j; let g=0;
+        while(prev[c]>=0 && g++<n+2){ load[pe[c]]+=w; c=prev[c]; }
+      }
+    }
+  }
+  return {D,load};
+}
+/* λ₂ des normierten Laplace-Operators, Potenzmethode mit Deflation */
+function lambda2(n,E){
+  if(!E||E.length===0) return 0;
+  const deg=new Float64Array(n);
+  for(const e of E){deg[e.u]++;deg[e.v]++;}
+  for(let i=0;i<n;i++) if(deg[i]===0) return 0;
+  const sq=new Float64Array(n); let nn=0;
+  for(let i=0;i<n;i++){sq[i]=Math.sqrt(deg[i]);nn+=deg[i];}
+  nn=Math.sqrt(nn);
+  const v0=new Float64Array(n); for(let i=0;i<n;i++) v0[i]=sq[i]/nn;
+  const rnd=mulberry32(12345);
+  let x=new Float64Array(n); for(let i=0;i<n;i++) x[i]=rnd()-0.5;
+  const orth=v=>{let d=0;for(let i=0;i<n;i++)d+=v[i]*v0[i];for(let i=0;i<n;i++)v[i]-=d*v0[i];};
+  const nrm=v=>{let s=0;for(let i=0;i<n;i++)s+=v[i]*v[i];s=Math.sqrt(s)||1;for(let i=0;i<n;i++)v[i]/=s;return s;};
+  orth(x); nrm(x);
+  let ray=0;
+  const y=new Float64Array(n);
+  for(let it=0;it<900;it++){
+    y.fill(0);
+    for(let i=0;i<n;i++) y[i]=x[i];              // I·x
+    for(const e of E){                            // D^{-1/2} A D^{-1/2} x
+      const u=e.u,v=e.v,s=1/(sq[u]*sq[v]);
+      y[u]+=x[v]*s; y[v]+=x[u]*s;
+    }
+    orth(y);
+    let d=0; for(let i=0;i<n;i++) d+=y[i]*x[i];
+    ray=d;
+    nrm(y); x.set(y);
+  }
+  return Math.max(0,Math.min(2,1-(ray-1)));
+}
+function hopStats(n,E){
+  const adj=Array.from({length:n},()=>[]);
+  for(const e of E){adj[e.u].push(e.v);adj[e.v].push(e.u);}
+  let diam=0,sum=0,cnt=0;
+  const d=new Int32Array(n);
+  for(let s=0;s<n;s++){
+    d.fill(-1); d[s]=0; const q=[s];
+    for(let h=0;h<q.length;h++){const u=q[h];for(const v of adj[u]) if(d[v]<0){d[v]=d[u]+1;q.push(v);}}
+    for(let j=0;j<n;j++){ if(d[j]<0){diam=Infinity;continue;} if(d[j]>diam)diam=d[j]; sum+=d[j];cnt++; }
+  }
+  return {diam, mean:sum/Math.max(1,cnt)};
+}
+function totalLen(E,pts){let s=0;for(const e of E)s+=dist(pts,e.u,e.v);return s;}
+
+function evaluate(E,pts,dm){
+  const n=pts.length;
+  const adj=adjacency(n,E,pts);
+  const {D,load}=apsp(n,adj,dm.W,true,E.length);
+  let T=0, worst=1, bad=false;
+  for(let i=0;i<n;i++)for(let j=i+1;j<n;j++){
+    const w=dm.W[i*n+j], d=D[i*n+j];
+    if(!isFinite(d)){bad=true;continue;}
+    T+=w*d;
+    const e=Math.hypot(pts[i].x-pts[j].x,pts[i].y-pts[j].y);
+    if(e>0.12){const st=d/e; if(st>worst)worst=st;}
+  }
+  T/=dm.sumW;
+  const hs=hopStats(n,E);
+  return {
+    E, L:totalLen(E,pts), T, stretch:bad?Infinity:T/dm.Teuc, worst:bad?Infinity:worst,
+    lam2:lambda2(n,E), hopDiam:hs.diam, hopMean:hs.mean, load, connectedOk:!bad,
+    avgDeg:2*E.length/n
+  };
+}
+
+/* ===================================================================
+   4. Greedy-Optimierer (marginaler Nutzen pro Gleismeter)
+=================================================================== */
+function candidateEdges(pts,have,seed){
+  const n=pts.length, all=[];
+  for(let i=0;i<n;i++)for(let j=i+1;j<n;j++) all.push({u:i,v:j,d:dist(pts,i,j)});
+  all.sort((a,b)=>a.d-b.d);
+  const shortN=Math.min(all.length,10*n);
+  const out=all.slice(0,shortN);
+  const rnd=mulberry32((seed*7919+3)>>>0);
+  const rest=all.slice(shortN);
+  for(let k=0;k<Math.min(rest.length,2*n);k++) out.push(rest[Math.floor(rnd()*rest.length)]);
+  const seen=new Set(have.map(e=>key(e.u,e.v))), res=[];
+  for(const e of out){const k=key(e.u,e.v); if(!seen.has(k)){seen.add(k);res.push(e);}}
+  return res;
+}
+function gainOf(D,W,n,u,v,t){
+  let g=0;
+  const ou=u*n, ov=v*n;
+  for(let i=0;i<n;i++){
+    const a=D[i*n+u]+t, b=D[i*n+v]+t, base=i*n;
+    for(let j=i+1;j<n;j++){
+      const cur=D[base+j];
+      let nd=a+D[ov+j];
+      const nd2=b+D[ou+j];
+      if(nd2<nd) nd=nd2;
+      if(nd<cur-1e-12) g+=W[base+j]*(cur-nd);
+    }
+  }
+  return g;
+}
+/* Generator: pro Schritt eine Kante, inklusive fertiger Pareto-Koordinaten */
+function* greedyGrow(pts,dm,seed,maxLen){
+  const n=pts.length;
+  const E=mst(pts).map(e=>({u:e.u,v:e.v}));
+  let L=totalLen(E,pts);
+  const cand=candidateEdges(pts,E,seed);
+  const used=new Uint8Array(cand.length);
+  for(let step=0;step<240;step++){
+    const adj=adjacency(n,E,pts);
+    const {D}=apsp(n,adj,dm.W,false,E.length);
+    let T=0;
+    for(let i=0;i<n;i++)for(let j=i+1;j<n;j++) T+=dm.W[i*n+j]*D[i*n+j];
+    yield {E:E.slice(),L,stretch:(T/dm.sumW)/dm.Teuc};
+    if(L>=maxLen) return;
+    let bi=-1,br=-1e-18;
+    for(let c=0;c<cand.length;c++){
+      if(used[c])continue;
+      const e=cand[c];
+      if(L+e.d>maxLen*1.02) continue;
+      const g=gainOf(D,dm.W,n,e.u,e.v,e.d);
+      const r=g/e.d;
+      if(r>br){br=r;bi=c;}
+    }
+    if(bi<0||br<=1e-12) return;
+    used[bi]=1;
+    E.push({u:cand[bi].u,v:cand[bi].v});
+    L+=cand[bi].d;
+  }
+}
+
+/* ===================================================================
+   5. Linienzerlegung + Transfergraph
+=================================================================== */
+function decomposeLines(E,pts,load){
+  const n=pts.length, m=E.length;
+  const inc=Array.from({length:n},()=>[]);
+  E.forEach((e,i)=>{inc[e.u].push(i);inc[e.v].push(i);});
+  const used=new Uint8Array(m);
+  const order=[...Array(m).keys()].sort((a,b)=>(load?load[b]-load[a]:0)||(dist(pts,E[b].u,E[b].v)-dist(pts,E[a].u,E[a].v)));
+  const lines=[];
+  const dirAng=(a,b)=>Math.atan2(pts[b].y-pts[a].y,pts[b].x-pts[a].x);
+  const wrap=a=>{while(a>Math.PI)a-=2*Math.PI;while(a<-Math.PI)a+=2*Math.PI;return a;};
+
+  function extend(path,edgesOfLine){
+    for(let guard=0;guard<n*2;guard++){
+      const c=path[path.length-1], p=path[path.length-2];
+      const inAng=dirAng(p,c);
+      let bi=-1,bt=Infinity,bn=-1;
+      for(const ei of inc[c]){
+        if(used[ei])continue;
+        const o=E[ei].u===c?E[ei].v:E[ei].u;
+        if(path.includes(o))continue;
+        const turn=Math.abs(wrap(dirAng(c,o)-inAng));
+        if(turn<bt){bt=turn;bi=ei;bn=o;}
+      }
+      if(bi<0||bt>2.0) return;      // > ~115° gilt als neue Linie
+      used[bi]=1; edgesOfLine.push(bi); path.push(bn);
+    }
+  }
+  for(const seed of order){
+    if(used[seed])continue;
+    used[seed]=1;
+    const path=[E[seed].u,E[seed].v], eol=[seed];
+    extend(path,eol);
+    path.reverse(); extend(path,eol);
+    lines.push({nodes:path.slice(),edges:eol.slice()});
+  }
+  lines.sort((a,b)=>b.nodes.length-a.nodes.length);   // Stammlinien zuerst einfärben
+  // Kante -> Linie
+  const edgeLine=new Int32Array(m).fill(-1);
+  lines.forEach((l,i)=>l.edges.forEach(ei=>edgeLine[ei]=i));
+  return {lines,edgeLine};
+}
+function transferGraph(lines){
+  const k=lines.length, sets=lines.map(l=>new Set(l.nodes)), E=[];
+  for(let i=0;i<k;i++)for(let j=i+1;j<k;j++){
+    let share=false;
+    for(const v of sets[i]) if(sets[j].has(v)){share=true;break;}
+    if(share) E.push({u:i,v:j});
+  }
+  const adj=Array.from({length:k},()=>[]);
+  for(const e of E){adj[e.u].push(e.v);adj[e.v].push(e.u);}
+  let diam=0, sum=0,cnt=0;
+  const d=new Int32Array(k);
+  for(let s=0;s<k;s++){
+    d.fill(-1);d[s]=0;const q=[s];
+    for(let h=0;h<q.length;h++){const u=q[h];for(const v of adj[u])if(d[v]<0){d[v]=d[u]+1;q.push(v);}}
+    for(let j=0;j<k;j++){if(d[j]<0){diam=Infinity;continue;} if(d[j]>diam)diam=d[j];sum+=d[j];cnt++;}
+  }
+  return {k,E,diam,mean:sum/Math.max(1,cnt),lam2:k>1?lambda2(k,E):0};
+}
+
+/* ===================================================================
+   6. Zustand
+=================================================================== */
+const S={
+  n:60,density:'mono',beta:0.6,seed:7,preset:'greedy',budget:1.6,
+  showLines:true,showLoad:true,showDens:true,
+  pts:[],dm:null,LMST:0,seq:[],cur:null,lineInfo:null,tg:null,
+  presetMarks:[],pareto:[],animAt:0,animTimer:null
+};
+
+/* ===================================================================
+   7. Zeichnen
+=================================================================== */
+function fitCanvas(cv){
+  const dpr=Math.min(2,window.devicePixelRatio||1);
+  const r=cv.getBoundingClientRect();
+  cv.width=Math.max(1,Math.round(r.width*dpr));
+  cv.height=Math.max(1,Math.round(r.height*dpr));
+  const ctx=cv.getContext('2d');
+  ctx.setTransform(dpr,0,0,dpr,0,0);
+  return {ctx,w:r.width,h:r.height};
+}
+function drawNet(){
+  const cv=document.getElementById('net');
+  const {ctx,w,h}=fitCanvas(cv);
+  ctx.clearRect(0,0,w,h);
+  const sc=Math.min(w,h)*0.44, cx=w/2, cy=h/2;
+  const X=p=>cx+p.x*sc, Y=p=>cy-p.y*sc;
+
+  // Hintergrund: Nachfragedichte
+  if(S.showDens && S.pts.length){
+    const g=ctx.createRadialGradient(cx,cy,0,cx,cy,sc*1.15);
+    if(S.density==='mono'){
+      g.addColorStop(0,'rgba(76,125,240,0.16)');g.addColorStop(0.45,'rgba(76,125,240,0.05)');g.addColorStop(1,'rgba(76,125,240,0)');
+      ctx.fillStyle=g;ctx.fillRect(0,0,w,h);
+    }else if(S.density==='uni'){
+      ctx.fillStyle='rgba(76,125,240,0.05)';ctx.beginPath();ctx.arc(cx,cy,sc,0,7);ctx.fill();
+    }else{
+      for(const c of [[0,0],[0.46,0.38],[-0.44,0.32],[0.06,-0.52]]){
+        const gx=cx+c[0]*sc, gy=cy-c[1]*sc;
+        const gg=ctx.createRadialGradient(gx,gy,0,gx,gy,sc*0.42);
+        gg.addColorStop(0,'rgba(76,125,240,0.16)');gg.addColorStop(1,'rgba(76,125,240,0)');
+        ctx.fillStyle=gg;ctx.fillRect(0,0,w,h);
+      }
+    }
+    ctx.strokeStyle='rgba(139,150,184,0.16)';ctx.lineWidth=1;
+    ctx.beginPath();ctx.arc(cx,cy,sc,0,7);ctx.stroke();
+  }
+
+  const cur=S.cur;
+  if(!cur){return;}
+  const E=cur.E, pts=S.pts;
+  const maxLoad=cur.load?Math.max(1e-9,...cur.load):1;
+
+  ctx.lineCap='round'; ctx.lineJoin='round';
+  E.forEach((e,i)=>{
+    let col=CSSV('--dim');
+    if(S.showLines && S.lineInfo && S.lineInfo.edgeLine[i]>=0)
+      col=LINECOLS[S.lineInfo.edgeLine[i]%LINECOLS.length];
+    let lw=2.6;
+    if(S.showLoad && cur.load) lw=1.4+4.6*Math.pow(cur.load[i]/maxLoad,0.55);
+    ctx.strokeStyle=col; ctx.lineWidth=lw; ctx.globalAlpha=0.92;
+    ctx.beginPath(); ctx.moveTo(X(pts[e.u]),Y(pts[e.u])); ctx.lineTo(X(pts[e.v]),Y(pts[e.v])); ctx.stroke();
+  });
+  ctx.globalAlpha=1;
+
+  // Stationen
+  const deg=new Int32Array(pts.length);
+  E.forEach(e=>{deg[e.u]++;deg[e.v]++;});
+  const linesAt=new Array(pts.length).fill(0).map(()=>new Set());
+  if(S.lineInfo) E.forEach((e,i)=>{const l=S.lineInfo.edgeLine[i];linesAt[e.u].add(l);linesAt[e.v].add(l);});
+  const pmax=Math.max(...S.dm.p);
+  for(let i=0;i<pts.length;i++){
+    const r=2.1+3.0*Math.pow(S.dm.p[i]/pmax,1.3);
+    const inter=linesAt[i].size>=2;
+    ctx.beginPath(); ctx.arc(X(pts[i]),Y(pts[i]),inter?r+1.6:r,0,7);
+    if(inter){ctx.fillStyle=CSSV('--ink2');ctx.fill();ctx.lineWidth=2;ctx.strokeStyle=CSSV('--paper');ctx.stroke();}
+    else{ctx.fillStyle=CSSV('--paper');ctx.fill();}
+  }
+}
+
+function drawPareto(){
+  const cv=document.getElementById('pareto');
+  const {ctx,w,h}=fitCanvas(cv);
+  ctx.clearRect(0,0,w,h);
+  const pad={l:46,r:14,t:16,b:34};
+  const P=S.pareto;
+  const marks=S.presetMarks;
+  const xs=[...P.map(d=>d.x),...marks.map(m=>m.x)];
+  const ys=[...P.map(d=>d.y),...marks.map(m=>m.y)].filter(isFinite);
+  if(!xs.length)return;
+  const x0=1, x1=Math.max(2.9,Math.min(5.6,Math.max(...xs)*1.05));
+  const y0=1, y1=Math.max(1.25,Math.min(2.9,Math.max(...ys)*1.06));
+  const PX=v=>pad.l+(v-x0)/(x1-x0)*(w-pad.l-pad.r);
+  const PY=v=>h-pad.b-(v-y0)/(y1-y0)*(h-pad.t-pad.b);
+
+  ctx.font='10px "IBM Plex Mono",monospace'; ctx.fillStyle=CSSV('--dim');
+  ctx.strokeStyle=CSSV('--rule'); ctx.lineWidth=1;
+  for(let k=0;k<=4;k++){
+    const yv=y0+(y1-y0)*k/4, py=PY(yv);
+    ctx.beginPath();ctx.moveTo(pad.l,py);ctx.lineTo(w-pad.r,py);ctx.stroke();
+    ctx.textAlign='right';ctx.textBaseline='middle';ctx.fillText(fmt(yv,2),pad.l-7,py);
+  }
+  for(let k=0;k<=4;k++){
+    const xv=x0+(x1-x0)*k/4, px=PX(xv);
+    ctx.textAlign='center';ctx.textBaseline='top';ctx.fillText(fmt(xv,1),px,h-pad.b+7);
+  }
+  ctx.textAlign='left';ctx.fillStyle=CSSV('--muted');
+  ctx.fillText('Umwegfaktor',6,4);
+  ctx.textAlign='right';ctx.fillText('L / L_MST',w-pad.r,h-13);
+
+  // Greedy-Kurve
+  if(P.length>1){
+    ctx.strokeStyle=CSSV('--L3');ctx.lineWidth=2.2;ctx.beginPath();
+    P.forEach((d,i)=>{const px=PX(d.x),py=PY(d.y);i?ctx.lineTo(px,py):ctx.moveTo(px,py);});
+    ctx.stroke();
+  }
+  // Presets
+  for(const m of marks){
+    if(!isFinite(m.y))continue;
+    const off=m.x>x1||m.y>y1;
+    const px=PX(Math.min(m.x,x1)),py=PY(Math.min(m.y,y1));
+    ctx.beginPath();ctx.arc(px,py,4,0,7);
+    if(off){ctx.strokeStyle=m.c;ctx.lineWidth=1.8;ctx.stroke();}else{ctx.fillStyle=m.c;ctx.fill();}
+    ctx.fillStyle=CSSV('--muted');ctx.font='10px "IBM Plex Mono",monospace';
+    ctx.textAlign=px>w*0.62?'right':'left';ctx.textBaseline='bottom';
+    ctx.fillText(m.n+(off?' ↗':''),px+(px>w*0.62?-7:7),py-3);
+  }
+  // aktueller Punkt
+  if(S.cur&&isFinite(S.cur.stretch)){
+    const px=PX(Math.min(S.cur.L/S.LMST,x1)),py=PY(Math.min(S.cur.stretch,y1));
+    ctx.beginPath();ctx.arc(px,py,6.5,0,7);ctx.strokeStyle=CSSV('--paper');ctx.lineWidth=2;ctx.stroke();
+  }
+}
+
+function drawLineGraph(){
+  const cv=document.getElementById('lg');
+  const {ctx,w,h}=fitCanvas(cv);
+  ctx.clearRect(0,0,w,h);
+  const tg=S.tg; if(!tg||tg.k===0)return;
+  const R=Math.min(w,h)*0.33, cx=w/2, cy=h/2-6;
+  const pos=[...Array(tg.k).keys()].map(i=>{
+    const a=-Math.PI/2+2*Math.PI*i/tg.k;
+    return {x:cx+R*Math.cos(a),y:cy+R*Math.sin(a)};
+  });
+  ctx.strokeStyle='rgba(139,150,184,0.42)';ctx.lineWidth=1.1;
+  for(const e of tg.E){ctx.beginPath();ctx.moveTo(pos[e.u].x,pos[e.u].y);ctx.lineTo(pos[e.v].x,pos[e.v].y);ctx.stroke();}
+  for(let i=0;i<tg.k;i++){
+    ctx.beginPath();ctx.arc(pos[i].x,pos[i].y,7,0,7);
+    ctx.fillStyle=LINECOLS[i%LINECOLS.length];ctx.fill();
+  }
+  ctx.font='11px "IBM Plex Mono",monospace';ctx.textAlign='center';ctx.fillStyle=CSSV('--muted');
+  ctx.fillText(tg.k+' Linien · Durchmesser '+(isFinite(tg.diam)?tg.diam:'∞')+' Umstiege · λ₂ = '+fmt(tg.lam2,2),cx,h-12);
+}
+
+/* ===================================================================
+   8. Kennzahlen-Kacheln
+=================================================================== */
+function renderTiles(){
+  const c=S.cur; if(!c)return;
+  const t=[
+    ['Gleislänge L','×L_MST',fmt(c.L/S.LMST,2),'hi'],
+    ['Umwegfaktor','ø',fmt(c.stretch,3),c.stretch<1.15?'hi':''],
+    ['schlimmster Umweg','max',fmt(c.worst,2),c.worst>2.2?'warnv':''],
+    ['mittlerer Grad','',fmt(c.avgDeg,2),''],
+    ['Hop-Durchmesser','Stat.',isFinite(c.hopDiam)?c.hopDiam:'∞',''],
+    ['λ₂ Gleisnetz','',fmtE(c.lam2),c.lam2<0.05?'warnv':''],
+    ['λ₂ Transfergraph','',S.tg?fmt(S.tg.lam2,2):'–','hi'],
+    ['max. Umstiege','',S.tg?(isFinite(S.tg.diam)?S.tg.diam:'∞'):'–','hi'],
+  ];
+  document.getElementById('tiles').innerHTML=t.map(([k,u,v,cl])=>
+    `<div class="tile ${cl}"><span class="k">${k}</span><span class="v">${v}<span class="u">${u}</span></span></div>`).join('');
+}
+
+/* ===================================================================
+   9. Pipeline
+=================================================================== */
+function buildPresetEdges(name){
+  switch(name){
+    case 'mst': return mst(S.pts);
+    case 'radial': return radialTree(S.pts);
+    case 'ring': return radialRing(S.pts);
+    case 'grid': return coneGraph(S.pts,4);
+    case 'delaunay': return delaunay(S.pts);
+    case 'reg3': return random3reg(S.pts.length,S.seed)||mst(S.pts);
+    default: return mst(S.pts);
+  }
+}
+function finish(res){
+  S.cur=res;
+  S.lineInfo=decomposeLines(res.E,S.pts,res.load);
+  S.tg=transferGraph(S.lineInfo.lines);
+  drawNet();renderTiles();drawPareto();drawLineGraph();
+}
+function applyPreset(){
+  if(S.preset==='greedy'){ applyBudget(); return; }
+  finish(evaluate(buildPresetEdges(S.preset),S.pts,S.dm));
+}
+function applyBudget(){
+  if(!S.seq.length)return;
+  const target=S.budget*S.LMST;
+  let k=0; for(let i=0;i<S.seq.length;i++) if(S.seq[i].L<=target+1e-9) k=i;
+  finish(evaluate(S.seq[k].E,S.pts,S.dm));
+}
+
+function rebuildCity(){
+  S.pts=samplePoints(S.n,S.density,S.seed);
+  S.dm=buildDemand(S.pts,S.beta);
+  S.LMST=totalLen(mst(S.pts),S.pts);
+  // Referenzpunkte für die Pareto-Grafik
+  const defs=[['mst','MST',CSSV('--dim')],['radial','radial','#F2B134'],['ring','+Ring','#C74E9E'],
+              ['grid','Gitter','#7ACB6B'],['delaunay','Delaunay','#4C7DF0'],['reg3','3-reg.','#E4572E']];
+  S.presetMarks=[];
+  for(const [id,label,col] of defs){
+    const E=buildPresetEdges(id); if(!E||!E.length)continue;
+    const n=S.pts.length, adj=adjacency(n,E,S.pts);
+    const {D}=apsp(n,adj,S.dm.W,false,E.length);
+    let T=0,bad=false;
+    for(let i=0;i<n;i++)for(let j=i+1;j<n;j++){const d=D[i*n+j];if(!isFinite(d)){bad=true;continue;}T+=S.dm.W[i*n+j]*d;}
+    T/=S.dm.sumW;
+    S.presetMarks.push({x:totalLen(E,S.pts)/S.LMST,y:bad?Infinity:T/S.dm.Teuc,n:label,c:col});
+  }
+  runGreedy();
+}
+
+function runGreedy(){
+  if(S.animTimer){cancelAnimationFrame(S.animTimer);S.animTimer=null;}
+  S.seq=[];S.pareto=[];
+  const gen=greedyGrow(S.pts,S.dm,S.seed,2.62*S.LMST);
+  const badge=document.getElementById('growing');
+  badge.style.display='inline';
+  const step=()=>{
+    const t0=performance.now();
+    let done=false;
+    do{
+      const r=gen.next();
+      if(r.done){done=true;break;}
+      S.seq.push(r.value);
+      S.pareto.push({x:r.value.L/S.LMST,y:r.value.stretch});
+    }while(performance.now()-t0<24 || REDUCED);
+    if(!done && S.preset==='greedy'){
+      // während des Wachstums nur billig zeichnen
+      const last=S.seq[S.seq.length-1];
+      S.cur={E:last.E,L:last.L,stretch:last.stretch,load:null};
+      S.lineInfo=decomposeLines(last.E,S.pts,null);
+      drawNet();
+    }
+    drawPareto();
+    if(done){badge.style.display='none';applyPreset();return;}
+    S.animTimer=requestAnimationFrame(step);
+  };
+  S.animTimer=requestAnimationFrame(step);
+}
+
+/* ===================================================================
+   10. UI
+=================================================================== */
+function seg(id,onPick){
+  const el=document.getElementById(id);
+  el.addEventListener('click',ev=>{
+    const b=ev.target.closest('button'); if(!b)return;
+    [...el.querySelectorAll('button')].forEach(x=>x.setAttribute('aria-pressed',String(x===b)));
+    onPick(b.dataset.v);
+  });
+}
+seg('segDensity',v=>{S.density=v;rebuildCity();});
+seg('segPreset',v=>{
+  S.preset=v;
+  document.getElementById('budgetCtl').style.opacity=v==='greedy'?'1':'.35';
+  document.getElementById('sBud').disabled=v!=='greedy';
+  applyPreset();
+});
+const sN=document.getElementById('sN'),vN=document.getElementById('vN');
+sN.addEventListener('input',()=>{S.n=+sN.value;vN.textContent=S.n;});
+sN.addEventListener('change',()=>{rebuildCity();});
+const sB=document.getElementById('sB'),vB=document.getElementById('vB');
+sB.addEventListener('input',()=>{S.beta=+sB.value;vB.textContent=fmt(S.beta,2);});
+sB.addEventListener('change',()=>{S.dm=buildDemand(S.pts,S.beta);rebuildCity();});
+const sBud=document.getElementById('sBud'),vBud=document.getElementById('vBud');
+let budRaf=null;
+sBud.addEventListener('input',()=>{
+  S.budget=+sBud.value; vBud.textContent=fmt(S.budget,2);
+  if(S.preset!=='greedy'||budRaf)return;
+  budRaf=requestAnimationFrame(()=>{budRaf=null;applyBudget();});
+});
+document.getElementById('reseed').addEventListener('click',()=>{S.seed=1+Math.floor(Math.random()*99999);rebuildCity();});
+document.getElementById('cLines').addEventListener('change',e=>{S.showLines=e.target.checked;drawNet();});
+document.getElementById('cLoad').addEventListener('change',e=>{S.showLoad=e.target.checked;drawNet();});
+document.getElementById('cDens').addEventListener('change',e=>{S.showDens=e.target.checked;drawNet();});
+
+// Tabs
+const tabs=[['t-net','p-net'],['t-scale','p-scale'],['t-theory','p-theory']];
+tabs.forEach(([tb,pn])=>{
+  document.getElementById(tb).addEventListener('click',()=>{
+    tabs.forEach(([t,p])=>{
+      const on=t===tb;
+      document.getElementById(t).setAttribute('aria-selected',String(on));
+      document.getElementById(p).classList.toggle('on',on);
+    });
+    if(tb==='t-net'){drawNet();drawPareto();drawLineGraph();}
+  });
+});
+let rt; window.addEventListener('resize',()=>{clearTimeout(rt);rt=setTimeout(()=>{drawNet();drawPareto();drawLineGraph();drawScale();},120);});
+
+/* ===================================================================
+   11. Skalierungsexperiment
+=================================================================== */
+const SC={ns:[24,34,48,66,92,128,170,220],rep:3,delLam:[],regLam:[],delLen:[],regLen:[],mstLen:[],done:0};
+function drawScale(){
+  const A=document.getElementById('chLam'), B=document.getElementById('chLen');
+  if(!A||!B)return;
+  if(!SC.delLam.length){[A,B].forEach(cv=>{const {ctx,w,h}=fitCanvas(cv);ctx.clearRect(0,0,w,h);
+    ctx.fillStyle=CSSV('--dim');ctx.font='12px "IBM Plex Mono",monospace';ctx.textAlign='center';
+    ctx.fillText('noch keine Daten',w/2,h/2);});return;}
+  // λ₂, log-log
+  {
+    const {ctx,w,h}=fitCanvas(A);ctx.clearRect(0,0,w,h);
+    const pad={l:52,r:14,t:14,b:32};
+    const ns=SC.ns.slice(0,SC.delLam.length);
+    const all=[...SC.delLam,...SC.regLam].filter(v=>v>0);
+    const lo=Math.min(...all)*0.7, hi=Math.max(...all)*1.4;
+    const LX=n=>pad.l+(Math.log(n)-Math.log(ns[0]))/(Math.log(ns[ns.length-1])-Math.log(ns[0]))*(w-pad.l-pad.r);
+    const LY=v=>h-pad.b-(Math.log(v)-Math.log(lo))/(Math.log(hi)-Math.log(lo))*(h-pad.t-pad.b);
+    ctx.strokeStyle=CSSV('--rule');ctx.lineWidth=1;ctx.font='10px "IBM Plex Mono",monospace';ctx.fillStyle=CSSV('--dim');
+    for(let e=Math.floor(Math.log10(lo));e<=Math.ceil(Math.log10(hi));e++){
+      const v=Math.pow(10,e); if(v<lo||v>hi)continue; const py=LY(v);
+      ctx.beginPath();ctx.moveTo(pad.l,py);ctx.lineTo(w-pad.r,py);ctx.stroke();
+      ctx.textAlign='right';ctx.textBaseline='middle';ctx.fillText('10'+sup(e),pad.l-7,py);
+    }
+    ctx.textAlign='center';ctx.textBaseline='top';
+    ns.forEach((n,i)=>{if(i%2===0||i===ns.length-1)ctx.fillText(n,LX(n),h-pad.b+7);});
+    const plot=(arr,col)=>{ctx.strokeStyle=col;ctx.lineWidth=2.2;ctx.beginPath();
+      arr.forEach((v,i)=>{const px=LX(ns[i]),py=LY(Math.max(v,lo));i?ctx.lineTo(px,py):ctx.moveTo(px,py);});ctx.stroke();
+      arr.forEach((v,i)=>{ctx.beginPath();ctx.arc(LX(ns[i]),LY(Math.max(v,lo)),3.2,0,7);ctx.fillStyle=col;ctx.fill();});};
+    plot(SC.regLam,'#E4572E'); plot(SC.delLam,'#25C4B0');
+    ctx.fillStyle=CSSV('--muted');ctx.textAlign='left';ctx.textBaseline='top';ctx.fillText('λ₂',6,4);
+    ctx.textAlign='right';ctx.textBaseline='bottom';ctx.fillText('n',w-pad.r,h-14);
+  }
+  // Länge
+  {
+    const {ctx,w,h}=fitCanvas(B);ctx.clearRect(0,0,w,h);
+    const pad={l:46,r:14,t:14,b:32};
+    const ns=SC.ns.slice(0,SC.delLen.length);
+    const hi=Math.max(...SC.regLen,...SC.delLen)*1.08;
+    const LX=n=>pad.l+(n-ns[0])/(ns[ns.length-1]-ns[0])*(w-pad.l-pad.r);
+    const LY=v=>h-pad.b-(v/hi)*(h-pad.t-pad.b);
+    ctx.strokeStyle=CSSV('--rule');ctx.lineWidth=1;ctx.font='10px "IBM Plex Mono",monospace';ctx.fillStyle=CSSV('--dim');
+    for(let k=0;k<=4;k++){const v=hi*k/4,py=LY(v);
+      ctx.beginPath();ctx.moveTo(pad.l,py);ctx.lineTo(w-pad.r,py);ctx.stroke();
+      ctx.textAlign='right';ctx.textBaseline='middle';ctx.fillText(Math.round(v),pad.l-7,py);}
+    ctx.textAlign='center';ctx.textBaseline='top';ns.forEach(n=>ctx.fillText(n,LX(n),h-pad.b+7));
+    const plot=(arr,col,dash)=>{ctx.setLineDash(dash||[]);ctx.strokeStyle=col;ctx.lineWidth=2.2;ctx.beginPath();
+      arr.forEach((v,i)=>{const px=LX(ns[i]),py=LY(v);i?ctx.lineTo(px,py):ctx.moveTo(px,py);});ctx.stroke();ctx.setLineDash([]);};
+    plot(SC.regLen,'#E4572E'); plot(SC.delLen,'#25C4B0'); plot(SC.mstLen,CSSV('--dim'),[4,4]);
+    ctx.fillStyle=CSSV('--muted');ctx.textAlign='left';ctx.textBaseline='top';ctx.fillText('Σ Gleislänge',6,4);
+    ctx.textAlign='right';ctx.textBaseline='bottom';ctx.fillText('n',w-pad.r,h-14);
+  }
+}
+document.getElementById('runScale').addEventListener('click',()=>{
+  SC.delLam=[];SC.regLam=[];SC.delLen=[];SC.regLen=[];SC.mstLen=[];SC.done=0;
+  const st=document.getElementById('scaleStatus'), bar=document.getElementById('scaleBar');
+  const stepOne=()=>{
+    const idx=SC.done;
+    if(idx>=SC.ns.length){st.textContent='fertig';bar.style.width='100%';drawScale();return;}
+    const n=SC.ns[idx];
+    let dl=0,rl=0,dL=0,rL=0,mL=0,ok=0;
+    for(let r=0;r<SC.rep;r++){
+      const pts=samplePoints(n,'uni',1000+idx*17+r);
+      if(pts.length<n*0.9) continue;
+      const dE=delaunay(pts), rE=random3reg(pts.length%2?pts.length-1:pts.length,500+idx*13+r);
+      dl+=lambda2(pts.length,dE); dL+=totalLen(dE,pts); mL+=totalLen(mst(pts),pts);
+      if(rE){rl+=lambda2(pts.length%2?pts.length-1:pts.length,rE); rL+=totalLen(rE,pts);}
+      ok++;
+    }
+    ok=Math.max(1,ok);
+    SC.delLam.push(dl/ok); SC.regLam.push(rl/ok);
+    SC.delLen.push(dL/ok); SC.regLen.push(rL/ok); SC.mstLen.push(mL/ok);
+    SC.done++;
+    st.textContent='n = '+n+' ausgewertet';
+    bar.style.width=(100*SC.done/SC.ns.length)+'%';
+    drawScale();
+    setTimeout(stepOne,20);
+  };
+  st.textContent='rechnet …';
+  setTimeout(stepOne,30);
+});
+
+/* ===================================================================
+   12. Start
+=================================================================== */
+rebuildCity();
+drawScale();
+</script>
+</body>
+</html>

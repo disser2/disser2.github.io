@@ -1,0 +1,807 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Evolution Lab — Vier Modelle</title>
+<style>
+:root{
+  --ink:#12161c;
+  --paper:#e8e4d9;
+  --panel:#f4f1e9;
+  --line:#c3bdad;
+  --acc1:#1f5f5b;   /* teal */
+  --acc2:#a83232;   /* madder */
+  --acc3:#c78a1e;   /* ochre */
+  --acc4:#3b4a8c;   /* indigo */
+  --dim:#6b6656;
+}
+*{box-sizing:border-box}
+body{
+  margin:0;background:var(--paper);color:var(--ink);
+  font-family:"Iowan Old Style","Palatino Linotype",Palatino,Georgia,serif;
+  line-height:1.5;
+}
+header{
+  border-bottom:1.5px solid var(--ink);padding:26px 22px 18px;
+  display:flex;flex-wrap:wrap;align-items:flex-end;gap:18px;justify-content:space-between;
+}
+h1{font-size:clamp(26px,4vw,40px);margin:0;letter-spacing:-.02em;font-weight:600}
+h1 em{font-style:italic;color:var(--acc1)}
+.sub{font-size:13px;color:var(--dim);max-width:52ch;font-family:ui-monospace,"SF Mono",Menlo,monospace;line-height:1.55}
+nav{display:flex;gap:0;border-bottom:1.5px solid var(--ink);overflow-x:auto;background:var(--paper)}
+nav button{
+  font:inherit;font-size:14px;background:none;border:0;border-right:1px solid var(--line);
+  padding:13px 20px;cursor:pointer;color:var(--dim);white-space:nowrap;position:relative;
+}
+nav button .num{font-family:ui-monospace,monospace;font-size:10px;vertical-align:super;margin-right:5px}
+nav button.on{color:var(--ink);background:var(--panel)}
+nav button.on::after{content:"";position:absolute;left:0;right:0;bottom:-1.5px;height:3px;background:var(--acc1)}
+nav button:focus-visible{outline:2px solid var(--acc4);outline-offset:-4px}
+.wrap{display:grid;grid-template-columns:minmax(0,1fr) 340px;gap:0;min-height:70vh}
+@media(max-width:900px){.wrap{grid-template-columns:1fr}}
+.stage{padding:20px 22px;border-right:1px solid var(--line);min-width:0}
+.side{padding:20px 22px;background:var(--panel);font-size:13.5px}
+h2{font-size:20px;margin:0 0 6px;font-weight:600;letter-spacing:-.01em}
+.lede{font-size:14px;color:var(--dim);margin:0 0 16px;max-width:70ch}
+canvas{width:100%;display:block;background:#fdfcf8;border:1px solid var(--line)}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin:12px 0}
+button.act{
+  font:inherit;font-size:13px;padding:7px 15px;background:var(--ink);color:var(--paper);
+  border:0;cursor:pointer;letter-spacing:.02em;
+}
+button.act.ghost{background:none;color:var(--ink);border:1px solid var(--ink)}
+button.act:hover{background:var(--acc1);color:#fff}
+label.ctl{display:block;margin:0 0 15px}
+label.ctl .top{display:flex;justify-content:space-between;font-size:12.5px;font-family:ui-monospace,monospace;margin-bottom:3px}
+label.ctl .val{color:var(--acc2);font-weight:600}
+label.ctl input[type=range]{width:100%;accent-color:var(--acc1)}
+label.ctl .hint{font-size:11.5px;color:var(--dim);line-height:1.45;font-family:ui-monospace,monospace}
+select{font:inherit;font-size:13px;padding:6px 8px;width:100%;background:#fff;border:1px solid var(--line)}
+.preset{margin-bottom:16px;padding-bottom:14px;border-bottom:1px dashed var(--line)}
+.preset .lab{font-family:ui-monospace,monospace;font-size:11px;text-transform:uppercase;letter-spacing:.09em;color:var(--dim);margin-bottom:5px}
+.preset .why{font-size:12px;color:var(--dim);margin-top:7px;line-height:1.5;min-height:2.6em}
+.note{
+  border-left:3px solid var(--acc3);padding:9px 12px;background:#fdfcf8;
+  font-size:12.5px;line-height:1.55;margin:14px 0;
+}
+.note b{font-variant:small-caps;letter-spacing:.03em}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(90px,1fr));gap:1px;background:var(--line);border:1px solid var(--line);margin:12px 0}
+.stats div{background:#fdfcf8;padding:7px 9px}
+.stats .k{font-family:ui-monospace,monospace;font-size:10px;text-transform:uppercase;letter-spacing:.07em;color:var(--dim)}
+.stats .v{font-size:17px;font-variant-numeric:tabular-nums}
+.legend{display:flex;gap:14px;flex-wrap:wrap;font-size:12px;font-family:ui-monospace,monospace;color:var(--dim);margin:8px 0}
+.legend i{display:inline-block;width:11px;height:11px;margin-right:5px;vertical-align:-1px}
+.panel{display:none}.panel.on{display:block}
+h3{font-size:12px;font-family:ui-monospace,monospace;text-transform:uppercase;letter-spacing:.09em;color:var(--dim);margin:20px 0 10px;border-bottom:1px solid var(--line);padding-bottom:5px}
+.obs{font-size:12.5px;line-height:1.6}
+.obs li{margin-bottom:7px}
+.obs code{background:#e0dcd0;padding:1px 4px;font-size:11.5px}
+</style>
+</head>
+<body>
+
+<header>
+  <div>
+    <h1>Evolution <em>Lab</em></h1>
+    <div class="sub">Vier Modelle: Fitnesslandschaft · Drift vs. Selektion · Raumstruktur · Koevolution</div>
+  </div>
+</header>
+
+<nav id="nav">
+  <button data-t="nk" class="on"><span class="num">01</span>NK-Fitnesslandschaft</button>
+  <button data-t="wf"><span class="num">02</span>Wright-Fisher</button>
+  <button data-t="sp"><span class="num">03</span>Räumliche Deme</button>
+  <button data-t="rq"><span class="num">04</span>Red Queen</button>
+</nav>
+
+<!-- ============ 01 NK ============ -->
+<div class="wrap panel on" id="p-nk">
+  <div class="stage">
+    <h2>NK-Fitnesslandschaft</h2>
+    <p class="lede">Jedes der N Loci trägt zur Fitness bei, abhängig von seinem eigenen Zustand und K weiteren Loci (Epistasie). K=0 erzeugt eine glatte Landschaft mit einem globalen Optimum; steigendes K erzeugt zunehmend zerklüftete Landschaften mit vielen lokalen Optima.</p>
+    <canvas id="c-nk" height="420"></canvas>
+    <div class="legend">
+      <span><i style="background:var(--acc4)"></i>Landschaft (2D-Projektion)</span>
+      <span><i style="background:var(--acc2)"></i>Population</span>
+      <span><i style="background:var(--acc3)"></i>Bester Genotyp</span>
+    </div>
+    <div class="stats" id="s-nk"></div>
+    <div class="row">
+      <button class="act" id="nk-run">Start</button>
+      <button class="act ghost" id="nk-reset">Neue Landschaft</button>
+    </div>
+    <div class="note"><b>Was zu beobachten ist:</b> Bei K=0 findet die Population zuverlässig das globale Optimum. Ab K≈4 bleibt sie regelmäßig auf lokalen Gipfeln hängen — die Fitness stagniert unterhalb des Maximums. Höhere Mutationsraten helfen beim Verlassen von Tälern, senken aber die mittlere Fitness (Mutationslast).</div>
+  </div>
+  <div class="side">
+    <div class="preset">
+      <div class="lab">Parameterkombination</div>
+      <select id="nk-pre">
+        <option value="custom">Eigene Einstellung</option>
+        <option value="smooth">Mount Fuji — K=0, glatte Landschaft</option>
+        <option value="rugged">Zerklüftet — K=8, viele lokale Optima</option>
+        <option value="trap">Adaptive Falle — K=6, μ niedrig</option>
+        <option value="explore">Explorationsregime — K=6, μ hoch</option>
+        <option value="drift">Kleine Population — N_pop=15</option>
+      </select>
+      <div class="why" id="nk-why">Vier Regime, die den Übergang von glatt zu zerklüftet und die Rolle der Mutationsrate zeigen.</div>
+    </div>
+    <label class="ctl"><span class="top">N — Loci<span class="val" id="v-nkN">16</span></span>
+      <input type="range" id="nkN" min="8" max="24" value="16">
+      <span class="hint">Länge des Genoms. Sequenzraum = 2^N.</span></label>
+    <label class="ctl"><span class="top">K — Epistasie<span class="val" id="v-nkK">2</span></span>
+      <input type="range" id="nkK" min="0" max="10" value="2">
+      <span class="hint">Anzahl interagierender Nachbarloci. K=0 glatt, K=N−1 vollständig zufällig.</span></label>
+    <label class="ctl"><span class="top">μ — Mutationsrate/Locus<span class="val" id="v-nkM">0.02</span></span>
+      <input type="range" id="nkM" min="1" max="150" value="20">
+      <span class="hint">Wahrscheinlichkeit pro Locus und Generation zu flippen.</span></label>
+    <label class="ctl"><span class="top">N_pop — Populationsgröße<span class="val" id="v-nkP">120</span></span>
+      <input type="range" id="nkP" min="10" max="400" value="120">
+      <span class="hint">Kleine Populationen driften stärker, finden aber gelegentlich Täler.</span></label>
+    <label class="ctl"><span class="top">s — Selektionsstärke<span class="val" id="v-nkS">3.0</span></span>
+      <input type="range" id="nkS" min="0" max="100" value="30">
+      <span class="hint">Exponent der Fitness-Gewichtung bei der Reproduktion. 0 = neutrale Drift.</span></label>
+    <h3>Beobachtbare Effekte</h3>
+    <ul class="obs">
+      <li><b>Ruggedness-Übergang:</b> mittlere Endfitness fällt mit K.</li>
+      <li><b>Lokale Optima:</b> Fitnesskurve plateaut vorzeitig.</li>
+      <li><b>Mutationslast:</b> zu hohes μ senkt mittlere Fitness trotz besserer Exploration.</li>
+      <li><b>Drift-Effekt:</b> kleines N_pop → verrauschte Trajektorie, gelegentliche Talüberquerung.</li>
+    </ul>
+  </div>
+</div>
+
+<!-- ============ 02 WF ============ -->
+<div class="wrap panel" id="p-wf">
+  <div class="stage">
+    <h2>Wright-Fisher: Drift gegen Selektion</h2>
+    <p class="lede">Ein biallelisches Locus in einer Population konstanter Größe N_e. Jede Generation wird durch binomiales Ziehen aus dem gewichteten Genpool neu gebildet. Die zentrale Größe ist das Produkt N_e·s: darunter dominiert Zufall, darüber Selektion.</p>
+    <canvas id="c-wf" height="330"></canvas>
+    <div class="legend">
+      <span><i style="background:var(--acc2)"></i>Einzelne Replikate</span>
+      <span><i style="background:var(--acc1)"></i>Mittlere Frequenz</span>
+      <span><i style="background:var(--acc3)"></i>Kimura-Erwartung</span>
+    </div>
+    <div class="stats" id="s-wf"></div>
+    <div class="row">
+      <button class="act" id="wf-run">Replikate laufen lassen</button>
+      <button class="act ghost" id="wf-reset">Zurücksetzen</button>
+    </div>
+    <div class="note"><b>Analytische Referenz:</b> Das Modell ist haploid, daher gilt Kimuras Fixationswahrscheinlichkeit in der Form u(p) = (1−e^(−2N_e·s·p)) / (1−e^(−2N_e·s)). Für diploide Populationen mit additiver Wirkung steht dort 4N_e·s. Der eingezeichnete Wert lässt sich direkt gegen die empirische Fixationsrate prüfen: ab etwa 50 Replikaten und ausreichend langem Zeithorizont stimmen beide auf wenige Prozentpunkte überein.</div>
+  </div>
+  <div class="side">
+    <div class="preset">
+      <div class="lab">Parameterkombination</div>
+      <select id="wf-pre">
+        <option value="custom">Eigene Einstellung</option>
+        <option value="neutral">Neutrale Drift — s=0</option>
+        <option value="nearly">Nahezu neutral — N_e·s ≈ 1</option>
+        <option value="strong">Starke Selektion — N_e·s ≈ 20</option>
+        <option value="small">Kleine Population — N_e=25, s=0.05</option>
+        <option value="balance">Mutations-Selektions-Balance</option>
+      </select>
+      <div class="why" id="wf-why">Die Schwelle N_e·s ≈ 1 trennt das Drift- vom Selektionsregime.</div>
+    </div>
+    <label class="ctl"><span class="top">N_e — Effektive Populationsgröße<span class="val" id="v-wfN">200</span></span>
+      <input type="range" id="wfN" min="10" max="2000" value="200">
+      <span class="hint">Bestimmt die Driftstärke: Varianz der Frequenzänderung ≈ p(1−p)/N_e.</span></label>
+    <label class="ctl"><span class="top">s — Selektionskoeffizient<span class="val" id="v-wfS">0.010</span></span>
+      <input type="range" id="wfS" min="-100" max="200" value="10">
+      <span class="hint">Relativer Fitnessvorteil des A-Allels. Negativ = nachteilig.</span></label>
+    <label class="ctl"><span class="top">p₀ — Startfrequenz<span class="val" id="v-wfP">0.10</span></span>
+      <input type="range" id="wfP" min="1" max="99" value="10">
+      <span class="hint">Anfangsfrequenz des fokalen Allels.</span></label>
+    <label class="ctl"><span class="top">μ — Mutationsrate<span class="val" id="v-wfM">0.0000</span></span>
+      <input type="range" id="wfM" min="0" max="200" value="0">
+      <span class="hint">Symmetrische Mutation zwischen den Allelen. Verhindert dauerhafte Fixierung.</span></label>
+    <label class="ctl"><span class="top">R — Replikate<span class="val" id="v-wfR">30</span></span>
+      <input type="range" id="wfR" min="5" max="120" value="30">
+      <span class="hint">Unabhängige Populationen. Mehr Replikate = bessere Schätzung der Fixationsrate.</span></label>
+    <label class="ctl"><span class="top">G — Generationen<span class="val" id="v-wfG">500</span></span>
+      <input type="range" id="wfG" min="100" max="3000" value="500">
+      <span class="hint">Zeithorizont. Neutrale Fixierung dauert im Mittel ≈ 4N_e Generationen.</span></label>
+    <h3>Beobachtbare Effekte</h3>
+    <ul class="obs">
+      <li><b>Driftregime:</b> bei <code>|N_e·s| &lt; 1</code> verhalten sich Trajektorien fast wie neutral.</li>
+      <li><b>Fixation/Verlust:</b> bei μ=0 endet jedes Replikat bei 0 oder 1.</li>
+      <li><b>Kimura-Abgleich:</b> empirische Fixationsrate ≈ u(p₀).</li>
+      <li><b>Balance:</b> mit μ&gt;0 stellt sich eine stationäre Verteilung ein statt Fixierung.</li>
+    </ul>
+  </div>
+</div>
+
+<!-- ============ 03 SPATIAL ============ -->
+<div class="wrap panel" id="p-sp">
+  <div class="stage">
+    <h2>Räumliche Struktur: Deme, Migration, Clines</h2>
+    <p class="lede">Ein Gitter lokaler Populationen (Deme), verbunden durch Migration. Ein Umweltgradient von links nach rechts erzeugt ortsabhängige Selektion. Die Migrationsrate m entscheidet, ob sich lokale Anpassung ausbildet oder Genfluss sie einebnet.</p>
+    <canvas id="c-sp" height="380"></canvas>
+    <div class="legend">
+      <span><i style="background:var(--acc4)"></i>Allel B fixiert</span>
+      <span><i style="background:#c9c4b4"></i>polymorph</span>
+      <span><i style="background:var(--acc2)"></i>Allel A fixiert</span>
+    </div>
+    <div class="stats" id="s-sp"></div>
+    <div class="row">
+      <button class="act" id="sp-run">Start</button>
+      <button class="act ghost" id="sp-reset">Zurücksetzen</button>
+    </div>
+    <div class="note"><b>Faustregel:</b> Lokale Anpassung setzt sich durch, wenn m &lt; s. Ist m ≫ s, homogenisiert der Genfluss das Gitter und der Cline verschwindet. Bei Range Expansion (Startmodus "Randbesiedlung") lässt sich Allele Surfing beobachten: neutrale Varianten erreichen an der Ausbreitungsfront hohe Frequenzen.</div>
+  </div>
+  <div class="side">
+    <div class="preset">
+      <div class="lab">Parameterkombination</div>
+      <select id="sp-pre">
+        <option value="custom">Eigene Einstellung</option>
+        <option value="cline">Stabiler Cline — m ≈ s</option>
+        <option value="swamp">Genfluss-Überflutung — m ≫ s</option>
+        <option value="isolate">Isolation — m ≈ 0, Drift dominiert</option>
+        <option value="surf">Allele Surfing — Randbesiedlung</option>
+      </select>
+      <div class="why" id="sp-why">Das Verhältnis von Migration zu Selektion bestimmt das räumliche Muster.</div>
+    </div>
+    <label class="ctl"><span class="top">m — Migrationsrate<span class="val" id="v-spM">0.05</span></span>
+      <input type="range" id="spM" min="0" max="500" value="50">
+      <span class="hint">Anteil Migranten pro Deme und Generation (4-Nachbarschaft).</span></label>
+    <label class="ctl"><span class="top">s — Selektionsgradient<span class="val" id="v-spS">0.10</span></span>
+      <input type="range" id="spS" min="0" max="300" value="100">
+      <span class="hint">Maximaler Fitnessvorteil an den Gitterrändern. 0 = neutral.</span></label>
+    <label class="ctl"><span class="top">n — Individuen pro Deme<span class="val" id="v-spN">50</span></span>
+      <input type="range" id="spN" min="5" max="300" value="50">
+      <span class="hint">Lokale Populationsgröße. Klein = starke lokale Drift.</span></label>
+    <label class="ctl"><span class="top">L — Gittergröße<span class="val" id="v-spL">32</span></span>
+      <input type="range" id="spL" min="12" max="60" value="32">
+      <span class="hint">L×L Deme.</span></label>
+    <label class="ctl"><span class="top">Startzustand</span>
+      <select id="spInit">
+        <option value="uniform">Homogen p=0.5</option>
+        <option value="split">Zwei Hälften (A links, B rechts)</option>
+        <option value="edge">Randbesiedlung (Expansion von links)</option>
+      </select></label>
+    <h3>Beobachtbare Effekte</h3>
+    <ul class="obs">
+      <li><b>Cline:</b> gradueller Frequenzübergang bei m ≈ s.</li>
+      <li><b>Swamping:</b> bei m ≫ s wird das Gitter uniform.</li>
+      <li><b>Isolation by distance:</b> bei m ≈ 0 entstehen fleckige Domänen.</li>
+      <li><b>Allele Surfing:</b> an der Front entstehen breite Streifen einer Variante.</li>
+    </ul>
+  </div>
+</div>
+
+<!-- ============ 04 RED QUEEN ============ -->
+<div class="wrap panel" id="p-rq">
+  <div class="stage">
+    <h2>Red Queen: Wirt-Parasit-Koevolution</h2>
+    <p class="lede">Wirte tragen Resistenzallele, Parasiten Infektivitätsallele. Im Matching-Allele-Modell infiziert ein Parasit nur den passenden Wirtstyp; im Gene-for-Gene-Modell infizieren universellere Genotypen mehr Wirte, zahlen aber Kosten. Beides erzeugt anhaltende Frequenzoszillationen ohne Gleichgewicht.</p>
+    <canvas id="c-rq" height="240"></canvas>
+    <canvas id="c-rq2" height="240" style="margin-top:12px"></canvas>
+    <div class="legend">
+      <span><i style="background:var(--acc1)"></i>Wirtsgenotypen</span>
+      <span><i style="background:var(--acc2)"></i>Parasitengenotypen</span>
+      <span><i style="background:var(--acc4)"></i>Phasenraum-Trajektorie</span>
+    </div>
+    <div class="stats" id="s-rq"></div>
+    <div class="row">
+      <button class="act" id="rq-run">Start</button>
+      <button class="act ghost" id="rq-reset">Zurücksetzen</button>
+    </div>
+    <div class="note"><b>Was zu beobachten ist:</b> Parasitenfrequenzen folgen den Wirtsfrequenzen mit Phasenverzögerung — der klassische Red-Queen-Zyklus. Die Verzögerung wächst mit dem Verhältnis der Generationszeiten. Die Phasenraumdarstellung rechts zeigt, ob das System auf einen Grenzzyklus, eine Spirale ins Gleichgewicht oder chaotisches Verhalten zuläuft.</div>
+  </div>
+  <div class="side">
+    <div class="preset">
+      <div class="lab">Parameterkombination</div>
+      <select id="rq-pre">
+        <option value="custom">Eigene Einstellung</option>
+        <option value="cycle">Klassischer Zyklus — MAM, mittlere Virulenz</option>
+        <option value="damped">Gedämpfte Oszillation — schwache Virulenz</option>
+        <option value="chaos">Instabiles Regime — hohe Virulenz</option>
+        <option value="gfg">Gene-for-Gene mit Resistenzkosten</option>
+        <option value="lag">Langsamer Wirt — starke Phasenverzögerung</option>
+      </select>
+      <div class="why" id="rq-why">Virulenz und Generationsverhältnis bestimmen Amplitude und Periode.</div>
+    </div>
+    <label class="ctl"><span class="top">Interaktionsmodell</span>
+      <select id="rqModel">
+        <option value="mam">Matching-Allele (MAM)</option>
+        <option value="gfg">Gene-for-Gene (GFG)</option>
+      </select></label>
+    <label class="ctl"><span class="top">v — Virulenz<span class="val" id="v-rqV">0.80</span></span>
+      <input type="range" id="rqV" min="0" max="100" value="80">
+      <span class="hint">Fitnessverlust eines infizierten Wirts.</span></label>
+    <label class="ctl"><span class="top">c — Resistenzkosten<span class="val" id="v-rqC">0.05</span></span>
+      <input type="range" id="rqC" min="0" max="50" value="5">
+      <span class="hint">Fitnesskosten spezialisierter Allele. In GFG treibt c die Zyklen.</span></label>
+    <label class="ctl"><span class="top">g — Generationen Parasit je Wirtsgeneration<span class="val" id="v-rqG">1.0</span></span>
+      <input type="range" id="rqG" min="10" max="60" value="10">
+      <span class="hint">Höhere Werte = schnellere Parasitenanpassung, kürzere Phasenverzögerung.</span></label>
+    <label class="ctl"><span class="top">A — Anzahl Allele<span class="val" id="v-rqA">4</span></span>
+      <input type="range" id="rqA" min="2" max="8" value="4">
+      <span class="hint">Anzahl Genotypen pro Art. Mehr Allele = komplexere Dynamik.</span></label>
+    <label class="ctl"><span class="top">μ — Mutationsrate<span class="val" id="v-rqM">0.002</span></span>
+      <input type="range" id="rqM" min="0" max="100" value="20">
+      <span class="hint">Verhindert das Aussterben von Genotypen und hält Zyklen am Laufen.</span></label>
+    <h3>Beobachtbare Effekte</h3>
+    <ul class="obs">
+      <li><b>Phasenverzögerung:</b> Parasitenpeak folgt dem Wirtspeak.</li>
+      <li><b>Grenzzyklus:</b> geschlossene Bahn im Phasenraum.</li>
+      <li><b>Dämpfung:</b> unterhalb v ≈ 0.7 spiralt das System ins Zentrum; darüber setzen anhaltende Zyklen ein.</li>
+      <li><b>Frequenzabhängige Selektion:</b> seltene Genotypen im Vorteil.</li>
+    </ul>
+  </div>
+</div>
+
+<script>
+"use strict";
+const $=id=>document.getElementById(id);
+const CSS=n=>getComputedStyle(document.documentElement).getPropertyValue(n).trim();
+const A1=CSS('--acc1'),A2=CSS('--acc2'),A3=CSS('--acc3'),A4=CSS('--acc4'),INK=CSS('--ink'),DIM=CSS('--dim'),LINE=CSS('--line');
+const MONO='11px ui-monospace, monospace';
+const clamp=(x,a,b)=>Math.max(a,Math.min(b,x));
+
+function fit(c){const d=window.devicePixelRatio||1;const w=c.clientWidth;c.width=w*d;c.height=c.getAttribute('height')*d;
+  const x=c.getContext('2d');x.setTransform(d,0,0,d,0,0);return {x,w,h:+c.getAttribute('height')};}
+function stats(el,arr){el.innerHTML=arr.map(o=>`<div><div class="k">${o[0]}</div><div class="v">${o[1]}</div></div>`).join('');}
+function axes(x,w,h,pad,yl,xl){
+  x.strokeStyle=LINE;x.lineWidth=1;
+  x.beginPath();x.moveTo(pad,8);x.lineTo(pad,h-pad);x.lineTo(w-8,h-pad);x.stroke();
+  x.fillStyle=DIM;x.font=MONO;x.textAlign='right';
+  yl.forEach(t=>{x.fillText(t[0],pad-6,t[1]+4);});
+  x.textAlign='center';xl.forEach(t=>x.fillText(t[0],t[1],h-pad+15));
+}
+// tabs
+document.querySelectorAll('#nav button').forEach(b=>b.onclick=()=>{
+  document.querySelectorAll('#nav button').forEach(o=>o.classList.remove('on'));
+  document.querySelectorAll('.panel').forEach(o=>o.classList.remove('on'));
+  b.classList.add('on');$('p-'+b.dataset.t).classList.add('on');
+  window.dispatchEvent(new Event('resize'));
+});
+function bind(id,vid,fmt){const s=$(id),v=$(vid);const u=()=>v.textContent=fmt(+s.value);s.addEventListener('input',u);u();return s;}
+
+/* ================= 01 NK ================= */
+const NK={run:false,gen:0,pop:[],land:null,hist:[],best:0};
+const nkN=bind('nkN','v-nkN',v=>v), nkK=bind('nkK','v-nkK',v=>v),
+      nkM=bind('nkM','v-nkM',v=>(v/1000).toFixed(3)), nkP=bind('nkP','v-nkP',v=>v),
+      nkS=bind('nkS','v-nkS',v=>(v/10).toFixed(1));
+
+function nkBuild(){
+  const N=+nkN.value,K=+nkK.value;
+  const tbl=[],idx=[];
+  for(let i=0;i<N;i++){
+    const dep=[i];for(let j=1;j<=K;j++)dep.push((i+j)%N);
+    idx.push(dep);
+    const t=new Float64Array(1<<(K+1));
+    for(let m=0;m<t.length;m++)t[m]=Math.random();
+    tbl.push(t);
+  }
+  NK.land={N,K,tbl,idx};
+}
+function nkFit(g){
+  const L=NK.land;let s=0;
+  for(let i=0;i<L.N;i++){let m=0;for(let j=0;j<L.idx[i].length;j++)m=(m<<1)|g[L.idx[i][j]];s+=L.tbl[i][m];}
+  return s/L.N;
+}
+function nkReset(){
+  nkBuild();const N=+nkN.value,P=+nkP.value;
+  NK.pop=[];for(let i=0;i<P;i++){const g=new Uint8Array(N);for(let j=0;j<N;j++)g[j]=Math.random()<.5?1:0;NK.pop.push(g);}
+  NK.gen=0;NK.hist=[];NK.best=0;nkDraw();
+}
+function nkStep(){
+  const L=NK.land,mu=+nkM.value/1000,s=+nkS.value/10,P=+nkP.value,N=L.N;
+  while(NK.pop.length<P){const g=NK.pop[(Math.random()*NK.pop.length)|0];NK.pop.push(Uint8Array.from(g));}
+  NK.pop.length=P;
+  const f=NK.pop.map(nkFit);
+  const w=f.map(v=>Math.exp(s*(v-0.5)*10));
+  const tot=w.reduce((a,b)=>a+b,0);
+  const cum=[];let acc=0;for(const v of w){acc+=v/tot;cum.push(acc);}
+  const nxt=[];
+  for(let i=0;i<P;i++){
+    const r=Math.random();let lo=0,hi=P-1;while(lo<hi){const m=(lo+hi)>>1;if(cum[m]<r)lo=m+1;else hi=m;}
+    const g=Uint8Array.from(NK.pop[lo]);
+    for(let j=0;j<N;j++)if(Math.random()<mu)g[j]^=1;
+    nxt.push(g);
+  }
+  NK.pop=nxt;NK.gen++;
+  const nf=NK.pop.map(nkFit);
+  const mean=nf.reduce((a,b)=>a+b,0)/nf.length, mx=Math.max(...nf);
+  NK.best=Math.max(NK.best,mx);
+  NK.hist.push({mean,mx});if(NK.hist.length>600)NK.hist.shift();
+  // diversity
+  const set=new Set(NK.pop.map(g=>g.join('')));
+  NK.div=set.size;
+}
+function nkDraw(){
+  const {x,w,h}=fit($('c-nk'));
+  const split=Math.min(230,h*.56);
+  x.clearRect(0,0,w,h);
+  // --- landscape strip: project genotypes onto 1D Gray-code index
+  const L=NK.land;const N=L.N;
+  const sample=Math.min(1<<N,600);
+  const pad=44;
+  x.fillStyle='#fdfcf8';x.fillRect(0,0,w,h);
+  // draw landscape profile via sampled walk
+  const prof=[];
+  const g=new Uint8Array(N);
+  for(let i=0;i<sample;i++){
+    const gc=i^(i>>1);
+    for(let j=0;j<N;j++)g[j]=(gc>>j)&1;
+    prof.push(nkFit(g));
+  }
+  const pmin=Math.min(...prof),pmax=Math.max(...prof);
+  x.beginPath();
+  prof.forEach((v,i)=>{const px=pad+(i/(sample-1))*(w-pad-10);
+    const py=split-8-((v-pmin)/(pmax-pmin||1))*(split-40);
+    i?x.lineTo(px,py):x.moveTo(px,py);});
+  x.strokeStyle=A4;x.lineWidth=1;x.globalAlpha=.65;x.stroke();x.globalAlpha=1;
+  // population markers
+  NK.pop.forEach(gg=>{
+    let gc=0;for(let j=0;j<N;j++)gc|=gg[j]<<j;
+    // invert gray
+    let bin=gc,sh=1;while(sh<32){bin^=bin>>sh;sh<<=1;}
+    const i=bin%sample;
+    const px=pad+(i/(sample-1))*(w-pad-10);
+    const v=nkFit(gg);
+    const py=split-8-((v-pmin)/(pmax-pmin||1))*(split-40);
+    x.fillStyle=A2;x.globalAlpha=.5;x.beginPath();x.arc(px,py,2.4,0,7);x.fill();
+  });
+  x.globalAlpha=1;
+  x.fillStyle=DIM;x.font=MONO;x.textAlign='left';
+  x.fillText('Fitnesslandschaft (Gray-Code-Projektion des Sequenzraums)',pad,14);
+  x.strokeStyle=LINE;x.beginPath();x.moveTo(0,split+4);x.lineTo(w,split+4);x.stroke();
+  // --- fitness over time
+  const y0=split+22,H=h-y0-26;
+  x.strokeStyle=LINE;x.beginPath();x.moveTo(pad,y0);x.lineTo(pad,y0+H);x.lineTo(w-10,y0+H);x.stroke();
+  x.fillStyle=DIM;x.textAlign='right';
+  x.fillText(pmax.toFixed(2),pad-6,y0+8);x.fillText(pmin.toFixed(2),pad-6,y0+H);
+  x.textAlign='left';x.fillText('Fitness über Generationen',pad+4,y0-6);
+  const n=NK.hist.length;
+  if(n>1){
+    const sx=i=>pad+(i/(Math.max(n,120)-1))*(w-pad-12);
+    const sy=v=>y0+H-((v-pmin)/(pmax-pmin||1))*H;
+    x.beginPath();NK.hist.forEach((d,i)=>{i?x.lineTo(sx(i),sy(d.mx)):x.moveTo(sx(i),sy(d.mx));});
+    x.strokeStyle=A3;x.lineWidth=1.6;x.stroke();
+    x.beginPath();NK.hist.forEach((d,i)=>{i?x.lineTo(sx(i),sy(d.mean)):x.moveTo(sx(i),sy(d.mean));});
+    x.strokeStyle=A2;x.lineWidth=1.6;x.stroke();
+  }
+  // global max line
+  x.setLineDash([3,3]);x.strokeStyle=A1;x.beginPath();x.moveTo(pad,y0+2);x.lineTo(w-10,y0+2);x.stroke();x.setLineDash([]);
+  x.fillStyle=A1;x.textAlign='right';x.fillText('geschätztes globales Optimum',w-12,y0+14);
+
+  const last=NK.hist[NK.hist.length-1];
+  stats($('s-nk'),[['Generation',NK.gen],['Ø Fitness',last?last.mean.toFixed(4):'—'],
+    ['Max Fitness',last?last.mx.toFixed(4):'—'],['Gipfel-Ref.',pmax.toFixed(4)],
+    ['Genotypen',NK.div??'—'],['Lücke',last?(pmax-last.mx).toFixed(4):'—']]);
+}
+$('nk-run').onclick=e=>{NK.run=!NK.run;e.target.textContent=NK.run?'Pause':'Start';if(NK.run)nkLoop();};
+$('nk-reset').onclick=()=>{nkReset();};
+function nkLoop(){if(!NK.run)return;for(let i=0;i<2;i++)nkStep();nkDraw();requestAnimationFrame(nkLoop);}
+[nkN,nkK].forEach(s=>s.addEventListener('change',nkReset));
+nkP.addEventListener('change',()=>{});
+const NKPRE={
+ smooth:{nkK:0,nkM:20,nkP:120,nkS:30,why:'K=0: additive Fitness, ein einziges globales Optimum. Die Population findet es zuverlässig — die Fitnesskurve steigt monoton und erreicht das Maximum.'},
+ rugged:{nkK:8,nkM:20,nkP:120,nkS:30,why:'Starke Epistasie erzeugt eine zerklüftete Landschaft. Die Population bleibt fast immer auf einem lokalen Gipfel hängen; die Lücke zum Optimum bleibt offen.'},
+ trap:{nkK:6,nkM:3,nkP:200,nkS:60,why:'Niedrige Mutationsrate plus starke Selektion: klassische adaptive Falle. Schnelle Anfangsanpassung, dann vollständige Stagnation.'},
+ explore:{nkK:6,nkM:80,nkP:200,nkS:60,why:'Gleiche Landschaft, hohe Mutationsrate. Täler werden überquert und höhere Gipfel erreicht — allerdings sinkt die mittlere Fitness durch Mutationslast.'},
+ drift:{nkK:6,nkM:20,nkP:15,nkS:30,why:'Kleine Population: starke Drift, verrauschte Trajektorie. Gelegentlich wird ein Tal zufällig überquert, oft geht aber Fitness verloren.'}
+};
+$('nk-pre').onchange=e=>{const p=NKPRE[e.target.value];if(!p){$('nk-why').textContent='Eigene Einstellung — Parameter frei wählbar.';return;}
+  for(const k in p)if(k!=='why'){$(k).value=p[k];$(k).dispatchEvent(new Event('input'));}
+  $('nk-why').textContent=p.why;nkReset();};
+
+/* ================= 02 WF ================= */
+const WF={data:[],fixed:0,lost:0,done:false};
+const wfN=bind('wfN','v-wfN',v=>v), wfS=bind('wfS','v-wfS',v=>(v/1000).toFixed(3)),
+      wfP=bind('wfP','v-wfP',v=>(v/100).toFixed(2)), wfM=bind('wfM','v-wfM',v=>(v/100000).toFixed(5)),
+      wfR=bind('wfR','v-wfR',v=>v), wfG=bind('wfG','v-wfG',v=>v);
+function binom(n,p){ // normal approx for large n
+  if(p<=0)return 0;if(p>=1)return n;
+  if(n<60){let k=0;for(let i=0;i<n;i++)if(Math.random()<p)k++;return k;}
+  const m=n*p,sd=Math.sqrt(n*p*(1-p));
+  let u=0,v=0;while(u===0)u=Math.random();while(v===0)v=Math.random();
+  const z=Math.sqrt(-2*Math.log(u))*Math.cos(2*Math.PI*v);
+  return clamp(Math.round(m+sd*z),0,n);
+}
+function wfRun(){
+  const N=+wfN.value,s=+wfS.value/1000,p0=+wfP.value/100,mu=+wfM.value/100000,R=+wfR.value,G=+wfG.value;
+  WF.data=[];WF.fixed=0;WF.lost=0;
+  for(let r=0;r<R;r++){
+    let p=p0;const tr=[p];
+    for(let g=0;g<G;g++){
+      let pp=p*(1+s)/(p*(1+s)+(1-p));
+      pp=pp*(1-mu)+(1-pp)*mu;
+      pp=clamp(pp,0,1);
+      p=binom(N,pp)/N;
+      tr.push(p);
+      if(mu===0&&(p===0||p===1)){for(let k=g+1;k<G;k++)tr.push(p);break;}
+    }
+    WF.data.push(tr);
+    if(p>=0.999)WF.fixed++;else if(p<=0.001)WF.lost++;
+  }
+  wfDraw();
+}
+function kimura(N,s,p){
+  if(Math.abs(s)<1e-9)return p;
+  const a=2*N*s;   // haploid Wright-Fisher: 2Ne*s (diploid form would be 4Ne*s)
+  if(Math.abs(a)>500)return s>0?1:0;
+  return (1-Math.exp(-a*p))/(1-Math.exp(-a));
+}
+function wfDraw(){
+  const {x,w,h}=fit($('c-wf'));const pad=44;
+  x.fillStyle='#fdfcf8';x.fillRect(0,0,w,h);
+  const H=h-pad-14,W=w-pad-14;
+  axes(x,w,h,pad,[['1.0',14],['0.5',14+H/2],['0.0',14+H]],[]);
+  const G=WF.data.length?WF.data[0].length:1;
+  const sx=i=>pad+(i/(G-1))*W, sy=p=>14+H-p*H;
+  WF.data.forEach(tr=>{
+    x.beginPath();tr.forEach((p,i)=>{i?x.lineTo(sx(i),sy(p)):x.moveTo(sx(i),sy(p));});
+    x.strokeStyle=A2;x.globalAlpha=.28;x.lineWidth=1;x.stroke();
+  });
+  x.globalAlpha=1;
+  if(WF.data.length){
+    x.beginPath();
+    for(let i=0;i<G;i++){const m=WF.data.reduce((a,t)=>a+t[i],0)/WF.data.length;i?x.lineTo(sx(i),sy(m)):x.moveTo(sx(i),sy(m));}
+    x.strokeStyle=A1;x.lineWidth=2.2;x.stroke();
+  }
+  const N=+wfN.value,s=+wfS.value/1000,p0=+wfP.value/100;
+  const u=kimura(N,s,p0);
+  x.setLineDash([4,4]);x.strokeStyle=A3;x.lineWidth=1.5;
+  x.beginPath();x.moveTo(pad,sy(u));x.lineTo(w-14,sy(u));x.stroke();x.setLineDash([]);
+  x.fillStyle=A3;x.font=MONO;x.textAlign='right';x.fillText('u(p₀) = '+u.toFixed(3),w-16,sy(u)-5);
+  x.fillStyle=DIM;x.textAlign='left';x.fillText('Generationen →',pad+2,h-4);
+  const R=WF.data.length||1;
+  stats($('s-wf'),[['N_e·s',(N*s).toFixed(2)],['fixiert',WF.fixed+'/'+R],
+    ['verloren',WF.lost+'/'+R],['empirisch',(WF.fixed/R).toFixed(3)],
+    ['Kimura u(p₀)',u.toFixed(3)],['Regime',Math.abs(N*s)<1?'Drift':'Selektion']]);
+}
+$('wf-run').onclick=wfRun;
+$('wf-reset').onclick=()=>{WF.data=[];WF.fixed=0;WF.lost=0;wfDraw();};
+const WFPRE={
+ neutral:{wfN:200,wfS:0,wfP:50,wfM:0,wfR:40,wfG:1000,why:'Reine Drift: Fixationswahrscheinlichkeit = Startfrequenz. Mittlere Fixationszeit ≈ 4N_e Generationen. Die Trajektorien fächern zufällig auf.'},
+ nearly:{wfN:100,wfS:10,wfP:10,wfM:0,wfR:60,wfG:1500,why:'N_e·s ≈ 1 — die Grenze zwischen den Regimen. Selektion ist erkennbar, aber viele vorteilhafte Allele gehen dennoch durch Drift verloren.'},
+ strong:{wfN:1000,wfS:20,wfP:10,wfM:0,wfR:40,wfG:800,why:'N_e·s ≈ 20: Selektion dominiert klar. Fast alle Replikate fixieren, die Trajektorien folgen einer engen logistischen Kurve.'},
+ small:{wfN:25,wfS:50,wfP:20,wfM:0,wfR:80,wfG:400,why:'Kleine Population trotz starkem Selektionsvorteil: N_e·s ≈ 1.25. Drift überstimmt die Selektion regelmäßig — sichtbar an der hohen Verlustrate.'},
+ balance:{wfN:400,wfS:-30,wfP:50,wfM:100,wfR:40,wfG:2000,why:'Nachteiliges Allel mit rekurrenter Mutation. Statt Fixierung stellt sich ein stationäres Gleichgewicht bei p ≈ μ/s ein.'}
+};
+$('wf-pre').onchange=e=>{const p=WFPRE[e.target.value];if(!p){$('wf-why').textContent='Eigene Einstellung — Parameter frei wählbar.';return;}
+  for(const k in p)if(k!=='why'){$(k).value=p[k];$(k).dispatchEvent(new Event('input'));}
+  $('wf-why').textContent=p.why;wfRun();};
+
+/* ================= 03 SPATIAL ================= */
+const SP={run:false,gen:0,grid:null,L:0,occ:null};
+const spM=bind('spM','v-spM',v=>(v/1000).toFixed(3)), spS=bind('spS','v-spS',v=>(v/1000).toFixed(3)),
+      spN=bind('spN','v-spN',v=>v), spL=bind('spL','v-spL',v=>v);
+function spReset(){
+  const L=+spL.value;SP.L=L;SP.gen=0;
+  SP.grid=new Float64Array(L*L);SP.occ=new Uint8Array(L*L);
+  const mode=$('spInit').value;
+  for(let i=0;i<L;i++)for(let j=0;j<L;j++){
+    const k=i*L+j;
+    if(mode==='uniform'){SP.grid[k]=.5;SP.occ[k]=1;}
+    else if(mode==='split'){SP.grid[k]=j<L/2?0.95:0.05;SP.occ[k]=1;}
+    else {SP.grid[k]=Math.random();SP.occ[k]=j<2?1:0;}
+  }
+  spDraw();
+}
+function spStep(){
+  const L=SP.L,m=+spM.value/1000,s=+spS.value/1000,n=+spN.value;
+  const g=SP.grid,o=SP.occ;
+  // expansion
+  if($('spInit').value==='edge'){
+    const no=Uint8Array.from(o);
+    for(let i=0;i<L;i++)for(let j=0;j<L;j++){const k=i*L+j;
+      if(o[k])continue;
+      let src=-1;
+      [[1,0],[-1,0],[0,1],[0,-1]].forEach(d=>{const a=i+d[0],b=j+d[1];
+        if(a>=0&&a<L&&b>=0&&b<L&&o[a*L+b]&&Math.random()<.25)src=a*L+b;});
+      if(src>=0){no[k]=1;g[k]=g[src];}
+    }
+    SP.occ=no;
+  }
+  const ng=new Float64Array(L*L);
+  for(let i=0;i<L;i++)for(let j=0;j<L;j++){
+    const k=i*L+j;if(!SP.occ[k]){ng[k]=g[k];continue;}
+    // migration
+    let sum=0,cnt=0;
+    [[1,0],[-1,0],[0,1],[0,-1]].forEach(d=>{const a=i+d[0],b=j+d[1];
+      if(a>=0&&a<L&&b>=0&&b<L&&SP.occ[a*L+b]){sum+=g[a*L+b];cnt++;}});
+    let p=cnt?(1-m)*g[k]+m*(sum/cnt):g[k];
+    // local selection: gradient across j
+    const grad=(j/(L-1))*2-1;      // -1 .. +1
+    const sl=s*grad;
+    p=p*(1+sl)/(p*(1+sl)+(1-p));
+    p=clamp(p,0,1);
+    // drift
+    let c=0;if(n<80){for(let q=0;q<n;q++)if(Math.random()<p)c++;}
+    else{const sd=Math.sqrt(n*p*(1-p));let u=0,v=0;while(u===0)u=Math.random();while(v===0)v=Math.random();
+      c=clamp(Math.round(n*p+sd*Math.sqrt(-2*Math.log(u))*Math.cos(2*Math.PI*v)),0,n);}
+    ng[k]=c/n;
+  }
+  SP.grid=ng;SP.gen++;
+}
+function spDraw(){
+  const {x,w,h}=fit($('c-sp'));
+  x.fillStyle='#fdfcf8';x.fillRect(0,0,w,h);
+  const L=SP.L,side=Math.min(w-160,h-40),cs=side/L,ox=14,oy=20;
+  for(let i=0;i<L;i++)for(let j=0;j<L;j++){
+    const k=i*L+j,p=SP.grid[k];
+    if(!SP.occ[k]){x.fillStyle='#eeece4';}
+    else{
+      // p=1 -> A (madder red), p=0 -> B (indigo)
+      const r=Math.round(59+(168-59)*p),gg=Math.round(74+(50-74)*p),b=Math.round(140+(50-140)*p);
+      const dull=1-Math.abs(p-.5)*2;
+      x.fillStyle=`rgb(${Math.round(r+(201-r)*dull*.55)},${Math.round(gg+(196-gg)*dull*.55)},${Math.round(b+(180-b)*dull*.55)})`;
+    }
+    x.fillRect(ox+j*cs,oy+i*cs,cs+.6,cs+.6);
+  }
+  x.strokeStyle=LINE;x.strokeRect(ox,oy,side,side);
+  x.fillStyle=DIM;x.font=MONO;x.textAlign='left';
+  x.fillText('Umweltgradient →  (links begünstigt B, rechts A)',ox,14);
+  // column profile (cline)
+  const px=ox+side+26,pw=w-px-14;
+  x.strokeStyle=LINE;x.beginPath();x.moveTo(px,oy);x.lineTo(px,oy+side);x.lineTo(px+pw,oy+side);x.stroke();
+  x.save();x.translate(px-4,oy+side/2);x.rotate(-Math.PI/2);x.textAlign='center';x.fillStyle=DIM;
+  x.fillText('Frequenz A',0,0);x.restore();
+  const colp=[];
+  for(let j=0;j<L;j++){let s=0,c=0;for(let i=0;i<L;i++){if(SP.occ[i*L+j]){s+=SP.grid[i*L+j];c++;}}colp.push(c?s/c:null);}
+  x.beginPath();let started=false;
+  colp.forEach((v,j)=>{if(v===null)return;const X=px+(j/(L-1))*pw,Y=oy+side-v*side;
+    started?x.lineTo(X,Y):x.moveTo(X,Y);started=true;});
+  x.strokeStyle=A2;x.lineWidth=2;x.stroke();
+  x.fillStyle=DIM;x.textAlign='center';x.fillText('Cline-Profil',px+pw/2,oy+side+15);
+  // stats
+  let tot=0,c=0,poly=0;
+  for(let k=0;k<L*L;k++)if(SP.occ[k]){tot+=SP.grid[k];c++;if(SP.grid[k]>.02&&SP.grid[k]<.98)poly++;}
+  const mean=c?tot/c:0;
+  let vsum=0;for(let k=0;k<L*L;k++)if(SP.occ[k])vsum+=(SP.grid[k]-mean)**2;
+  const varp=c?vsum/c:0;
+  const fst=mean>0&&mean<1?varp/(mean*(1-mean)):0;
+  const m=+spM.value/1000,s=+spS.value/1000;
+  stats($('s-sp'),[['Generation',SP.gen],['Ø p(A)',mean.toFixed(3)],
+    ['F_ST',fst.toFixed(3)],['polymorph',(100*poly/(c||1)).toFixed(0)+'%'],
+    ['m/s',s>0?(m/s).toFixed(2):'∞'],['besiedelt',c+'/'+(L*L)]]);
+}
+$('sp-run').onclick=e=>{SP.run=!SP.run;e.target.textContent=SP.run?'Pause':'Start';if(SP.run)spLoop();};
+$('sp-reset').onclick=spReset;
+$('spL').addEventListener('change',spReset);
+$('spInit').addEventListener('change',spReset);
+function spLoop(){if(!SP.run)return;spStep();spDraw();setTimeout(()=>requestAnimationFrame(spLoop),40);}
+const SPPRE={
+ cline:{spM:50,spS:60,spN:80,spL:36,init:'split',why:'m ≈ s: lokale Anpassung und Genfluss halten sich die Waage. Es bildet sich ein stabiler, gradueller Cline mit erhöhtem F_ST aus.'},
+ swamp:{spM:400,spS:20,spN:80,spL:36,init:'split',why:'m ≫ s: Genfluss überflutet die lokale Selektion. Das Gitter wird nahezu uniform, F_ST fällt gegen null, der Cline verschwindet.'},
+ isolate:{spM:2,spS:0,spN:20,spL:40,init:'uniform',why:'Fast keine Migration, keine Selektion: reine lokale Drift. Es entstehen fleckige Domänen fixierter Allele — Isolation by distance mit hohem F_ST.'},
+ surf:{spM:80,spS:0,spN:25,spL:44,init:'edge',why:'Neutrale Expansion von links. An der Ausbreitungsfront gewinnen zufällig einzelne Varianten und bilden breite Streifen — Allele Surfing.'}
+};
+$('sp-pre').onchange=e=>{const p=SPPRE[e.target.value];if(!p){$('sp-why').textContent='Eigene Einstellung — Parameter frei wählbar.';return;}
+  for(const k in p)if(k!=='why'&&k!=='init'){$(k).value=p[k];$(k).dispatchEvent(new Event('input'));}
+  $('spInit').value=p.init;$('sp-why').textContent=p.why;spReset();};
+
+/* ================= 04 RED QUEEN ================= */
+const RQ={run:false,gen:0,H:[],P:[],hist:[],A:4};
+const rqV=bind('rqV','v-rqV',v=>(v/100).toFixed(2)), rqC=bind('rqC','v-rqC',v=>(v/100).toFixed(2)),
+      rqG=bind('rqG','v-rqG',v=>(v/10).toFixed(1)), rqA=bind('rqA','v-rqA',v=>v),
+      rqM=bind('rqM','v-rqM',v=>(v/10000).toFixed(4));
+function rqReset(){
+  const A=+rqA.value;RQ.A=A;RQ.gen=0;RQ.hist=[];
+  RQ.H=[];RQ.P=[];
+  let sh=0,sp=0;
+  for(let i=0;i<A;i++){const a=1+Math.random()*.4,b=1+Math.random()*.4;RQ.H.push(a);RQ.P.push(b);sh+=a;sp+=b;}
+  RQ.H=RQ.H.map(v=>v/sh);RQ.P=RQ.P.map(v=>v/sp);
+  rqDraw();
+}
+function normalize(a){const s=a.reduce((x,y)=>x+y,0);return a.map(v=>v/s);}
+function mutate(a,mu){const A=a.length;return normalize(a.map((v,i)=>v*(1-mu)+mu*(1/A)));}
+function rqStep(){
+  const A=RQ.A,v=+rqV.value/100,c=+rqC.value/100,g=+rqG.value/10,mu=+rqM.value/10000;
+  const model=$('rqModel').value;
+  const Q=(i,j)=>{ // infection matrix: parasite j infects host i?
+    if(model==='mam')return i===j?1:0;
+    return j>=i?1:0;   // GFG: more virulent parasites infect more hosts
+  };
+  // Matching-Allele braucht eine nichtlineare Fitnessantwort, damit sich statt einer
+  // gedämpften Spirale ein echter Grenzzyklus einstellt. GFG zyklisiert bereits linear.
+  const al=model==='mam'?4:1;
+  // host fitness
+  const wH=[];
+  for(let i=0;i<A;i++){
+    let inf=0;for(let j=0;j<A;j++)inf+=Q(i,j)*RQ.P[j];
+    const cost=model==='gfg'?c*i:0;
+    wH.push(Math.max(1e-9,Math.pow(Math.max(1e-9,1-v*inf),al)-cost));
+  }
+  RQ.H=mutate(normalize(RQ.H.map((p,i)=>p*wH[i])),mu);
+  // parasite: run g generations
+  const steps=Math.max(1,Math.round(g));
+  for(let t=0;t<steps;t++){
+    const wP=[];
+    for(let j=0;j<A;j++){
+      let hit=0;for(let i=0;i<A;i++)hit+=Q(i,j)*RQ.H[i];
+      const cost=model==='gfg'?c*j*2:0;
+      wP.push(Math.max(1e-9,Math.pow(hit+0.03,al)-cost));
+    }
+    RQ.P=mutate(normalize(RQ.P.map((p,j)=>p*wP[j])),mu);
+  }
+  RQ.gen++;
+  RQ.hist.push({H:RQ.H.slice(),P:RQ.P.slice()});
+  if(RQ.hist.length>900)RQ.hist.shift();
+}
+function series(x,w,h,key,color,title){
+  const pad=44;x.fillStyle='#fdfcf8';x.fillRect(0,0,w,h);
+  const H=h-pad-10,W=w-pad-14;
+  x.strokeStyle=LINE;x.lineWidth=1;
+  x.beginPath();x.moveTo(pad,10);x.lineTo(pad,10+H);x.lineTo(w-14,10+H);x.stroke();
+  x.fillStyle=DIM;x.font=MONO;x.textAlign='right';
+  x.fillText('1.0',pad-6,16);x.fillText('0.0',pad-6,10+H);
+  x.textAlign='left';x.fillText(title,pad+4,h-4);
+  const n=RQ.hist.length;if(n<2)return;
+  const N=Math.max(n,200);
+  const sx=i=>pad+((i-(n-Math.min(n,N)))/(N-1))*W, sy=p=>10+H-p*H;
+  for(let k=0;k<RQ.A;k++){
+    x.beginPath();
+    RQ.hist.forEach((d,i)=>{const X=sx(i),Y=sy(d[key][k]);i?x.lineTo(X,Y):x.moveTo(X,Y);});
+    x.strokeStyle=color;x.globalAlpha=.35+.65*(k/Math.max(1,RQ.A-1));x.lineWidth=1.5;x.stroke();
+  }
+  x.globalAlpha=1;
+}
+function rqDraw(){
+  const a=fit($('c-rq'));series(a.x,a.w,a.h,'H',A1,'Wirtsgenotyp-Frequenzen über Generationen');
+  const b=fit($('c-rq2'));
+  const {x,w,h}=b;const pad=44;
+  x.fillStyle='#fdfcf8';x.fillRect(0,0,w,h);
+  const half=w*0.56;
+  // parasite series on left
+  x.save();x.beginPath();x.rect(0,0,half,h);x.clip();
+  series(x,half,h,'P',A2,'Parasitengenotyp-Frequenzen');
+  x.restore();
+  // phase portrait right
+  const px=half+30,size=Math.min(w-px-16,h-34);
+  x.strokeStyle=LINE;x.strokeRect(px,10,size,size);
+  x.fillStyle=DIM;x.font=MONO;x.textAlign='center';
+  x.fillText('Phasenraum: p(Wirt₁) × p(Parasit₁)',px+size/2,h-4);
+  const n=RQ.hist.length;
+  if(n>2){
+    x.beginPath();
+    RQ.hist.forEach((d,i)=>{const X=px+d.H[0]*size,Y=10+size-d.P[0]*size;i?x.lineTo(X,Y):x.moveTo(X,Y);});
+    x.strokeStyle=A4;x.globalAlpha=.55;x.lineWidth=1;x.stroke();x.globalAlpha=1;
+    const L=RQ.hist[n-1];
+    x.fillStyle=A3;x.beginPath();x.arc(px+L.H[0]*size,10+size-L.P[0]*size,3.5,0,7);x.fill();
+  }
+  // stats: amplitude + lag
+  let amp='—',lag='—';
+  if(n>60){
+    const hs=RQ.hist.map(d=>d.H[0]),ps=RQ.hist.map(d=>d.P[0]);
+    const tail=hs.slice(-Math.min(400,n));
+    amp=(Math.max(...tail)-Math.min(...tail)).toFixed(3);
+    const mh=hs.reduce((x,y)=>x+y,0)/n,mp=ps.reduce((x,y)=>x+y,0)/n;
+    let best=0,bl=0;
+    for(let L=0;L<Math.min(80,n/3);L++){
+      let s=0;for(let i=0;i+L<n;i++)s+=(hs[i]-mh)*(ps[i+L]-mp);
+      s/=(n-L);if(s>best){best=s;bl=L;}
+    }
+    lag=bl;
+  }
+  stats($('s-rq'),[['Generation',RQ.gen],['Modell',$('rqModel').value.toUpperCase()],
+    ['Amplitude',amp],['Phasenlag',lag],
+    ['Wirts-Diversität',(1-RQ.H.reduce((s,p)=>s+p*p,0)).toFixed(3)],
+    ['Parasiten-Div.',(1-RQ.P.reduce((s,p)=>s+p*p,0)).toFixed(3)]]);
+}
+$('rq-run').onclick=e=>{RQ.run=!RQ.run;e.target.textContent=RQ.run?'Pause':'Start';if(RQ.run)rqLoop();};
+$('rq-reset').onclick=rqReset;
+$('rqA').addEventListener('change',rqReset);
+$('rqModel').addEventListener('change',rqReset);
+function rqLoop(){if(!RQ.run)return;rqStep();rqDraw();setTimeout(()=>requestAnimationFrame(rqLoop),30);}
+const RQPRE={
+ cycle:{rqModel:'mam',rqV:80,rqC:5,rqG:10,rqA:4,rqM:20,why:'Matching-Allele mit hoher Virulenz: stabile, anhaltende Oszillationen mit großer Amplitude. Im Phasenraum bildet sich ein geschlossener Grenzzyklus.'},
+ damped:{rqModel:'mam',rqV:15,rqC:5,rqG:10,rqA:4,rqM:20,why:'Schwache Virulenz: die Selektion ist zu schwach für anhaltende Zyklen. Die Trajektorie spiralt ins Zentrum — gedämpfte Oszillation zum Polymorphismus-Gleichgewicht.'},
+ chaos:{rqModel:'mam',rqV:98,rqC:2,rqG:30,rqA:6,rqM:5,why:'Hohe Virulenz, schnelle Parasitengeneration, viele Allele: irreguläre Amplituden und eine nicht geschlossene Phasenraumbahn — instabiles bis chaotisches Regime.'},
+ gfg:{rqModel:'gfg',rqV:60,rqC:20,rqG:10,rqA:5,rqM:20,why:'Gene-for-Gene: universelle Parasiten infizieren mehr Wirte, zahlen aber Kosten. Ohne Kosten würde der Generalist fixieren — c hält die Zyklen am Leben.'},
+ lag:{rqModel:'mam',rqV:70,rqC:5,rqG:50,rqA:4,rqM:20,why:'Parasit durchläuft 5 Generationen je Wirtsgeneration: er verfolgt den Wirt sehr eng, die Amplitude steigt, der Phasenversatz wird kurz und scharf.'}
+};
+$('rq-pre').onchange=e=>{const p=RQPRE[e.target.value];if(!p){$('rq-why').textContent='Eigene Einstellung — Parameter frei wählbar.';return;}
+  $('rqModel').value=p.rqModel;
+  ['rqV','rqC','rqG','rqA','rqM'].forEach(k=>{$(k).value=p[k];$(k).dispatchEvent(new Event('input'));});
+  $('rq-why').textContent=p.why;rqReset();};
+
+/* init */
+nkReset();wfRun();spReset();rqReset();
+window.addEventListener('resize',()=>{nkDraw();wfDraw();spDraw();rqDraw();});
+</script>
+</body>
+</html>

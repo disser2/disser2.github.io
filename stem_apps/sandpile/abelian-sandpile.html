@@ -1,0 +1,1072 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Abelsches Sandhaufenmodell</title>
+<style>
+:root{
+  --c1:#CCF2FF; --c2:#80D9FF; --c3:#3399FF; --c4:#1460BF; --c5:#002A8C;
+  --accent:#FF7A29;
+  --stage:#0A1626;
+  --stage-line:#1B2E47;
+  --ink:#0E1A24;
+  --ink-mid:#4A5D6E;
+  --ink-soft:#7C8B99;
+  --paper:#F2F5F7;
+  --panel:#FFFFFF;
+  --rule:#D3DBE2;
+  --font: "Frutiger","Frutiger Linotype","Univers","Calibri","Helvetica Neue",Helvetica,Arial,sans-serif;
+  --mono: "Roboto Mono","Consolas","DejaVu Sans Mono",monospace;
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{
+  font-family:var(--font);
+  background:var(--paper);
+  color:var(--ink);
+  font-size:14px;
+  line-height:1.45;
+}
+header{
+  display:flex;align-items:flex-start;justify-content:space-between;gap:24px;
+  padding:18px 24px 14px;border-bottom:2px solid var(--c5);background:var(--panel);
+}
+header h1{margin:0;font-size:21px;font-weight:600;letter-spacing:-0.01em;color:var(--c5)}
+header p{margin:3px 0 0;color:var(--ink-mid);max-width:76ch;font-size:13px}
+.logo{height:34px;display:block}
+.logo-fallback{font-size:12px;font-weight:600;color:var(--c5);letter-spacing:.04em;white-space:nowrap}
+
+main{display:grid;grid-template-columns:296px minmax(0,1fr);gap:0;align-items:start}
+aside{
+  background:var(--panel);border-right:1px solid var(--rule);
+  padding:16px 18px 28px;position:sticky;top:0;max-height:100vh;overflow-y:auto;
+}
+.stage-wrap{padding:16px 24px 8px;min-width:0}
+
+/* ---- Controls ---- */
+.group{border-top:1px solid var(--rule);padding:14px 0 4px}
+.group:first-child{border-top:none;padding-top:0}
+.group > h2{
+  margin:0 0 10px;font-size:11px;font-weight:700;letter-spacing:.09em;
+  text-transform:uppercase;color:var(--ink-soft);
+}
+label.field{display:block;margin-bottom:12px}
+label.field > span{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:4px}
+label.field .lbl{font-size:12.5px;color:var(--ink-mid)}
+label.field .val{font-family:var(--mono);font-size:12px;color:var(--c5)}
+input[type=range]{width:100%;accent-color:var(--c4);margin:0}
+select,button{font-family:var(--font);font-size:13px}
+select{
+  width:100%;padding:6px 8px;border:1px solid var(--rule);background:#fff;color:var(--ink);
+  border-radius:0;
+}
+.btn-row{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px}
+button{
+  padding:7px 12px;border:1px solid var(--c4);background:#fff;color:var(--c4);
+  cursor:pointer;border-radius:0;font-weight:600;letter-spacing:.01em;
+}
+button:hover{background:var(--c1)}
+button:focus-visible,select:focus-visible,input:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+button.primary{background:var(--c4);color:#fff}
+button.primary:hover{background:var(--c5)}
+button.wide{flex:1}
+button:disabled{opacity:.45;cursor:not-allowed}
+.radio-row{display:flex;border:1px solid var(--rule)}
+.radio-row label{
+  flex:1;text-align:center;padding:6px 4px;font-size:12.5px;cursor:pointer;color:var(--ink-mid);
+  border-right:1px solid var(--rule);
+}
+.radio-row label:last-child{border-right:none}
+.radio-row input{position:absolute;opacity:0;width:0;height:0}
+.radio-row label:has(input:checked){background:var(--c4)}
+.radio-row label:has(input:checked) span{color:#fff}
+.radio-row label:has(input:focus-visible){outline:2px solid var(--accent);outline-offset:-2px}
+.hint{font-size:11.5px;color:var(--ink-soft);margin:-4px 0 10px}
+.check{display:flex;align-items:center;gap:7px;margin-bottom:10px;font-size:12.5px;color:var(--ink-mid);cursor:pointer}
+.check input{accent-color:var(--c4);margin:0}
+
+/* ---- Stage ---- */
+.views{display:grid;grid-template-columns:1fr 1fr;gap:14px;min-width:0}
+.view{background:var(--stage);border:1px solid var(--stage-line);min-width:0;display:flex;flex-direction:column}
+.view-bar{
+  display:flex;justify-content:space-between;align-items:center;gap:10px;
+  padding:6px 10px;border-bottom:1px solid var(--stage-line);
+  font-size:11px;letter-spacing:.09em;text-transform:uppercase;font-weight:700;color:var(--c2);
+}
+.view-bar .note{text-transform:none;letter-spacing:0;font-weight:400;color:#6E86A0;font-size:11.5px}
+.canvas-box{position:relative;width:100%;aspect-ratio:1/1}
+.canvas-box canvas{position:absolute;inset:0;width:100%;height:100%;display:block;touch-action:none}
+#c2d{cursor:crosshair}
+#c3d{cursor:grab}
+#c3d.dragging{cursor:grabbing}
+
+/* ---- Stats + histogram ---- */
+.lower{display:grid;grid-template-columns:minmax(0,1fr) 320px;gap:14px;margin-top:14px}
+.card{background:var(--panel);border:1px solid var(--rule);padding:12px 14px}
+.card h2{margin:0 0 10px;font-size:11px;font-weight:700;letter-spacing:.09em;text-transform:uppercase;color:var(--ink-soft)}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(112px,1fr));gap:12px 18px}
+.stat .k{font-size:11px;color:var(--ink-soft);letter-spacing:.03em}
+.stat .v{font-family:var(--mono);font-size:17px;color:var(--c5);line-height:1.2}
+.stat .v.alert{color:var(--accent)}
+#hist{width:100%;height:150px;display:block;background:#fff}
+.legend{display:flex;flex-wrap:wrap;gap:10px 16px;margin-top:12px;padding-top:10px;border-top:1px solid var(--rule)}
+.legend span{display:flex;align-items:center;gap:6px;font-size:12px;color:var(--ink-mid)}
+.swatch{width:13px;height:13px;border:1px solid rgba(0,0,0,.25)}
+
+.status{margin-top:10px;font-size:12px;color:var(--ink-mid);min-height:1.3em}
+footer{
+  margin-top:18px;padding:12px 24px 20px;border-top:1px solid var(--rule);
+  font-size:11.5px;color:var(--ink-soft);
+}
+
+@media (max-width:1180px){
+  main{grid-template-columns:1fr}
+  aside{position:static;max-height:none;border-right:none;border-bottom:1px solid var(--rule)}
+  .views{grid-template-columns:1fr}
+  .lower{grid-template-columns:1fr}
+}
+@media (prefers-reduced-motion:reduce){*{scroll-behavior:auto}}
+</style>
+</head>
+<body>
+
+<header>
+  <div>
+    <h1>Abelsches Sandhaufenmodell</h1>
+    <p>Quadratgitter mit Schwellwert 4 und offenen Rändern. Instabile Zellen geben je ein Korn an ihre vier Nachbarn ab; pro Welle toppeln alle instabilen Zellen gleichzeitig. Beide Ansichten lesen denselben Zustand im selben Frame.</p>
+  </div>
+  <img src="logo.png" alt="Fraunhofer IAIS" class="logo" onerror="this.replaceWith(Object.assign(document.createElement('div'),{className:'logo-fallback',textContent:'FRAUNHOFER IAIS'}))">
+</header>
+
+<main>
+  <aside>
+    <div class="group">
+      <h2>Ablauf</h2>
+      <div class="btn-row">
+        <button id="btnRun" class="primary wide">Start</button>
+        <button id="btnStep">Welle</button>
+      </div>
+      <div class="btn-row">
+        <button id="btnSettle" class="wide">Stabilisieren</button>
+        <button id="btnReset">Reset</button>
+      </div>
+      <label class="field">
+        <span><span class="lbl">Geschwindigkeit</span><span class="val" id="vSpeed"></span></span>
+        <input type="range" id="speed" min="1" max="400" value="120">
+      </label>
+    </div>
+
+    <div class="group">
+      <h2>Körner hinzufügen</h2>
+      <div class="radio-row" id="modeRow">
+        <label><input type="radio" name="mode" value="click" checked><span>Nur per Klick</span></label>
+        <label><input type="radio" name="mode" value="rain"><span>Zufallsregen</span></label>
+      </div>
+      <p class="hint">Zufallsregen setzt ein Korn erst, wenn das Gitter stabil ist — so bleibt die Lawinenstatistik aussagekräftig.</p>
+      <label class="field">
+        <span><span class="lbl">Körner pro Klick</span><span class="val" id="vDrop"></span></span>
+        <input type="range" id="dropSize" min="1" max="2000" value="1">
+      </label>
+      <p class="hint">Klicken oder ziehen — in beiden Ansichten.</p>
+    </div>
+
+    <div class="group">
+      <h2>Startkonfiguration</h2>
+      <select id="preset">
+        <option value="empty">Leer</option>
+        <option value="stack14" selected>Einzelstapel Mitte (16.384)</option>
+        <option value="stack16">Großer Stapel Mitte (65.536, läuft über den Rand)</option>
+        <option value="bg3">Hintergrund 3 + Störung</option>
+        <option value="bg2">Hintergrund 2 + Störung</option>
+        <option value="noise">Zufallsrauschen 0–3</option>
+        <option value="chaos">Zufällig instabil 0–7</option>
+        <option value="identity">Identitätselement der Gruppe</option>
+        <option value="four">Vier Punktquellen</option>
+        <option value="ring">Ring</option>
+      </select>
+      <div class="btn-row" style="margin-top:10px">
+        <button id="btnApply" class="wide">Konfiguration laden</button>
+      </div>
+      <label class="field">
+        <span><span class="lbl">Gitter</span><span class="val" id="vSize"></span></span>
+        <input type="range" id="gridSize" min="41" max="201" step="20" value="161">
+      </label>
+    </div>
+
+    <div class="group">
+      <h2>Darstellung</h2>
+      <label class="field">
+        <span><span class="lbl">Höhenüberhöhung</span><span class="val" id="vExag"></span></span>
+        <input type="range" id="exag" min="50" max="1200" step="10" value="450">
+      </label>
+      <label class="check"><input type="checkbox" id="showFront" checked> Lawinenfront hervorheben</label>
+      <label class="check"><input type="checkbox" id="autoRotate"> 3D langsam drehen</label>
+      <div class="btn-row">
+        <button id="btnCam" class="wide">Kamera zurücksetzen</button>
+      </div>
+      <p class="hint">3D: ziehen zum Drehen, Mausrad zum Zoomen, Klick setzt Körner.</p>
+    </div>
+
+    <div class="group">
+      <h2>Daten</h2>
+      <div class="btn-row">
+        <button id="btnExport" class="wide">JSON exportieren</button>
+      </div>
+    </div>
+  </aside>
+
+  <div class="stage-wrap">
+    <div class="views">
+      <section class="view">
+        <div class="view-bar"><span>2D — Draufsicht</span><span class="note" id="note2d"></span></div>
+        <div class="canvas-box"><canvas id="c2d"></canvas></div>
+      </section>
+      <section class="view">
+        <div class="view-bar"><span>3D — Säulenhöhe</span><span class="note" id="note3d"></span></div>
+        <div class="canvas-box" id="box3d"><canvas id="c3d"></canvas></div>
+      </section>
+    </div>
+
+    <div class="lower">
+      <div class="card">
+        <h2>Zustand</h2>
+        <div class="stats">
+          <div class="stat"><div class="k">Wellen</div><div class="v" id="sWaves">0</div></div>
+          <div class="stat"><div class="k">Körner im Gitter</div><div class="v" id="sGrains">0</div></div>
+          <div class="stat"><div class="k">Instabile Zellen</div><div class="v" id="sUnstable">0</div></div>
+          <div class="stat"><div class="k">Lawinen</div><div class="v" id="sAval">0</div></div>
+          <div class="stat"><div class="k">Letzte Lawine</div><div class="v" id="sLast">–</div></div>
+          <div class="stat"><div class="k">Verlorene Körner</div><div class="v" id="sLost">0</div></div>
+        </div>
+        <div class="legend">
+          <span><i class="swatch" style="background:#0F2138"></i>0</span>
+          <span><i class="swatch" style="background:#1460BF"></i>1</span>
+          <span><i class="swatch" style="background:#3399FF"></i>2</span>
+          <span><i class="swatch" style="background:#80D9FF"></i>3</span>
+          <span><i class="swatch" style="background:#FF7A29"></i>4 und mehr (instabil)</span>
+        </div>
+        <div class="status" id="status"></div>
+      </div>
+      <div class="card">
+        <h2>Lawinengrößen (log–log)</h2>
+        <canvas id="hist"></canvas>
+        <p class="hint" style="margin:8px 0 0">Anzahl der Toppling-Ereignisse pro Lawine. Bei Zufallsregen im kritischen Zustand nähert sich die Verteilung einem Potenzgesetz.</p>
+      </div>
+    </div>
+  </div>
+</main>
+
+<footer>(c) Dario Antweiler, Fraunhofer IAIS &middot; <span id="today"></span></footer>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script>
+"use strict";
+
+/* ============================================================
+   1. ZUSTAND — eine einzige Quelle der Wahrheit
+   ============================================================
+   `grid` ist der gesamte Simulationszustand. Kein Renderer hält
+   eine Kopie, kein Renderer schreibt hinein. Eingaben laufen über
+   `pending` und werden ausschließlich am Anfang eines Schrittes
+   angewandt. Eine Welle liest nur aus `grid` und schreibt nach
+   `delta` — erst danach wird addiert (Double Buffering).
+============================================================ */
+
+const $ = id => document.getElementById(id);
+
+let N = 161;                       // Kantenlänge
+let grid   = new Int32Array(N * N);
+let delta  = new Int32Array(N * N);
+let front  = new Uint8Array(N * N); // Zellen, die in der letzten Welle getopplet haben
+let pending = [];                   // {i, amount} aus Klicks
+
+const stats = {
+  waves: 0, grains: 0, unstable: 0,
+  avalanches: 0, lastAvalanche: null, lost: 0,
+  currentAvalanche: 0
+};
+let avalancheSizes = [];
+let running = false;
+let dirty = true;                   // Gitter seit letztem Zeichnen verändert
+
+/* ---- Grundoperationen ---- */
+
+function allocate(n){
+  N = n;
+  grid  = new Int32Array(N * N);
+  delta = new Int32Array(N * N);
+  front = new Uint8Array(N * N);
+  pending.length = 0;
+}
+
+function clearStats(){
+  stats.waves = 0; stats.grains = 0; stats.unstable = 0;
+  stats.avalanches = 0; stats.lastAvalanche = null; stats.lost = 0;
+  stats.currentAvalanche = 0;
+  avalancheSizes = [];
+}
+
+function countState(){
+  let g = 0, u = 0;
+  for (let i = 0; i < grid.length; i++){
+    const v = grid[i];
+    g += v;
+    if (v >= 4) u++;
+  }
+  stats.grains = g;
+  stats.unstable = u;
+}
+
+function isStable(){
+  return stats.unstable === 0;
+}
+
+/* Eine synchrone Welle. Gibt die Zahl der Toppling-Ereignisse zurück. */
+function wave(){
+  let topples = 0, lost = 0;
+  delta.fill(0);
+
+  for (let y = 0; y < N; y++){
+    const row = y * N;
+    for (let x = 0; x < N; x++){
+      const i = row + x;
+      const h = grid[i];
+      if (h < 4) { front[i] = 0; continue; }
+      const t = h >> 2;               // Mehrfach-Toppling in einem Zug
+      topples += t;
+      front[i] = 1;
+      delta[i] -= 4 * t;
+      if (x > 0)     delta[i - 1] += t; else lost += t;
+      if (x < N - 1) delta[i + 1] += t; else lost += t;
+      if (y > 0)     delta[i - N] += t; else lost += t;
+      if (y < N - 1) delta[i + N] += t; else lost += t;
+    }
+  }
+
+  if (topples === 0) return 0;
+
+  let g = 0, u = 0;
+  for (let i = 0; i < grid.length; i++){
+    const v = grid[i] + delta[i];
+    grid[i] = v;
+    g += v;
+    if (v >= 4) u++;
+  }
+  stats.grains = g;
+  stats.unstable = u;
+  stats.lost += lost;
+  stats.waves++;
+  stats.currentAvalanche += topples;
+  dirty = true;
+  return topples;
+}
+
+/* Lawine abschließen, sobald das Gitter stabil ist. */
+function closeAvalanche(){
+  if (stats.unstable === 0 && stats.currentAvalanche > 0){
+    stats.lastAvalanche = stats.currentAvalanche;
+    avalancheSizes.push(stats.currentAvalanche);
+    if (avalancheSizes.length > 200000) avalancheSizes.shift();
+    stats.avalanches++;
+    stats.currentAvalanche = 0;
+    return true;
+  }
+  return false;
+}
+
+/* Bis zum Fixpunkt rechnen, ohne Animation. */
+function settle(budgetMs){
+  const t0 = performance.now();
+  let n = 0;
+  while (stats.unstable > 0){
+    wave(); n++;
+    if ((n & 31) === 0 && performance.now() - t0 > budgetMs) break;
+  }
+  closeAvalanche();
+  return n;
+}
+
+function addGrains(i, amount){
+  if (i < 0 || i >= grid.length) return;
+  grid[i] += amount;
+  stats.grains += amount;
+  if (grid[i] >= 4 && grid[i] - amount < 4) stats.unstable++;
+  dirty = true;
+}
+
+function applyPending(){
+  if (!pending.length) return;
+  for (const p of pending) addGrains(p.i, p.amount);
+  pending.length = 0;
+}
+
+/* ============================================================
+   2b. FARBEN
+============================================================ */
+
+const COL = {
+  h0: "#0F2138", h1: "#1460BF", h2: "#3399FF", h3: "#80D9FF",
+  hi: "#FF7A29", front: "#FFC98A", stage: "#0A1626", line: "#1B2E47"
+};
+
+function hexToABGR(hex){                       // für ImageData (Little Endian)
+  const v = parseInt(hex.slice(1), 16);
+  const r = (v >> 16) & 255, g = (v >> 8) & 255, b = v & 255;
+  return (255 << 24) | (b << 16) | (g << 8) | r;
+}
+
+/* ============================================================
+   3. STARTKONFIGURATIONEN
+============================================================ */
+
+const CENTER = () => ((N >> 1) * N + (N >> 1));
+
+/* Schnelle Stabilisierung auf einem beliebigen Array (für die Identität). */
+function stabilizeArray(a, n){
+  let unstable = true;
+  const d = new Int32Array(n * n);
+  let guard = 0;
+  while (unstable && guard++ < 500000){
+    d.fill(0);
+    unstable = false;
+    let any = false;
+    for (let y = 0; y < n; y++){
+      const row = y * n;
+      for (let x = 0; x < n; x++){
+        const i = row + x;
+        if (a[i] < 4) continue;
+        const t = a[i] >> 2;
+        any = true;
+        d[i] -= 4 * t;
+        if (x > 0)     d[i - 1] += t;
+        if (x < n - 1) d[i + 1] += t;
+        if (y > 0)     d[i - n] += t;
+        if (y < n - 1) d[i + n] += t;
+      }
+    }
+    if (!any) break;
+    for (let i = 0; i < a.length; i++) a[i] += d[i];
+    unstable = true;
+  }
+  return a;
+}
+
+function identityConfig(n){
+  const a = new Int32Array(n * n).fill(6);
+  stabilizeArray(a, n);
+  const b = new Int32Array(n * n);
+  for (let i = 0; i < b.length; i++) b[i] = 6 - a[i];
+  stabilizeArray(b, n);
+  return b;
+}
+
+function applyPreset(name){
+  grid.fill(0);
+  front.fill(0);
+  clearStats();
+  const c = CENTER();
+  const mid = N >> 1;
+
+  switch (name){
+    case "empty": break;
+    case "stack14": grid[c] = 16384; break;
+    case "stack16": grid[c] = 65536; break;
+    case "bg3":
+      grid.fill(3); grid[c] += 400; break;
+    case "bg2":
+      grid.fill(2); grid[c] += 2000; break;
+    case "noise":
+      for (let i = 0; i < grid.length; i++) grid[i] = (Math.random() * 4) | 0;
+      break;
+    case "chaos":
+      for (let i = 0; i < grid.length; i++) grid[i] = (Math.random() * 8) | 0;
+      break;
+    case "identity": {
+      const b = identityConfig(N);
+      grid.set(b);
+      break;
+    }
+    case "four": {
+      const o = Math.max(4, Math.round(N / 5));
+      grid[(mid - o) * N + (mid - o)] = 4096;
+      grid[(mid - o) * N + (mid + o)] = 4096;
+      grid[(mid + o) * N + (mid - o)] = 4096;
+      grid[(mid + o) * N + (mid + o)] = 4096;
+      break;
+    }
+    case "ring": {
+      const r = Math.max(5, Math.round(N * 0.32));
+      const steps = Math.round(2 * Math.PI * r);
+      for (let s = 0; s < steps; s++){
+        const a = 2 * Math.PI * s / steps;
+        const x = mid + Math.round(r * Math.cos(a));
+        const y = mid + Math.round(r * Math.sin(a));
+        if (x >= 0 && x < N && y >= 0 && y < N) grid[y * N + x] += 220;
+      }
+      break;
+    }
+  }
+  countState();
+  dirty = true;
+}
+
+/* ============================================================
+   4. 2D-RENDERER
+   Zeichnet ausschließlich aus `grid`. Das Layout-Rechteck wird
+   hier berechnet und ist zugleich die Grundlage des Klick-Mappings —
+   damit können Bild und Trefferzone nicht auseinanderlaufen.
+============================================================ */
+
+const cv2 = $("c2d");
+const ctx2 = cv2.getContext("2d", { alpha: false });
+let off = document.createElement("canvas");
+let offCtx = off.getContext("2d");
+let imgData = null, pix = null;
+const layout2d = { x0: 0, y0: 0, size: 0 };
+const PAD2D = 8;
+
+function rebuild2dBuffer(){
+  off.width = N; off.height = N;
+  offCtx = off.getContext("2d");
+  imgData = offCtx.createImageData(N, N);
+  pix = new Uint32Array(imgData.data.buffer);
+}
+
+function resize2d(){
+  const dpr = Math.min(window.devicePixelRatio || 1, 2);
+  const w = cv2.clientWidth, h = cv2.clientHeight;
+  if (!w || !h) return;
+  cv2.width = Math.round(w * dpr);
+  cv2.height = Math.round(h * dpr);
+  ctx2.setTransform(dpr, 0, 0, dpr, 0, 0);
+  ctx2.imageSmoothingEnabled = false;
+  const size = Math.min(w, h) - 2 * PAD2D;
+  layout2d.size = size;
+  layout2d.x0 = (w - size) / 2;
+  layout2d.y0 = (h - size) / 2;
+  dirty = true;
+}
+
+function draw2d(){
+  if (!pix) rebuild2dBuffer();
+  const c0 = hexToABGR(COL.h0), c1 = hexToABGR(COL.h1),
+        c2 = hexToABGR(COL.h2), c3 = hexToABGR(COL.h3),
+        ci = hexToABGR(COL.hi), cf = hexToABGR(COL.front);
+  const showFront = $("showFront").checked;
+
+  for (let i = 0; i < grid.length; i++){
+    const h = grid[i];
+    let c;
+    if (h >= 4) c = ci;
+    else if (h === 3) c = c3;
+    else if (h === 2) c = c2;
+    else if (h === 1) c = c1;
+    else c = c0;
+    if (showFront && front[i] && h < 4) c = cf;
+    pix[i] = c;
+  }
+  offCtx.putImageData(imgData, 0, 0);
+
+  const w = cv2.clientWidth, h = cv2.clientHeight;
+  ctx2.fillStyle = COL.stage;
+  ctx2.fillRect(0, 0, w, h);
+  ctx2.drawImage(off, layout2d.x0, layout2d.y0, layout2d.size, layout2d.size);
+  ctx2.strokeStyle = COL.line;
+  ctx2.lineWidth = 1;
+  ctx2.strokeRect(layout2d.x0 - 0.5, layout2d.y0 - 0.5, layout2d.size + 1, layout2d.size + 1);
+}
+
+/* Das eine Pixel-zu-Zelle-Mapping für die 2D-Ansicht. */
+function cellFrom2d(ev){
+  const r = cv2.getBoundingClientRect();
+  const px = ev.clientX - r.left - layout2d.x0;
+  const py = ev.clientY - r.top - layout2d.y0;
+  if (px < 0 || py < 0 || px >= layout2d.size || py >= layout2d.size) return -1;
+  const x = Math.floor(px / layout2d.size * N);
+  const y = Math.floor(py / layout2d.size * N);
+  if (x < 0 || y < 0 || x >= N || y >= N) return -1;
+  return y * N + x;
+}
+
+/* ============================================================
+   5. 3D-RENDERER
+   Bewusst vollständig opak: keine Transparenz, kein Blending,
+   damit keine Sortierartefakte entstehen. Tiefe kommt aus
+   gerichtetem Licht (unterschiedlich helle Würfelseiten),
+   Nebel und einer Grundplatte.
+   Vier InstancedMeshes, eine je Höhenklasse — dadurch werden
+   keine Per-Instanz-Farben gebraucht.
+============================================================ */
+
+const has3d = (typeof THREE !== "undefined");
+const box3d = $("box3d");
+const cv3 = $("c3d");
+let renderer, scene, camera, meshes = [], ground, frame3d;
+const cam = { theta: 0.62, phi: 0.95, radius: 1 };
+const HEIGHT_CAP = 12;                 // optische Begrenzung sehr hoher Stapel
+
+function init3d(){
+  if (!has3d) return;
+  renderer = new THREE.WebGLRenderer({ canvas: cv3, antialias: true });
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+  renderer.setClearColor(new THREE.Color(COL.stage), 1);
+
+  scene = new THREE.Scene();
+  camera = new THREE.PerspectiveCamera(42, 1, 0.5, 4000);
+
+  scene.add(new THREE.HemisphereLight(0xBFDCFF, 0x0A1626, 0.55));
+  const dir = new THREE.DirectionalLight(0xFFFFFF, 0.85);
+  dir.position.set(0.55, 1, 0.35);
+  scene.add(dir);
+  const fill = new THREE.DirectionalLight(0x6FA8FF, 0.25);
+  fill.position.set(-0.6, 0.4, -0.5);
+  scene.add(fill);
+
+  buildScene();
+  resetCamera();
+}
+
+function disposeScene(){
+  for (const m of meshes){ scene.remove(m); m.geometry.dispose(); m.material.dispose(); }
+  meshes = [];
+  if (ground){ scene.remove(ground); ground.geometry.dispose(); ground.material.dispose(); ground = null; }
+  if (frame3d){ scene.remove(frame3d); frame3d.geometry.dispose(); frame3d.material.dispose(); frame3d = null; }
+}
+
+function buildScene(){
+  if (!has3d) return;
+  disposeScene();
+
+  const half = N / 2;
+  ground = new THREE.Mesh(
+    new THREE.PlaneGeometry(N * 1.12, N * 1.12),
+    new THREE.MeshLambertMaterial({ color: 0x16283F })
+  );
+  ground.rotation.x = -Math.PI / 2;
+  ground.position.y = -0.02;
+  scene.add(ground);
+
+  const pts = [
+    -half, 0.02, -half,  half, 0.02, -half,
+     half, 0.02, -half,  half, 0.02,  half,
+     half, 0.02,  half, -half, 0.02,  half,
+    -half, 0.02,  half, -half, 0.02, -half
+  ];
+  const fg = new THREE.BufferGeometry();
+  fg.setAttribute("position", new THREE.Float32BufferAttribute(pts, 3));
+  frame3d = new THREE.LineSegments(fg, new THREE.LineBasicMaterial({ color: 0x35557C }));
+  scene.add(frame3d);
+
+  const colors = [COL.h1, COL.h2, COL.h3, COL.hi];
+  const geo = new THREE.BoxGeometry(1, 1, 1);
+  geo.translate(0, 0.5, 0);
+  const cap = N * N;
+  for (let k = 0; k < 4; k++){
+    const mat = new THREE.MeshLambertMaterial({ color: new THREE.Color(colors[k]) });
+    const mesh = new THREE.InstancedMesh(geo.clone(), mat, cap);
+    mesh.instanceMatrix.setUsage(THREE.DynamicDrawUsage);
+    mesh.frustumCulled = false;
+    mesh.count = 0;
+    meshes.push(mesh);
+    scene.add(mesh);
+  }
+  geo.dispose();
+
+  scene.fog = new THREE.Fog(new THREE.Color(COL.stage), N * 0.7, N * 2.4);
+}
+
+/* Schreibt die Instanzmatrizen direkt — liest nur aus `grid`. */
+function update3d(){
+  if (!has3d || !meshes.length) return;
+  const exag = (+$("exag").value) / 100;
+  const off = (N - 1) / 2;
+  const s = 0.9;
+  const counts = [0, 0, 0, 0];
+  const arrs = meshes.map(m => m.instanceMatrix.array);
+
+  for (let y = 0; y < N; y++){
+    const row = y * N;
+    for (let x = 0; x < N; x++){
+      const h = grid[row + x];
+      if (h <= 0) continue;
+      const k = h >= 4 ? 3 : h - 1;
+      const a = arrs[k];
+      const o = counts[k]++ * 16;
+      const sy = Math.min(h, HEIGHT_CAP) * exag;
+      a[o]      = s; a[o + 1]  = 0; a[o + 2]  = 0;  a[o + 3]  = 0;
+      a[o + 4]  = 0; a[o + 5]  = sy; a[o + 6] = 0;  a[o + 7]  = 0;
+      a[o + 8]  = 0; a[o + 9]  = 0; a[o + 10] = s;  a[o + 11] = 0;
+      a[o + 12] = x - off; a[o + 13] = 0; a[o + 14] = y - off; a[o + 15] = 1;
+    }
+  }
+  for (let k = 0; k < 4; k++){
+    meshes[k].count = counts[k];
+    meshes[k].instanceMatrix.needsUpdate = true;
+  }
+}
+
+function resize3d(){
+  if (!has3d) return;
+  const w = box3d.clientWidth, h = box3d.clientHeight;
+  if (!w || !h) return;
+  renderer.setSize(w, h, false);
+  camera.aspect = w / h;
+  camera.updateProjectionMatrix();
+}
+
+function resetCamera(){
+  cam.theta = 0.62; cam.phi = 0.95; cam.radius = N * 1.12;
+  updateCamera();
+}
+
+function updateCamera(){
+  if (!has3d) return;
+  const r = cam.radius, p = cam.phi, t = cam.theta;
+  camera.position.set(
+    r * Math.sin(p) * Math.cos(t),
+    r * Math.cos(p),
+    r * Math.sin(p) * Math.sin(t)
+  );
+  camera.lookAt(0, N * 0.03, 0);
+}
+
+/* Pixel -> Zelle für die 3D-Ansicht: Strahl auf die Grundebene y = 0. */
+const _ray = has3d ? new THREE.Raycaster() : null;
+const _plane = has3d ? new THREE.Plane(new THREE.Vector3(0, 1, 0), 0) : null;
+const _hit = has3d ? new THREE.Vector3() : null;
+
+function cellFrom3d(ev){
+  if (!has3d) return -1;
+  const r = cv3.getBoundingClientRect();
+  const ndc = {
+    x: ((ev.clientX - r.left) / r.width) * 2 - 1,
+    y: -((ev.clientY - r.top) / r.height) * 2 + 1
+  };
+  _ray.setFromCamera(ndc, camera);
+  if (!_ray.ray.intersectPlane(_plane, _hit)) return -1;
+  const off = (N - 1) / 2;
+  const x = Math.round(_hit.x + off);
+  const y = Math.round(_hit.z + off);
+  if (x < 0 || y < 0 || x >= N || y >= N) return -1;
+  return y * N + x;
+}
+
+/* ============================================================
+   6. HAUPTSCHLEIFE
+   Genau eine Schleife für Simulation und beide Renderer.
+   Reihenfolge pro Frame: Eingaben -> Wellen -> 2D -> 3D -> WebGL.
+   Beide Ansichten zeigen damit zwangsläufig denselben Schritt.
+============================================================ */
+
+const MAX_STEPS_PER_FRAME = 48;
+let acc = 0, lastT = 0, lastUI = 0;
+let settling = false, settleWaves = 0, settleStart = 0, lastDraw = 0;
+
+function mode(){ return document.querySelector('input[name=mode]:checked').value; }
+
+function simStep(){
+  if (stats.unstable > 0){
+    wave();
+    closeAvalanche();
+  } else if (mode() === "rain"){
+    front.fill(0);
+    addGrains((Math.random() * grid.length) | 0, 1);
+  }
+}
+
+function tick(t){
+  requestAnimationFrame(tick);
+  if (!lastT) lastT = t;
+  let dt = t - lastT; lastT = t;
+  if (dt > 250) dt = 250;
+
+  applyPending();
+
+  if (settling){
+    settleWaves += settle(30);
+    if (stats.unstable === 0){
+      settling = false;
+      dirty = true;
+      say("Fixpunkt nach " + nf.format(settleWaves) + " Wellen ("
+          + Math.round(performance.now() - settleStart) + " ms).", 6000);
+    } else {
+      say("Stabilisiere … " + nf.format(settleWaves) + " Wellen", 1000);
+    }
+  }
+
+  if (running && !settling){
+    acc += dt;
+    const interval = 1000 / (+$("speed").value);
+    let steps = 0;
+    while (acc >= interval && steps < MAX_STEPS_PER_FRAME){ acc -= interval; simStep(); steps++; }
+    if (acc > interval * MAX_STEPS_PER_FRAME) acc = 0;
+  } else {
+    acc = 0;
+  }
+
+  if ($("autoRotate").checked){ cam.theta += 0.0022; updateCamera(); }
+
+  // Beim Stabilisieren wird seltener gezeichnet, damit die Rechenzeit
+  // in die Simulation und nicht in den Renderer fließt.
+  let drew = false;
+  if (dirty && (!settling || t - lastDraw > 110)){
+    draw2d(); update3d(); dirty = false; lastDraw = t; drew = true;
+  }
+  if (t - lastUI > 90){ updateStats(); lastUI = t; }
+  if (has3d && (!settling || drew)) renderer.render(scene, camera);
+}
+
+/* ============================================================
+   7. ANZEIGE VON STATISTIK UND HISTOGRAMM
+============================================================ */
+
+const nf = new Intl.NumberFormat("de-DE");
+let stickyUntil = 0;
+function say(msg, ms){ $("status").textContent = msg; stickyUntil = performance.now() + (ms || 4000); }
+
+function updateStats(){
+  $("sWaves").textContent    = nf.format(stats.waves);
+  $("sGrains").textContent   = nf.format(stats.grains);
+  const u = $("sUnstable");
+  u.textContent = nf.format(stats.unstable);
+  u.classList.toggle("alert", stats.unstable > 0);
+  $("sAval").textContent     = nf.format(stats.avalanches);
+  $("sLast").textContent     = stats.lastAvalanche === null ? "–" : nf.format(stats.lastAvalanche);
+  $("sLost").textContent     = nf.format(stats.lost);
+  drawHist();
+
+  const st = $("status");
+  if (performance.now() < stickyUntil) return;
+  if (stats.unstable > 0){
+    st.textContent = "Lawine läuft — " + nf.format(stats.currentAvalanche) + " Topplings bisher.";
+  } else if (running && mode() === "rain"){
+    st.textContent = "Stabil. Zufallsregen setzt das nächste Korn.";
+  } else if (running){
+    st.textContent = "Stabil. Klicken Sie in eine Ansicht, um Körner zu setzen.";
+  } else {
+    st.textContent = "Pausiert.";
+  }
+}
+
+const histCv = $("hist");
+const hctx = histCv.getContext("2d");
+
+function drawHist(){
+  const dpr = Math.min(window.devicePixelRatio || 1, 2);
+  const w = histCv.clientWidth, h = histCv.clientHeight;
+  if (!w || !h) return;
+  if (histCv.width !== Math.round(w * dpr)){
+    histCv.width = Math.round(w * dpr);
+    histCv.height = Math.round(h * dpr);
+  }
+  hctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  hctx.clearRect(0, 0, w, h);
+  hctx.fillStyle = "#FFFFFF";
+  hctx.fillRect(0, 0, w, h);
+
+  const L = 22, R = 8, T = 8, B = 20;
+  const pw = w - L - R, ph = h - T - B;
+
+  hctx.strokeStyle = "#D3DBE2"; hctx.lineWidth = 1;
+  hctx.beginPath();
+  hctx.moveTo(L + .5, T); hctx.lineTo(L + .5, T + ph + .5); hctx.lineTo(L + pw, T + ph + .5);
+  hctx.stroke();
+
+  if (!avalancheSizes.length){
+    hctx.fillStyle = "#7C8B99"; hctx.font = "12px " + getComputedStyle(document.body).fontFamily;
+    hctx.fillText("Noch keine Lawine abgeschlossen", L + 8, T + ph / 2);
+    return;
+  }
+
+  const NB = 22;                       // log2-Bins
+  const bins = new Float64Array(NB);
+  let maxBin = 0;
+  for (const s of avalancheSizes){
+    const b = Math.min(NB - 1, Math.floor(Math.log2(s)));
+    bins[b]++;
+  }
+  for (let i = 0; i < NB; i++) if (bins[i] > maxBin) maxBin = bins[i];
+  const yMax = Math.log10(maxBin) + 0.15;
+
+  const bw = pw / NB;
+  for (let i = 0; i < NB; i++){
+    if (!bins[i]) continue;
+    const v = Math.log10(bins[i]) / yMax;
+    const bh = Math.max(1.5, v * ph);
+    hctx.fillStyle = i >= NB - 4 ? COL.hi : COL.h3;
+    hctx.fillRect(L + i * bw + 1, T + ph - bh, Math.max(1.5, bw - 2), bh);
+  }
+  hctx.fillStyle = "#7C8B99";
+  hctx.font = "10px " + getComputedStyle(document.body).fontFamily;
+  hctx.fillText("1", L, h - 6);
+  hctx.fillText("2^" + (NB - 1), L + pw - 26, h - 6);
+  hctx.save();
+  hctx.translate(9, T + ph / 2); hctx.rotate(-Math.PI / 2);
+  hctx.textAlign = "center"; hctx.fillText("log Anzahl", 0, 0);
+  hctx.restore();
+}
+
+/* ============================================================
+   8. EINGABEN
+   Klicks landen in `pending` und werden erst im nächsten
+   Simulationsschritt angewandt — nie mitten im Zeichnen.
+============================================================ */
+
+function queue(i){
+  if (i < 0) return;
+  pending.push({ i, amount: +$("dropSize").value });
+}
+
+let painting = false, lastCell = -1;
+cv2.addEventListener("pointerdown", e => {
+  painting = true; lastCell = cellFrom2d(e); queue(lastCell);
+  cv2.setPointerCapture(e.pointerId);
+});
+cv2.addEventListener("pointermove", e => {
+  if (!painting) return;
+  const i = cellFrom2d(e);
+  if (i !== lastCell){ lastCell = i; queue(i); }
+});
+const endPaint = () => { painting = false; lastCell = -1; };
+cv2.addEventListener("pointerup", endPaint);
+cv2.addEventListener("pointercancel", endPaint);
+
+let orbit = null;
+cv3.addEventListener("pointerdown", e => {
+  orbit = { x: e.clientX, y: e.clientY, moved: 0, theta: cam.theta, phi: cam.phi };
+  cv3.setPointerCapture(e.pointerId);
+  cv3.classList.add("dragging");
+});
+cv3.addEventListener("pointermove", e => {
+  if (!orbit) return;
+  const dx = e.clientX - orbit.x, dy = e.clientY - orbit.y;
+  orbit.moved = Math.max(orbit.moved, Math.abs(dx) + Math.abs(dy));
+  cam.theta = orbit.theta + dx * 0.008;
+  cam.phi = Math.max(0.08, Math.min(Math.PI / 2 - 0.03, orbit.phi + dy * 0.006));
+  updateCamera();
+});
+cv3.addEventListener("pointerup", e => {
+  if (orbit && orbit.moved < 5) queue(cellFrom3d(e));
+  orbit = null;
+  cv3.classList.remove("dragging");
+});
+cv3.addEventListener("pointercancel", () => { orbit = null; cv3.classList.remove("dragging"); });
+cv3.addEventListener("wheel", e => {
+  e.preventDefault();
+  cam.radius = Math.max(N * 0.18, Math.min(N * 3, cam.radius * Math.exp(e.deltaY * 0.0012)));
+  updateCamera();
+}, { passive: false });
+
+/* ============================================================
+   9. STEUERELEMENTE
+============================================================ */
+
+function labels(){
+  $("vSpeed").textContent = $("speed").value + " Wellen/s";
+  $("vDrop").textContent  = nf.format(+$("dropSize").value);
+  $("vSize").textContent  = $("gridSize").value + " × " + $("gridSize").value;
+  $("vExag").textContent  = ((+$("exag").value) / 100).toFixed(2) + " ×";
+}
+["speed", "dropSize", "gridSize", "exag"].forEach(id => $(id).addEventListener("input", labels));
+$("exag").addEventListener("input", () => { dirty = true; });
+$("showFront").addEventListener("change", () => { dirty = true; });
+
+function setRunning(v){
+  running = v;
+  $("btnRun").textContent = v ? "Pause" : "Start";
+  if (!v) updateStats();
+}
+
+$("btnRun").addEventListener("click", () => setRunning(!running));
+$("btnStep").addEventListener("click", () => { applyPending(); simStep(); draw2d(); update3d(); dirty = false; updateStats(); });
+$("btnReset").addEventListener("click", () => { setRunning(false); loadPreset($("preset").value); });
+$("btnApply").addEventListener("click", () => loadPreset($("preset").value));
+$("preset").addEventListener("change", () => loadPreset($("preset").value));
+$("btnCam").addEventListener("click", () => { $("autoRotate").checked = false; resetCamera(); });
+
+$("btnSettle").addEventListener("click", () => {
+  if (stats.unstable === 0){ say("Bereits stabil.", 2500); return; }
+  settling = true; settleWaves = 0; settleStart = performance.now();
+  say("Stabilisiere …", 60000);
+});
+
+$("gridSize").addEventListener("change", () => {
+  const n = +$("gridSize").value;
+  setRunning(false);
+  allocate(n);
+  rebuild2dBuffer();
+  buildScene();
+  resetCamera();
+  loadPreset($("preset").value);
+});
+
+function loadPreset(name){
+  const heavy = (name === "identity" && N > 121);
+  if (heavy) say("Berechne Identitätselement — das dauert einen Moment …", 60000);
+  const run = () => {
+    settling = false;
+    applyPreset(name);
+    front.fill(0);
+    stickyUntil = 0;
+    draw2d(); update3d(); dirty = false; updateStats();
+  };
+  if (heavy) setTimeout(run, 30); else run();
+}
+
+$("btnExport").addEventListener("click", () => {
+  const data = {
+    modell: "Abelian Sandpile, Quadratgitter, Schwellwert 4, offene Ränder",
+    erzeugt: new Date().toISOString(),
+    parameter: {
+      gitter: N,
+      startkonfiguration: $("preset").value,
+      koernerProKlick: +$("dropSize").value,
+      modus: mode(),
+      wellenProSekunde: +$("speed").value
+    },
+    statistik: {
+      wellen: stats.waves, koerner: stats.grains, instabileZellen: stats.unstable,
+      lawinen: stats.avalanches, letzteLawine: stats.lastAvalanche, verloreneKoerner: stats.lost
+    },
+    lawinengroessen: avalancheSizes,
+    gitter: Array.from(grid)
+  };
+  const blob = new Blob([JSON.stringify(data)], { type: "application/json" });
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(blob);
+  a.download = "sandpile-" + N + "-" + Date.now() + ".json";
+  a.click();
+  URL.revokeObjectURL(a.href);
+});
+
+/* ============================================================
+   10. START
+============================================================ */
+
+document.addEventListener("keydown", e => {
+  if (e.target.tagName === "SELECT" || e.target.tagName === "INPUT") return;
+  if (e.code === "Space"){ e.preventDefault(); setRunning(!running); }
+  else if (e.key === "s" || e.key === "S"){ $("btnStep").click(); }
+});
+
+$("today").textContent = new Date().toLocaleDateString("de-DE", { year: "numeric", month: "long", day: "numeric" });
+$("note2d").textContent = "Farbe = Körner je Zelle";
+$("note3d").textContent = has3d ? "Höhe = Körner je Zelle" : "WebGL/three.js nicht verfügbar";
+
+allocate(+$("gridSize").value);
+rebuild2dBuffer();
+labels();
+init3d();
+
+const ro = new ResizeObserver(() => { resize2d(); resize3d(); });
+ro.observe(cv2);
+ro.observe(box3d);
+resize2d(); resize3d();
+
+loadPreset($("preset").value);
+requestAnimationFrame(tick);
+
+</script>
+</body>
+</html>

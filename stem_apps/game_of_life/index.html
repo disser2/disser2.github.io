@@ -1,0 +1,467 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Elementary Cellular Automaton Explorer</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f5f5f5;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .container {
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            max-width: 1000px;
+            width: 100%;
+        }
+
+        h1 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 30px;
+        }
+
+        .controls {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 20px;
+            padding: 15px;
+            background-color: #f8f9fa;
+            border-radius: 8px;
+        }
+
+        .control-group {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        label {
+            font-weight: 600;
+            color: #555;
+        }
+
+        select, button {
+            padding: 8px 12px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+
+        select {
+            background: white;
+            min-width: 120px;
+        }
+
+        button {
+            background: #007bff;
+            color: white;
+            border: none;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+
+        button:hover {
+            background: #0056b3;
+        }
+
+        button:disabled {
+            background: #6c757d;
+            cursor: not-allowed;
+        }
+
+        .step-btn {
+            background: #28a745;
+        }
+
+        .step-btn:hover {
+            background: #1e7e34;
+        }
+
+        .reset-btn {
+            background: #dc3545;
+        }
+
+        .reset-btn:hover {
+            background: #c82333;
+        }
+
+        .canvas-container {
+            display: flex;
+            justify-content: center;
+            margin: 20px 0;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        canvas {
+            display: block;
+            background: white;
+        }
+
+        .info {
+            text-align: center;
+            color: #666;
+            font-size: 14px;
+            margin-top: 15px;
+        }
+
+        .speed-control {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .speed-slider {
+            width: 100px;
+        }
+
+        .export-btn {
+            background: #6f42c1;
+        }
+
+        .export-btn:hover {
+            background: #5a32a3;
+        }
+
+        input[type="checkbox"] {
+            transform: scale(1.2);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Elementary Cellular Automaton Explorer</h1>
+        
+        <div class="controls">
+            <div class="control-group">
+                <label for="ruleSelect">Rule:</label>
+                <select id="ruleSelect">
+                    <!-- Options will be populated by JavaScript -->
+                </select>
+            </div>
+            
+            <div class="control-group">
+                <label for="randomInit">Random Init:</label>
+                <input type="checkbox" id="randomInit">
+            </div>
+            
+            <div class="control-group">
+                <button id="playPauseBtn">Play</button>
+                <button id="stepBtn" class="step-btn">Step</button>
+                <button id="resetBtn" class="reset-btn">Reset</button>
+            </div>
+            
+            <div class="control-group speed-control">
+                <label for="speedSlider">Speed:</label>
+                <input type="range" id="speedSlider" class="speed-slider" min="1" max="20" value="5">
+                <span id="speedValue">5</span>
+            </div>
+            
+            <div class="control-group">
+                <button id="exportBtn" class="export-btn">Export PNG</button>
+            </div>
+        </div>
+        
+        <div class="canvas-container">
+            <canvas id="automaton" width="800" height="400"></canvas>
+        </div>
+        
+        <div class="info">
+            <p>Generation: <span id="generation">0</span> | Rule: <span id="currentRule">30</span></p>
+            <p>Click Play to start evolution, Step to advance one generation, or Reset to restart with current settings.</p>
+        </div>
+    </div>
+
+    <script>
+        class ElementaryCellularAutomaton {
+            constructor(canvasId, width = 800, height = 400) {
+                this.canvas = document.getElementById(canvasId);
+                this.ctx = this.canvas.getContext('2d');
+                this.width = width;
+                this.height = height;
+                this.cellSize = 2;
+                this.gridWidth = Math.floor(width / this.cellSize);
+                this.gridHeight = Math.floor(height / this.cellSize);
+                
+                this.rule = 30;
+                this.ruleTable = this.generateRuleTable(this.rule);
+                this.currentGeneration = 0;
+                this.grid = [];
+                this.isRunning = false;
+                this.animationId = null;
+                this.speed = 5;
+                this.lastUpdateTime = 0;
+                
+                this.initializeGrid();
+                this.setupEventListeners();
+                this.populateRuleSelect();
+                this.render();
+            }
+            
+            generateRuleTable(ruleNumber) {
+                const table = {};
+                const binary = ruleNumber.toString(2).padStart(8, '0');
+                
+                // Map each possible neighborhood (111, 110, 101, etc.) to its outcome
+                const neighborhoods = ['111', '110', '101', '100', '011', '010', '001', '000'];
+                for (let i = 0; i < 8; i++) {
+                    table[neighborhoods[i]] = binary[i] === '1';
+                }
+                
+                return table;
+            }
+            
+            initializeGrid(random = false) {
+                this.grid = [];
+                this.currentGeneration = 0;
+                
+                // Initialize first generation
+                const firstGen = new Array(this.gridWidth).fill(false);
+                
+                if (random) {
+                    // Random initialization
+                    for (let i = 0; i < this.gridWidth; i++) {
+                        firstGen[i] = Math.random() < 0.3; // 30% chance of being alive
+                    }
+                } else {
+                    // Single seed in the middle
+                    firstGen[Math.floor(this.gridWidth / 2)] = true;
+                }
+                
+                this.grid.push(firstGen);
+                this.updateGenerationDisplay();
+            }
+            
+            computeNextGeneration() {
+                if (this.currentGeneration >= this.gridHeight - 1) {
+                    this.stop();
+                    return;
+                }
+                
+                const currentGen = this.grid[this.currentGeneration];
+                const nextGen = new Array(this.gridWidth).fill(false);
+                
+                for (let i = 0; i < this.gridWidth; i++) {
+                    // Get neighborhood (left, center, right) with wrapping
+                    const left = currentGen[(i - 1 + this.gridWidth) % this.gridWidth];
+                    const center = currentGen[i];
+                    const right = currentGen[(i + 1) % this.gridWidth];
+                    
+                    const neighborhood = `${left ? '1' : '0'}${center ? '1' : '0'}${right ? '1' : '0'}`;
+                    nextGen[i] = this.ruleTable[neighborhood];
+                }
+                
+                this.grid.push(nextGen);
+                this.currentGeneration++;
+                this.updateGenerationDisplay();
+            }
+            
+            render() {
+                // Clear canvas
+                this.ctx.fillStyle = '#ffffff';
+                this.ctx.fillRect(0, 0, this.width, this.height);
+                
+                // Draw cells
+                this.ctx.fillStyle = '#000000';
+                for (let gen = 0; gen < this.grid.length; gen++) {
+                    for (let cell = 0; cell < this.grid[gen].length; cell++) {
+                        if (this.grid[gen][cell]) {
+                            this.ctx.fillRect(
+                                cell * this.cellSize,
+                                gen * this.cellSize,
+                                this.cellSize,
+                                this.cellSize
+                            );
+                        }
+                    }
+                }
+            }
+            
+            animate(currentTime) {
+                if (currentTime - this.lastUpdateTime >= (21 - this.speed) * 50) {
+                    this.computeNextGeneration();
+                    this.render();
+                    this.lastUpdateTime = currentTime;
+                }
+                
+                if (this.isRunning) {
+                    this.animationId = requestAnimationFrame((time) => this.animate(time));
+                }
+            }
+            
+            play() {
+                if (!this.isRunning) {
+                    this.isRunning = true;
+                    this.lastUpdateTime = 0;
+                    this.animationId = requestAnimationFrame((time) => this.animate(time));
+                    document.getElementById('playPauseBtn').textContent = 'Pause';
+                }
+            }
+            
+            pause() {
+                this.isRunning = false;
+                if (this.animationId) {
+                    cancelAnimationFrame(this.animationId);
+                }
+                document.getElementById('playPauseBtn').textContent = 'Play';
+            }
+            
+            stop() {
+                this.pause();
+            }
+            
+            step() {
+                this.computeNextGeneration();
+                this.render();
+            }
+            
+            reset() {
+                this.stop();
+                const randomInit = document.getElementById('randomInit').checked;
+                this.initializeGrid(randomInit);
+                this.render();
+            }
+            
+            setRule(ruleNumber) {
+                this.rule = ruleNumber;
+                this.ruleTable = this.generateRuleTable(ruleNumber);
+                document.getElementById('currentRule').textContent = ruleNumber;
+                this.reset();
+            }
+            
+            setSpeed(speed) {
+                this.speed = speed;
+                document.getElementById('speedValue').textContent = speed;
+            }
+            
+            exportPNG() {
+                const link = document.createElement('a');
+                link.download = `cellular_automaton_rule_${this.rule}_gen_${this.currentGeneration}.png`;
+                link.href = this.canvas.toDataURL();
+                link.click();
+            }
+            
+            updateGenerationDisplay() {
+                document.getElementById('generation').textContent = this.currentGeneration;
+            }
+            
+            populateRuleSelect() {
+                const select = document.getElementById('ruleSelect');
+                
+                // Add some notable rules first
+                const notableRules = [30, 110, 90, 150, 184, 225, 73, 105];
+                const addedRules = new Set();
+                
+                notableRules.forEach(rule => {
+                    const option = document.createElement('option');
+                    option.value = rule;
+                    option.textContent = `Rule ${rule}`;
+                    select.appendChild(option);
+                    addedRules.add(rule);
+                });
+                
+                // Add separator
+                const separator = document.createElement('option');
+                separator.disabled = true;
+                separator.textContent = '──────────';
+                select.appendChild(separator);
+                
+                // Add all other rules
+                for (let i = 0; i <= 255; i++) {
+                    if (!addedRules.has(i)) {
+                        const option = document.createElement('option');
+                        option.value = i;
+                        option.textContent = `Rule ${i}`;
+                        select.appendChild(option);
+                    }
+                }
+                
+                // Set default to Rule 30
+                select.value = 30;
+            }
+            
+            setupEventListeners() {
+                // Rule selection
+                document.getElementById('ruleSelect').addEventListener('change', (e) => {
+                    this.setRule(parseInt(e.target.value));
+                });
+                
+                // Random initialization toggle
+                document.getElementById('randomInit').addEventListener('change', () => {
+                    this.reset();
+                });
+                
+                // Control buttons
+                document.getElementById('playPauseBtn').addEventListener('click', () => {
+                    if (this.isRunning) {
+                        this.pause();
+                    } else {
+                        this.play();
+                    }
+                });
+                
+                document.getElementById('stepBtn').addEventListener('click', () => {
+                    this.step();
+                });
+                
+                document.getElementById('resetBtn').addEventListener('click', () => {
+                    this.reset();
+                });
+                
+                // Speed control
+                document.getElementById('speedSlider').addEventListener('input', (e) => {
+                    this.setSpeed(parseInt(e.target.value));
+                });
+                
+                // Export button
+                document.getElementById('exportBtn').addEventListener('click', () => {
+                    this.exportPNG();
+                });
+                
+                // Keyboard shortcuts
+                document.addEventListener('keydown', (e) => {
+                    switch(e.key) {
+                        case ' ':
+                            e.preventDefault();
+                            if (this.isRunning) {
+                                this.pause();
+                            } else {
+                                this.play();
+                            }
+                            break;
+                        case 's':
+                        case 'S':
+                            e.preventDefault();
+                            this.step();
+                            break;
+                        case 'r':
+                        case 'R':
+                            e.preventDefault();
+                            this.reset();
+                            break;
+                    }
+                });
+            }
+        }
+        
+        // Initialize the automaton when the page loads
+        document.addEventListener('DOMContentLoaded', () => {
+            const automaton = new ElementaryCellularAutomaton('automaton');
+        });
+    </script>
+</body>
+</html>

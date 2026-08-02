@@ -1,0 +1,1051 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Parkettierungen der Ebene — interaktives Labor</title>
+<style>
+  :root{
+    --ink:#e9edf5;
+    --ink-dim:#8f9bb3;
+    --chrome:#0d1119;
+    --chrome-2:#141a25;
+    --chrome-3:#1b2333;
+    --line:#26314599;
+    --accent:#ffd23f;
+    --accent-2:#4ecdc4;
+    --radius:9px;
+  }
+  *{box-sizing:border-box}
+  html,body{height:100%;margin:0}
+  body{
+    background:var(--chrome);
+    color:var(--ink);
+    font-family:"Inter","Segoe UI",system-ui,-apple-system,sans-serif;
+    font-size:14px;
+    overflow:hidden;
+    -webkit-font-smoothing:antialiased;
+  }
+  .mono{font-family:"SFMono-Regular",ui-monospace,"JetBrains Mono",Menlo,Consolas,monospace}
+
+  /* ---- Kopfzeile ---- */
+  header{
+    height:56px;display:flex;align-items:center;gap:16px;
+    padding:0 16px;border-bottom:1px solid var(--line);
+    background:var(--chrome-2);position:relative;z-index:5;
+  }
+  header h1{
+    font-size:15px;font-weight:650;letter-spacing:-.01em;margin:0;white-space:nowrap;
+  }
+  header h1 span{color:var(--accent);font-weight:400}
+  .spacer{flex:1}
+  .btn{
+    background:var(--chrome-3);color:var(--ink);border:1px solid var(--line);
+    padding:7px 13px;border-radius:var(--radius);font:inherit;font-size:13px;
+    cursor:pointer;white-space:nowrap;transition:background .12s,border-color .12s;
+  }
+  .btn:hover{background:#243046;border-color:#3a4a68}
+  .btn:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+  .btn.primary{background:var(--accent);color:#1b1400;border-color:transparent;font-weight:600}
+  .btn.primary:hover{background:#ffdf6b}
+  select.btn{padding-right:8px}
+
+  /* ---- Layout ---- */
+  .app{display:flex;height:calc(100% - 56px)}
+  aside{
+    width:318px;flex:none;background:var(--chrome-2);border-right:1px solid var(--line);
+    overflow-y:auto;overscroll-behavior:contain;padding:4px 0 40px;
+  }
+  aside::-webkit-scrollbar{width:9px}
+  aside::-webkit-scrollbar-thumb{background:#2a364d;border-radius:9px}
+  main{flex:1;position:relative;min-width:0;background:#000}
+  svg#view{display:block;width:100%;height:100%;touch-action:none;cursor:grab}
+  svg#view.dragging{cursor:grabbing}
+
+  /* ---- Bedienelemente ---- */
+  .sec{
+    font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-dim);
+    padding:20px 18px 6px;font-weight:600;
+  }
+  .sec:first-child{padding-top:14px}
+  .ctl{padding:7px 18px}
+  .ctl .row{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:5px;gap:8px}
+  .ctl label{font-size:12.5px;color:#c6cfe0}
+  .ctl .val{font-size:11.5px;color:var(--accent-2)}
+  .ctl select{
+    width:100%;background:var(--chrome-3);color:var(--ink);border:1px solid var(--line);
+    border-radius:var(--radius);padding:7px 9px;font:inherit;font-size:13px;cursor:pointer;
+  }
+  .ctl input[type=color]{
+    width:100%;height:32px;background:var(--chrome-3);border:1px solid var(--line);
+    border-radius:var(--radius);padding:3px;cursor:pointer;
+  }
+  input[type=range]{
+    -webkit-appearance:none;appearance:none;width:100%;height:20px;background:transparent;cursor:pointer;
+  }
+  input[type=range]::-webkit-slider-runnable-track{height:3px;background:#31405c;border-radius:3px}
+  input[type=range]::-moz-range-track{height:3px;background:#31405c;border-radius:3px}
+  input[type=range]::-webkit-slider-thumb{
+    -webkit-appearance:none;width:15px;height:15px;border-radius:50%;background:var(--accent);
+    margin-top:-6px;border:none;
+  }
+  input[type=range]::-moz-range-thumb{width:15px;height:15px;border-radius:50%;background:var(--accent);border:none}
+  input[type=range]:focus-visible{outline:2px solid var(--accent);outline-offset:4px;border-radius:4px}
+  .toggle{display:flex;align-items:center;gap:10px;cursor:pointer;padding:4px 0}
+  .toggle input{accent-color:var(--accent);width:16px;height:16px;cursor:pointer}
+  .hidden{display:none !important}
+
+  /* ---- Infokarte ---- */
+  .card{
+    position:absolute;left:16px;bottom:16px;max-width:min(400px,calc(100% - 32px));
+    background:#0d1119e6;backdrop-filter:blur(10px);border:1px solid var(--line);
+    border-radius:12px;padding:13px 15px;pointer-events:auto;
+  }
+  .card h2{margin:0 0 3px;font-size:14px;font-weight:650}
+  .card .meta{font-size:11.5px;color:var(--accent-2);margin-bottom:7px}
+  .card .meta b{color:var(--ink-dim);font-weight:500}
+  .card p{margin:0;font-size:12.5px;line-height:1.5;color:#b9c3d6}
+  .card .fold{margin-top:9px;font-size:11px;color:var(--ink-dim);letter-spacing:.05em}
+  .hudbar{
+    position:absolute;right:16px;top:16px;display:flex;gap:6px;align-items:center;
+    background:#0d1119cc;backdrop-filter:blur(10px);border:1px solid var(--line);
+    border-radius:10px;padding:5px 6px;
+  }
+  .hudbar .zoomlbl{font-size:11.5px;color:var(--ink-dim);padding:0 6px;min-width:52px;text-align:center}
+  .icobtn{
+    width:28px;height:28px;display:grid;place-items:center;background:var(--chrome-3);
+    border:1px solid var(--line);border-radius:7px;color:var(--ink);cursor:pointer;font-size:15px;line-height:1;
+  }
+  .icobtn:hover{background:#243046}
+  .warn{
+    position:absolute;left:50%;top:16px;transform:translateX(-50%);
+    background:#4a2d0e;border:1px solid #7a5216;color:#ffd68a;
+    padding:6px 12px;border-radius:8px;font-size:12px;
+  }
+
+  @media (max-width:860px){
+    .app{flex-direction:column-reverse}
+    aside{width:100%;height:44%;border-right:none;border-top:1px solid var(--line)}
+    main{height:56%}
+    .card{display:none}
+    header h1{font-size:13px}
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>Parkettierungen der Ebene <span>· interaktives Labor</span></h1>
+  <div class="spacer"></div>
+  <button class="btn" id="btnRandom">Zufällig</button>
+  <button class="btn" id="btnReset">Zurücksetzen</button>
+  <select class="btn" id="pngScale" title="Auflösung des PNG-Exports">
+    <option value="1">1×</option>
+    <option value="2" selected>2×</option>
+    <option value="4">4×</option>
+  </select>
+  <button class="btn" id="btnPng">PNG</button>
+  <button class="btn primary" id="btnSvg">SVG</button>
+</header>
+
+<div class="app">
+  <aside id="panel"></aside>
+  <main>
+    <svg id="view" xmlns="http://www.w3.org/2000/svg"></svg>
+    <div class="hudbar">
+      <button class="icobtn" id="zoomOut" title="Herauszoomen">−</button>
+      <div class="zoomlbl mono" id="zoomLbl">100 %</div>
+      <button class="icobtn" id="zoomIn" title="Hineinzoomen">+</button>
+      <button class="icobtn" id="zoomFit" title="Ansicht zentrieren">⌖</button>
+    </div>
+    <div class="card" id="card">
+      <h2 id="cardName">—</h2>
+      <div class="meta mono" id="cardMeta">—</div>
+      <p id="cardDesc">—</p>
+      <div class="fold mono" id="cardStat">—</div>
+    </div>
+  </main>
+</div>
+
+<script>
+"use strict";
+/* =======================================================================
+   Parkettierungen der Ebene — interaktives Labor
+   Alle Kacheln werden aus einem Gitter (v1, v2) und einer Menge von
+   Prototilen erzeugt. Ausnahmen: Penrose (Substitution) und Truchet
+   (Zufallsorientierung).
+   ======================================================================= */
+
+const S3 = Math.sqrt(3);
+const PHI = (1 + Math.sqrt(5)) / 2;
+const clamp = (x, a, b) => x < a ? a : x > b ? b : x;
+
+/* ---------- Geometrie-Helfer ---------- */
+function ngon(n, r, phase, cx = 0, cy = 0) {
+  const out = [];
+  for (let k = 0; k < n; k++) {
+    const a = phase + k * 2 * Math.PI / n;
+    out.push([cx + r * Math.cos(a), cy + r * Math.sin(a)]);
+  }
+  return out;                                  // gegen den Uhrzeigersinn
+}
+const rot = (p, a) => [p[0] * Math.cos(a) - p[1] * Math.sin(a),
+                       p[0] * Math.sin(a) + p[1] * Math.cos(a)];
+const rotPoly = (poly, a) => poly.map(p => rot(p, a));
+const movePoly = (poly, t) => poly.map(p => [p[0] + t[0], p[1] + t[1]]);
+
+/* Auf die Kante p→q (Polygon gegen Uhrzeigersinn) nach außen ansetzen */
+function outNormal(p, q) {
+  const dx = q[0] - p[0], dy = q[1] - p[1], L = Math.hypot(dx, dy);
+  return [dy / L, -dx / L, L];
+}
+function attachTriangle(p, q) {
+  const [nx, ny, L] = outNormal(p, q);
+  const m = [(p[0] + q[0]) / 2, (p[1] + q[1]) / 2];
+  return [p, q, [m[0] + nx * L * S3 / 2, m[1] + ny * L * S3 / 2]];
+}
+function attachSquare(p, q) {
+  const [nx, ny, L] = outNormal(p, q);
+  return [p, q, [q[0] + nx * L, q[1] + ny * L], [p[0] + nx * L, p[1] + ny * L]];
+}
+function arcPts(cx, cy, r, a0, a1, n) {
+  const out = [];
+  for (let k = 0; k <= n; k++) {
+    const a = a0 + (a1 - a0) * k / n;
+    out.push([cx + r * Math.cos(a), cy + r * Math.sin(a)]);
+  }
+  return out;
+}
+
+/* ---------- Definition aller Parkettierungen ---------- */
+const TILINGS = (() => {
+  const T = {};
+  const H = ngon(6, 1, 0);                       // Einheits-Sechseck
+
+  T.dreieck = {
+    name: 'Dreiecke', vc: '3.3.3.3.3.3', wg: 'p6m', dual: 'Sechseckparkett',
+    desc: 'Eine der drei regelmäßigen Parkettierungen: sechs gleichseitige Dreiecke treffen sich in jeder Ecke. Dual zum Sechseckparkett.',
+    kind: 'lattice', v1: [1, 0], v2: [0.5, S3 / 2],
+    shapes: ['Dreieck ▲', 'Dreieck ▼'],
+    tiles: [
+      { s: 0, p: [[0, 0], [1, 0], [0.5, S3 / 2]] },
+      { s: 1, p: [[1, 0], [1.5, S3 / 2], [0.5, S3 / 2]] }
+    ]
+  };
+
+  T.quadrat = {
+    name: 'Quadrate', vc: '4.4.4.4', wg: 'p4m', dual: 'selbstdual',
+    desc: 'Das Quadratparkett ist die einzige selbstduale regelmäßige Parkettierung. Vier Quadrate pro Ecke, Innenwinkel 4 × 90°.',
+    kind: 'lattice', v1: [1, 0], v2: [0, 1],
+    shapes: ['Quadrat'],
+    tiles: [{ s: 0, p: [[0, 0], [1, 0], [1, 1], [0, 1]] }]
+  };
+
+  T.hexagon = {
+    name: 'Sechsecke (Bienenwabe)', vc: '6.6.6.6', wg: 'p6m', dual: 'Dreiecksparkett',
+    desc: 'Bei gleichem Flächeninhalt hat das Sechseck den kürzesten Gesamtumfang — die Wabenvermutung, 1999 von Thomas Hales bewiesen.',
+    kind: 'lattice', v1: [1.5, S3 / 2], v2: [0, S3],
+    shapes: ['Sechseck'],
+    tiles: [{ s: 0, p: H }]
+  };
+
+  T.rhombille = {
+    name: 'Rhombenparkett (Würfelillusion)', vc: '3.6.3.6 dual', wg: 'p6m', dual: 'Trihexagonal',
+    desc: 'Jedes Sechseck zerfällt in drei Rauten. Färbt man die drei Orientierungen unterschiedlich, kippt die Ebene optisch in einen Stapel Würfel.',
+    kind: 'lattice', v1: [1.5, S3 / 2], v2: [0, S3],
+    shapes: ['Raute ↖', 'Raute ↑', 'Raute ↗'],
+    tiles: [
+      { s: 0, p: [[0, 0], H[0], H[1], H[2]] },
+      { s: 1, p: [[0, 0], H[2], H[3], H[4]] },
+      { s: 2, p: [[0, 0], H[4], H[5], H[0]] }
+    ]
+  };
+
+  T.fischgraet = {
+    name: 'Fischgrät (Herringbone)', vc: '—', wg: 'pgg', dual: '—',
+    desc: 'Zwei Rechtecke 2 × 1, um 90° gegeneinander versetzt. Kein Archimedisches Parkett, aber ein Klassiker aus Parkettboden und Ziegelmauerwerk.',
+    kind: 'lattice', v1: [3, 1], v2: [-1, 1],
+    shapes: ['liegend', 'stehend'],
+    tiles: [
+      { s: 0, p: [[0, 0], [2, 0], [2, 1], [0, 1]] },
+      { s: 1, p: [[2, 0], [3, 0], [3, 2], [2, 2]] }
+    ]
+  };
+
+  T.trihex = {
+    name: 'Trihexagonal', vc: '3.6.3.6', wg: 'p6m', dual: 'Rhombenparkett',
+    desc: 'Dreiecke und Sechsecke wechseln sich an jeder Ecke ab. In der Physik als Kagome-Gitter bekannt.',
+    kind: 'lattice', v1: [2, 0], v2: [1, S3],
+    shapes: ['Sechseck', 'Dreieck'],
+    tiles: [
+      { s: 0, p: H },
+      { s: 1, p: attachTriangle(H[0], H[1]) },
+      { s: 1, p: attachTriangle(H[5], H[0]) }
+    ]
+  };
+
+  T.elong = {
+    name: 'Gestrecktes Dreiecksparkett', vc: '3.3.3.4.4', wg: 'cmm', dual: 'Prismatisches Fünfeck',
+    desc: 'Streifen aus Quadraten wechseln mit Streifen aus Dreiecken. Das einzige Archimedische Parkett, dessen Ecken nicht alle gleich orientiert sind.',
+    kind: 'lattice', v1: [1, 0], v2: [0.5, 1 + S3 / 2],
+    shapes: ['Quadrat', 'Dreieck'],
+    tiles: [
+      { s: 0, p: [[0, 0], [1, 0], [1, 1], [0, 1]] },
+      { s: 1, p: [[0, 1], [1, 1], [0.5, 1 + S3 / 2]] },
+      { s: 1, p: [[1, 1], [1.5, 1 + S3 / 2], [0.5, 1 + S3 / 2]] }
+    ]
+  };
+
+  (() => {                                       // 3.3.4.3.4 — Snub Square
+    const L = 2 * Math.cos(Math.PI / 12);
+    const A = ngon(4, Math.SQRT1_2, Math.PI / 3);
+    const B = movePoly(ngon(4, Math.SQRT1_2, Math.PI / 6), [L / 2, L / 2]);
+    const tiles = [{ s: 0, p: A }, { s: 0, p: B }];
+    for (let k = 0; k < 4; k++) tiles.push({ s: 1, p: attachTriangle(A[k], A[(k + 1) % 4]) });
+    T.snubquad = {
+      name: 'Abgeschrägtes Quadratparkett', vc: '3.3.4.3.4', wg: 'p4g', dual: 'Cairo-Fünfeck',
+      desc: 'Zwei um 30° gegeneinander verdrehte Quadratfamilien, dazwischen Dreiecke. Dieses Parkett ist chiral — es gibt es in zwei spiegelbildlichen Varianten.',
+      kind: 'lattice', v1: [L, 0], v2: [0, L],
+      shapes: ['Quadrat', 'Dreieck'], tiles
+    };
+  })();
+
+  (() => {                                       // 3.4.6.4 — Rhombitrihexagonal
+    const d = 1 + S3;
+    const sq0 = attachSquare(H[0], H[1]);
+    const sq1 = attachSquare(H[1], H[2]);
+    const sq2 = attachSquare(H[2], H[3]);
+    T.rhombitri = {
+      name: 'Rhombitrihexagonal', vc: '3.4.6.4', wg: 'p6m', dual: 'Deltoidales Trihexagonal',
+      desc: 'Sechsecke, Quadrate und Dreiecke. Entsteht, wenn man das Sechseckparkett aufbläht und die Lücken mit Quadraten und Dreiecken füllt.',
+      kind: 'lattice', v1: [d * S3 / 2, d / 2], v2: [0, d],
+      shapes: ['Sechseck', 'Quadrat', 'Dreieck'],
+      tiles: [
+        { s: 0, p: H },
+        { s: 1, p: sq0 }, { s: 1, p: sq1 }, { s: 1, p: sq2 },
+        { s: 2, p: [H[1], sq0[2], sq1[3]] },
+        { s: 2, p: [H[2], sq1[2], sq2[3]] }
+      ]
+    };
+  })();
+
+  (() => {                                       // 4.8.8 — Truncated Square
+    const a = 1 + Math.SQRT2;
+    T.trunkquad = {
+      name: 'Abgestumpftes Quadratparkett', vc: '4.8.8', wg: 'p4m', dual: 'Tetrakis-Quadrat',
+      desc: 'Schneidet man die Ecken des Quadratparketts ab, entstehen Achtecke; in den Lücken bleiben gedrehte Quadrate. Klassisches Bad- und Kirchenmosaik.',
+      kind: 'lattice', v1: [a, 0], v2: [0, a],
+      shapes: ['Achteck', 'Quadrat'],
+      tiles: [
+        { s: 0, p: ngon(8, 1 / (2 * Math.sin(Math.PI / 8)), Math.PI / 8) },
+        { s: 1, p: movePoly(ngon(4, Math.SQRT1_2, 0), [a / 2, a / 2]) }
+      ]
+    };
+  })();
+
+  (() => {                                       // 3.12.12 — Truncated Hexagonal
+    const d = 2 + S3;
+    const D = ngon(12, 1 / (2 * Math.sin(Math.PI / 12)), Math.PI / 12);
+    T.trunkhex = {
+      name: 'Abgestumpftes Sechseckparkett', vc: '3.12.12', wg: 'p6m', dual: 'Triakis-Dreieck',
+      desc: 'Abgeschnittene Sechsecke werden zu Zwölfecken, an den alten Ecken bleiben kleine Dreiecke. Zwei Zwölfecke und ein Dreieck pro Ecke.',
+      kind: 'lattice', v1: [d, 0], v2: [d / 2, d * S3 / 2],
+      shapes: ['Zwölfeck', 'Dreieck'],
+      tiles: [
+        { s: 0, p: D },
+        { s: 1, p: attachTriangle(D[0], D[1]) },
+        { s: 1, p: attachTriangle(D[2], D[3]) }
+      ]
+    };
+  })();
+
+  (() => {                                       // 4.6.12 — Truncated Trihexagonal
+    const d = 3 + S3;
+    const D = ngon(12, 1 / (2 * Math.sin(Math.PI / 12)), Math.PI / 12);
+    const c = 1 + S3;
+    T.trunktrihex = {
+      name: 'Abgestumpftes Trihexagonal', vc: '4.6.12', wg: 'p6m', dual: 'Kisrhombille',
+      desc: 'Das einzige Archimedische Parkett mit drei verschiedenen Vielecken an jeder Ecke: Quadrat, Sechseck, Zwölfeck.',
+      kind: 'lattice', v1: [d, 0], v2: [d / 2, d * S3 / 2],
+      shapes: ['Zwölfeck', 'Quadrat', 'Sechseck'],
+      tiles: [
+        { s: 0, p: D },
+        { s: 1, p: attachSquare(D[11], D[0]) },
+        { s: 1, p: attachSquare(D[1], D[2]) },
+        { s: 1, p: attachSquare(D[3], D[4]) },
+        { s: 2, p: movePoly(H, [c * S3 / 2, c / 2]) },
+        { s: 2, p: movePoly(H, [0, c]) }
+      ]
+    };
+  })();
+
+  (() => {                                       // 3.3.3.3.6 — Snub Hexagonal
+    const tiles = [{ s: 0, p: H }];
+    for (let k = 0; k < 6; k++) tiles.push({ s: 1, p: attachTriangle(H[k], H[(k + 1) % 6]) });
+    tiles.push({ s: 1, p: [[0.5, S3 / 2], [1.5, S3 / 2], [1, S3]] });
+    tiles.push({ s: 1, p: [[-0.5, S3 / 2], [0, S3], [-1, S3]] });
+    T.snubhex = {
+      name: 'Abgeschrägtes Sechseckparkett', vc: '3.3.3.3.6', wg: 'p6', dual: 'Floret-Fünfeck',
+      desc: 'Acht Dreiecke pro Sechseck. Chiral und ohne jede Spiegelachse — die Wirbelrichtung ist über die ganze Ebene festgelegt.',
+      kind: 'lattice', v1: [2.5, S3 / 2], v2: [0.5, 3 * S3 / 2],
+      shapes: ['Sechseck', 'Dreieck'], tiles
+    };
+  })();
+
+  (() => {                                       // Cairo-Fünfeck
+    const L = 2 * Math.cos(Math.PI / 12);
+    const P = [
+      [0.9659258262890683, 0.9659258262890683],
+      [0.20412414523193153, 1.1700499715209998],
+      [-0.20412414523193153, 0.7618016810571368],
+      [0, 0],
+      [0.7618016810571368, 0.20412414523193153]
+    ];
+    T.cairo = {
+      name: 'Cairo-Fünfeckparkett', vc: '3.3.4.3.4 dual', wg: 'p4g', dual: 'Abgeschrägtes Quadrat',
+      desc: 'Vier gleich lange Seiten, eine kürzere. Benannt nach Straßenpflaster in Kairo. Es ist das Duale des abgeschrägten Quadratparketts.',
+      kind: 'lattice', v1: [L, 0], v2: [0, L],
+      shapes: ['Fünfeck ↑', 'Fünfeck ←', 'Fünfeck ↓', 'Fünfeck →'],
+      tiles: [0, 1, 2, 3].map(k => ({ s: k, p: rotPoly(P, k * Math.PI / 2) }))
+    };
+  })();
+
+  T.penrose = {
+    name: 'Penrose P3 (aperiodisch)', vc: 'aperiodisch', wg: 'keine Translation', dual: '—',
+    desc: 'Zwei Rautentypen, erzeugt durch wiederholte Substitution der Robinson-Dreiecke. Die Parkettierung füllt die Ebene lückenlos, wiederholt sich aber niemals durch Verschiebung.',
+    kind: 'penrose', shapes: ['schmale Raute', 'breite Raute']
+  };
+
+  T.truchet = {
+    name: 'Truchet-Bögen (Zufall)', vc: '4.4.4.4 + Zufall', wg: 'statistisch', dual: '—',
+    desc: 'Ein Quadratgitter, in dem jede Zelle zufällig eine von zwei Orientierungen bekommt. Aus einer einzigen Kachel entstehen unendlich viele Muster — Sébastien Truchet, 1704.',
+    kind: 'truchet', shapes: ['Zwischenraum', 'Viertelkreis']
+  };
+
+  return T;
+})();
+
+/* ---------- Farbpaletten (H, S, L) ---------- */
+const PALETTES = {
+  spektrum:  { name: 'Spektrum',       c: [[352,78,58],[28,88,56],[48,92,55],[142,55,46],[192,72,50],[262,58,60],[318,65,58],[88,55,48]] },
+  sonne:     { name: 'Sonnenuntergang',c: [[344,80,60],[12,86,58],[32,92,56],[50,94,62],[6,66,44],[328,58,50]] },
+  ozean:     { name: 'Ozean',          c: [[192,82,54],[206,74,44],[222,68,56],[168,62,48],[242,52,62],[186,88,70]] },
+  neon:      { name: 'Neon',           c: [[300,100,62],[178,100,54],[62,100,56],[330,100,64],[150,96,50],[212,100,60]] },
+  pastell:   { name: 'Pastell',        c: [[340,72,82],[198,70,80],[104,52,78],[46,84,80],[268,58,84],[18,80,82]] },
+  wald:      { name: 'Wald',           c: [[96,42,42],[74,48,54],[142,38,38],[42,52,54],[164,32,46],[28,44,38]] },
+  vulkan:    { name: 'Vulkan',         c: [[0,84,46],[18,90,52],[38,94,56],[8,68,34],[46,86,62],[350,58,40]] },
+  indigo:    { name: 'Indigo (mono)',  c: [[224,62,28],[224,60,42],[224,54,56],[224,48,70],[224,42,84],[224,66,20]] },
+  kontrast:  { name: 'Warm / Kalt',    c: [[16,86,56],[200,80,54],[36,92,60],[220,68,48],[0,74,50],[186,70,44]] }
+};
+
+const COLOR_MODES = [
+  ['proto', 'Prototil'], ['shape', 'Kachelform'], ['cell', 'Gitterzelle'],
+  ['checker', 'Schachbrett'], ['radial', 'Abstand vom Ursprung'], ['angle', 'Winkel'],
+  ['zufall', 'Zufällig'], ['verlauf', 'Stufenloser Verlauf']
+];
+
+/* ---------- Zustand ---------- */
+const DEFAULTS = {
+  tiling: 'trihex', tileSize: 46, zoom: 1, cx: 0, cy: 0,
+  rotation: 0, shear: 0,
+  warpMode: 'none', warpAmp: 0.18, warpFreq: 0.8,
+  inset: 0.04, stroke: 1.2, strokeMode: 'auto',
+  palette: 'spektrum', colorMode: 'shape', hue: 0, sat: 1, light: 1,
+  bg: '#0b0f18', seed: 12, penroseDepth: 5,
+  showCell: false, showDual: false
+};
+let st = Object.assign({}, DEFAULTS);
+
+/* ---------- Bedienelemente (deklarativ) ---------- */
+const CONTROLS = [
+  { type: 'section', label: 'Parkettierung' },
+  { type: 'select', id: 'tiling', label: 'Typ',
+    opts: () => Object.entries(TILINGS).map(([k, v]) => [k, v.name]) },
+  { type: 'range', id: 'penroseDepth', label: 'Substitutionstiefe', min: 1, max: 7, step: 1,
+    when: s => s.tiling === 'penrose' },
+  { type: 'range', id: 'seed', label: 'Zufallszahl', min: 1, max: 400, step: 1,
+    when: s => s.tiling === 'truchet' || s.colorMode === 'zufall' },
+
+  { type: 'section', label: 'Geometrie' },
+  { type: 'range', id: 'tileSize', label: 'Kachelgröße', min: 10, max: 150, step: 1, unit: ' px' },
+  { type: 'range', id: 'rotation', label: 'Drehung der Ebene', min: 0, max: 360, step: 1, unit: '°' },
+  { type: 'range', id: 'shear', label: 'Scherung (affin)', min: -1, max: 1, step: 0.01 },
+  { type: 'range', id: 'inset', label: 'Fugenbreite', min: 0, max: 0.3, step: 0.005 },
+
+  { type: 'section', label: 'Verzerrung' },
+  { type: 'select', id: 'warpMode', label: 'Feld',
+    opts: () => [['none', 'keine'], ['wave', 'Wellen'], ['swirl', 'Wirbel'], ['ripple', 'Ringe']] },
+  { type: 'range', id: 'warpAmp', label: 'Stärke', min: 0, max: 0.6, step: 0.005, when: s => s.warpMode !== 'none' },
+  { type: 'range', id: 'warpFreq', label: 'Frequenz', min: 0.1, max: 3, step: 0.01, when: s => s.warpMode !== 'none' },
+
+  { type: 'section', label: 'Farbe' },
+  { type: 'select', id: 'palette', label: 'Palette',
+    opts: () => Object.entries(PALETTES).map(([k, v]) => [k, v.name]) },
+  { type: 'select', id: 'colorMode', label: 'Einfärben nach', opts: () => COLOR_MODES },
+  { type: 'range', id: 'hue', label: 'Farbton drehen', min: 0, max: 360, step: 1, unit: '°' },
+  { type: 'range', id: 'sat', label: 'Sättigung', min: 0, max: 1.8, step: 0.01 },
+  { type: 'range', id: 'light', label: 'Helligkeit', min: 0.4, max: 1.6, step: 0.01 },
+  { type: 'color', id: 'bg', label: 'Hintergrund' },
+
+  { type: 'section', label: 'Linien & Didaktik' },
+  { type: 'range', id: 'stroke', label: 'Linienstärke', min: 0, max: 5, step: 0.1, unit: ' px' },
+  { type: 'select', id: 'strokeMode', label: 'Linienfarbe',
+    opts: () => [['auto', 'automatisch'], ['light', 'hell'], ['dark', 'dunkel'], ['none', 'keine']] },
+  { type: 'toggle', id: 'showCell', label: 'Elementarzelle & Gittervektoren' },
+  { type: 'toggle', id: 'showDual', label: 'Dualgraph überlagern' }
+];
+
+const panel = document.getElementById('panel');
+const nodes = {};
+
+function buildPanel() {
+  const frag = document.createDocumentFragment();
+  let currentSection = null;
+  for (const c of CONTROLS) {
+    if (c.type === 'section') {
+      const d = document.createElement('div');
+      d.className = 'sec'; d.textContent = c.label;
+      frag.appendChild(d); currentSection = d; continue;
+    }
+    const wrap = document.createElement('div');
+    wrap.className = 'ctl';
+    wrap.dataset.id = c.id;
+
+    if (c.type === 'toggle') {
+      const lab = document.createElement('label');
+      lab.className = 'toggle';
+      const inp = document.createElement('input');
+      inp.type = 'checkbox'; inp.checked = st[c.id];
+      const sp = document.createElement('span'); sp.textContent = c.label;
+      lab.append(inp, sp); wrap.appendChild(lab);
+      inp.addEventListener('change', () => { st[c.id] = inp.checked; refresh(); });
+      nodes[c.id] = { input: inp, wrap, spec: c };
+    } else {
+      const row = document.createElement('div'); row.className = 'row';
+      const lab = document.createElement('label'); lab.textContent = c.label;
+      const val = document.createElement('span'); val.className = 'val mono';
+      row.append(lab, val); wrap.appendChild(row);
+
+      let inp;
+      if (c.type === 'range') {
+        inp = document.createElement('input');
+        inp.type = 'range'; inp.min = c.min; inp.max = c.max; inp.step = c.step; inp.value = st[c.id];
+        inp.addEventListener('input', () => { st[c.id] = parseFloat(inp.value); refresh(); });
+      } else if (c.type === 'select') {
+        inp = document.createElement('select');
+        for (const [v, t] of c.opts()) {
+          const o = document.createElement('option'); o.value = v; o.textContent = t; inp.appendChild(o);
+        }
+        inp.value = st[c.id];
+        inp.addEventListener('change', () => { st[c.id] = inp.value; if (c.id === 'tiling') resetView(); refresh(); });
+      } else if (c.type === 'color') {
+        inp = document.createElement('input');
+        inp.type = 'color'; inp.value = st[c.id];
+        inp.addEventListener('input', () => { st[c.id] = inp.value; refresh(); });
+      }
+      wrap.appendChild(inp);
+      nodes[c.id] = { input: inp, wrap, val, spec: c };
+    }
+    frag.appendChild(wrap);
+  }
+  panel.appendChild(frag);
+}
+
+function syncPanel() {
+  for (const id in nodes) {
+    const n = nodes[id], c = n.spec;
+    if (c.type === 'toggle') n.input.checked = st[id];
+    else n.input.value = st[id];
+    if (n.val) {
+      let txt = st[id];
+      if (c.type === 'range') txt = (c.step < 1 ? (+st[id]).toFixed(2) : st[id]) + (c.unit || '');
+      else txt = '';
+      n.val.textContent = txt;
+    }
+    n.wrap.classList.toggle('hidden', !!(c.when && !c.when(st)));
+  }
+}
+
+/* ---------- Farben ---------- */
+function hslHex(h, s, l) {
+  h = ((h % 360) + 360) % 360; s = clamp(s, 0, 100) / 100; l = clamp(l, 0, 100) / 100;
+  const a = s * Math.min(l, 1 - l);
+  const k = n => (n + h / 30) % 12;
+  const f = n => l - a * Math.max(-1, Math.min(k(n) - 3, Math.min(9 - k(n), 1)));
+  const to = x => Math.round(255 * x).toString(16).padStart(2, '0');
+  return '#' + to(f(0)) + to(f(8)) + to(f(4));
+}
+function paletteColor(idx) {
+  const pal = PALETTES[st.palette].c;
+  const c = pal[((idx % pal.length) + pal.length) % pal.length];
+  return hslHex(c[0] + st.hue, c[1] * st.sat, c[2] * st.light);
+}
+function gradientColor(t) {
+  const base = PALETTES[st.palette].c[0];
+  return hslHex(st.hue + t, base[1] * st.sat, base[2] * st.light);
+}
+function darken(hex, f) {
+  const n = parseInt(hex.slice(1), 16);
+  const r = Math.round(((n >> 16) & 255) * f), g = Math.round(((n >> 8) & 255) * f), b = Math.round((n & 255) * f);
+  return '#' + [r, g, b].map(x => x.toString(16).padStart(2, '0')).join('');
+}
+function luminance(hex) {
+  const n = parseInt(hex.slice(1), 16);
+  return (0.299 * ((n >> 16) & 255) + 0.587 * ((n >> 8) & 255) + 0.114 * (n & 255)) / 255;
+}
+function hash2(x, y, s) {
+  let h = Math.imul(x | 0, 374761393) + Math.imul(y | 0, 668265263) + Math.imul(s | 0, 2246822519);
+  h = Math.imul(h ^ (h >>> 13), 1274126177);
+  return ((h ^ (h >>> 16)) >>> 0) / 4294967296;
+}
+
+/* ---------- Penrose-Substitution ---------- */
+const penroseCache = new Map();
+function penroseTiles(depth) {
+  if (penroseCache.has(depth)) return penroseCache.get(depth);
+  let tris = [];
+  for (let i = 0; i < 10; i++) {
+    let B = [Math.cos(-i * Math.PI / 5), Math.sin(-i * Math.PI / 5)];
+    let C = [Math.cos(-(i + 1) * Math.PI / 5), Math.sin(-(i + 1) * Math.PI / 5)];
+    if (i % 2 === 0) { const t = B; B = C; C = t; }
+    tris.push([0, [0, 0], B, C]);
+  }
+  for (let d = 0; d < depth; d++) {
+    const next = [];
+    for (const [col, A, B, C] of tris) {
+      if (col === 0) {
+        const P = [A[0] + (B[0] - A[0]) / PHI, A[1] + (B[1] - A[1]) / PHI];
+        next.push([0, C, P, B], [1, P, C, A]);
+      } else {
+        const Q = [B[0] + (A[0] - B[0]) / PHI, B[1] + (A[1] - B[1]) / PHI];
+        const R = [B[0] + (C[0] - B[0]) / PHI, B[1] + (C[1] - B[1]) / PHI];
+        next.push([1, R, C, A], [1, Q, R, B], [0, R, Q, A]);
+      }
+    }
+    tris = next;
+  }
+  const sc = Math.pow(PHI, depth);
+  const out = tris.map(([c, A, B, C], k) => ({
+    s: c, p: c, i: k, j: 0,
+    pts: [[A[0] * sc, A[1] * sc], [B[0] * sc, B[1] * sc], [C[0] * sc, C[1] * sc]]
+  }));
+  penroseCache.set(depth, out);
+  return out;
+}
+
+/* ---------- Truchet-Zelle ---------- */
+const ARC_SEG = 10;
+function truchetCell(r) {
+  if (r === 0) {
+    return [
+      { s: 1, p: 1, pts: [[0, 0]].concat(arcPts(0, 0, 0.5, 0, Math.PI / 2, ARC_SEG)) },
+      { s: 1, p: 1, pts: [[1, 1]].concat(arcPts(1, 1, 0.5, Math.PI, 1.5 * Math.PI, ARC_SEG)) },
+      { s: 0, p: 0, pts: [[0.5, 0], [1, 0], [1, 0.5]]
+          .concat(arcPts(1, 1, 0.5, -Math.PI / 2, -Math.PI, ARC_SEG))
+          .concat([[0, 1], [0, 0.5]])
+          .concat(arcPts(0, 0, 0.5, Math.PI / 2, 0, ARC_SEG)) }
+    ];
+  }
+  return [
+    { s: 1, p: 1, pts: [[1, 0]].concat(arcPts(1, 0, 0.5, Math.PI, Math.PI / 2, ARC_SEG)) },
+    { s: 1, p: 1, pts: [[0, 1]].concat(arcPts(0, 1, 0.5, -Math.PI / 2, 0, ARC_SEG)) },
+    { s: 0, p: 0, pts: [[0.5, 0], [0, 0], [0, 0.5]]
+        .concat(arcPts(0, 1, 0.5, -Math.PI / 2, 0, ARC_SEG))
+        .concat([[0.5, 1], [1, 1], [1, 0.5]])
+        .concat(arcPts(1, 0, 0.5, Math.PI / 2, Math.PI, ARC_SEG)) }
+  ];
+}
+
+/* ---------- Verzerrungsfeld ---------- */
+function warp(x, y) {
+  const a = st.warpAmp, f = st.warpFreq;
+  switch (st.warpMode) {
+    case 'wave':   return [x + a * Math.sin(f * y) * 2, y + a * Math.sin(f * x) * 2];
+    case 'swirl': {
+      const r = Math.hypot(x, y);
+      const ang = Math.atan2(y, x) + a * Math.sin(f * r) * 2;
+      return [r * Math.cos(ang), r * Math.sin(ang)];
+    }
+    case 'ripple': {
+      const r = Math.hypot(x, y);
+      if (r < 1e-9) return [x, y];
+      const k = 1 + a * Math.sin(f * r) * 1.2;
+      return [x * k, y * k];
+    }
+    default: return [x, y];
+  }
+}
+const warpOn = () => st.warpMode !== 'none' && st.warpAmp > 0.0005;
+
+/* ---------- Rendering ---------- */
+const svg = document.getElementById('view');
+const MAX_TILES = 22000;
+
+function render() {
+  const W = svg.clientWidth || 900, Hh = svg.clientHeight || 600;
+  svg.setAttribute('width', W); svg.setAttribute('height', Hh);
+  svg.setAttribute('viewBox', `0 0 ${W} ${Hh}`);
+
+  const def = TILINGS[st.tiling];
+  const s = clamp(st.tileSize * st.zoom, 3, 900);
+  const th = st.rotation * Math.PI / 180, k = st.shear;
+  const cs = Math.cos(th), sn = Math.sin(th);
+  const M = p => { const x = p[0] + k * p[1], y = p[1]; return [cs * x - sn * y, sn * x + cs * y]; };
+  const toScreen = p => [(p[0] - st.cx) * s + W / 2, Hh / 2 - (p[1] - st.cy) * s];
+
+  const halfW = W / (2 * s), halfH = Hh / (2 * s);
+  const pad = 1 + (warpOn() ? st.warpAmp * 3 : 0);
+  const box = { x0: st.cx - halfW - pad, x1: st.cx + halfW + pad,
+                y0: st.cy - halfH - pad, y1: st.cy + halfH + pad };
+
+  /* --- Kacheln einsammeln (Weltkoordinaten, unverzerrt) --- */
+  const raw = [];
+  let truncated = false;
+  let cellInfo = null;
+
+  if (def.kind === 'lattice') {
+    const a1 = M(def.v1), a2 = M(def.v2);
+    const det = a1[0] * a2[1] - a1[1] * a2[0];
+    const protos = def.tiles.map((t, idx) => ({ s: t.s, p: idx, pts: t.p.map(M) }));
+    let maxR = 0;
+    for (const pr of protos) for (const q of pr.pts) maxR = Math.max(maxR, Math.hypot(q[0], q[1]));
+    const minLen = Math.min(Math.hypot(a1[0], a1[1]), Math.hypot(a2[0], a2[1]));
+    const padC = Math.ceil(maxR / minLen) + 1;
+
+    let i0 = Infinity, i1 = -Infinity, j0 = Infinity, j1 = -Infinity;
+    for (const [X, Y] of [[box.x0, box.y0], [box.x1, box.y0], [box.x0, box.y1], [box.x1, box.y1]]) {
+      const ii = (X * a2[1] - Y * a2[0]) / det;
+      const jj = (Y * a1[0] - X * a1[1]) / det;
+      i0 = Math.min(i0, ii); i1 = Math.max(i1, ii);
+      j0 = Math.min(j0, jj); j1 = Math.max(j1, jj);
+    }
+    i0 = Math.floor(i0) - padC; i1 = Math.ceil(i1) + padC;
+    j0 = Math.floor(j0) - padC; j1 = Math.ceil(j1) + padC;
+
+    let ni = i1 - i0 + 1, nj = j1 - j0 + 1;
+    const maxCells = Math.floor(MAX_TILES / protos.length);
+    if (ni * nj > maxCells) {
+      truncated = true;
+      const f = Math.sqrt(maxCells / (ni * nj));
+      const ci = (i0 + i1) / 2, cj = (j0 + j1) / 2;
+      i0 = Math.round(ci - ni * f / 2); i1 = Math.round(ci + ni * f / 2);
+      j0 = Math.round(cj - nj * f / 2); j1 = Math.round(cj + nj * f / 2);
+    }
+    for (let i = i0; i <= i1; i++) {
+      for (let j = j0; j <= j1; j++) {
+        const tx = i * a1[0] + j * a2[0], ty = i * a1[1] + j * a2[1];
+        for (const pr of protos) {
+          raw.push({ s: pr.s, p: pr.p, i, j, pts: pr.pts.map(q => [q[0] + tx, q[1] + ty]) });
+        }
+      }
+    }
+    cellInfo = { a1, a2 };
+  } else if (def.kind === 'penrose') {
+    for (const t of penroseTiles(st.penroseDepth)) {
+      const pts = t.pts.map(M);
+      let x0 = Infinity, x1 = -Infinity, y0 = Infinity, y1 = -Infinity;
+      for (const q of pts) { x0 = Math.min(x0, q[0]); x1 = Math.max(x1, q[0]); y0 = Math.min(y0, q[1]); y1 = Math.max(y1, q[1]); }
+      if (x1 < box.x0 || x0 > box.x1 || y1 < box.y0 || y0 > box.y1) continue;
+      raw.push({ s: t.s, p: t.p, i: t.i, j: 0, pts });
+    }
+  } else if (def.kind === 'truchet') {
+    const a1 = M([1, 0]), a2 = M([0, 1]);
+    const det = a1[0] * a2[1] - a1[1] * a2[0];
+    let i0 = Infinity, i1 = -Infinity, j0 = Infinity, j1 = -Infinity;
+    for (const [X, Y] of [[box.x0, box.y0], [box.x1, box.y0], [box.x0, box.y1], [box.x1, box.y1]]) {
+      const ii = (X * a2[1] - Y * a2[0]) / det, jj = (Y * a1[0] - X * a1[1]) / det;
+      i0 = Math.min(i0, ii); i1 = Math.max(i1, ii); j0 = Math.min(j0, jj); j1 = Math.max(j1, jj);
+    }
+    i0 = Math.floor(i0) - 1; i1 = Math.ceil(i1) + 1; j0 = Math.floor(j0) - 1; j1 = Math.ceil(j1) + 1;
+    let ni = i1 - i0 + 1, nj = j1 - j0 + 1;
+    if (ni * nj > MAX_TILES / 3) {
+      truncated = true;
+      const f = Math.sqrt((MAX_TILES / 3) / (ni * nj));
+      const ci = (i0 + i1) / 2, cj = (j0 + j1) / 2;
+      i0 = Math.round(ci - ni * f / 2); i1 = Math.round(ci + ni * f / 2);
+      j0 = Math.round(cj - nj * f / 2); j1 = Math.round(cj + nj * f / 2);
+    }
+    for (let i = i0; i <= i1; i++) {
+      for (let j = j0; j <= j1; j++) {
+        const r = hash2(i, j, st.seed) < 0.5 ? 0 : 1;
+        const tx = i * a1[0] + j * a2[0], ty = i * a1[1] + j * a2[1];
+        for (const part of truchetCell(r)) {
+          raw.push({ s: part.s, p: part.p, i, j, pts: part.pts.map(q => { const m = M(q); return [m[0] + tx, m[1] + ty]; }) });
+        }
+      }
+    }
+    cellInfo = { a1, a2 };
+  }
+
+  /* --- Farbe je Kachel --- */
+  const nPal = PALETTES[st.palette].c.length;
+  function colorOf(t, cxw, cyw) {
+    switch (st.colorMode) {
+      case 'proto':   return paletteColor(t.p);
+      case 'shape':   return paletteColor(t.s);
+      case 'cell':    return paletteColor(t.i + 2 * t.j);
+      case 'checker': return paletteColor(((t.i + t.j) % 2 + 2) % 2 * 3 + t.s);
+      case 'radial':  return paletteColor(Math.floor(Math.hypot(cxw, cyw) / 1.6));
+      case 'angle':   return paletteColor(Math.floor((Math.atan2(cyw, cxw) + Math.PI) / (2 * Math.PI) * nPal));
+      case 'zufall':  return paletteColor(Math.floor(hash2(t.i * 7 + t.p, t.j * 13 + t.s, st.seed) * nPal));
+      case 'verlauf': return gradientColor(Math.hypot(cxw, cyw) * 11 + Math.atan2(cyw, cxw) * 24);
+      default:        return paletteColor(t.s);
+    }
+  }
+
+  /* --- Pfade bauen, nach Farbe gruppiert --- */
+  const groups = new Map();
+  const SUB = warpOn() ? 6 : 1;
+  const bgLum = luminance(st.bg);
+  const dualPts = new Map();
+
+  for (const t of raw) {
+    const n = t.pts.length;
+    let cx = 0, cy = 0;
+    for (const q of t.pts) { cx += q[0]; cy += q[1]; }
+    cx /= n; cy /= n;
+
+    if (st.showDual) {
+      for (let e = 0; e < n; e++) {
+        const q = t.pts[e], r2 = t.pts[(e + 1) % n];
+        const key = Math.round((q[0] + r2[0]) * 500) + '_' + Math.round((q[1] + r2[1]) * 500);
+        if (!dualPts.has(key)) dualPts.set(key, []);
+        dualPts.get(key).push([cx, cy]);
+      }
+    }
+
+    const f = 1 - st.inset;
+    let d = '';
+    for (let e = 0; e < n; e++) {
+      const A = t.pts[e], B = t.pts[(e + 1) % n];
+      for (let u = 0; u < SUB; u++) {
+        const g = u / SUB;
+        let x = A[0] + (B[0] - A[0]) * g, y = A[1] + (B[1] - A[1]) * g;
+        x = cx + (x - cx) * f; y = cy + (y - cy) * f;
+        if (warpOn()) { const w = warp(x, y); x = w[0]; y = w[1]; }
+        const sp = toScreen([x, y]);
+        d += (d ? 'L' : 'M') + sp[0].toFixed(1) + ' ' + sp[1].toFixed(1) + ' ';
+      }
+    }
+    d += 'Z';
+
+    const fill = colorOf(t, cx, cy);
+    let stroke;
+    if (st.strokeMode === 'none' || st.stroke <= 0) stroke = 'none';
+    else if (st.strokeMode === 'light') stroke = '#ffffff';
+    else if (st.strokeMode === 'dark') stroke = '#0a0a0a';
+    else stroke = bgLum > 0.5 ? darken(fill, 0.55) : darken(fill, 0.45);
+
+    const key = fill + '|' + stroke;
+    if (!groups.has(key)) groups.set(key, []);
+    groups.get(key).push(d);
+  }
+
+  /* --- SVG zusammensetzen --- */
+  const out = [];
+  out.push(`<rect x="0" y="0" width="${W}" height="${Hh}" fill="${st.bg}"/>`);
+  out.push('<g shape-rendering="geometricPrecision" stroke-linejoin="round">');
+  for (const [key, ds] of groups) {
+    const [fill, stroke] = key.split('|');
+    const sw = stroke === 'none' ? '' : ` stroke="${stroke}" stroke-width="${st.stroke}"`;
+    out.push(`<path d="${ds.join('')}" fill="${fill}"${sw}/>`);
+  }
+  out.push('</g>');
+
+  /* Dualgraph */
+  if (st.showDual && dualPts.size) {
+    const dc = bgLum > 0.5 ? '#101010' : '#ffffff';
+    let dd = '';
+    for (const arr of dualPts.values()) {
+      if (arr.length !== 2) continue;
+      let [p, q] = arr;
+      if (warpOn()) { p = warp(p[0], p[1]); q = warp(q[0], q[1]); }
+      const A = toScreen(p), B = toScreen(q);
+      dd += `M${A[0].toFixed(1)} ${A[1].toFixed(1)}L${B[0].toFixed(1)} ${B[1].toFixed(1)}`;
+    }
+    out.push(`<path d="${dd}" fill="none" stroke="${dc}" stroke-width="1.4" stroke-opacity="0.75"/>`);
+    out.push(`<g fill="${dc}" fill-opacity="0.9">`);
+    let cnt = 0;
+    for (const t of raw) {
+      if (++cnt > 1600) break;
+      let cx = 0, cy = 0;
+      for (const q of t.pts) { cx += q[0]; cy += q[1]; }
+      cx /= t.pts.length; cy /= t.pts.length;
+      let pw = [cx, cy];
+      if (warpOn()) pw = warp(cx, cy);
+      const sp = toScreen(pw);
+      out.push(`<circle cx="${sp[0].toFixed(1)}" cy="${sp[1].toFixed(1)}" r="2.2"/>`);
+    }
+    out.push('</g>');
+  }
+
+  /* Elementarzelle */
+  if (st.showCell && cellInfo) {
+    const ac = bgLum > 0.5 ? '#101010' : '#ffffff';
+    const O = toScreen([0, 0]);
+    const P1 = toScreen(cellInfo.a1);
+    const P2 = toScreen(cellInfo.a2);
+    const P3 = toScreen([cellInfo.a1[0] + cellInfo.a2[0], cellInfo.a1[1] + cellInfo.a2[1]]);
+    out.push(`<path d="M${O[0]} ${O[1]}L${P1[0]} ${P1[1]}L${P3[0]} ${P3[1]}L${P2[0]} ${P2[1]}Z" fill="${ac}" fill-opacity="0.14" stroke="${ac}" stroke-width="1.6" stroke-dasharray="6 4"/>`);
+    out.push(`<path d="M${O[0]} ${O[1]}L${P1[0]} ${P1[1]}M${O[0]} ${O[1]}L${P2[0]} ${P2[1]}" stroke="${ac}" stroke-width="2.6" fill="none"/>`);
+    out.push(`<circle cx="${O[0]}" cy="${O[1]}" r="4" fill="${ac}"/>`);
+    const lab = (p, txt) => `<text x="${p[0] + 8}" y="${p[1] - 8}" font-family="sans-serif" font-size="15" font-weight="600" fill="${ac}">${txt}</text>`;
+    out.push(lab(P1, 'v₁'), lab(P2, 'v₂'));
+  }
+
+  svg.innerHTML = out.join('');
+
+  /* --- Infokarte --- */
+  document.getElementById('cardName').textContent = def.name;
+  document.getElementById('cardMeta').innerHTML =
+    `<b>Eckenfigur</b> ${def.vc} &nbsp;·&nbsp; <b>Symmetrie</b> ${def.wg} &nbsp;·&nbsp; <b>dual</b> ${def.dual}`;
+  document.getElementById('cardDesc').textContent = def.desc;
+  document.getElementById('cardStat').textContent =
+    `${raw.length.toLocaleString('de-DE')} Kacheln sichtbar · ${def.shapes.length} Kachelform${def.shapes.length > 1 ? 'en' : ''}: ${def.shapes.join(', ')}`;
+  document.getElementById('zoomLbl').textContent = Math.round(st.zoom * 100) + ' %';
+
+  let w = document.querySelector('.warn');
+  if (truncated) {
+    if (!w) { w = document.createElement('div'); w.className = 'warn'; svg.parentNode.appendChild(w); }
+    w.textContent = 'Ausschnitt begrenzt — Kachelgröße erhöhen für ein vollständiges Bild';
+  } else if (w) w.remove();
+
+  if (def.kind === 'penrose' && !raw.length) {
+    let e = document.querySelector('.warn');
+    if (!e) { e = document.createElement('div'); e.className = 'warn'; svg.parentNode.appendChild(e); }
+    e.textContent = 'Außerhalb des erzeugten Bereichs — Substitutionstiefe erhöhen oder zurücksetzen';
+  }
+}
+
+let raf = null;
+function refresh() {
+  syncPanel();
+  if (raf) return;
+  raf = requestAnimationFrame(() => { raf = null; render(); });
+}
+
+/* ---------- Navigation ---------- */
+function resetView() { st.cx = 0; st.cy = 0; st.zoom = 1; }
+
+const pointers = new Map();
+let pinchDist = 0, pinchZoom = 1;
+
+svg.addEventListener('pointerdown', e => {
+  svg.setPointerCapture(e.pointerId);
+  pointers.set(e.pointerId, { x: e.clientX, y: e.clientY });
+  svg.classList.add('dragging');
+  if (pointers.size === 2) {
+    const [a, b] = [...pointers.values()];
+    pinchDist = Math.hypot(a.x - b.x, a.y - b.y);
+    pinchZoom = st.zoom;
+  }
+});
+svg.addEventListener('pointermove', e => {
+  if (!pointers.has(e.pointerId)) return;
+  const prev = pointers.get(e.pointerId);
+  const s = clamp(st.tileSize * st.zoom, 3, 900);
+  if (pointers.size === 1) {
+    st.cx -= (e.clientX - prev.x) / s;
+    st.cy += (e.clientY - prev.y) / s;
+  }
+  pointers.set(e.pointerId, { x: e.clientX, y: e.clientY });
+  if (pointers.size === 2 && pinchDist > 0) {
+    const [a, b] = [...pointers.values()];
+    const d = Math.hypot(a.x - b.x, a.y - b.y);
+    st.zoom = clamp(pinchZoom * d / pinchDist, 0.1, 30);
+  }
+  refresh();
+});
+const endPointer = e => {
+  pointers.delete(e.pointerId);
+  if (pointers.size < 2) pinchDist = 0;
+  if (pointers.size === 0) svg.classList.remove('dragging');
+};
+svg.addEventListener('pointerup', endPointer);
+svg.addEventListener('pointercancel', endPointer);
+
+svg.addEventListener('wheel', e => {
+  e.preventDefault();
+  const r = svg.getBoundingClientRect();
+  const mx = e.clientX - r.left - r.width / 2;
+  const my = e.clientY - r.top - r.height / 2;
+  const s0 = clamp(st.tileSize * st.zoom, 3, 900);
+  const wx = st.cx + mx / s0, wy = st.cy - my / s0;
+  st.zoom = clamp(st.zoom * Math.exp(-e.deltaY * 0.0016), 0.1, 30);
+  const s1 = clamp(st.tileSize * st.zoom, 3, 900);
+  st.cx = wx - mx / s1; st.cy = wy + my / s1;
+  refresh();
+}, { passive: false });
+
+document.getElementById('zoomIn').onclick = () => { st.zoom = clamp(st.zoom * 1.3, 0.1, 30); refresh(); };
+document.getElementById('zoomOut').onclick = () => { st.zoom = clamp(st.zoom / 1.3, 0.1, 30); refresh(); };
+document.getElementById('zoomFit').onclick = () => { resetView(); refresh(); };
+
+document.getElementById('btnReset').onclick = () => {
+  st = Object.assign({}, DEFAULTS); refresh();
+};
+document.getElementById('btnRandom').onclick = () => {
+  const keys = Object.keys(TILINGS);
+  const pk = Object.keys(PALETTES);
+  const pick = a => a[Math.floor(Math.random() * a.length)];
+  st.tiling = pick(keys);
+  st.palette = pick(pk);
+  st.colorMode = pick(COLOR_MODES)[0];
+  st.hue = Math.floor(Math.random() * 360);
+  st.rotation = Math.floor(Math.random() * 360);
+  st.shear = 0;
+  st.warpMode = pick(['none', 'none', 'wave', 'swirl', 'ripple']);
+  st.warpAmp = 0.05 + Math.random() * 0.25;
+  st.warpFreq = 0.3 + Math.random() * 1.4;
+  st.seed = 1 + Math.floor(Math.random() * 400);
+  st.tileSize = 26 + Math.floor(Math.random() * 70);
+  resetView();
+  refresh();
+};
+
+/* ---------- Export ---------- */
+function svgMarkup() {
+  const W = svg.clientWidth, Hh = svg.clientHeight;
+  return '<?xml version="1.0" encoding="UTF-8"?>\n' +
+    `<svg xmlns="http://www.w3.org/2000/svg" width="${W}" height="${Hh}" viewBox="0 0 ${W} ${Hh}">` +
+    svg.innerHTML + '</svg>';
+}
+function download(blob, name) {
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = name; a.click();
+  setTimeout(() => URL.revokeObjectURL(url), 4000);
+}
+function fileName(ext) {
+  return 'parkettierung_' + TILINGS[st.tiling].name.toLowerCase()
+    .replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '') + '.' + ext;
+}
+document.getElementById('btnSvg').onclick = () => {
+  download(new Blob([svgMarkup()], { type: 'image/svg+xml;charset=utf-8' }), fileName('svg'));
+};
+document.getElementById('btnPng').onclick = () => {
+  const scale = parseInt(document.getElementById('pngScale').value, 10);
+  const W = svg.clientWidth, Hh = svg.clientHeight;
+  const blob = new Blob([svgMarkup()], { type: 'image/svg+xml;charset=utf-8' });
+  const url = URL.createObjectURL(blob);
+  const img = new Image();
+  img.onload = () => {
+    const c = document.createElement('canvas');
+    c.width = W * scale; c.height = Hh * scale;
+    const ctx = c.getContext('2d');
+    ctx.fillStyle = st.bg; ctx.fillRect(0, 0, c.width, c.height);
+    ctx.drawImage(img, 0, 0, c.width, c.height);
+    URL.revokeObjectURL(url);
+    c.toBlob(b => download(b, fileName('png')), 'image/png');
+  };
+  img.onerror = () => { URL.revokeObjectURL(url); alert('PNG-Export fehlgeschlagen. Bitte SVG verwenden.'); };
+  img.src = url;
+};
+
+/* ---------- Start ---------- */
+buildPanel();
+window.addEventListener('resize', refresh);
+refresh();
+</script>
+</body>
+</html>

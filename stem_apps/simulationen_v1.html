@@ -1,0 +1,598 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Simulationen</title>
+<style>
+:root{
+  --paper:#EFF3F6;
+  --sheet:#FFFFFF;
+  --rule:#C9D6DF;
+  --blue-100:#C9E1EF;
+  --blue-300:#7EBDE2;
+  --blue-500:#1E7AB8;
+  --blue-700:#0B4E7D;
+  --blue-900:#072B4C;
+  --ink:#072B4C;
+  --muted:#5C7183;
+  --sans:'Frutiger','Frutiger LT Std','Frutiger Neue','Myriad Pro','Helvetica Neue',Helvetica,Arial,sans-serif;
+  --mono:'IBM Plex Mono','JetBrains Mono',ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{
+  margin:0;
+  background:var(--paper);
+  color:var(--ink);
+  font-family:var(--sans);
+  font-size:15px;
+  line-height:1.5;
+  -webkit-font-smoothing:antialiased;
+}
+a{color:inherit}
+
+/* ---------- Kopf ---------- */
+.masthead{
+  border-bottom:1px solid var(--rule);
+  padding:34px 40px 22px;
+  display:flex;
+  align-items:flex-start;
+  justify-content:space-between;
+  gap:40px;
+}
+.masthead-text{max-width:60ch}
+.eyebrow{
+  font-family:var(--mono);
+  font-size:10.5px;
+  letter-spacing:.22em;
+  text-transform:uppercase;
+  color:var(--blue-500);
+  margin:0 0 14px;
+}
+h1{
+  font-size:clamp(34px,5.2vw,54px);
+  line-height:.98;
+  letter-spacing:-.02em;
+  font-weight:600;
+  margin:0 0 14px;
+}
+.lead{margin:0;color:var(--muted);font-size:15.5px;max-width:56ch}
+.masthead-side{
+  display:flex;
+  flex-direction:column;
+  align-items:flex-end;
+  gap:18px;
+  flex:none;
+}
+.logo{height:34px;width:auto;display:block}
+.stats{
+  font-family:var(--mono);
+  font-size:11px;
+  letter-spacing:.06em;
+  color:var(--muted);
+  text-align:right;
+  white-space:nowrap;
+}
+.stats b{color:var(--ink);font-weight:600}
+
+/* ---------- Buttons ---------- */
+.btn{
+  font-family:var(--mono);
+  font-size:11px;
+  letter-spacing:.09em;
+  text-transform:uppercase;
+  color:var(--blue-700);
+  background:var(--sheet);
+  border:1px solid var(--rule);
+  padding:7px 13px;
+  cursor:pointer;
+  border-radius:0;
+}
+.btn:hover{border-color:var(--blue-500);color:var(--blue-900)}
+.btn:focus-visible{outline:2px solid var(--blue-500);outline-offset:1px}
+.btn[aria-expanded="true"]{background:var(--blue-900);color:#fff;border-color:var(--blue-900)}
+
+/* ---------- Einstellungen ---------- */
+.settings{border-bottom:1px solid var(--rule);background:#E7EEF3;display:none}
+.settings.open{display:block}
+.settings-inner{padding:26px 40px 30px}
+.settings-head{
+  display:flex;align-items:baseline;justify-content:space-between;
+  gap:24px;flex-wrap:wrap;margin-bottom:20px;
+}
+.settings h2{
+  font-size:13px;letter-spacing:.16em;text-transform:uppercase;
+  font-weight:600;margin:0;
+}
+.settings-hint{margin:4px 0 0;color:var(--muted);font-size:13.5px;max-width:64ch}
+.settings-actions{display:flex;gap:8px;flex-wrap:wrap}
+.settings-groups{
+  display:grid;
+  grid-template-columns:repeat(auto-fill,minmax(280px,1fr));
+  gap:24px 40px;
+}
+.settings-group h3{
+  font-family:var(--mono);font-size:10.5px;letter-spacing:.16em;
+  text-transform:uppercase;color:var(--blue-500);font-weight:400;
+  margin:0 0 8px;padding-bottom:6px;border-bottom:1px solid var(--rule);
+}
+.opt{display:flex;gap:10px;align-items:flex-start;padding:6px 0;cursor:pointer}
+.opt input{
+  appearance:none;-webkit-appearance:none;
+  width:14px;height:14px;margin:4px 0 0;flex:none;
+  border:1px solid var(--blue-700);background:var(--sheet);cursor:pointer;
+}
+.opt input:checked{background:var(--blue-700);box-shadow:inset 0 0 0 2.5px var(--sheet)}
+.opt input:focus-visible{outline:2px solid var(--blue-500);outline-offset:2px}
+.opt-label{font-size:14px;line-height:1.35}
+.opt-path{display:block;font-family:var(--mono);font-size:10.5px;color:var(--muted);margin-top:2px}
+.opt input:not(:checked)+.opt-label{color:var(--muted)}
+
+/* ---------- Gerüst ---------- */
+.shell{display:grid;grid-template-columns:236px 1fr;align-items:start}
+.rail{
+  position:sticky;top:0;
+  padding:32px 24px 32px 40px;
+  border-right:1px solid var(--rule);
+}
+.rail h2{
+  font-family:var(--mono);font-size:10.5px;letter-spacing:.18em;
+  text-transform:uppercase;color:var(--muted);font-weight:400;margin:0 0 12px;
+}
+.rail-list{list-style:none;margin:0 0 26px;padding:0}
+.rail-item{
+  display:flex;justify-content:space-between;gap:10px;align-items:baseline;
+  width:100%;text-align:left;background:none;border:0;border-top:1px solid var(--rule);
+  padding:8px 0;font-family:var(--sans);font-size:14px;color:var(--ink);cursor:pointer;
+}
+.rail-list li:last-child .rail-item{border-bottom:1px solid var(--rule)}
+.rail-item:hover{color:var(--blue-500)}
+.rail-item .n{font-family:var(--mono);font-size:11px;color:var(--muted)}
+.rail-item[aria-current="true"]{color:var(--blue-500);font-weight:600}
+.rail-item[aria-current="true"] .n{color:var(--blue-500)}
+.rail-item:focus-visible{outline:2px solid var(--blue-500);outline-offset:2px}
+
+.main{padding:32px 40px 48px}
+
+/* ---------- Abschnitte ---------- */
+.section{margin:0 0 44px}
+.section:last-child{margin-bottom:0}
+.section-head{
+  display:flex;align-items:baseline;gap:16px;
+  border-bottom:1px solid var(--blue-900);padding-bottom:8px;margin-bottom:0;
+}
+.section-head h2{
+  font-size:12.5px;letter-spacing:.2em;text-transform:uppercase;
+  font-weight:600;margin:0;
+}
+.section-head .n{font-family:var(--mono);font-size:11px;color:var(--muted);margin-left:auto}
+
+/* ---------- Kachelbogen ---------- */
+.grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fill,minmax(272px,1fr));
+  border-left:1px solid var(--rule);
+}
+.tile{
+  background:var(--sheet);
+  display:flex;flex-direction:column;min-width:0;
+  border-right:1px solid var(--rule);
+  border-bottom:1px solid var(--rule);
+}
+.tile-link{display:block;text-decoration:none;color:inherit;flex:1}
+.tile-link:focus-visible{outline:2px solid var(--blue-500);outline-offset:-2px}
+.tile-body{padding:18px 16px 4px}
+.tile-body h3{font-size:16.5px;font-weight:600;margin:0 0 5px;letter-spacing:-.005em}
+.tile-link:hover .tile-body h3{color:var(--blue-500)}
+.tile-body p{margin:0;font-size:13.5px;line-height:1.45;color:var(--muted)}
+.tile-foot{
+  padding:12px 16px 14px;
+  display:flex;flex-direction:column;gap:5px;
+}
+.tile-path{
+  font-family:var(--mono);font-size:10.5px;color:var(--blue-500);
+  overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
+}
+.tile-tags{font-family:var(--mono);font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+.tile-variant{
+  border-top:1px solid var(--rule);padding:9px 16px;
+  font-family:var(--mono);font-size:10.5px;letter-spacing:.04em;
+}
+.tile-variant a{color:var(--blue-700);text-decoration:none}
+.tile-variant a:hover{text-decoration:underline}
+
+/* ---------- Todo-Kacheln ---------- */
+.tile-todo{opacity:.66}
+.tile-todo .tile-body{padding-top:18px}
+.tile-todo .tile-body h3{color:var(--muted)}
+.tile-status{
+  font-family:var(--mono);font-size:10.5px;letter-spacing:.06em;
+  text-transform:uppercase;color:var(--blue-500);
+}
+
+/* ---------- Leerzustand ---------- */
+.empty{border:1px solid var(--rule);background:var(--sheet);padding:36px 32px;max-width:60ch}
+.empty p{margin:0 0 16px;color:var(--muted)}
+
+/* ---------- Fuß ---------- */
+.foot{
+  border-top:1px solid var(--rule);
+  padding:20px 40px 34px;
+  display:flex;justify-content:space-between;gap:24px;flex-wrap:wrap;
+  font-family:var(--mono);font-size:10.5px;letter-spacing:.06em;color:var(--muted);
+}
+
+@media (max-width:880px){
+  .masthead{padding:26px 22px 18px;flex-direction:column-reverse;gap:18px}
+  .masthead-side{flex-direction:row;align-items:center;justify-content:space-between;width:100%}
+  .stats{text-align:left}
+  .shell{grid-template-columns:1fr}
+  .rail{position:static;border-right:0;border-bottom:1px solid var(--rule);padding:20px 22px}
+  .rail-list{display:flex;flex-wrap:wrap;gap:0 18px;margin-bottom:16px}
+  .rail-list li{flex:none}
+  .rail-item{border:0!important;padding:5px 0}
+  .main{padding:24px 22px 40px}
+  .settings-inner{padding:22px}
+  .foot{padding:18px 22px 28px}
+}
+@media (prefers-reduced-motion:reduce){
+  *{transition:none!important}
+}
+</style>
+</head>
+<body>
+
+<header class="masthead">
+  <div class="masthead-text">
+    <p class="eyebrow">Interaktive Modelle im Browser</p>
+    <h1>Simulationen</h1>
+    <p class="lead">Eigenständige Anwendungen aus Physik, Biologie und Komplexitätsforschung.
+      Jede Kachel rechnet ihr Modell in Miniatur mit; ein Klick öffnet die vollständige Simulation.</p>
+  </div>
+  <div class="masthead-side">
+    <img class="logo" src="logo.png" alt="Fraunhofer IAIS" onerror="this.style.display='none'">
+    <p class="stats" id="stats"></p>
+    <button class="btn" id="settings-toggle" aria-expanded="false" aria-controls="settings">Einstellungen</button>
+  </div>
+</header>
+
+<section class="settings" id="settings" aria-label="Einstellungen">
+  <div class="settings-inner">
+    <div class="settings-head">
+      <div>
+        <h2>Anzeige je Anwendung</h2>
+        <p class="settings-hint">Abgewählte Anwendungen verschwinden aus der Übersicht. Die Auswahl bleibt bei
+          künftigen Besuchen erhalten.</p>
+      </div>
+      <div class="settings-actions">
+        <button class="btn" id="all-on">Alle einblenden</button>
+        <button class="btn" id="all-off">Alle ausblenden</button>
+        <button class="btn" id="reset">Zurücksetzen</button>
+        <button class="btn" id="export">JSON exportieren</button>
+      </div>
+    </div>
+    <div class="settings-groups" id="settings-groups"></div>
+  </div>
+</section>
+
+<div class="shell">
+  <nav class="rail" aria-label="Disziplinen">
+    <h2>Disziplinen</h2>
+    <ul class="rail-list" id="rail"></ul>
+  </nav>
+  <main class="main" id="main"></main>
+</div>
+
+<footer class="foot">
+  <span>(c) Dario Antweiler, Fraunhofer IAIS &middot; 26. Juli 2026</span>
+  <span>Alle Modelle laufen lokal, ohne Build-Schritt und ohne Netzverbindung.</span>
+</footer>
+
+<script>
+/* =======================================================================
+   KATALOG  —  hier pflegen: Reihenfolge, Disziplin, Titel, Pfad, Miniatur
+   ======================================================================= */
+const CATALOG = [
+  { id:'physik', name:'Physik', apps:[
+    { id:'double-pendulum', sim:'pendulum',
+      title:'Doppelpendel',
+      desc:'Zwei gekoppelte Pendel: winzige Unterschiede in den Anfangswerten trennen die Bahnen.',
+      path:'double_pendulum/double_pendulum_v2.html',
+      tags:'Chaos · Mechanik' },
+    { id:'phase-transitions', sim:'ising',
+      title:'Phasenübergänge',
+      desc:'Ising-Gitter am kritischen Punkt: die Ordnung bricht mit steigender Temperatur zusammen.',
+      path:'phase-transitions/phase-transitions.html',
+      tags:'Statistische Physik · Monte-Carlo' },
+    { id:'sandpile', sim:'sandpile',
+      title:'Abelscher Sandhaufen',
+      desc:'Korn für Korn bis zur Lawine. Das Muster ist Ergebnis der Regel, nicht Vorgabe.',
+      path:'sandpile/abelian-sandpile.html',
+      variant:{ label:'Zweite Fassung', path:'sandpile/index.html' },
+      tags:'Selbstorganisierte Kritikalität' },
+    { id:'galaxy-conquest', sim:'galaxy',
+      title:'Rotierende Galaxie',
+      desc:'Innen läuft die Scheibe schneller um als außen: aus der Differenzrotation wickeln sich Spiralarme auf.',
+      path:'galaxy-conquest/galaxy-conquest.html',
+      tags:'Astrophysik · Himmelsmechanik' },
+    { id:'perkolationsschwelle', sim:'percolation', status:'todo',
+      title:'Perkolationsschwelle',
+      desc:'Ein zufälliges Gitter kippt an einem scharfen Schwellenwert vom Inselreich zum durchgängigen Netz.',
+      tags:'Statistische Physik · Phasenübergang' },
+    { id:'stroemungssimulation', sim:'vortex', status:'todo',
+      title:'Verwirbelung',
+      desc:'Ein Hindernis im Strom lässt Wirbel ablösen, die sich zu einer Kármánschen Straße ordnen.',
+      tags:'Strömungsmechanik · CFD' },
+  ]},
+  { id:'biologie', name:'Biologie', apps:[
+    { id:'evolution', sim:'phylo',
+      title:'Evolution Lab',
+      desc:'Mutation, Selektion, Drift: Abstammungslinien verzweigen sich und sterben aus.',
+      path:'evolution/evolution-lab.html',
+      tags:'Populationsgenetik' },
+    { id:'schwarm', sim:'boids',
+      title:'Schwarmverhalten',
+      desc:'Drei lokale Regeln pro Agent, daraus entsteht ein Schwarm ohne Anführer.',
+      path:'schwarm/index.html',
+      tags:'Boids · Kollektivverhalten' },
+    { id:'firefly', sim:'kuramoto',
+      title:'Glühwürmchen-Synchronisation',
+      desc:'Schwach gekoppelte Oszillatoren finden ohne Taktgeber in einen gemeinsamen Rhythmus.',
+      path:'firefly/firefly_sync.html',
+      tags:'Kuramoto-Modell · Chronobiologie' },
+  ]},
+  { id:'oekologie', name:'Ökologie', apps:[
+    { id:'forest-fire', sim:'forestfire',
+      title:'Waldbrand',
+      desc:'Wachstum, Blitzschlag, Feuerfront: ein Gleichgewicht, das nie zur Ruhe kommt.',
+      path:'forest_fire_simulation/forest-fire-simulation.html',
+      tags:'Perkolation · Störungsdynamik' },
+  ]},
+  { id:'mathematik', name:'Mathematik und Informatik', apps:[
+    { id:'game-of-life', sim:'life',
+      title:'Game of Life',
+      desc:'Vier Regeln auf einem Gitter erzeugen Gleiter, Oszillatoren und Stillstand.',
+      path:'game_of_life/index.html',
+      variant:{ label:'Gitter-Variante', path:'game_of_life/index_grid.html' },
+      tags:'Zellulärer Automat' },
+    { id:'de-casteljau', sim:'bezier',
+      title:'De-Casteljau-Algorithmus',
+      desc:'Bézier-Kurven durch wiederholte Unterteilung. Die Konstruktion bleibt sichtbar.',
+      path:'de-casteljau/de-casteljau.html',
+      tags:'Geometrie · Numerik' },
+    { id:'parkettierungen', sim:'tessellation',
+      title:'Parkettierungen der Ebene',
+      desc:'Ein einziges Kachelmotiv, gedreht und gespiegelt, füllt die Fläche ohne Lücke und ohne Überlappung.',
+      path:'parkettierungen/parkettierungen.html',
+      tags:'Geometrie · Symmetriegruppen' },
+    { id:'rubiks-cube', sim:'rubik',
+      title:"Rubik's Cube",
+      desc:'Jeder Zug ist eine Permutation der Aufkleber. Aus wenigen Generatoren entsteht die ganze Gruppe.',
+      path:'rubiks-cube/rubiks-cube.html',
+      tags:'Gruppentheorie · Kombinatorik' },
+    { id:'force-directed-graph', sim:'forcegraph', status:'todo',
+      title:'Force-Directed-Graph-Drawing',
+      desc:'Federkräfte zwischen Kanten und Abstoßung zwischen Knoten finden von selbst eine lesbare Anordnung.',
+      tags:'Graphenzeichnen · Physik-Simulation' },
+    { id:'satz-von-pick', sim:'pick', status:'todo',
+      title:'Satz von Pick',
+      desc:'Die Fläche eines Gitterpolygons ergibt sich allein aus der Zahl der Rand- und Innenpunkte.',
+      tags:'Geometrie · Gitterpunkte' },
+    { id:'spannbaum-kreise', sim:'growingcircles', status:'todo',
+      title:'Minimaler Spannbaum durch wachsende Kreise',
+      desc:'Um jeden Punkt wächst ein Kreis; erste Berührungen zweier Kreise liefern nach und nach den Spannbaum.',
+      tags:'Graphentheorie · Algorithmen' },
+    { id:'pythagorasbaum', sim:'pythagorastree', status:'todo',
+      title:'Fraktaler Pythagorasbaum',
+      desc:'Auf jedem Quadrat wächst ein rechtwinkliges Dreieck, auf dessen Katheten wieder zwei Quadrate.',
+      tags:'Fraktale · Rekursion' },
+  ]},
+  { id:'maschinelles-lernen', name:'Maschinelles Lernen', apps:[
+    { id:'clustering', sim:'clustering',
+      title:'Clustering-Algorithmen',
+      desc:'Punktwolken ohne Beschriftung: verschiedene Verfahren ziehen unterschiedliche Grenzen zwischen ihnen.',
+      path:'clustering/clustering.html',
+      tags:'Unüberwachtes Lernen' },
+    { id:'svm', sim:'svm', status:'todo',
+      title:'Support Vector Machines',
+      desc:'Die Trenngerade mit dem größten Rand zu beiden Klassen hängt nur an wenigen Stützvektoren.',
+      tags:'Überwachtes Lernen · Klassifikation' },
+  ]},
+  { id:'sozialwissenschaften', name:'Sozialwissenschaften', apps:[
+    { id:'spatial-pd', sim:'spatialpd',
+      title:'Räumliches Gefangenendilemma',
+      desc:'Kooperation überlebt in Clustern, sobald nur noch Nachbarn gegeneinander spielen.',
+      path:'spieltheorie/spatial-pd/index.html',
+      tags:'Spieltheorie · Nowak-May' },
+  ]},
+  { id:'ingenieurwissenschaften', name:'Ingenieurwissenschaften', apps:[
+    { id:'ubahn', sim:'metro',
+      title:'U-Bahn-Netz',
+      desc:'Linienführung gegen Fahrzeit: welche Verbindung ein Netz wirklich schneller macht.',
+      path:'ubahnen/ubahn-optimal.html',
+      tags:'Graphenoptimierung · Verkehr' },
+  ]},
+];
+
+const ALL_APPS = CATALOG.flatMap(c => c.apps.map(a => ({...a, category:c.id, categoryName:c.name})));
+
+/* =======================================================================
+   Zustand und Persistenz
+   ======================================================================= */
+const STORE_KEY = 'simulationen-katalog-v1';
+const state = { hidden:new Set(), filter:'all' };
+
+async function loadState(){
+  let raw = null;
+  try { if (window.storage && window.storage.get){ const r = await window.storage.get(STORE_KEY); raw = r && r.value; } } catch(e){}
+  if (raw == null){ try { raw = window.localStorage.getItem(STORE_KEY); } catch(e){} }
+  if (!raw) return;
+  try {
+    const data = JSON.parse(raw);
+    if (Array.isArray(data.hidden)) state.hidden = new Set(data.hidden);
+  } catch(e){}
+}
+
+async function saveState(){
+  const raw = JSON.stringify({ hidden:[...state.hidden] });
+  try { if (window.storage && window.storage.set){ await window.storage.set(STORE_KEY, raw); return; } } catch(e){}
+  try { window.localStorage.setItem(STORE_KEY, raw); } catch(e){}
+}
+
+const isVisible = app => !state.hidden.has(app.id);
+
+/* =======================================================================
+   Rendering
+   ======================================================================= */
+const els = {
+  main: document.getElementById('main'),
+  rail: document.getElementById('rail'),
+  stats: document.getElementById('stats'),
+  groups: document.getElementById('settings-groups'),
+  settings: document.getElementById('settings'),
+  toggle: document.getElementById('settings-toggle'),
+};
+
+function renderStats(){
+  const shown = ALL_APPS.filter(isVisible).length;
+  const disciplines = new Set(ALL_APPS.filter(isVisible).map(a => a.category)).size;
+  const hidden = ALL_APPS.length - shown;
+  els.stats.innerHTML =
+    `<b>${shown}</b> Anwendungen &middot; <b>${disciplines}</b> Disziplinen` +
+    (hidden ? ` &middot; ${hidden} ausgeblendet` : '');
+}
+
+function renderRail(){
+  const total = ALL_APPS.filter(isVisible).length;
+  const rows = [{ id:'all', name:'Alle', n:total }].concat(
+    CATALOG.map(c => ({ id:c.id, name:c.name, n:c.apps.filter(isVisible).length }))
+  );
+  els.rail.innerHTML = rows.map(r => `
+    <li><button class="rail-item" data-cat="${r.id}" aria-current="${state.filter === r.id}">
+      <span>${r.name}</span><span class="n">${String(r.n).padStart(2,'0')}</span>
+    </button></li>`).join('');
+  els.rail.querySelectorAll('.rail-item').forEach(b => {
+    b.addEventListener('click', () => { state.filter = b.dataset.cat; renderRail(); renderMain(); });
+  });
+}
+
+function tileMarkup(app){
+  if (app.status === 'todo'){
+    return `
+    <article class="tile tile-todo">
+      <div class="tile-body">
+        <h3>${app.title}</h3>
+        <p>${app.desc}</p>
+      </div>
+      <div class="tile-foot">
+        <span class="tile-status">In Vorbereitung</span>
+        <span class="tile-tags">${app.tags}</span>
+      </div>
+    </article>`;
+  }
+  return `
+  <article class="tile">
+    <a class="tile-link" href="${app.path}">
+      <div class="tile-body">
+        <h3>${app.title}</h3>
+        <p>${app.desc}</p>
+      </div>
+    </a>
+    <div class="tile-foot">
+      <span class="tile-path">${app.path}</span>
+      <span class="tile-tags">${app.tags}</span>
+    </div>
+    ${app.variant ? `<div class="tile-variant"><a href="${app.variant.path}">${app.variant.label} &rarr;</a></div>` : ''}
+  </article>`;
+}
+
+function renderMain(){
+  const sections = CATALOG
+    .filter(c => state.filter === 'all' || state.filter === c.id)
+    .map(c => ({ c, apps:c.apps.filter(isVisible) }))
+    .filter(x => x.apps.length);
+
+  if (!sections.length){
+    els.main.innerHTML = `
+      <div class="empty">
+        <p>Keine Anwendung sichtbar. In den Einstellungen wieder einblenden.</p>
+        <button class="btn" id="empty-reset">Alle einblenden</button>
+      </div>`;
+    const b = document.getElementById('empty-reset');
+    if (b) b.addEventListener('click', showAll);
+    return;
+  }
+
+  els.main.innerHTML = sections.map(({c, apps}) => `
+    <section class="section">
+      <div class="section-head">
+        <h2>${c.name}</h2>
+        <span class="n">${String(apps.length).padStart(2,'0')}</span>
+      </div>
+      <div class="grid">${apps.map(tileMarkup).join('')}</div>
+    </section>`).join('');
+}
+
+function renderSettings(){
+  els.groups.innerHTML = CATALOG.map(c => `
+    <div class="settings-group">
+      <h3>${c.name}</h3>
+      ${c.apps.map(a => `
+        <label class="opt">
+          <input type="checkbox" data-app="${a.id}" ${isVisible(a) ? 'checked' : ''}>
+          <span class="opt-label">${a.title}<span class="opt-path">${a.status === 'todo' ? 'in Vorbereitung' : a.path}</span></span>
+        </label>`).join('')}
+    </div>`).join('');
+  els.groups.querySelectorAll('input[data-app]').forEach(input => {
+    input.addEventListener('change', () => {
+      if (input.checked) state.hidden.delete(input.dataset.app);
+      else state.hidden.add(input.dataset.app);
+      saveState(); renderAll();
+    });
+  });
+}
+
+function renderAll(){ renderStats(); renderRail(); renderMain(); renderSettings(); }
+
+function showAll(){ state.hidden.clear(); saveState(); renderAll(); }
+
+/* =======================================================================
+   Bedienelemente
+   ======================================================================= */
+els.toggle.addEventListener('click', () => {
+  const open = els.settings.classList.toggle('open');
+  els.toggle.setAttribute('aria-expanded', String(open));
+});
+document.getElementById('all-on').addEventListener('click', showAll);
+document.getElementById('all-off').addEventListener('click', () => {
+  ALL_APPS.forEach(a => state.hidden.add(a.id)); saveState(); renderAll();
+});
+document.getElementById('reset').addEventListener('click', () => {
+  state.hidden.clear(); state.filter = 'all'; saveState(); renderAll();
+});
+document.getElementById('export').addEventListener('click', () => {
+  const data = {
+    exportiert: new Date().toISOString(),
+    anwendungen: ALL_APPS.map(a => ({
+      id:a.id, titel:a.title, disziplin:a.categoryName, pfad:a.path || null,
+      variante: a.variant ? a.variant.path : null,
+      status: a.status === 'todo' ? 'in Vorbereitung' : 'verfügbar',
+      sichtbar: isVisible(a),
+    })),
+  };
+  const blob = new Blob([JSON.stringify(data, null, 2)], {type:'application/json'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = 'simulationen-katalog.json';
+  document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(() => URL.revokeObjectURL(url), 1000);
+});
+
+/* =======================================================================
+   Start
+   ======================================================================= */
+loadState().then(renderAll);
+</script>
+</body>
+</html>

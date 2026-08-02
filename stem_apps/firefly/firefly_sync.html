@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Glühwürmchen-Synchronisation (Kuramoto-Modell)</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: linear-gradient(135deg, #0a0e27 0%, #1a1d3a 100%);
+            color: #e0e0e0;
+            min-height: 100vh;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        
+        h1 {
+            font-size: 24px;
+            margin-bottom: 10px;
+            color: #ffd700;
+            text-align: center;
+        }
+        
+        .subtitle {
+            font-size: 14px;
+            color: #a0a0a0;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        
+        .container {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            max-width: 900px;
+            width: 100%;
+        }
+        
+        canvas {
+            background: #0a0a1a;
+            border-radius: 8px;
+            display: block;
+            margin: 0 auto 20px;
+            box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.5);
+        }
+        
+        .controls {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+        
+        .control-group {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 12px;
+            border-radius: 8px;
+        }
+        
+        label {
+            display: block;
+            font-size: 13px;
+            margin-bottom: 8px;
+            color: #b0b0b0;
+            font-weight: 500;
+        }
+        
+        .value-display {
+            color: #ffd700;
+            font-weight: 600;
+        }
+        
+        input[type="range"] {
+            width: 100%;
+            height: 6px;
+            border-radius: 3px;
+            background: rgba(255, 255, 255, 0.1);
+            outline: none;
+            -webkit-appearance: none;
+        }
+        
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            background: #ffd700;
+            cursor: pointer;
+            box-shadow: 0 2px 8px rgba(255, 215, 0, 0.4);
+        }
+        
+        input[type="range"]::-moz-range-thumb {
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            background: #ffd700;
+            cursor: pointer;
+            border: none;
+            box-shadow: 0 2px 8px rgba(255, 215, 0, 0.4);
+        }
+        
+        button {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+        }
+        
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(102, 126, 234, 0.4);
+        }
+        
+        button:active {
+            transform: translateY(0);
+        }
+        
+        .sync-meter {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 15px;
+        }
+        
+        .sync-label {
+            font-size: 13px;
+            color: #b0b0b0;
+            margin-bottom: 8px;
+        }
+        
+        .sync-bar-container {
+            background: rgba(0, 0, 0, 0.3);
+            height: 24px;
+            border-radius: 12px;
+            overflow: hidden;
+            position: relative;
+        }
+        
+        .sync-bar {
+            height: 100%;
+            background: linear-gradient(90deg, #ff6b6b 0%, #ffd700 50%, #51cf66 100%);
+            border-radius: 12px;
+            transition: width 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            padding-right: 10px;
+            font-size: 12px;
+            font-weight: 600;
+            color: white;
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+        }
+    </style>
+</head>
+<body>
+    <h1>🔆 Glühwürmchen-Synchronisation</h1>
+    <p class="subtitle">Emergenz durch Kuramoto-Kopplungsmechanismus</p>
+    
+    <div class="container">
+        <canvas id="canvas" width="800" height="500"></canvas>
+        
+        <div class="controls">
+            <div class="control-group">
+                <label>
+                    Anzahl Nachbarn (k): <span class="value-display" id="kValue">5</span>
+                </label>
+                <input type="range" id="kSlider" min="1" max="20" value="5">
+            </div>
+            
+            <div class="control-group">
+                <label>
+                    Kopplungsstärke: <span class="value-display" id="couplingValue">0.30</span>
+                </label>
+                <input type="range" id="couplingSlider" min="0" max="100" value="30">
+            </div>
+        </div>
+        
+        <button id="resetBtn">🔄 Simulation zurücksetzen</button>
+        
+        <div class="sync-meter">
+            <div class="sync-label">Synchronisationsgrad</div>
+            <div class="sync-bar-container">
+                <div class="sync-bar" id="syncBar" style="width: 0%">0%</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const canvas = document.getElementById('canvas');
+        const ctx = canvas.getContext('2d');
+        const NUM_FIREFLIES = 50;
+        
+        let fireflies = [];
+        let k = 5;
+        let coupling = 0.3;
+        
+        class Firefly {
+            constructor(x, y) {
+                this.x = x;
+                this.y = y;
+                this.phase = Math.random() * Math.PI * 2; // Zufällige Startphase
+                this.frequency = 1.0 + (Math.random() - 0.5) * 0.2; // Leichte Frequenzvariation
+                this.neighbors = [];
+            }
+            
+            update(dt) {
+                // Kuramoto-Modell: Phase update
+                let phaseShift = 0;
+                
+                // Berechne durchschnittliche Phasendifferenz zu Nachbarn
+                for (let neighbor of this.neighbors) {
+                    phaseShift += Math.sin(neighbor.phase - this.phase);
+                }
+                
+                // Update Phase: natürliche Frequenz + Kopplungsterm
+                this.phase += (this.frequency + (coupling / this.neighbors.length) * phaseShift) * dt;
+                
+                // Phase im Bereich [0, 2π] halten
+                if (this.phase > Math.PI * 2) {
+                    this.phase -= Math.PI * 2;
+                }
+            }
+            
+            draw() {
+                // Berechne Helligkeit basierend auf Phase (cos für smooth on/off)
+                const brightness = (Math.cos(this.phase) + 1) / 2;
+                const intensity = Math.pow(brightness, 3); // Steilere Kurve für dramatischeres Blinken
+                
+                // Äußerer Glüh-Effekt
+                if (intensity > 0.1) {
+                    const glowRadius = 15 * intensity;
+                    const gradient = ctx.createRadialGradient(
+                        this.x, this.y, 0,
+                        this.x, this.y, glowRadius
+                    );
+                    gradient.addColorStop(0, `rgba(255, 215, 0, ${intensity * 0.8})`);
+                    gradient.addColorStop(0.5, `rgba(255, 200, 0, ${intensity * 0.3})`);
+                    gradient.addColorStop(1, 'rgba(255, 200, 0, 0)');
+                    
+                    ctx.fillStyle = gradient;
+                    ctx.beginPath();
+                    ctx.arc(this.x, this.y, glowRadius, 0, Math.PI * 2);
+                    ctx.fill();
+                }
+                
+                // Glühwürmchen-Körper
+                ctx.fillStyle = intensity > 0.5 
+                    ? `rgba(255, 215, 0, ${0.3 + intensity * 0.7})`
+                    : 'rgba(100, 100, 100, 0.6)';
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, 4, 0, Math.PI * 2);
+                ctx.fill();
+                
+                // Heller Kern wenn aktiv
+                if (intensity > 0.7) {
+                    ctx.fillStyle = `rgba(255, 255, 200, ${intensity})`;
+                    ctx.beginPath();
+                    ctx.arc(this.x, this.y, 2, 0, Math.PI * 2);
+                    ctx.fill();
+                }
+            }
+        }
+        
+        function initFireflies() {
+            fireflies = [];
+            const margin = 40;
+            
+            for (let i = 0; i < NUM_FIREFLIES; i++) {
+                const x = margin + Math.random() * (canvas.width - 2 * margin);
+                const y = margin + Math.random() * (canvas.height - 2 * margin);
+                fireflies.push(new Firefly(x, y));
+            }
+            
+            updateNeighbors();
+        }
+        
+        function updateNeighbors() {
+            // Für jedes Glühwürmchen: finde k nächste Nachbarn
+            for (let firefly of fireflies) {
+                const distances = fireflies
+                    .filter(f => f !== firefly)
+                    .map(f => ({
+                        firefly: f,
+                        distance: Math.hypot(f.x - firefly.x, f.y - firefly.y)
+                    }))
+                    .sort((a, b) => a.distance - b.distance)
+                    .slice(0, k);
+                
+                firefly.neighbors = distances.map(d => d.firefly);
+            }
+        }
+        
+        function calculateSynchronization() {
+            // Berechne Ordnungsparameter (Order Parameter) des Kuramoto-Modells
+            let sumCos = 0;
+            let sumSin = 0;
+            
+            for (let firefly of fireflies) {
+                sumCos += Math.cos(firefly.phase);
+                sumSin += Math.sin(firefly.phase);
+            }
+            
+            const r = Math.sqrt(sumCos * sumCos + sumSin * sumSin) / fireflies.length;
+            return r; // Wert zwischen 0 (keine Sync) und 1 (perfekte Sync)
+        }
+        
+        function animate() {
+            ctx.fillStyle = 'rgba(10, 10, 26, 0.3)';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            
+            const dt = 0.05;
+            
+            for (let firefly of fireflies) {
+                firefly.update(dt);
+                firefly.draw();
+            }
+            
+            // Update Synchronisationsanzeige
+            const syncLevel = calculateSynchronization();
+            const syncPercent = Math.round(syncLevel * 100);
+            const syncBar = document.getElementById('syncBar');
+            syncBar.style.width = syncPercent + '%';
+            syncBar.textContent = syncPercent + '%';
+            
+            requestAnimationFrame(animate);
+        }
+        
+        // Event Listeners
+        document.getElementById('kSlider').addEventListener('input', (e) => {
+            k = parseInt(e.target.value);
+            document.getElementById('kValue').textContent = k;
+            updateNeighbors();
+        });
+        
+        document.getElementById('couplingSlider').addEventListener('input', (e) => {
+            coupling = e.target.value / 100;
+            document.getElementById('couplingValue').textContent = coupling.toFixed(2);
+        });
+        
+        document.getElementById('resetBtn').addEventListener('click', () => {
+            initFireflies();
+        });
+        
+        // Start
+        initFireflies();
+        animate();
+    </script>
+</body>
+</html>

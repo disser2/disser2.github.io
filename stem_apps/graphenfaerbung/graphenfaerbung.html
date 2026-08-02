@@ -1,0 +1,825 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Graphenfärbung – Karte &amp; Dualgraph</title>
+<style>
+  :root{
+    --bg:#eef0f4; --panel:#ffffff; --line:#d8dde5; --line-soft:#e8ecf1;
+    --ink:#1b2430; --ink-soft:#5b6674; --muted:#8a94a2;
+    --accent:#2f6fbf; --ok:#2f8f5b; --bad:#c8323f;
+    --radius:8px; --shadow:0 1px 2px rgba(20,30,45,.06), 0 6px 18px rgba(20,30,45,.06);
+  }
+  *{box-sizing:border-box}
+  html,body{height:100%}
+  body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Inter,Roboto,"Helvetica Neue",Arial,sans-serif;
+    background:var(--bg);color:var(--ink);font-size:14px;line-height:1.45;-webkit-font-smoothing:antialiased}
+  header{background:var(--panel);border-bottom:1px solid var(--line);padding:12px 20px;
+    display:flex;align-items:center;gap:20px;flex-wrap:wrap}
+  .brand{display:flex;flex-direction:column;gap:1px;margin-right:auto}
+  .brand h1{margin:0;font-size:16px;font-weight:650;letter-spacing:-.2px}
+  .brand span{font-size:12px;color:var(--muted)}
+  .seg{display:inline-flex;border:1px solid var(--line);border-radius:var(--radius);overflow:hidden;background:#f7f8fa}
+  .seg button{appearance:none;border:0;background:transparent;padding:7px 16px;font:inherit;font-size:13px;
+    color:var(--ink-soft);cursor:pointer;border-right:1px solid var(--line)}
+  .seg button:last-child{border-right:0}
+  .seg button.active{background:var(--accent);color:#fff;font-weight:600}
+  .seg button:hover:not(.active){background:#eef1f6}
+
+  .layout{display:grid;grid-template-columns:290px 1fr;gap:16px;padding:16px 20px 24px;align-items:start}
+  aside{display:flex;flex-direction:column;gap:12px;position:sticky;top:16px}
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow)}
+  .card h2{margin:0;padding:10px 14px;font-size:11px;font-weight:700;letter-spacing:.9px;text-transform:uppercase;
+    color:var(--muted);border-bottom:1px solid var(--line-soft)}
+  .card .body{padding:12px 14px;display:flex;flex-direction:column;gap:10px}
+
+  .swatches{display:grid;grid-template-columns:repeat(2,1fr);gap:8px}
+  .sw{display:flex;align-items:center;gap:9px;padding:8px 10px;cursor:pointer;border:1px solid var(--line);
+    border-radius:6px;background:#fff;font-size:13px;color:var(--ink-soft)}
+  .sw:hover{border-color:#b9c2cf}
+  .sw.active{border-color:var(--accent);box-shadow:0 0 0 2px rgba(47,111,191,.16);color:var(--ink);font-weight:600}
+  .chip{width:18px;height:18px;border-radius:4px;border:1px solid rgba(0,0,0,.18);flex:none}
+  .chip.eraser{background:repeating-linear-gradient(45deg,#fff,#fff 4px,#e3e7ec 4px,#e3e7ec 8px)}
+  .kbd{margin-left:auto;font-size:10px;color:var(--muted);border:1px solid var(--line);border-radius:3px;padding:0 4px}
+
+  button.btn{appearance:none;font:inherit;font-size:13px;cursor:pointer;padding:8px 12px;border-radius:6px;
+    border:1px solid var(--line);background:#fff;color:var(--ink);text-align:left}
+  button.btn:hover{background:#f4f6f9;border-color:#c3ccd8}
+  button.btn.primary{background:var(--accent);border-color:var(--accent);color:#fff;font-weight:600;text-align:center}
+  button.btn.primary:hover{background:#2a63aa}
+  .row{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+  .divider{height:1px;background:var(--line-soft);margin:2px 0}
+
+  label.field{display:flex;flex-direction:column;gap:6px;font-size:12px;color:var(--ink-soft)}
+  label.field .val{color:var(--ink);font-weight:600}
+  input[type=range]{width:100%;accent-color:var(--accent)}
+  label.check{display:flex;align-items:center;gap:8px;font-size:13px;color:var(--ink-soft);cursor:pointer}
+  input[type=checkbox]{accent-color:var(--accent);width:15px;height:15px}
+
+  main{display:flex;flex-direction:column;gap:12px;min-width:0}
+  .stage{position:relative;background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);
+    box-shadow:var(--shadow);padding:10px}
+  svg{display:block;width:100%;height:auto;touch-action:manipulation}
+  .task{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:10px 14px;
+    font-size:13px;color:var(--ink-soft);box-shadow:var(--shadow)}
+  .task b{color:var(--ink);font-weight:600}
+
+  .banner{position:absolute;left:50%;top:18px;transform:translateX(-50%);background:var(--ok);color:#fff;
+    padding:9px 18px;border-radius:6px;font-size:13px;font-weight:600;
+    box-shadow:0 6px 20px rgba(20,60,40,.25);display:none;z-index:5}
+  .banner.show{display:block}
+
+  .statusbar{display:flex;flex-wrap:wrap;background:var(--panel);border:1px solid var(--line);
+    border-radius:var(--radius);box-shadow:var(--shadow);overflow:hidden}
+  .stat{padding:9px 16px;border-right:1px solid var(--line-soft);display:flex;gap:7px;align-items:baseline;
+    font-size:12px;color:var(--muted)}
+  .stat:last-child{border-right:0}
+  .stat b{font-size:14px;color:var(--ink);font-weight:650;font-variant-numeric:tabular-nums}
+  .stat b.bad{color:var(--bad)}
+  .stat b.ok{color:var(--ok)}
+
+  .note{font-size:12px;color:var(--ink-soft);line-height:1.55}
+  .note p{margin:0 0 8px}
+  .note p:last-child{margin:0}
+  .note code{background:#f1f3f7;padding:1px 4px;border-radius:3px;font-size:11px}
+  details summary{cursor:pointer;list-style:none;color:var(--accent);font-size:12px;font-weight:600}
+  details summary::-webkit-details-marker{display:none}
+  details[open] summary{margin-bottom:8px}
+  .msg{font-size:12px;color:var(--ink-soft);min-height:16px}
+  .msg.bad{color:var(--bad)}
+  .msg.ok{color:var(--ok)}
+
+  .region{cursor:pointer;stroke:#fff;stroke-width:2.2;stroke-linejoin:round;transition:fill .12s ease}
+  .region:hover{stroke:#1b2430;stroke-width:2.6}
+  .region.neighbor{stroke:#1b2430;stroke-width:2;stroke-dasharray:5 4}
+  .conflict-edge{stroke:#c8323f;stroke-width:5;stroke-linecap:round;stroke-linejoin:round;fill:none}
+  .dual-edge{stroke:#3d4a5a;stroke-width:1.6;opacity:.5;fill:none}
+  .dual-edge.strong{stroke-width:2.4;opacity:.9}
+  .dual-edge.bad{stroke:#c8323f;stroke-width:3.4;opacity:1}
+  .node{cursor:pointer;stroke:#1b2430;stroke-width:1.6}
+  .node.hi{stroke-width:3}
+  .node-label{font-size:12px;font-weight:600;pointer-events:none;text-anchor:middle;dominant-baseline:central;fill:#1b2430}
+  .node-label.light{fill:#fff}
+  .region-label{font-size:12px;font-weight:600;pointer-events:none;text-anchor:middle;dominant-baseline:central;fill:#33404f}
+  .region-label.light{fill:#fff}
+  .frame{fill:#fbfcfd;stroke:#c9d0da;stroke-width:1}
+
+  @media (max-width:900px){ .layout{grid-template-columns:1fr} aside{position:static} }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="brand">
+    <h1>Graphenfärbung – Landkarte und Dualgraph</h1>
+    <span>Interaktives Lernmodul zum Vierfarbensatz</span>
+  </div>
+  <div class="seg" id="viewToggle">
+    <button data-view="karte">Karte</button>
+    <button data-view="graph">Graph</button>
+    <button data-view="beides" class="active">Beides</button>
+  </div>
+</header>
+
+<div class="layout">
+  <aside>
+    <div class="card">
+      <h2>Farbe wählen</h2>
+      <div class="body">
+        <div class="swatches" id="palette"></div>
+        <div class="sw" id="eraser"><span class="chip eraser"></span>Radierer<span class="kbd">0</span></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>Karte</h2>
+      <div class="body">
+        <label class="field">
+          <span>Anzahl Länder: <span class="val" id="nLabel">14</span></span>
+          <input type="range" id="nRange" min="6" max="30" step="1" value="14">
+        </label>
+        <div class="divider"></div>
+        <label class="check"><input type="checkbox" id="optNonConvex"> Nicht-konvexe Länder</label>
+        <label class="field" id="mergeWrap" style="display:none">
+          <span>Verschmelzungsgrad: <span class="val" id="mLabel">40 %</span></span>
+          <input type="range" id="mRange" min="20" max="80" step="10" value="40">
+        </label>
+        <div class="divider"></div>
+        <button class="btn primary" id="btnNew">Neue Karte generieren</button>
+        <div class="row">
+          <button class="btn" id="btnReset">Zurücksetzen</button>
+          <button class="btn" id="btnHint">Tipp</button>
+        </div>
+        <button class="btn" id="btnSolve">Lösung anzeigen</button>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>Anzeige</h2>
+      <div class="body">
+        <label class="check"><input type="checkbox" id="optLabels" checked> Beschriftung</label>
+        <label class="check"><input type="checkbox" id="optConflicts" checked> Konflikte hervorheben</label>
+        <label class="check"><input type="checkbox" id="optNeighbors" checked> Nachbarn beim Hovern</label>
+        <label class="check"><input type="checkbox" id="optChromatic"> Chromatische Zahl zeigen</label>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>Hintergrund</h2>
+      <div class="body">
+        <div class="note">
+          <p><b>Vierfarbensatz</b> (Appel &amp; Haken, 1976): Jede Landkarte in der Ebene lässt sich mit höchstens vier Farben so färben, dass benachbarte Länder verschiedene Farben haben.</p>
+          <details>
+            <summary>Mehr zur Dualität</summary>
+            <p>Der <b>Dualgraph</b> ordnet jedem Land einen Knoten zu; zwei Knoten sind verbunden, wenn die Länder eine gemeinsame Grenzlinie besitzen (ein gemeinsamer Punkt genügt nicht).</p>
+            <p>Das Färben der Karte ist damit äquivalent zum Färben der Knoten des Dualgraphen — der Dualgraph einer ebenen Karte ist stets planar.</p>
+            <p>Die kleinste mögliche Farbanzahl heißt <code>χ(G)</code>. Für planare Graphen gilt <code>χ(G) ≤ 4</code>; enthält der Graph ein Dreieck, ist <code>χ(G) ≥ 3</code>.</p>
+          </details>
+          <details>
+            <summary>Nicht-konvexe Länder</summary>
+            <p>Bei aktivierter Option werden benachbarte Zellen zu Ländern verschmolzen und die Grenzverläufe organisch gebrochen. Es entstehen L-, U- und Hufeisenformen sowie gelegentlich <b>Enklaven</b> — Länder, die vollständig von einem einzigen Nachbarn umschlossen sind.</p>
+            <p>Für den Satz ist das irrelevant: entscheidend ist allein die Topologie der Nachbarschaften, nicht die Geometrie. Voraussetzung bleibt, dass jedes Land <b>zusammenhängend</b> ist — bei Exklaven (etwa Kaliningrad) gilt die Schranke von vier Farben nicht mehr.</p>
+          </details>
+        </div>
+      </div>
+    </div>
+  </aside>
+
+  <main>
+    <div class="task">
+      <b>Aufgabe:</b> Färbe alle Länder so, dass keine zwei benachbarten Länder dieselbe Farbe tragen — mit maximal vier Farben.
+      Klick auf ein Land oder einen Knoten färbt; erneuter Klick mit derselben Farbe hebt die Färbung auf.
+    </div>
+
+    <div class="stage">
+      <div class="banner" id="banner"></div>
+      <svg id="canvas" viewBox="0 0 840 560" preserveAspectRatio="xMidYMid meet" role="img" aria-label="Landkarte und Dualgraph"></svg>
+    </div>
+
+    <div class="statusbar">
+      <div class="stat">Gefärbt <b id="stColored">0/0</b></div>
+      <div class="stat">Konflikte <b id="stConf">0</b></div>
+      <div class="stat">Farben benutzt <b id="stUsed">0</b></div>
+      <div class="stat">Grenzen <b id="stEdges">0</b></div>
+      <div class="stat">Max. Grad <b id="stDeg">0</b></div>
+      <div class="stat" id="chromWrap" style="display:none">χ(G) <b id="stChrom">–</b></div>
+      <div class="stat">Züge <b id="stMoves">0</b></div>
+      <div class="stat">Zeit <b id="stTime">0:00</b></div>
+    </div>
+
+    <div class="msg" id="msg"></div>
+  </main>
+</div>
+
+<script>
+(function(){
+"use strict";
+
+const W = 840, H = 560, PAD = 14;
+
+const COLORS = [
+  {name:"Blau",  fill:"#3E7CC0", light:true},
+  {name:"Amber", fill:"#E4A63C", light:false},
+  {name:"Grün",  fill:"#569C79", light:true},
+  {name:"Rot",   fill:"#C0616B", light:true}
+];
+const UNCOLORED = "#DEE3EA";
+
+const state = {
+  n:14, nonConvex:false, mergeShare:0.4,
+  shapes:[], pos:[], adj:[], edges:[], borders:new Map(),
+  colors:[], view:"beides", selected:0,
+  hover:-1, moves:0, t0:null, tEnd:null, won:false, assisted:false
+};
+const opts = { labels:true, conflicts:true, neighbors:true, chromatic:false };
+
+/* ============ Voronoi ============ */
+
+function clipHalfPlane(poly, s, t){
+  const f = p => 2*(p[0]*(t[0]-s[0]) + p[1]*(t[1]-s[1])) + (s[0]*s[0]+s[1]*s[1]) - (t[0]*t[0]+t[1]*t[1]);
+  const out = [];
+  for(let i=0;i<poly.length;i++){
+    const a = poly[i], b = poly[(i+1)%poly.length];
+    const fa = f(a), fb = f(b);
+    if(fa <= 0) out.push(a);
+    if((fa < 0 && fb > 0) || (fa > 0 && fb < 0)){
+      const u = fa/(fa-fb);
+      out.push([a[0]+u*(b[0]-a[0]), a[1]+u*(b[1]-a[1])]);
+    }
+  }
+  return out;
+}
+
+function voronoi(sites){
+  const box = [[PAD,PAD],[W-PAD,PAD],[W-PAD,H-PAD],[PAD,H-PAD]];
+  return sites.map((s,i)=>{
+    let poly = box;
+    for(let j=0;j<sites.length;j++){
+      if(i===j) continue;
+      poly = clipHalfPlane(poly, s, sites[j]);
+      if(poly.length < 3) break;
+    }
+    return poly;
+  });
+}
+
+function polyArea(poly){
+  let a = 0;
+  for(let i=0;i<poly.length;i++){
+    const p = poly[i], q = poly[(i+1)%poly.length];
+    a += p[0]*q[1] - q[0]*p[1];
+  }
+  return Math.abs(a/2);
+}
+function centroid(poly){
+  let a=0, cx=0, cy=0;
+  for(let i=0;i<poly.length;i++){
+    const p=poly[i], q=poly[(i+1)%poly.length];
+    const cr = p[0]*q[1]-q[0]*p[1];
+    a += cr; cx += (p[0]+q[0])*cr; cy += (p[1]+q[1])*cr;
+  }
+  a *= 0.5;
+  if(Math.abs(a) < 1e-9) return poly[0].slice();
+  return [cx/(6*a), cy/(6*a)];
+}
+
+function samplePoints(m){
+  const pts = [];
+  const minD = Math.sqrt((W-2*PAD)*(H-2*PAD)/m) * 0.62;
+  let guard = 0;
+  while(pts.length < m && guard < 40000){
+    guard++;
+    const p = [PAD + Math.random()*(W-2*PAD), PAD + Math.random()*(H-2*PAD)];
+    let ok = true;
+    for(const q of pts){
+      const dx=p[0]-q[0], dy=p[1]-q[1];
+      if(dx*dx+dy*dy < minD*minD){ ok=false; break; }
+    }
+    if(ok) pts.push(p);
+  }
+  return pts;
+}
+
+/* ============ Planare Kantenstruktur ============ */
+/* Zellen werden auf gemeinsame Ecken gerastert, sodass jede Grenzkante
+   genau einmal existiert und von beiden Nachbarn identisch benutzt wird. */
+
+function buildStructure(polys){
+  const vmap = new Map(), verts = [];
+  const vid = p => {
+    const k = Math.round(p[0]*4)+","+Math.round(p[1]*4);
+    let id = vmap.get(k);
+    if(id === undefined){ id = verts.length; verts.push([p[0],p[1]]); vmap.set(k,id); }
+    return id;
+  };
+  const loops = polys.map(poly => {
+    const loop = [];
+    for(const p of poly){
+      const id = vid(p);
+      if(!loop.length || loop[loop.length-1] !== id) loop.push(id);
+    }
+    if(loop.length > 1 && loop[0] === loop[loop.length-1]) loop.pop();
+    return loop;
+  });
+  const owners = new Map();
+  for(let c=0;c<loops.length;c++){
+    const L = loops[c];
+    for(let k=0;k<L.length;k++){
+      const u = L[k], v = L[(k+1)%L.length];
+      if(u === v) continue;
+      const key = u<v ? u+"_"+v : v+"_"+u;
+      let arr = owners.get(key);
+      if(!arr){ arr = []; owners.set(key, arr); }
+      if(arr.indexOf(c) < 0) arr.push(c);
+    }
+  }
+  return {verts, loops, owners};
+}
+
+function edgeLength(verts, key){
+  const [u,v] = key.split("_").map(Number);
+  return Math.hypot(verts[u][0]-verts[v][0], verts[u][1]-verts[v][1]);
+}
+
+function cellAdjacency(struct, m){
+  const adj = Array.from({length:m}, ()=>new Set());
+  for(const [key, own] of struct.owners){
+    if(own.length < 2) continue;
+    if(edgeLength(struct.verts, key) < 2) continue;
+    adj[own[0]].add(own[1]); adj[own[1]].add(own[0]);
+  }
+  return adj;
+}
+
+/* ============ Verschmelzen zu nicht-konvexen Ländern ============ */
+
+function groupCells(m, target, cellAdj, maxSize){
+  const group = new Array(m);
+  const members = new Map();
+  for(let i=0;i<m;i++){ group[i]=i; members.set(i,[i]); }
+  let count = m, guard = 0;
+  while(count > target && guard < 8000){
+    guard++;
+    const gids = Array.from(members.keys());
+    const a = gids[(Math.random()*gids.length)|0];
+    const ma = members.get(a);
+    if(ma.length >= maxSize) continue;
+    const cand = new Set();
+    for(const c of ma) for(const d of cellAdj[c]){
+      const g = group[d];
+      if(g !== a && members.get(g).length + ma.length <= maxSize) cand.add(g);
+    }
+    if(!cand.size) continue;
+    const arr = Array.from(cand);
+    const b = arr[(Math.random()*arr.length)|0];
+    for(const c of members.get(b)) group[c] = a;
+    members.set(a, ma.concat(members.get(b)));
+    members.delete(b);
+    count--;
+  }
+  const remap = new Map();
+  const groups = [];
+  for(const [g, cells] of members){ remap.set(g, groups.length); groups.push(cells); }
+  const groupOf = group.map(g => remap.get(g));
+  return {groupOf, groups};
+}
+
+/* ============ Organische Grenzverläufe ============ */
+
+function makeJitter(struct, active){
+  const jit = new Map();
+  if(!active) return jit;
+  const onFrame = p => Math.abs(p[0]-PAD)<.6 || Math.abs(p[0]-(W-PAD))<.6 ||
+                       Math.abs(p[1]-PAD)<.6 || Math.abs(p[1]-(H-PAD))<.6;
+  for(const key of struct.owners.keys()){
+    const [u,v] = key.split("_").map(Number);
+    const A = struct.verts[u], B = struct.verts[v];
+    if(onFrame(A) && onFrame(B)){ jit.set(key, []); continue; }
+    let pts = [A, B];
+    for(let level=0; level<2; level++){
+      const out = [pts[0]];
+      for(let i=0;i<pts.length-1;i++){
+        const a = pts[i], b = pts[i+1];
+        const dx = b[0]-a[0], dy = b[1]-a[1], len = Math.hypot(dx,dy);
+        if(len < 1e-6){ out.push(b); continue; }
+        const d = (Math.random()-0.5) * Math.min(0.34*len, 11);
+        out.push([(a[0]+b[0])/2 - dy/len*d, (a[1]+b[1])/2 + dx/len*d], b);
+      }
+      pts = out;
+    }
+    jit.set(key, pts.slice(1,-1));
+  }
+  return jit;
+}
+
+function edgePolyline(struct, jit, u, v){
+  const key = u<v ? u+"_"+v : v+"_"+u;
+  const mid = jit.get(key) || [];
+  const inner = (u<v) ? mid : mid.slice().reverse();
+  return [struct.verts[u]].concat(inner, [struct.verts[v]]);
+}
+
+/* ============ Länder: Ränder, Nachbarschaft, Grenzen ============ */
+
+function buildCountries(struct, jit, groupOf, groups, polys, sites){
+  const K = groups.length;
+  const adj = Array.from({length:K}, ()=>new Set());
+  const borders = new Map();
+
+  for(const [key, own] of struct.owners){
+    if(own.length < 2) continue;
+    const gi = groupOf[own[0]], gj = groupOf[own[1]];
+    if(gi === gj) continue;
+    if(edgeLength(struct.verts, key) < 2) continue;
+    adj[gi].add(gj); adj[gj].add(gi);
+    const pk = gi<gj ? gi+"-"+gj : gj+"-"+gi;
+    const [u,v] = key.split("_").map(Number);
+    if(!borders.has(pk)) borders.set(pk, []);
+    borders.get(pk).push(edgePolyline(struct, jit, u, v));
+  }
+
+  const shapes = [], pos = [];
+  for(let g=0; g<K; g++){
+    const dir = new Map();
+    for(const c of groups[g]){
+      const L = struct.loops[c];
+      for(let k=0;k<L.length;k++){
+        const u = L[k], v = L[(k+1)%L.length];
+        if(u === v) continue;
+        const key = u<v ? u+"_"+v : v+"_"+u;
+        const own = struct.owners.get(key);
+        if(own.length === 2 && groupOf[own[0]] === groupOf[own[1]]) continue;
+        let a = dir.get(u); if(!a){ a=[]; dir.set(u,a); }
+        a.push(v);
+      }
+    }
+    const loops = [];
+    for(let outer=0; outer<50; outer++){
+      let start = -1;
+      for(const [u,a] of dir) if(a.length){ start = u; break; }
+      if(start < 0) break;
+      const chain = [start];
+      let cur = start, safety = 0;
+      while(safety++ < 5000){
+        const a = dir.get(cur);
+        if(!a || !a.length) break;
+        const nxt = a.pop();
+        if(nxt === start) break;
+        chain.push(nxt); cur = nxt;
+      }
+      if(chain.length >= 3) loops.push(chain);
+    }
+    shapes.push(loops.map(chain => {
+      const pts = [];
+      for(let k=0;k<chain.length;k++){
+        const u = chain[k], v = chain[(k+1)%chain.length];
+        const seg = edgePolyline(struct, jit, u, v);
+        for(let t=0;t<seg.length-1;t++) pts.push(seg[t]);
+      }
+      return pts;
+    }));
+
+    let best = groups[g][0], bestA = -1;
+    for(const c of groups[g]){
+      const a = polyArea(polys[c]);
+      if(a > bestA){ bestA = a; best = c; }
+    }
+    pos.push(sites[best].slice());
+  }
+  return {adj, borders, shapes, pos};
+}
+
+/* ============ Generierung ============ */
+
+function generate(){
+  const n = state.n;
+  const maxSize = 3;
+  const m = state.nonConvex ? Math.min(60, Math.round(n * (1 + state.mergeShare))) : n;
+
+  let sites = samplePoints(m);
+  let polys = voronoi(sites);
+  for(let it=0; it<2; it++){ sites = polys.map(centroid); polys = voronoi(sites); }
+
+  const struct = buildStructure(polys);
+  const cAdj = cellAdjacency(struct, sites.length);
+  const {groupOf, groups} = state.nonConvex
+      ? groupCells(sites.length, n, cAdj, maxSize)
+      : {groupOf: sites.map((_,i)=>i), groups: sites.map((_,i)=>[i])};
+
+  const jit = makeJitter(struct, state.nonConvex);
+  const {adj, borders, shapes, pos} = buildCountries(struct, jit, groupOf, groups, polys, sites);
+
+  const edges = [];
+  for(let i=0;i<adj.length;i++) for(const j of adj[i]) if(j>i) edges.push([i,j]);
+
+  state.shapes = shapes; state.pos = pos; state.adj = adj;
+  state.edges = edges; state.borders = borders;
+  state.colors = new Array(adj.length).fill(-1);
+  state.moves = 0; state.t0 = null; state.tEnd = null;
+  state.won = false; state.assisted = false; state.hover = -1;
+}
+
+/* ============ Färbung / Backtracking ============ */
+
+function solveFrom(fixed, k){
+  const n = state.pos.length;
+  const col = fixed ? fixed.slice() : new Array(n).fill(-1);
+  for(let i=0;i<n;i++){
+    if(col[i] >= k) return null;
+    if(col[i] < 0) continue;
+    for(const j of state.adj[i]) if(col[j] === col[i]) return null;
+  }
+  const order = [];
+  for(let i=0;i<n;i++) if(col[i] < 0) order.push(i);
+  order.sort((a,b)=> state.adj[b].size - state.adj[a].size);
+  let steps = 0;
+  function bt(idx){
+    if(++steps > 3000000) return false;
+    if(idx === order.length) return true;
+    const v = order[idx];
+    const used = new Set();
+    for(const j of state.adj[v]) if(col[j] >= 0) used.add(col[j]);
+    for(let c=0;c<k;c++){
+      if(used.has(c)) continue;
+      col[v] = c;
+      if(bt(idx+1)) return true;
+      col[v] = -1;
+    }
+    return false;
+  }
+  return bt(0) ? col : null;
+}
+function chromaticNumber(){
+  for(let k=1;k<=4;k++) if(solveFrom(null,k)) return k;
+  return ">4";
+}
+function conflictPairs(){
+  const out = [];
+  for(const [i,j] of state.edges)
+    if(state.colors[i] >= 0 && state.colors[i] === state.colors[j]) out.push([i,j]);
+  return out;
+}
+
+/* ============ Rendering ============ */
+
+const svg = document.getElementById("canvas");
+const P = v => v.toFixed(2);
+
+function shapePath(loops){
+  return loops.map(pts => "M" + pts.map(p => P(p[0])+","+P(p[1])).join("L") + "Z").join("");
+}
+function linePath(pts){
+  return "M" + pts.map(p => P(p[0])+","+P(p[1])).join("L");
+}
+function fillOf(i){ const c = state.colors[i]; return c<0 ? UNCOLORED : COLORS[c].fill; }
+function isLight(i){ const c = state.colors[i]; return c>=0 && COLORS[c].light; }
+
+function borderMid(i,j){
+  const list = state.borders.get(i<j ? i+"-"+j : j+"-"+i);
+  if(!list || !list.length) return null;
+  let best = list[0], bestLen = -1;
+  for(const pl of list){
+    let L = 0;
+    for(let k=0;k<pl.length-1;k++) L += Math.hypot(pl[k+1][0]-pl[k][0], pl[k+1][1]-pl[k][1]);
+    if(L > bestLen){ bestLen = L; best = pl; }
+  }
+  return best[(best.length/2)|0];
+}
+
+function dualEdgePath(i,j){
+  const A = state.pos[i], B = state.pos[j];
+  if(!state.nonConvex) return "M"+P(A[0])+","+P(A[1])+"L"+P(B[0])+","+P(B[1]);
+  const M = borderMid(i,j);
+  if(!M) return "M"+P(A[0])+","+P(A[1])+"L"+P(B[0])+","+P(B[1]);
+  const cx = 2*M[0] - (A[0]+B[0])/2, cy = 2*M[1] - (A[1]+B[1])/2;
+  return "M"+P(A[0])+","+P(A[1])+"Q"+P(cx)+","+P(cy)+" "+P(B[0])+","+P(B[1]);
+}
+
+function render(){
+  const n = state.pos.length;
+  const showMap = state.view !== "graph";
+  const showGraph = state.view !== "karte";
+  const conflicts = opts.conflicts ? conflictPairs() : [];
+  const confSet = new Set(conflicts.map(([i,j]) => i+"-"+j));
+  const hov = state.hover;
+  const nb = (hov >= 0 && opts.neighbors) ? state.adj[hov] : new Set();
+
+  let s = '<rect class="frame" x="1" y="1" width="'+(W-2)+'" height="'+(H-2)+'" rx="6"'+(showMap?'':' style="fill:#ffffff"')+'/>';
+
+  if(showMap){
+    for(let i=0;i<n;i++){
+      if(!state.shapes[i].length) continue;
+      const cls = "region" + (nb.has(i) ? " neighbor" : "");
+      s += '<path class="'+cls+'" data-i="'+i+'" fill-rule="evenodd" d="'+shapePath(state.shapes[i])+'" fill="'+fillOf(i)+'"'
+         + (hov===i ? ' stroke="#1b2430" stroke-width="3"' : '') + '/>';
+    }
+    for(const [i,j] of conflicts){
+      const list = state.borders.get(i+"-"+j) || [];
+      for(const pl of list) s += '<path class="conflict-edge" d="'+linePath(pl)+'"/>';
+    }
+    if(opts.labels && !showGraph){
+      for(let i=0;i<n;i++)
+        s += '<text class="region-label'+(isLight(i)?' light':'')+'" x="'+P(state.pos[i][0])+'" y="'+P(state.pos[i][1])+'">'+(i+1)+'</text>';
+    }
+  }
+
+  if(showGraph){
+    for(const [i,j] of state.edges){
+      let cls = "dual-edge";
+      if(confSet.has(i+"-"+j)) cls += " bad";
+      else if(hov === i || hov === j) cls += " strong";
+      s += '<path class="'+cls+'" d="'+dualEdgePath(i,j)+'"/>';
+    }
+    const r = state.view === "graph" ? 17 : 12;
+    for(let i=0;i<n;i++){
+      const p = state.pos[i];
+      const cls = "node" + ((hov === i || nb.has(i)) ? " hi" : "");
+      s += '<circle class="'+cls+'" data-i="'+i+'" cx="'+P(p[0])+'" cy="'+P(p[1])+'" r="'+r+'" fill="'+fillOf(i)+'"/>';
+      if(opts.labels)
+        s += '<text class="node-label'+(isLight(i)?' light':'')+'" x="'+P(p[0])+'" y="'+P(p[1])+'">'+(i+1)+'</text>';
+    }
+  }
+
+  svg.innerHTML = s;
+  updateStatus(conflicts.length);
+}
+
+function fmtTime(ms){
+  const t = Math.floor(ms/1000);
+  return Math.floor(t/60)+":"+String(t%60).padStart(2,"0");
+}
+function updateStatus(confCount){
+  const n = state.pos.length;
+  const colored = state.colors.filter(c=>c>=0).length;
+  const used = new Set(state.colors.filter(c=>c>=0)).size;
+  document.getElementById("stColored").textContent = colored+"/"+n;
+  const cEl = document.getElementById("stConf");
+  const cc = confCount !== undefined ? confCount : conflictPairs().length;
+  cEl.textContent = cc;
+  cEl.className = cc>0 ? "bad" : (colored===n ? "ok" : "");
+  document.getElementById("stUsed").textContent = used;
+  document.getElementById("stEdges").textContent = state.edges.length;
+  let maxDeg = 0;
+  for(const a of state.adj) maxDeg = Math.max(maxDeg, a.size);
+  document.getElementById("stDeg").textContent = maxDeg;
+  document.getElementById("stMoves").textContent = state.moves;
+  const end = state.tEnd || Date.now();
+  document.getElementById("stTime").textContent = state.t0 ? fmtTime(end - state.t0) : "0:00";
+}
+setInterval(()=>{ if(state.t0 && !state.tEnd) updateStatus(); }, 500);
+
+/* ============ Interaktion ============ */
+
+const banner = document.getElementById("banner");
+const msgEl = document.getElementById("msg");
+function setMsg(t,k){ msgEl.textContent = t||""; msgEl.className = "msg"+(k?" "+k:""); }
+function showBanner(t){ banner.textContent = t; banner.className = "banner show"; }
+function hideBanner(){ banner.className = "banner"; }
+
+function checkWin(){
+  if(state.colors.some(c=>c<0)){ if(!state.won) hideBanner(); return; }
+  if(conflictPairs().length > 0){ hideBanner(); return; }
+  if(state.won) return;
+  state.won = true; state.tEnd = Date.now();
+  const used = new Set(state.colors).size;
+  showBanner("Ziel erreicht: gültige Färbung mit "+used+" Farben in "+fmtTime(state.tEnd-state.t0)+(state.assisted?" (mit Hilfe)":""));
+  setMsg("Vollständige und konfliktfreie Färbung. Der Dualgraph ist "+used+"-färbbar dargestellt.","ok");
+}
+
+function applyColor(i){
+  if(state.t0 === null) state.t0 = Date.now();
+  if(state.won){ state.won = false; state.tEnd = null; hideBanner(); }
+  const c = state.selected;
+  state.colors[i] = (c>=0 && state.colors[i]===c) ? -1 : c;
+  state.moves++;
+  setMsg("");
+  render(); checkWin();
+}
+
+svg.addEventListener("click", e => {
+  const el = e.target.closest("[data-i]");
+  if(el) applyColor(+el.getAttribute("data-i"));
+});
+svg.addEventListener("mousemove", e => {
+  const el = e.target.closest("[data-i]");
+  const i = el ? +el.getAttribute("data-i") : -1;
+  if(i !== state.hover){ state.hover = i; render(); }
+});
+svg.addEventListener("mouseleave", ()=>{ if(state.hover !== -1){ state.hover = -1; render(); }});
+
+const paletteEl = document.getElementById("palette");
+COLORS.forEach((c,idx)=>{
+  const d = document.createElement("div");
+  d.className = "sw" + (idx===0 ? " active" : "");
+  d.dataset.c = idx;
+  d.innerHTML = '<span class="chip" style="background:'+c.fill+'"></span>'+c.name+'<span class="kbd">'+(idx+1)+'</span>';
+  paletteEl.appendChild(d);
+});
+const eraserEl = document.getElementById("eraser");
+function selectColor(idx){
+  state.selected = idx;
+  Array.from(paletteEl.children).forEach(el => el.classList.toggle("active", +el.dataset.c === idx));
+  eraserEl.classList.toggle("active", idx === -1);
+}
+paletteEl.addEventListener("click", e => { const el = e.target.closest(".sw"); if(el) selectColor(+el.dataset.c); });
+eraserEl.addEventListener("click", ()=> selectColor(-1));
+
+document.addEventListener("keydown", e => {
+  if(e.target.tagName === "INPUT") return;
+  if(e.key >= "1" && e.key <= "4") selectColor(+e.key-1);
+  else if(e.key === "0") selectColor(-1);
+  else if(e.key.toLowerCase() === "n") newMap();
+  else if(e.key.toLowerCase() === "r") resetColors();
+  else if(e.key.toLowerCase() === "h") hint();
+});
+
+document.getElementById("viewToggle").addEventListener("click", e => {
+  const b = e.target.closest("button[data-view]"); if(!b) return;
+  state.view = b.dataset.view;
+  Array.from(b.parentElement.children).forEach(x => x.classList.toggle("active", x === b));
+  render();
+});
+
+function bindOpt(id,key){
+  document.getElementById(id).addEventListener("change", e => { opts[key] = e.target.checked; onOpt(key); render(); });
+}
+function onOpt(key){
+  if(key === "chromatic"){
+    document.getElementById("chromWrap").style.display = opts.chromatic ? "flex" : "none";
+    if(opts.chromatic) document.getElementById("stChrom").textContent = chromaticNumber();
+  }
+}
+bindOpt("optLabels","labels");
+bindOpt("optConflicts","conflicts");
+bindOpt("optNeighbors","neighbors");
+bindOpt("optChromatic","chromatic");
+
+const nRange = document.getElementById("nRange");
+nRange.addEventListener("input", e => {
+  state.n = +e.target.value;
+  document.getElementById("nLabel").textContent = state.n;
+});
+nRange.addEventListener("change", newMap);
+
+const mRange = document.getElementById("mRange");
+mRange.addEventListener("input", e => {
+  state.mergeShare = +e.target.value/100;
+  document.getElementById("mLabel").textContent = e.target.value+" %";
+});
+mRange.addEventListener("change", newMap);
+
+document.getElementById("optNonConvex").addEventListener("change", e => {
+  state.nonConvex = e.target.checked;
+  document.getElementById("mergeWrap").style.display = state.nonConvex ? "flex" : "none";
+  newMap();
+});
+
+function newMap(){
+  generate();
+  hideBanner(); setMsg("");
+  if(opts.chromatic) document.getElementById("stChrom").textContent = chromaticNumber();
+  render();
+}
+function resetColors(){
+  state.colors.fill(-1);
+  state.moves = 0; state.t0 = null; state.tEnd = null;
+  state.won = false; state.assisted = false;
+  hideBanner(); setMsg(""); render();
+}
+function hint(){
+  if(state.colors.every(c=>c>=0)){ setMsg("Alle Länder sind bereits gefärbt."); return; }
+  const sol = solveFrom(state.colors, 4);
+  if(!sol){
+    setMsg("Die aktuelle Teilfärbung lässt sich nicht mehr mit vier Farben vervollständigen – eine der gesetzten Farben muss zurückgenommen werden.","bad");
+    return;
+  }
+  const open = [];
+  for(let i=0;i<state.colors.length;i++) if(state.colors[i] < 0) open.push(i);
+  open.sort((a,b)=> state.adj[b].size - state.adj[a].size);
+  const pick = open[0];
+  if(state.t0 === null) state.t0 = Date.now();
+  state.colors[pick] = sol[pick];
+  state.assisted = true;
+  setMsg("Tipp: Land "+(pick+1)+" (Grad "+state.adj[pick].size+") erhält "+COLORS[sol[pick]].name+".");
+  render(); checkWin();
+}
+function solveAll(){
+  const sol = solveFrom(null, 4);
+  if(!sol){ setMsg("Keine Lösung gefunden.","bad"); return; }
+  state.colors = sol; state.assisted = true;
+  if(state.t0 === null) state.t0 = Date.now();
+  setMsg("Lösung eingesetzt: "+new Set(sol).size+" Farben genügen für diese Karte.");
+  render(); checkWin();
+}
+
+document.getElementById("btnNew").addEventListener("click", newMap);
+document.getElementById("btnReset").addEventListener("click", resetColors);
+document.getElementById("btnHint").addEventListener("click", hint);
+document.getElementById("btnSolve").addEventListener("click", solveAll);
+
+newMap();
+})();
+</script>
+</body>
+</html>

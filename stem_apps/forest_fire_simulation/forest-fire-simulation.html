@@ -1,0 +1,499 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Forest Fire Simulation – Zellulärer Automat</title>
+<style>
+  :root {
+    --fh-100: #CCF2FF;
+    --fh-200: #80D9FF;
+    --fh-400: #3399FF;
+    --fh-600: #1460BF;
+    --fh-800: #002A8C;
+    --bg: #F5F8FB;
+    --panel: #FFFFFF;
+    --ink: #1A2733;
+    --ink-soft: #5A6B7A;
+    --line: #D9E4EE;
+    --tree: #2E8B57;
+    --fire: #E85D26;
+    --empty: #22303C;
+    font-size: 15px;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: "Frutiger", "Frutiger LT Std", "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+    background: var(--bg);
+    color: var(--ink);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+  }
+
+  header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: 0.9rem 1.5rem;
+    background: var(--panel);
+    border-bottom: 3px solid var(--fh-600);
+  }
+  header .titles h1 {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--fh-800);
+    letter-spacing: 0.01em;
+  }
+  header .titles p {
+    font-size: 0.8rem;
+    color: var(--ink-soft);
+    margin-top: 0.15rem;
+  }
+  .logo-slot img { height: 40px; display: block; }
+  .logo-fallback {
+    font-weight: 700;
+    font-size: 1.05rem;
+    color: var(--fh-800);
+    border: 2px solid var(--fh-800);
+    padding: 0.35rem 0.7rem;
+    letter-spacing: 0.04em;
+    white-space: nowrap;
+  }
+
+  main {
+    flex: 1;
+    display: grid;
+    grid-template-columns: 300px 1fr 240px;
+    gap: 1rem;
+    padding: 1rem 1.5rem;
+    align-items: start;
+  }
+
+  .panel {
+    background: var(--panel);
+    border: 1px solid var(--line);
+    border-radius: 4px;
+    padding: 1rem;
+  }
+  .panel h2 {
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.09em;
+    color: var(--fh-600);
+    margin-bottom: 0.8rem;
+  }
+
+  /* Controls */
+  .control { margin-bottom: 1.05rem; }
+  .control label {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.85rem;
+    margin-bottom: 0.3rem;
+  }
+  .control label .val {
+    font-variant-numeric: tabular-nums;
+    color: var(--fh-800);
+    font-weight: 600;
+  }
+  input[type="range"] {
+    width: 100%;
+    accent-color: var(--fh-600);
+  }
+  .hint { font-size: 0.72rem; color: var(--ink-soft); margin-top: 0.2rem; }
+
+  .btn-row { display: flex; gap: 0.5rem; flex-wrap: wrap; margin-top: 0.4rem; }
+  button {
+    font: inherit;
+    font-size: 0.85rem;
+    font-weight: 600;
+    padding: 0.5rem 0.9rem;
+    border-radius: 4px;
+    border: 1px solid var(--fh-600);
+    background: var(--panel);
+    color: var(--fh-600);
+    cursor: pointer;
+  }
+  button:hover { background: var(--fh-100); }
+  button.primary { background: var(--fh-600); color: #fff; }
+  button.primary:hover { background: var(--fh-800); }
+  button:focus-visible { outline: 3px solid var(--fh-200); outline-offset: 1px; }
+
+  /* Grid area */
+  .grid-wrap { display: flex; flex-direction: column; gap: 0.6rem; }
+  #gridCanvas {
+    width: 100%;
+    image-rendering: pixelated;
+    border: 1px solid var(--line);
+    border-radius: 4px;
+    background: var(--empty);
+    cursor: crosshair;
+    display: block;
+  }
+  .grid-note { font-size: 0.75rem; color: var(--ink-soft); }
+
+  /* Legend + stats */
+  .legend { display: flex; gap: 1.1rem; flex-wrap: wrap; font-size: 0.8rem; }
+  .legend span { display: inline-flex; align-items: center; gap: 0.4rem; }
+  .swatch { width: 12px; height: 12px; border-radius: 2px; display: inline-block; }
+
+  .stat { margin-bottom: 0.9rem; }
+  .stat .label { font-size: 0.72rem; color: var(--ink-soft); text-transform: uppercase; letter-spacing: 0.06em; }
+  .stat .value { font-size: 1.15rem; font-weight: 700; font-variant-numeric: tabular-nums; }
+  .stat canvas {
+    width: 100%;
+    height: 46px;
+    display: block;
+    margin-top: 0.3rem;
+    border: 1px solid var(--line);
+    border-radius: 3px;
+    background: #FBFDFF;
+  }
+
+  footer {
+    padding: 0.7rem 1.5rem;
+    font-size: 0.75rem;
+    color: var(--ink-soft);
+    border-top: 1px solid var(--line);
+    background: var(--panel);
+  }
+
+  @media (max-width: 1000px) {
+    main { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="titles">
+    <h1>Forest Fire Simulation</h1>
+    <p>Zellulärer Automat nach Drossel &amp; Schwabl – Zellen: leer, Baum, brennend</p>
+  </div>
+  <div class="logo-slot">
+    <img src="logo.png" alt="Fraunhofer IAIS"
+         onerror="this.outerHTML='<div class=&quot;logo-fallback&quot;>Fraunhofer IAIS</div>'">
+  </div>
+</header>
+
+<main>
+  <!-- Controls -->
+  <section class="panel" aria-label="Parameter">
+    <h2>Parameter</h2>
+
+    <div class="control">
+      <label for="density">Baumdichte (initial) <span class="val" id="densityVal">60 %</span></label>
+      <input type="range" id="density" min="0" max="100" value="60" step="1">
+      <div class="hint">Anteil der Zellen, die beim Reset mit Bäumen belegt werden.</div>
+    </div>
+
+    <div class="control">
+      <label for="lightning">Blitzeinschläge f <span class="val" id="lightningVal">1e-4</span></label>
+      <input type="range" id="lightning" min="0" max="100" value="50" step="1">
+      <div class="hint">Wahrscheinlichkeit pro Baum und Schritt, spontan zu zünden (log-Skala, 0 bis 10⁻²).</div>
+    </div>
+
+    <div class="control">
+      <label for="growth">Wachstum p <span class="val" id="growthVal">1e-2</span></label>
+      <input type="range" id="growth" min="0" max="100" value="67" step="1">
+      <div class="hint">Wahrscheinlichkeit pro leerer Zelle und Schritt, dass ein Baum wächst (log-Skala, 0 bis 10⁻¹).</div>
+    </div>
+
+    <div class="control">
+      <label for="speed">Speed <span class="val" id="speedVal">20 Steps/s</span></label>
+      <input type="range" id="speed" min="1" max="60" value="20" step="1">
+    </div>
+
+    <div class="control">
+      <label for="gridSize">Gittergröße <span class="val" id="gridSizeVal">140 × 140</span></label>
+      <input type="range" id="gridSize" min="80" max="220" value="140" step="10">
+      <div class="hint">Änderung wirkt beim nächsten Reset.</div>
+    </div>
+
+    <h2 style="margin-top:1.2rem">Steuerung</h2>
+    <div class="btn-row">
+      <button id="btnPlay" class="primary">Start</button>
+      <button id="btnStep">Einzelschritt</button>
+      <button id="btnReset">Reset</button>
+      <button id="btnExport">Export (JSON)</button>
+    </div>
+  </section>
+
+  <!-- Grid -->
+  <section class="grid-wrap panel" aria-label="Simulationsgitter">
+    <canvas id="gridCanvas" width="140" height="140"></canvas>
+    <div class="legend">
+      <span><i class="swatch" style="background:var(--empty)"></i> leer</span>
+      <span><i class="swatch" style="background:var(--tree)"></i> Baum</span>
+      <span><i class="swatch" style="background:var(--fire)"></i> brennend</span>
+      <span class="grid-note">Klicken oder Ziehen im Gitter legt Feuer.</span>
+    </div>
+  </section>
+
+  <!-- Stats + charts -->
+  <aside class="panel" aria-label="Statistik">
+    <h2>Verlauf</h2>
+    <div class="stat">
+      <div class="label">Schritt</div>
+      <div class="value" id="stepCount">0</div>
+    </div>
+    <div class="stat">
+      <div class="label">Bäume <span id="treePct" style="float:right">0 %</span></div>
+      <canvas id="chartTree"></canvas>
+    </div>
+    <div class="stat">
+      <div class="label">Brennend <span id="firePct" style="float:right">0 %</span></div>
+      <canvas id="chartFire"></canvas>
+    </div>
+    <div class="stat">
+      <div class="label">Leer <span id="emptyPct" style="float:right">0 %</span></div>
+      <canvas id="chartEmpty"></canvas>
+    </div>
+  </aside>
+</main>
+
+<footer>
+  &copy; Dario Antweiler, Fraunhofer IAIS &middot; <span id="footerDate"></span>
+</footer>
+
+<script>
+"use strict";
+
+/* ---------- State ---------- */
+const EMPTY = 0, TREE = 1, FIRE = 2;
+let N = 140;                       // grid side length
+let grid = new Uint8Array(N * N);
+let next = new Uint8Array(N * N);
+let step = 0;
+let running = false;
+let lastTick = 0;
+
+const HISTORY_MAX = 400;           // ring buffer length for charts
+const hist = { tree: [], fire: [], empty: [] };
+const exportLog = [];              // full time series for JSON export
+
+/* ---------- DOM ---------- */
+const $ = id => document.getElementById(id);
+const canvas = $("gridCanvas"), ctx = canvas.getContext("2d");
+const charts = {
+  tree:  { cv: $("chartTree"),  color: getCSS("--tree"),  data: hist.tree },
+  fire:  { cv: $("chartFire"),  color: getCSS("--fire"),  data: hist.fire },
+  empty: { cv: $("chartEmpty"), color: "#5A6B7A",         data: hist.empty }
+};
+function getCSS(v){ return getComputedStyle(document.documentElement).getPropertyValue(v).trim(); }
+
+$("footerDate").textContent = new Date().toLocaleDateString("de-DE",
+  { year: "numeric", month: "long", day: "numeric" });
+
+/* ---------- Parameters (log-scale mapping for f and p) ---------- */
+/* slider 0 => 0, slider 100 => max; in between: max * 10^(-4 * (1 - s/100)) */
+function logMap(slider, max){
+  if (slider === 0) return 0;
+  return max * Math.pow(10, -4 * (1 - slider / 100));
+}
+function fmtProb(x){
+  if (x === 0) return "0";
+  const e = Math.floor(Math.log10(x));
+  const m = x / Math.pow(10, e);
+  return (m >= 9.95 ? "1e" + (e + 1) : m.toFixed(1).replace(".0","") + "e" + e);
+}
+function params(){
+  return {
+    density: +$("density").value / 100,
+    f: logMap(+$("lightning").value, 1e-2),
+    p: logMap(+$("growth").value, 1e-1),
+    speed: +$("speed").value,
+    n: +$("gridSize").value
+  };
+}
+function refreshLabels(){
+  const pr = params();
+  $("densityVal").textContent  = Math.round(pr.density * 100) + " %";
+  $("lightningVal").textContent = fmtProb(pr.f);
+  $("growthVal").textContent    = fmtProb(pr.p);
+  $("speedVal").textContent     = pr.speed + " Steps/s";
+  $("gridSizeVal").textContent  = pr.n + " × " + pr.n;
+}
+["density","lightning","growth","speed","gridSize"].forEach(id =>
+  $(id).addEventListener("input", refreshLabels));
+
+/* ---------- Simulation ---------- */
+function reset(){
+  const pr = params();
+  N = pr.n;
+  grid = new Uint8Array(N * N);
+  next = new Uint8Array(N * N);
+  for (let i = 0; i < grid.length; i++)
+    grid[i] = Math.random() < pr.density ? TREE : EMPTY;
+  step = 0;
+  hist.tree.length = hist.fire.length = hist.empty.length = 0;
+  exportLog.length = 0;
+  canvas.width = N; canvas.height = N;
+  record(); draw(); drawCharts(); updateStats();
+}
+
+function tick(){
+  const pr = params();
+  const f = pr.f, p = pr.p, n = N;
+  for (let y = 0; y < n; y++){
+    const yu = ((y - 1 + n) % n) * n, yd = ((y + 1) % n) * n, yc = y * n;
+    for (let x = 0; x < n; x++){
+      const xl = (x - 1 + n) % n, xr = (x + 1) % n;
+      const c = grid[yc + x];
+      if (c === FIRE){ next[yc + x] = EMPTY; continue; }
+      if (c === EMPTY){ next[yc + x] = Math.random() < p ? TREE : EMPTY; continue; }
+      // TREE: burns if any of 8 neighbors burns (torus), else lightning with prob f
+      const burning =
+        grid[yu + xl] === FIRE || grid[yu + x] === FIRE || grid[yu + xr] === FIRE ||
+        grid[yc + xl] === FIRE ||                          grid[yc + xr] === FIRE ||
+        grid[yd + xl] === FIRE || grid[yd + x] === FIRE || grid[yd + xr] === FIRE;
+      next[yc + x] = (burning || Math.random() < f) ? FIRE : TREE;
+    }
+  }
+  [grid, next] = [next, grid];
+  step++;
+  record();
+}
+
+function record(){
+  let t = 0, b = 0;
+  for (let i = 0; i < grid.length; i++){
+    if (grid[i] === TREE) t++;
+    else if (grid[i] === FIRE) b++;
+  }
+  const total = grid.length;
+  const shares = { step, tree: t / total, fire: b / total, empty: (total - t - b) / total };
+  hist.tree.push(shares.tree); hist.fire.push(shares.fire); hist.empty.push(shares.empty);
+  if (hist.tree.length > HISTORY_MAX){
+    hist.tree.shift(); hist.fire.shift(); hist.empty.shift();
+  }
+  exportLog.push(shares);
+}
+
+/* ---------- Rendering ---------- */
+const COLORS = { [EMPTY]: getCSS("--empty"), [TREE]: getCSS("--tree"), [FIRE]: getCSS("--fire") };
+const img = () => ctx.createImageData(N, N);
+const rgb = {};
+Object.entries(COLORS).forEach(([k, v]) => {
+  const c = v.startsWith("#") ? v : "#22303C";
+  rgb[k] = [parseInt(c.slice(1,3),16), parseInt(c.slice(3,5),16), parseInt(c.slice(5,7),16)];
+});
+
+function draw(){
+  const im = ctx.createImageData(N, N), d = im.data;
+  for (let i = 0; i < grid.length; i++){
+    const [r, g, b] = rgb[grid[i]];
+    const o = i * 4;
+    d[o] = r; d[o+1] = g; d[o+2] = b; d[o+3] = 255;
+  }
+  ctx.putImageData(im, 0, 0);
+}
+
+function drawCharts(){
+  for (const key of Object.keys(charts)){
+    const { cv, color, data } = charts[key];
+    const w = cv.clientWidth, h = cv.clientHeight;
+    if (cv.width !== w || cv.height !== h){ cv.width = w; cv.height = h; }
+    const c2 = cv.getContext("2d");
+    c2.clearRect(0, 0, w, h);
+    if (data.length < 2) continue;
+    c2.beginPath();
+    const n = data.length;
+    for (let i = 0; i < n; i++){
+      const x = (i / (HISTORY_MAX - 1)) * w;
+      const y = h - 2 - data[i] * (h - 4);
+      i === 0 ? c2.moveTo(x, y) : c2.lineTo(x, y);
+    }
+    c2.strokeStyle = color;
+    c2.lineWidth = 1.5;
+    c2.stroke();
+    // fill under curve
+    c2.lineTo(((n - 1) / (HISTORY_MAX - 1)) * w, h);
+    c2.lineTo(0, h);
+    c2.closePath();
+    c2.globalAlpha = 0.12;
+    c2.fillStyle = color;
+    c2.fill();
+    c2.globalAlpha = 1;
+  }
+}
+
+function updateStats(){
+  $("stepCount").textContent = step;
+  const last = exportLog[exportLog.length - 1];
+  if (!last) return;
+  $("treePct").textContent  = (last.tree  * 100).toFixed(1) + " %";
+  $("firePct").textContent  = (last.fire  * 100).toFixed(2) + " %";
+  $("emptyPct").textContent = (last.empty * 100).toFixed(1) + " %";
+}
+
+/* ---------- Main loop ---------- */
+function loop(ts){
+  requestAnimationFrame(loop);
+  if (!running) return;
+  const interval = 1000 / params().speed;
+  if (ts - lastTick < interval) return;
+  lastTick = ts;
+  tick(); draw(); drawCharts(); updateStats();
+}
+requestAnimationFrame(loop);
+
+/* ---------- Interaction: ignite by click/drag ---------- */
+let painting = false;
+function ignite(ev){
+  const r = canvas.getBoundingClientRect();
+  const x = Math.floor((ev.clientX - r.left) / r.width * N);
+  const y = Math.floor((ev.clientY - r.top) / r.height * N);
+  const rad = 1;
+  for (let dy = -rad; dy <= rad; dy++)
+    for (let dx = -rad; dx <= rad; dx++){
+      const xi = (x + dx + N) % N, yi = (y + dy + N) % N;
+      if (grid[yi * N + xi] === TREE) grid[yi * N + xi] = FIRE;
+    }
+  draw();
+}
+canvas.addEventListener("pointerdown", e => { painting = true; ignite(e); });
+canvas.addEventListener("pointermove", e => { if (painting) ignite(e); });
+window.addEventListener("pointerup", () => painting = false);
+
+/* ---------- Buttons ---------- */
+$("btnPlay").addEventListener("click", () => {
+  running = !running;
+  $("btnPlay").textContent = running ? "Pause" : "Start";
+});
+$("btnStep").addEventListener("click", () => {
+  if (running) return;
+  tick(); draw(); drawCharts(); updateStats();
+});
+$("btnReset").addEventListener("click", () => {
+  running = false;
+  $("btnPlay").textContent = "Start";
+  reset();
+});
+$("btnExport").addEventListener("click", () => {
+  const pr = params();
+  const payload = {
+    model: "Forest Fire Cellular Automaton (Drossel-Schwabl)",
+    exported: new Date().toISOString(),
+    parameters: { gridSize: N, initialDensity: pr.density, lightningF: pr.f, growthP: pr.p },
+    steps: step,
+    timeSeries: exportLog
+  };
+  const blob = new Blob([JSON.stringify(payload, null, 2)], { type: "application/json" });
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(blob);
+  a.download = "forest-fire-timeseries.json";
+  a.click();
+  URL.revokeObjectURL(a.href);
+});
+
+window.addEventListener("resize", drawCharts);
+
+/* ---------- Init ---------- */
+refreshLabels();
+reset();
+</script>
+</body>
+</html>

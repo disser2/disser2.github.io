@@ -1,0 +1,536 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>De Casteljau — das Reißbrett</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600&family=Bodoni+Moda:opsz,wght@6..96,400;6..96,700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --board:#a3b2a9;
+  --board-deep:#8b9c92;
+  --sheet:#f2efe4;
+  --ink:#15201c;
+  --ink-soft:rgba(21,32,28,.58);
+  --rule:rgba(21,32,28,.16);
+  --l1:#1d4e77;
+  --l2:#8a3a6b;
+  --l3:#ce3d22;
+  --l4:#96731a;
+  --l5:#2c7a6e;
+  --pad:18px;
+  --r:3px;
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{
+  background:var(--board);
+  background-image:
+    linear-gradient(rgba(255,255,255,.05) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(255,255,255,.05) 1px,transparent 1px);
+  background-size:22px 22px;
+  color:var(--ink);
+  font-family:"Archivo",system-ui,sans-serif;
+  font-size:15px;
+  line-height:1.5;
+  -webkit-font-smoothing:antialiased;
+  padding:0 var(--pad) 64px;
+}
+.wrap{max-width:560px;margin:0 auto}
+
+/* ── Kopf ─────────────────────────────── */
+.masthead{padding:34px 0 18px}
+.eyebrow{
+  font-family:"DM Mono",monospace;font-size:10.5px;letter-spacing:.16em;
+  text-transform:uppercase;color:var(--ink-soft);margin:0 0 14px;
+}
+h1{
+  font-family:"Bodoni Moda",serif;font-weight:400;
+  font-size:clamp(40px,13.5vw,62px);line-height:.92;letter-spacing:-.015em;
+  margin:0;
+}
+h1 em{font-style:italic}
+.lede{margin:14px 0 0;max-width:38ch;color:rgba(21,32,28,.78)}
+
+/* ── Reißbrett ────────────────────────── */
+.sheet{
+  background:var(--sheet);
+  border:1px solid rgba(21,32,28,.28);
+  border-radius:var(--r);
+  box-shadow:0 12px 28px -18px rgba(10,20,16,.75);
+  overflow:hidden;
+}
+.stage{display:block;width:100%;aspect-ratio:1/1;touch-action:none;cursor:grab}
+.stage.grabbing{cursor:grabbing}
+.sheet-foot{
+  display:flex;justify-content:space-between;gap:10px;
+  padding:8px 12px;border-top:1px solid var(--rule);
+  font-family:"DM Mono",monospace;font-size:10.5px;letter-spacing:.06em;
+  color:var(--ink-soft);
+}
+
+/* ── Bedienung ────────────────────────── */
+.panel{margin-top:20px}
+.panel-label{
+  font-family:"DM Mono",monospace;font-size:10.5px;letter-spacing:.16em;
+  text-transform:uppercase;color:rgba(21,32,28,.62);
+  display:flex;justify-content:space-between;align-items:baseline;margin-bottom:8px;
+}
+.tval{font-size:15px;letter-spacing:0;color:var(--ink);font-weight:500}
+
+input[type=range]{
+  -webkit-appearance:none;appearance:none;width:100%;height:34px;
+  background:transparent;margin:0;display:block;
+}
+input[type=range]::-webkit-slider-runnable-track{
+  height:6px;background:rgba(21,32,28,.22);border-radius:99px;
+}
+input[type=range]::-moz-range-track{height:6px;background:rgba(21,32,28,.22);border-radius:99px}
+input[type=range]::-webkit-slider-thumb{
+  -webkit-appearance:none;width:30px;height:30px;margin-top:-12px;border-radius:50%;
+  background:var(--sheet);border:2px solid var(--ink);
+  box-shadow:0 2px 6px rgba(10,20,16,.35);cursor:grab;
+}
+input[type=range]::-moz-range-thumb{
+  width:26px;height:26px;border-radius:50%;background:var(--sheet);
+  border:2px solid var(--ink);cursor:grab;
+}
+input[type=range]:focus-visible{outline:2px solid var(--l1);outline-offset:4px}
+
+.row{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
+button,.chipbox{
+  font-family:"Archivo",sans-serif;font-size:13.5px;font-weight:500;
+  border:1px solid rgba(21,32,28,.4);border-radius:99px;
+  background:transparent;color:var(--ink);
+  padding:9px 15px;min-height:42px;cursor:pointer;
+  transition:background .15s,color .15s,border-color .15s;
+}
+button:hover{background:rgba(255,255,255,.3)}
+button.primary{background:var(--ink);color:var(--sheet);border-color:var(--ink)}
+button.primary:hover{background:#243430}
+.seg{display:inline-flex;border:1px solid rgba(21,32,28,.4);border-radius:99px;overflow:hidden}
+.seg button{border:0;border-radius:0;padding:9px 14px;min-width:44px}
+.seg button+button{border-left:1px solid rgba(21,32,28,.25)}
+.seg button[aria-pressed=true]{background:var(--ink);color:var(--sheet)}
+.toggle[aria-pressed=true]{background:var(--ink);color:var(--sheet);border-color:var(--ink)}
+:focus-visible{outline:2px solid var(--l1);outline-offset:2px}
+
+/* ── Tableau (Signature) ──────────────── */
+.tableau{
+  margin-top:26px;background:var(--sheet);
+  border:1px solid rgba(21,32,28,.28);border-radius:var(--r);
+  padding:14px 12px 12px;
+  box-shadow:0 12px 28px -20px rgba(10,20,16,.7);
+}
+.tab-head{
+  font-family:"DM Mono",monospace;font-size:10.5px;letter-spacing:.16em;
+  text-transform:uppercase;color:rgba(21,32,28,.62);margin-bottom:12px;
+  display:flex;justify-content:space-between;gap:8px;
+}
+.tier{display:flex;justify-content:center;gap:6px;margin-bottom:6px}
+.cell{
+  flex:1 1 0;min-width:0;max-width:96px;
+  border:1px solid rgba(21,32,28,.22);border-radius:var(--r);
+  background:rgba(255,255,255,.45);
+  padding:6px 4px 5px;text-align:center;cursor:pointer;
+  transition:transform .12s,box-shadow .12s;
+}
+.cell:hover{transform:translateY(-1px)}
+.cell[aria-pressed=true]{box-shadow:inset 0 0 0 2px currentColor}
+.cell .nm{
+  font-family:"Bodoni Moda",serif;font-size:15px;line-height:1;display:block;
+}
+.cell .co{
+  font-family:"DM Mono",monospace;font-size:9.5px;letter-spacing:-.02em;
+  color:var(--ink-soft);display:block;margin-top:3px;white-space:nowrap;
+}
+.cell[aria-pressed=true] .co{color:inherit;opacity:.75}
+.formula{
+  margin-top:10px;padding-top:10px;border-top:1px solid var(--rule);
+  font-family:"DM Mono",monospace;font-size:11.5px;line-height:1.7;
+  color:rgba(21,32,28,.8);word-break:break-word;
+}
+.formula b{font-weight:500;color:var(--ink)}
+
+/* ── Notizen ──────────────────────────── */
+.notes{margin-top:32px;border-top:1px solid rgba(21,32,28,.3)}
+.note{padding:18px 0;border-bottom:1px solid rgba(21,32,28,.18)}
+.note h2{
+  font-family:"Bodoni Moda",serif;font-weight:400;font-size:21px;
+  margin:0 0 6px;letter-spacing:-.01em;
+}
+.note p{margin:0;color:rgba(21,32,28,.8);font-size:14.5px}
+.note code{
+  font-family:"DM Mono",monospace;font-size:12.5px;
+  background:rgba(255,255,255,.4);padding:1px 4px;border-radius:2px;
+}
+.colophon{
+  margin-top:28px;font-family:"DM Mono",monospace;font-size:10.5px;
+  letter-spacing:.05em;color:rgba(21,32,28,.55);max-width:44ch;
+}
+
+@media (min-width:900px){
+  .wrap{max-width:1080px;display:grid;grid-template-columns:1fr 1fr;
+    gap:0 40px;align-items:start}
+  .masthead{grid-column:1/-1}
+  .board-col{grid-column:1}
+  .side-col{grid-column:2;position:sticky;top:24px}
+  .stage{aspect-ratio:4/3}
+  .notes{grid-column:1/-1}
+  .colophon{grid-column:1/-1}
+}
+@media (prefers-reduced-motion:reduce){
+  *{animation-duration:.001ms!important;transition-duration:.001ms!important}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header class="masthead">
+    <p class="eyebrow">Citroën · 1959 · zwölf Jahre Betriebsgeheimnis</p>
+    <h1>De&nbsp;Casteljau,<br><em>Stufe für Stufe</em></h1>
+    <p class="lede">Eine Bézierkurve entsteht ohne ein einziges Polynom — nur durch wiederholtes Teilen von Strecken im Verhältnis <em>t</em>. Zieh die Punkte, schieb <em>t</em>, sieh zu.</p>
+  </header>
+
+  <div class="board-col">
+    <div class="sheet">
+      <canvas id="stage" class="stage"></canvas>
+      <div class="sheet-foot">
+        <span id="hint">Kontrollpunkte ziehen</span>
+        <span id="degLabel">Grad 3</span>
+      </div>
+    </div>
+
+    <div class="panel">
+      <div class="panel-label"><span>Parameter t</span><span class="tval" id="tOut">0.400</span></div>
+      <input id="t" type="range" min="0" max="1" step="0.001" value="0.4" aria-label="Parameter t">
+      <div class="row">
+        <button id="play" class="primary">Abspielen</button>
+        <span class="seg" role="group" aria-label="Grad der Kurve">
+          <button data-deg="2">2</button>
+          <button data-deg="3" aria-pressed="true">3</button>
+          <button data-deg="4">4</button>
+          <button data-deg="5">5</button>
+        </span>
+        <button id="reset">Zurücksetzen</button>
+      </div>
+      <div class="row">
+        <button class="toggle" id="tgTangent" aria-pressed="false">Tangente</button>
+        <button class="toggle" id="tgSplit" aria-pressed="false">Unterteilung</button>
+        <button class="toggle" id="tgTrace" aria-pressed="true">Spur bis t</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="side-col">
+    <section class="tableau" aria-label="De-Casteljau-Tableau">
+      <div class="tab-head"><span>Tableau</span><span id="tabT">t = 0.400</span></div>
+      <div id="tiers"></div>
+      <p class="formula" id="formula"></p>
+    </section>
+  </div>
+
+  <section class="notes">
+    <article class="note">
+      <h2>Die ganze Rekursion</h2>
+      <p><code>Pᵢ⁰ = Pᵢ</code> und <code>Pᵢʳ = (1−t)·Pᵢʳ⁻¹ + t·Pᵢ₊₁ʳ⁻¹</code>. Nach n Stufen bleibt genau ein Punkt übrig: <code>P₀ⁿ = C(t)</code>. Jede Zeile im Tableau ist eine Stufe, jede Zelle eine Konvexkombination zweier Nachbarn.</p>
+    </article>
+    <article class="note">
+      <h2>Die Tangente fällt ab</h2>
+      <p>Die letzte verbleibende Strecke — auf Stufe n−1 — liegt tangential an der Kurve. Präzise: <code>C′(t) = n·(P₁ⁿ⁻¹ − P₀ⁿ⁻¹)</code>. Die Ableitung braucht keinen eigenen Rechengang.</p>
+    </article>
+    <article class="note">
+      <h2>Unterteilung gratis</h2>
+      <p>Die linke Kante des Tableaus <code>P₀⁰…P₀ⁿ</code> ist das Kontrollpolygon der Teilkurve über [0,t], die rechte Kante <code>P₀ⁿ…Pₙ⁰</code> das der Teilkurve über [t,1]. Genau darauf beruhen adaptives Rendering, Schnittalgorithmen und der Beweis der konvexen Hülle.</p>
+    </article>
+    <article class="note">
+      <h2>Warum nicht Bernstein?</h2>
+      <p>Beide Wege kosten O(n²). Aber für t ∈ [0,1] besteht De Casteljau ausschließlich aus Konvexkombinationen mit nichtnegativen Gewichten — keine Auslöschung, kein Aufschaukeln. Die direkte Auswertung der Bernstein-Basis ist numerisch spürbar schlechter konditioniert.</p>
+    </article>
+  </section>
+
+  <p class="colophon">Paul de Casteljau entwickelte das Verfahren 1959 in der Entwicklungsabteilung von Citroën. Veröffentlicht wurde es erst in den Siebzigern — bis dahin trug Pierre Béziers Arbeit bei Renault den Namen.</p>
+
+</div>
+
+<script>
+(function(){
+"use strict";
+const cv=document.getElementById("stage"), ctx=cv.getContext("2d");
+const LEVEL=["#1d4e77","#8a3a6b","#ce3d22","#96731a","#2c7a6e"];
+const INK="#15201c", SHEET="#f2efe4";
+const SUB="₀₁₂₃₄₅", SUP="⁰¹²³⁴⁵";
+const reduce=matchMedia("(prefers-reduced-motion:reduce)").matches;
+
+const PRESETS={
+ 2:[[.12,.80],[.50,.14],[.88,.78]],
+ 3:[[.10,.78],[.28,.18],[.72,.86],[.90,.24]],
+ 4:[[.08,.72],[.26,.16],[.50,.86],[.74,.16],[.92,.72]],
+ 5:[[.07,.66],[.22,.16],[.40,.84],[.60,.16],[.78,.84],[.93,.34]]
+};
+
+let deg=3, pts=PRESETS[3].map(p=>p.slice()), t=.4;
+let playing=false, drag=-1, sel=null, dpr=1, W=0, H=0, PAD=30, reveal=reduce?1:0;
+let showTangent=false, showSplit=false, showTrace=true;
+
+/* ── Koordinaten ─────────────────────── */
+const toPx=p=>[PAD+p[0]*(W-2*PAD), PAD+p[1]*(H-2*PAD)];
+const toNorm=(x,y)=>[
+  Math.min(1,Math.max(0,(x-PAD)/(W-2*PAD))),
+  Math.min(1,Math.max(0,(y-PAD)/(H-2*PAD)))
+];
+
+/* ── Der Algorithmus ─────────────────── */
+function tableau(P,u){
+  const t0=[P.map(p=>p.slice())];
+  for(let r=1;r<P.length;r++){
+    const prev=t0[r-1], row=[];
+    for(let i=0;i<prev.length-1;i++)
+      row.push([(1-u)*prev[i][0]+u*prev[i+1][0],(1-u)*prev[i][1]+u*prev[i+1][1]]);
+    t0.push(row);
+  }
+  return t0;
+}
+const evalAt=u=>{const T=tableau(pts,u);return T[T.length-1][0];};
+
+/* ── Zeichnen ────────────────────────── */
+function resize(){
+  const r=cv.getBoundingClientRect();
+  dpr=Math.min(window.devicePixelRatio||1,2.5);
+  W=r.width;H=r.height;
+  cv.width=Math.round(W*dpr);cv.height=Math.round(H*dpr);
+  ctx.setTransform(dpr,0,0,dpr,0,0);
+  PAD=Math.max(24,Math.min(W,H)*.075);
+  draw();
+}
+
+function grid(){
+  ctx.fillStyle=SHEET;ctx.fillRect(0,0,W,H);
+  ctx.strokeStyle="rgba(21,32,28,.07)";ctx.lineWidth=1;
+  const s=Math.max(18,W/18);
+  ctx.beginPath();
+  for(let x=s;x<W;x+=s){ctx.moveTo(Math.round(x)+.5,0);ctx.lineTo(Math.round(x)+.5,H);}
+  for(let y=s;y<H;y+=s){ctx.moveTo(0,Math.round(y)+.5);ctx.lineTo(W,Math.round(y)+.5);}
+  ctx.stroke();
+}
+
+function poly(list,color,width,dash){
+  if(list.length<2)return;
+  ctx.save();ctx.setLineDash(dash||[]);ctx.strokeStyle=color;ctx.lineWidth=width;
+  ctx.lineJoin="round";ctx.lineCap="round";ctx.beginPath();
+  list.forEach((p,i)=>{const q=toPx(p);i?ctx.lineTo(q[0],q[1]):ctx.moveTo(q[0],q[1]);});
+  ctx.stroke();ctx.restore();
+}
+
+function dot(p,color,r,fill){
+  const q=toPx(p);
+  ctx.beginPath();ctx.arc(q[0],q[1],r,0,6.2832);
+  ctx.fillStyle=fill||color;ctx.fill();
+  ctx.lineWidth=2;ctx.strokeStyle=color;ctx.stroke();
+}
+
+function curvePts(a,b,n){
+  const out=[];for(let i=0;i<=n;i++)out.push(evalAt(a+(b-a)*i/n));return out;
+}
+
+function draw(){
+  if(!W)return;
+  grid();
+  const T=tableau(pts,t), n=deg;
+
+  // Unterteilung
+  if(showSplit){
+    const L=T.map(r=>r[0]), R=T.map((r,i)=>T[n-i][T[n-i].length-1]);
+    poly(L,"rgba(29,78,119,.34)",6,[]);
+    poly(R,"rgba(150,115,26,.34)",6,[]);
+  }
+
+  // Kurve: Spur bis t kräftig, Rest zurückgenommen
+  const nSeg=140, upto=Math.max(1,Math.round(nSeg*t*reveal));
+  if(showTrace){
+    poly(curvePts(0,1,nSeg),"rgba(21,32,28,.22)",2.5);
+    poly(curvePts(0,Math.min(1,t*reveal),upto),INK,3.5);
+  }else{
+    poly(curvePts(0,Math.max(.001,reveal),Math.round(nSeg*reveal)||1),INK,3.5);
+  }
+
+  // Kontrollpolygon
+  poly(pts,"rgba(21,32,28,.5)",1.5,[5,5]);
+
+  // Zwischenstufen
+  for(let r=1;r<=n;r++){
+    const c=LEVEL[(r-1)%LEVEL.length], row=T[r];
+    if(row.length>1)poly(row,c,2);
+    row.forEach((p,i)=>{
+      const isSel=sel&&sel.r===r&&sel.i===i;
+      if(r<n)dot(p,c,isSel?7:5,SHEET);
+      if(isSel){const q=toPx(p);ctx.beginPath();ctx.arc(q[0],q[1],13,0,6.2832);
+        ctx.strokeStyle=c;ctx.lineWidth=1.5;ctx.globalAlpha=.5;ctx.stroke();ctx.globalAlpha=1;}
+    });
+  }
+
+  // Tangente
+  if(showTangent&&n>=1){
+    const a=T[n-1][0], b=T[n-1][1], A=toPx(a), B=toPx(b);
+    const dx=B[0]-A[0], dy=B[1]-A[1], L=Math.hypot(dx,dy)||1, k=Math.max(W,H);
+    const C=toPx(T[n][0]);
+    ctx.save();ctx.setLineDash([2,6]);ctx.strokeStyle="rgba(21,32,28,.55)";ctx.lineWidth=1.5;
+    ctx.beginPath();ctx.moveTo(C[0]-dx/L*k,C[1]-dy/L*k);ctx.lineTo(C[0]+dx/L*k,C[1]+dy/L*k);
+    ctx.stroke();ctx.restore();
+  }
+
+  // Kurvenpunkt
+  const c=T[n][0], q=toPx(c);
+  ctx.beginPath();ctx.arc(q[0],q[1],14,0,6.2832);
+  ctx.fillStyle="rgba(206,61,34,.16)";ctx.fill();
+  dot(c,LEVEL[(n-1)%LEVEL.length],7);
+
+  // Kontrollpunkte + Namen
+  ctx.font='500 11px "DM Mono",monospace';ctx.fillStyle="rgba(21,32,28,.72)";
+  pts.forEach((p,i)=>{
+    dot(p,INK,8,SHEET);
+    const s=toPx(p);
+    ctx.fillText("P"+SUB[i],s[0]+12,s[1]-9);
+  });
+}
+
+/* ── Tableau-UI ──────────────────────── */
+const tiers=document.getElementById("tiers");
+function buildTiers(){
+  tiers.innerHTML="";
+  for(let r=0;r<=deg;r++){
+    const row=document.createElement("div");row.className="tier";
+    for(let i=0;i<=deg-r;i++){
+      const b=document.createElement("button");
+      b.className="cell";b.type="button";
+      b.style.color=r===0?INK:LEVEL[(r-1)%LEVEL.length];
+      b.dataset.r=r;b.dataset.i=i;
+      b.setAttribute("aria-pressed","false");
+      b.innerHTML='<span class="nm"></span><span class="co"></span>';
+      b.addEventListener("click",()=>{
+        sel=(sel&&sel.r===r&&sel.i===i)?null:{r,i};
+        syncTiers();draw();
+      });
+      row.appendChild(b);
+    }
+    tiers.appendChild(row);
+  }
+  syncTiers();
+}
+const f=v=>v.toFixed(2);
+function syncTiers(){
+  const T=tableau(pts,t);
+  tiers.querySelectorAll(".cell").forEach(b=>{
+    const r=+b.dataset.r,i=+b.dataset.i,p=T[r][i];
+    b.querySelector(".nm").textContent="P"+SUB[i]+(r?SUP[r]:"");
+    b.querySelector(".co").textContent=f(p[0])+","+f(p[1]);
+    b.setAttribute("aria-pressed",String(!!sel&&sel.r===r&&sel.i===i));
+  });
+  document.getElementById("tabT").textContent="t = "+t.toFixed(3);
+  const F=document.getElementById("formula");
+  if(!sel){
+    F.innerHTML='<b>Pᵢʳ = (1−t)·Pᵢʳ⁻¹ + t·Pᵢ₊₁ʳ⁻¹</b><br>Tippe eine Zelle an, um ihre Herkunft zu sehen.';
+  }else if(sel.r===0){
+    const p=T[0][sel.i];
+    F.innerHTML='<b>P'+SUB[sel.i]+'</b> = ('+f(p[0])+', '+f(p[1])+')<br>Kontrollpunkt — Ausgangsdatum, frei verschiebbar.';
+  }else{
+    const{r,i}=sel,a=T[r-1][i],b=T[r-1][i+1],p=T[r][i];
+    const nm=x=>"P"+SUB[x]+(r-1?SUP[r-1]:"");
+    F.innerHTML='<b>P'+SUB[i]+SUP[r]+'</b> = (1−t)·'+nm(i)+' + t·'+nm(i+1)+
+      '<br>= '+f(1-t)+'·('+f(a[0])+', '+f(a[1])+') + '+f(t)+'·('+f(b[0])+', '+f(b[1])+')'+
+      '<br>= <b>('+f(p[0])+', '+f(p[1])+')</b>'+
+      (r===deg?'<br>Letzte Stufe: das ist C(t).':'');
+  }
+}
+
+/* ── Interaktion ─────────────────────── */
+function pos(e){
+  const r=cv.getBoundingClientRect();
+  const s=e.touches?e.touches[0]:e;
+  return[s.clientX-r.left,s.clientY-r.top];
+}
+function pick(x,y){
+  let best=-1,bd=26*26;
+  pts.forEach((p,i)=>{const q=toPx(p),d=(q[0]-x)**2+(q[1]-y)**2;if(d<bd){bd=d;best=i;}});
+  return best;
+}
+function down(e){
+  const[x,y]=pos(e);drag=pick(x,y);
+  if(drag>=0){cv.classList.add("grabbing");e.preventDefault();}
+}
+function move(e){
+  if(drag<0)return;
+  e.preventDefault();
+  const[x,y]=pos(e);pts[drag]=toNorm(x,y);draw();syncTiers();
+}
+function up(){drag=-1;cv.classList.remove("grabbing");}
+cv.addEventListener("mousedown",down);
+window.addEventListener("mousemove",move);
+window.addEventListener("mouseup",up);
+cv.addEventListener("touchstart",down,{passive:false});
+cv.addEventListener("touchmove",move,{passive:false});
+window.addEventListener("touchend",up);
+
+const slider=document.getElementById("t"), tOut=document.getElementById("tOut");
+slider.addEventListener("input",()=>{
+  t=+slider.value;tOut.textContent=t.toFixed(3);stop();draw();syncTiers();
+});
+
+const playBtn=document.getElementById("play");
+let raf=0,last=0;
+function stop(){playing=false;playBtn.textContent="Abspielen";cancelAnimationFrame(raf);}
+function loop(ts){
+  if(!last)last=ts;
+  const dt=Math.min(64,ts-last);last=ts;
+  t+=dt/3600;
+  if(t>=1){t=1;stop();}
+  slider.value=t;tOut.textContent=t.toFixed(3);draw();syncTiers();
+  if(playing)raf=requestAnimationFrame(loop);
+}
+playBtn.addEventListener("click",()=>{
+  if(playing){stop();return;}
+  if(t>=.999)t=0;
+  playing=true;last=0;playBtn.textContent="Pause";raf=requestAnimationFrame(loop);
+});
+
+document.querySelectorAll("[data-deg]").forEach(b=>{
+  b.addEventListener("click",()=>{
+    deg=+b.dataset.deg;pts=PRESETS[deg].map(p=>p.slice());sel=null;
+    document.querySelectorAll("[data-deg]").forEach(o=>o.setAttribute("aria-pressed",String(o===b)));
+    document.getElementById("degLabel").textContent="Grad "+deg;
+    buildTiers();draw();
+  });
+});
+document.getElementById("reset").addEventListener("click",()=>{
+  pts=PRESETS[deg].map(p=>p.slice());t=.4;slider.value=.4;tOut.textContent="0.400";
+  sel=null;stop();syncTiers();draw();
+});
+function toggle(id,set){
+  const b=document.getElementById(id);
+  b.addEventListener("click",()=>{
+    const v=b.getAttribute("aria-pressed")!=="true";
+    b.setAttribute("aria-pressed",String(v));set(v);draw();
+  });
+}
+toggle("tgTangent",v=>showTangent=v);
+toggle("tgSplit",v=>showSplit=v);
+toggle("tgTrace",v=>showTrace=v);
+
+/* ── Start ───────────────────────────── */
+new ResizeObserver(resize).observe(cv);
+buildTiers();resize();
+if(!reduce){
+  const t0=performance.now();
+  (function intro(ts){
+    const k=Math.min(1,(ts-t0)/900);
+    reveal=1-Math.pow(1-k,3);draw();
+    if(k<1)requestAnimationFrame(intro);
+  })(t0);
+}
+})();
+</script>
+</body>
+</html>
