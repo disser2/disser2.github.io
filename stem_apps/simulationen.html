@@ -268,6 +268,7 @@ h1{
       <div class="settings-actions">
         <button class="btn" id="all-on">Alle einblenden</button>
         <button class="btn" id="all-off">Alle ausblenden</button>
+        <button class="btn" id="toggle-todo">In Vorbereitung ausblenden</button>
         <button class="btn" id="reset">Zurücksetzen</button>
         <button class="btn" id="export">JSON exportieren</button>
       </div>
@@ -381,9 +382,10 @@ const CATALOG = [
       title:'Force-Directed-Graph-Drawing',
       desc:'Federkräfte zwischen Kanten und Abstoßung zwischen Knoten finden von selbst eine lesbare Anordnung.',
       tags:'Graphenzeichnen · Physik-Simulation' },
-    { id:'satz-von-pick', sim:'pick', status:'todo',
+    { id:'satz-von-pick', sim:'pick',
       title:'Satz von Pick',
       desc:'Die Fläche eines Gitterpolygons ergibt sich allein aus der Zahl der Rand- und Innenpunkte.',
+      path:'satz-von-pick/satz-von-pick.html',
       tags:'Geometrie · Gitterpunkte' },
     { id:'spannbaum-kreise', sim:'growingcircles',
       title:'Minimaler Spannbaum durch wachsende Kreise',
@@ -406,9 +408,10 @@ const CATALOG = [
       desc:'Punktwolken ohne Beschriftung: verschiedene Verfahren ziehen unterschiedliche Grenzen zwischen ihnen.',
       path:'clustering/clustering.html',
       tags:'Unüberwachtes Lernen' },
-    { id:'svm', sim:'svm', status:'todo',
+    { id:'svm', sim:'svm',
       title:'Support Vector Machines',
-      desc:'Die Trenngerade mit dem größten Rand zu beiden Klassen hängt nur an wenigen Stützvektoren.',
+      desc:'Wie man zwei Gruppen mit möglichst viel Abstand trennt — und warum genau das gut funktioniert.',
+      path:'svm/svm.html',
       tags:'Überwachtes Lernen · Klassifikation' },
   ]},
   { id:'sozialwissenschaften', name:'Sozialwissenschaften', apps:[
@@ -438,7 +441,7 @@ const ALL_APPS = CATALOG.flatMap(c => c.apps.map(a => ({...a, category:c.id, cat
    Zustand und Persistenz
    ======================================================================= */
 const STORE_KEY = 'simulationen-katalog-v1';
-const state = { hidden:new Set(), filter:'all' };
+const state = { hidden:new Set(), filter:'all', hideTodo:false };
 
 async function loadState(){
   let raw = null;
@@ -448,16 +451,18 @@ async function loadState(){
   try {
     const data = JSON.parse(raw);
     if (Array.isArray(data.hidden)) state.hidden = new Set(data.hidden);
+    if (typeof data.hideTodo === 'boolean') state.hideTodo = data.hideTodo;
   } catch(e){}
 }
 
 async function saveState(){
-  const raw = JSON.stringify({ hidden:[...state.hidden] });
+  const raw = JSON.stringify({ hidden:[...state.hidden], hideTodo:state.hideTodo });
   try { if (window.storage && window.storage.set){ await window.storage.set(STORE_KEY, raw); return; } } catch(e){}
   try { window.localStorage.setItem(STORE_KEY, raw); } catch(e){}
 }
 
 const isVisible = app => !state.hidden.has(app.id);
+const isShown = app => isVisible(app) && !(state.hideTodo && app.status === 'todo');
 
 /* =======================================================================
    Rendering
@@ -472,8 +477,8 @@ const els = {
 };
 
 function renderStats(){
-  const shown = ALL_APPS.filter(isVisible).length;
-  const disciplines = new Set(ALL_APPS.filter(isVisible).map(a => a.category)).size;
+  const shown = ALL_APPS.filter(isShown).length;
+  const disciplines = new Set(ALL_APPS.filter(isShown).map(a => a.category)).size;
   const hidden = ALL_APPS.length - shown;
   els.stats.innerHTML =
     `<b>${shown}</b> Anwendungen &middot; <b>${disciplines}</b> Disziplinen` +
@@ -481,9 +486,9 @@ function renderStats(){
 }
 
 function renderRail(){
-  const total = ALL_APPS.filter(isVisible).length;
+  const total = ALL_APPS.filter(isShown).length;
   const rows = [{ id:'all', name:'Alle', n:total }].concat(
-    CATALOG.map(c => ({ id:c.id, name:c.name, n:c.apps.filter(isVisible).length }))
+    CATALOG.map(c => ({ id:c.id, name:c.name, n:c.apps.filter(isShown).length }))
   );
   els.rail.innerHTML = rows.map(r => `
     <li><button class="rail-item" data-cat="${r.id}" aria-current="${state.filter === r.id}">
@@ -527,7 +532,7 @@ function tileMarkup(app){
 function renderMain(){
   const sections = CATALOG
     .filter(c => state.filter === 'all' || state.filter === c.id)
-    .map(c => ({ c, apps:c.apps.filter(isVisible) }))
+    .map(c => ({ c, apps:c.apps.filter(isShown) }))
     .filter(x => x.apps.length);
 
   if (!sections.length){
@@ -551,7 +556,15 @@ function renderMain(){
     </section>`).join('');
 }
 
+function renderTodoToggle(){
+  const btn = document.getElementById('toggle-todo');
+  if (!btn) return;
+  btn.textContent = state.hideTodo ? 'In Vorbereitung einblenden' : 'In Vorbereitung ausblenden';
+  btn.setAttribute('aria-pressed', String(state.hideTodo));
+}
+
 function renderSettings(){
+  renderTodoToggle();
   els.groups.innerHTML = CATALOG.map(c => `
     <div class="settings-group">
       <h3>${c.name}</h3>
@@ -585,8 +598,11 @@ document.getElementById('all-on').addEventListener('click', showAll);
 document.getElementById('all-off').addEventListener('click', () => {
   ALL_APPS.forEach(a => state.hidden.add(a.id)); saveState(); renderAll();
 });
+document.getElementById('toggle-todo').addEventListener('click', () => {
+  state.hideTodo = !state.hideTodo; saveState(); renderAll();
+});
 document.getElementById('reset').addEventListener('click', () => {
-  state.hidden.clear(); state.filter = 'all'; saveState(); renderAll();
+  state.hidden.clear(); state.filter = 'all'; state.hideTodo = false; saveState(); renderAll();
 });
 document.getElementById('export').addEventListener('click', () => {
   const data = {
