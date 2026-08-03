@@ -1,0 +1,881 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Pythagoras-Baum — interaktiv</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=Karla:wght@400;500;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#16233D;
+    --ink-2:#1E3053;
+    --ink-3:#27406B;
+    --paper:#EDF1F4;
+    --amber:#E8A33D;
+    --sap:#4FA36A;
+    --text:#E9EEF5;
+    --muted:#94A6C4;
+    --line:rgba(255,255,255,.13);
+    --radius:10px;
+    --display:"Bricolage Grotesque","Karla",system-ui,sans-serif;
+    --body:"Karla",system-ui,-apple-system,"Segoe UI",sans-serif;
+    --mono:"IBM Plex Mono",ui-monospace,"SFMono-Regular",monospace;
+  }
+  *{box-sizing:border-box}
+  html,body{height:100%}
+  body{
+    margin:0;
+    font-family:var(--body);
+    background:var(--ink);
+    color:var(--text);
+    -webkit-font-smoothing:antialiased;
+    overflow:hidden;
+  }
+  .app{display:flex;height:100dvh;width:100%}
+
+  /* ---------- Panel ---------- */
+  .panel{
+    width:352px;flex:0 0 352px;
+    background:var(--ink);
+    border-right:1px solid var(--line);
+    display:flex;flex-direction:column;
+    min-height:0;
+  }
+  .panel-head{padding:20px 22px 14px;border-bottom:1px solid var(--line)}
+  .eyebrow{
+    font-family:var(--mono);font-size:10.5px;letter-spacing:.16em;text-transform:uppercase;
+    color:var(--amber);display:flex;align-items:center;gap:8px;margin-bottom:9px;
+  }
+  .eyebrow::before{content:"";width:14px;height:2px;background:var(--amber);display:block}
+  h1{
+    font-family:var(--display);font-weight:800;font-size:27px;line-height:1.02;
+    margin:0 0 9px;letter-spacing:-.02em;
+  }
+  .lede{margin:0;font-size:13px;line-height:1.5;color:var(--muted);max-width:34ch}
+
+  .scroll{overflow-y:auto;padding:6px 22px 26px;flex:1;min-height:0;scrollbar-width:thin;
+    scrollbar-color:var(--ink-3) transparent}
+  .scroll::-webkit-scrollbar{width:9px}
+  .scroll::-webkit-scrollbar-thumb{background:var(--ink-3);border-radius:9px;border:3px solid var(--ink)}
+
+  .group{padding:18px 0 4px;border-top:1px solid var(--line)}
+  .group:first-child{border-top:none}
+  .group-title{
+    font-family:var(--mono);font-size:10.5px;letter-spacing:.15em;text-transform:uppercase;
+    color:var(--muted);margin:0 0 14px;
+  }
+
+  .field{margin-bottom:15px}
+  .field-top{display:flex;justify-content:space-between;align-items:baseline;gap:10px;margin-bottom:6px}
+  label{font-size:13px;font-weight:500;color:#CBD8EC}
+  .val{font-family:var(--mono);font-size:12px;color:var(--amber);font-variant-numeric:tabular-nums}
+  .hint{font-size:11.5px;color:var(--muted);margin-top:5px;line-height:1.45}
+
+  input[type=range]{
+    -webkit-appearance:none;appearance:none;width:100%;height:22px;background:transparent;cursor:grab;margin:0;display:block;
+  }
+  input[type=range]:active{cursor:grabbing}
+  input[type=range]::-webkit-slider-runnable-track{height:3px;background:var(--ink-3);border-radius:3px}
+  input[type=range]::-moz-range-track{height:3px;background:var(--ink-3);border-radius:3px}
+  input[type=range]::-webkit-slider-thumb{
+    -webkit-appearance:none;width:16px;height:16px;border-radius:50%;background:var(--amber);
+    margin-top:-6.5px;border:none;box-shadow:0 0 0 3px rgba(232,163,61,.18);transition:box-shadow .15s;
+  }
+  input[type=range]::-moz-range-thumb{
+    width:16px;height:16px;border-radius:50%;background:var(--amber);border:none;
+    box-shadow:0 0 0 3px rgba(232,163,61,.18);
+  }
+  input[type=range]:hover::-webkit-slider-thumb{box-shadow:0 0 0 6px rgba(232,163,61,.22)}
+  input[type=range]:focus-visible::-webkit-slider-thumb{box-shadow:0 0 0 6px rgba(232,163,61,.4)}
+  input[type=range]:focus-visible{outline:none}
+
+  .seg{display:flex;flex-wrap:wrap;gap:6px}
+  .seg button{
+    font-family:var(--body);font-size:12.5px;font-weight:500;color:#BACAE4;
+    background:var(--ink-2);border:1px solid transparent;border-radius:999px;
+    padding:7px 13px;cursor:pointer;transition:all .16s;
+  }
+  .seg button:hover{background:var(--ink-3);color:#fff}
+  .seg button[aria-pressed=true]{background:var(--amber);color:#20160A;font-weight:700}
+  .seg.small button{font-size:11.5px;padding:6px 11px}
+
+  .switch{
+    display:flex;align-items:center;justify-content:space-between;gap:12px;
+    padding:9px 0;cursor:pointer;user-select:none;
+  }
+  .switch span{font-size:13px;font-weight:500;color:#CBD8EC}
+  .track{
+    width:38px;height:21px;border-radius:999px;background:var(--ink-3);position:relative;
+    flex:0 0 auto;transition:background .18s;
+  }
+  .track::after{
+    content:"";position:absolute;top:3px;left:3px;width:15px;height:15px;border-radius:50%;
+    background:#8FA4C6;transition:transform .18s,background .18s;
+  }
+  .switch[aria-pressed=true] .track{background:rgba(232,163,61,.35)}
+  .switch[aria-pressed=true] .track::after{transform:translateX(17px);background:var(--amber)}
+  .switch:focus-visible{outline:2px solid var(--amber);outline-offset:3px;border-radius:6px}
+
+  .colors{display:flex;gap:10px;align-items:center}
+  .swatch{position:relative;width:44px;height:32px;border-radius:8px;overflow:hidden;border:1px solid var(--line)}
+  .swatch input{position:absolute;inset:-6px;width:150%;height:150%;border:none;padding:0;background:none;cursor:pointer}
+
+  .btn-row{display:flex;gap:8px;flex-wrap:wrap;margin-top:4px}
+  .btn{
+    font-family:var(--body);font-size:12.5px;font-weight:600;
+    background:var(--ink-2);color:#DCE6F5;border:1px solid var(--line);border-radius:8px;
+    padding:9px 13px;cursor:pointer;transition:all .16s;flex:1 1 auto;
+  }
+  .btn:hover{background:var(--ink-3);border-color:rgba(255,255,255,.25)}
+  .btn.primary{background:var(--amber);color:#20160A;border-color:transparent}
+  .btn.primary:hover{filter:brightness(1.08)}
+  .btn:focus-visible,.seg button:focus-visible{outline:2px solid var(--amber);outline-offset:2px}
+
+  /* ---------- Stage ---------- */
+  .stage{flex:1;position:relative;min-width:0;background:var(--paper)}
+  canvas#tree{display:block;width:100%;height:100%;touch-action:none;cursor:grab}
+  canvas#tree:active{cursor:grabbing}
+
+  .chips{
+    position:absolute;top:16px;left:16px;display:flex;gap:8px;flex-wrap:wrap;pointer-events:none;
+  }
+  .chip{
+    background:rgba(22,35,61,.86);backdrop-filter:blur(8px);
+    border-radius:8px;padding:7px 11px;display:flex;align-items:baseline;gap:7px;
+  }
+  .chip b{font-family:var(--mono);font-size:13px;font-weight:500;color:var(--amber);font-variant-numeric:tabular-nums}
+  .chip span{font-size:10.5px;letter-spacing:.09em;text-transform:uppercase;color:var(--muted);font-family:var(--mono)}
+
+  .drag-hint{
+    position:absolute;top:16px;right:16px;font-size:11.5px;color:#5A6C87;
+    background:rgba(255,255,255,.72);border-radius:999px;padding:6px 12px;
+    transition:opacity .4s;pointer-events:none;font-family:var(--mono);
+  }
+
+  .cards{
+    position:absolute;left:16px;right:16px;bottom:16px;
+    display:flex;gap:12px;align-items:flex-end;justify-content:space-between;pointer-events:none;flex-wrap:wrap;
+  }
+  .card{
+    background:rgba(22,35,61,.9);backdrop-filter:blur(10px);
+    border-radius:12px;padding:13px 15px 14px;pointer-events:auto;
+  }
+  .card h2{
+    font-family:var(--mono);font-size:10.5px;letter-spacing:.15em;text-transform:uppercase;
+    color:var(--amber);margin:0 0 10px;font-weight:500;
+  }
+  .card p{margin:10px 0 0;font-size:11.5px;line-height:1.5;color:#B6C6E0;max-width:38ch}
+
+  /* Flächen-Check */
+  #areaCard{flex:1 1 300px;max-width:440px}
+  .bars{display:flex;align-items:flex-end;gap:3px;height:56px;position:relative}
+  .bars::before{
+    content:"";position:absolute;left:0;right:0;top:20%;border-top:1px dashed rgba(232,163,61,.6);
+  }
+  .bar{flex:1;background:linear-gradient(180deg,var(--sap),#2F7A50);border-radius:2px 2px 0 0;min-height:1px;
+       transition:height .12s linear}
+  .bars-axis{display:flex;justify-content:space-between;font-family:var(--mono);font-size:9.5px;color:var(--muted);margin-top:5px}
+
+  /* Bauplan */
+  #planCard{flex:0 0 auto}
+  #plan{display:block;width:230px;height:158px}
+
+  @media (max-width:900px){
+    body{overflow:auto}
+    .app{flex-direction:column;height:auto;min-height:100dvh}
+    .panel{width:100%;flex:0 0 auto;border-right:none;border-bottom:1px solid var(--line);order:2}
+    .scroll{overflow:visible;max-height:none}
+    .stage{order:1;height:auto;flex:0 0 auto;padding-bottom:14px}
+    canvas#tree{height:54dvh}
+    .cards{position:static;padding:12px 14px 0;flex-direction:column;align-items:stretch}
+    .card{background:rgba(22,35,61,.96)}
+    #plan{width:100%;height:auto;max-width:280px}
+    .drag-hint{display:none}
+    #areaCard{max-width:none}
+  }
+  @media (prefers-reduced-motion:reduce){
+    *{transition-duration:.001s!important}
+  }
+</style>
+</head>
+<body>
+<div class="app">
+
+  <!-- ============ Bedienfeld ============ -->
+  <aside class="panel">
+    <div class="panel-head">
+      <div class="eyebrow">Quadrat · Dreieck · Quadrat</div>
+      <h1>Der Pythagoras&#8209;Baum</h1>
+      <p class="lede">Auf jedem Quadrat sitzt ein rechtwinkliges Dreieck. Auf seinen beiden kurzen Seiten stehen wieder Quadrate — und so weiter. Nach wenigen Runden wächst daraus ein Baum.</p>
+    </div>
+
+    <div class="scroll">
+
+      <section class="group">
+        <p class="group-title">Fertige Bäume</p>
+        <div class="seg small" id="presets">
+          <button data-preset="klassisch" aria-pressed="true">Klassisch</button>
+          <button data-preset="sturm" aria-pressed="false">Sturm</button>
+          <button data-preset="faecher" aria-pressed="false">Fächer</button>
+          <button data-preset="farn" aria-pressed="false">Farn</button>
+          <button data-preset="koralle" aria-pressed="false">Koralle</button>
+          <button data-preset="pusteblume" aria-pressed="false">Pusteblume</button>
+        </div>
+      </section>
+
+      <section class="group">
+        <p class="group-title">Form des Baums</p>
+
+        <div class="field">
+          <div class="field-top"><label for="depth">Etagen</label><span class="val" id="depthVal">10</span></div>
+          <input type="range" id="depth" min="0" max="13" step="1" value="10">
+          <p class="hint">Jede Etage verdoppelt die Anzahl der Quadrate.</p>
+        </div>
+
+        <div class="field">
+          <div class="field-top"><label for="alpha">Winkel im Dreieck</label><span class="val" id="alphaVal">45°</span></div>
+          <input type="range" id="alpha" min="5" max="85" step="0.5" value="45">
+          <p class="hint">Bei 45° ist der Baum symmetrisch. Sonst wird ein Ast größer als der andere.</p>
+        </div>
+
+        <div class="field">
+          <div class="field-top"><label for="tilt">Neigung</label><span class="val" id="tiltVal">0°</span></div>
+          <input type="range" id="tilt" min="-30" max="30" step="0.5" value="0">
+          <p class="hint">Kippt alle Äste in dieselbe Richtung — wie im Wind gewachsen.</p>
+        </div>
+
+        <div class="field">
+          <div class="field-top"><label for="scale">Größe der Äste</label><span class="val" id="scaleVal">1.00</span></div>
+          <input type="range" id="scale" min="0.55" max="1.15" step="0.005" value="1">
+          <p class="hint" id="scaleHint">Bei 1.00 ist der Baum exakt nach Pythagoras gebaut.</p>
+        </div>
+
+        <div class="field">
+          <div class="field-top"><label for="jitter">Unordnung</label><span class="val" id="jitterVal">0°</span></div>
+          <input type="range" id="jitter" min="0" max="30" step="0.5" value="0">
+          <p class="hint">Zufällige Abweichung pro Ast. Macht den Baum natürlicher.</p>
+        </div>
+
+        <div class="field">
+          <div class="field-top"><label for="zoom">Zoom</label><span class="val" id="zoomVal">100%</span></div>
+          <input type="range" id="zoom" min="0.4" max="1.4" step="0.01" value="1">
+        </div>
+      </section>
+
+      <section class="group">
+        <p class="group-title">Bausteine</p>
+        <div class="field">
+          <div class="field-top"><label>Form der Bausteine</label></div>
+          <div class="seg" id="shapes">
+            <button data-shape="square" aria-pressed="true">Quadrat</button>
+            <button data-shape="round" aria-pressed="false">Abgerundet</button>
+            <button data-shape="circle" aria-pressed="false">Kreis</button>
+            <button data-shape="leaf" aria-pressed="false">Blatt</button>
+            <button data-shape="diamond" aria-pressed="false">Raute</button>
+          </div>
+        </div>
+
+        <div class="switch" id="triToggle" role="button" tabindex="0" aria-pressed="true">
+          <span>Dreiecke anzeigen</span><div class="track"></div>
+        </div>
+        <div class="switch" id="strokeToggle" role="button" tabindex="0" aria-pressed="true">
+          <span>Umrisse zeichnen</span><div class="track"></div>
+        </div>
+        <div class="switch" id="fillToggle" role="button" tabindex="0" aria-pressed="true">
+          <span>Flächen füllen</span><div class="track"></div>
+        </div>
+
+        <div class="field" style="margin-top:12px">
+          <div class="field-top"><label for="lw">Strichstärke</label><span class="val" id="lwVal">1.0</span></div>
+          <input type="range" id="lw" min="0.2" max="4" step="0.1" value="1">
+        </div>
+        <div class="field">
+          <div class="field-top"><label for="opacity">Deckkraft</label><span class="val" id="opacityVal">100%</span></div>
+          <input type="range" id="opacity" min="0.15" max="1" step="0.01" value="1">
+        </div>
+      </section>
+
+      <section class="group">
+        <p class="group-title">Farben</p>
+        <div class="field">
+          <div class="seg" id="schemes">
+            <button data-scheme="nature" aria-pressed="true">Natur</button>
+            <button data-scheme="rainbow" aria-pressed="false">Regenbogen</button>
+            <button data-scheme="gradient" aria-pressed="false">Verlauf</button>
+            <button data-scheme="mono" aria-pressed="false">Ein Ton</button>
+          </div>
+        </div>
+
+        <div class="field" data-for="gradient" hidden>
+          <div class="field-top"><label>Von unten nach oben</label></div>
+          <div class="colors">
+            <span class="swatch"><input type="color" id="c1" value="#2E4A8C"></span>
+            <span class="swatch"><input type="color" id="c2" value="#4FA36A"></span>
+          </div>
+        </div>
+
+        <div class="field" data-for="rainbow mono">
+          <div class="field-top"><label for="hue">Farbton</label><span class="val" id="hueVal">120</span></div>
+          <input type="range" id="hue" min="0" max="360" step="1" value="120">
+        </div>
+        <div class="field" data-for="rainbow mono">
+          <div class="field-top"><label for="sat">Buntheit</label><span class="val" id="satVal">62%</span></div>
+          <input type="range" id="sat" min="0" max="100" step="1" value="62">
+        </div>
+
+        <div class="field">
+          <div class="field-top"><label>Hintergrund</label></div>
+          <div class="seg small" id="bgs">
+            <button data-bg="#EDF1F4" aria-pressed="true">Hell</button>
+            <button data-bg="#F6EFE3" aria-pressed="false">Sand</button>
+            <button data-bg="#101A28" aria-pressed="false">Nacht</button>
+            <button data-bg="#16332E" aria-pressed="false">Tiefgrün</button>
+          </div>
+        </div>
+      </section>
+
+      <section class="group">
+        <p class="group-title">Bewegung</p>
+        <div class="switch" id="windToggle" role="button" tabindex="0" aria-pressed="false">
+          <span>Wind</span><div class="track"></div>
+        </div>
+        <div class="field" style="margin-top:10px">
+          <div class="field-top"><label for="windAmp">Windstärke</label><span class="val" id="windAmpVal">8°</span></div>
+          <input type="range" id="windAmp" min="1" max="25" step="0.5" value="8">
+        </div>
+        <div class="btn-row">
+          <button class="btn primary" id="growBtn">Wachsen lassen</button>
+          <button class="btn" id="diceBtn">Würfeln</button>
+        </div>
+        <div class="btn-row" style="margin-top:8px">
+          <button class="btn" id="resetBtn">Zurücksetzen</button>
+          <button class="btn" id="saveBtn">Bild speichern</button>
+        </div>
+      </section>
+
+    </div>
+  </aside>
+
+  <!-- ============ Bühne ============ -->
+  <main class="stage">
+    <canvas id="tree"></canvas>
+
+    <div class="chips">
+      <div class="chip"><b id="statSquares">1023</b><span>Quadrate</span></div>
+      <div class="chip"><b id="statLevels">10</b><span>Etagen</span></div>
+      <div class="chip"><b id="statSmall">1.0%</b><span>kleinstes Quadrat</span></div>
+    </div>
+
+    <div class="drag-hint" id="dragHint">im Bild ziehen zum Formen</div>
+
+    <div class="cards">
+      <div class="card" id="areaCard">
+        <h2>Flächen-Check</h2>
+        <div class="bars" id="bars"></div>
+        <div class="bars-axis"><span>Stamm</span><span id="axisTop">Etage 10</span></div>
+        <p id="areaNote">Alle Quadrate einer Etage haben zusammen genau so viel Fläche wie der Stamm. Das ist der Satz des Pythagoras — egal, wie du den Winkel drehst.</p>
+      </div>
+      <div class="card" id="planCard">
+        <h2>Der Bauplan</h2>
+        <canvas id="plan" width="460" height="316"></canvas>
+      </div>
+    </div>
+  </main>
+</div>
+
+<script>
+(function(){
+"use strict";
+
+/* ---------------- Zustand ---------------- */
+const DEFAULTS = {
+  depth:10, alpha:45, tilt:0, scale:1, jitter:0, zoom:1,
+  shape:'square', tri:true, stroke:true, fill:true, lw:1, opacity:1,
+  scheme:'nature', c1:'#2E4A8C', c2:'#4FA36A', hue:120, sat:62,
+  bg:'#EDF1F4', wind:false, windAmp:8, seed:20260803
+};
+let S = Object.assign({}, DEFAULTS);
+
+const PRESETS = {
+  klassisch:{depth:10,alpha:45,tilt:0,scale:1,jitter:0,shape:'square',scheme:'nature',bg:'#EDF1F4',tri:true,stroke:true,fill:true,opacity:1,lw:1,zoom:1},
+  sturm:{depth:11,alpha:36,tilt:13,scale:0.99,jitter:9,shape:'round',scheme:'gradient',c1:'#2E4A8C',c2:'#9EC7E8',bg:'#101A28',tri:true,stroke:false,fill:true,opacity:.92,lw:1,zoom:1},
+  faecher:{depth:12,alpha:62,tilt:0,scale:1,jitter:0,shape:'square',scheme:'rainbow',hue:200,sat:70,bg:'#101A28',tri:false,stroke:false,fill:true,opacity:.85,lw:1,zoom:1},
+  farn:{depth:12,alpha:24,tilt:0,scale:1,jitter:4,shape:'leaf',scheme:'mono',hue:126,sat:55,bg:'#EDF1F4',tri:false,stroke:false,fill:true,opacity:.9,lw:1,zoom:1},
+  koralle:{depth:11,alpha:52,tilt:-7,scale:1.02,jitter:15,shape:'circle',scheme:'gradient',c1:'#B8425F',c2:'#E8A33D',bg:'#16332E',tri:false,stroke:false,fill:true,opacity:.8,lw:1,zoom:1},
+  pusteblume:{depth:12,alpha:45,tilt:0,scale:0.9,jitter:24,shape:'circle',scheme:'mono',hue:44,sat:35,bg:'#101A28',tri:false,stroke:true,fill:false,opacity:.85,lw:.6,zoom:1}
+};
+
+const cv = document.getElementById('tree');
+const ctx = cv.getContext('2d');
+const planCv = document.getElementById('plan');
+const planCtx = planCv.getContext('2d');
+const MIN_SIDE = 0.4;
+const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+let W=0,H=0,dpr=1;
+let fit={s:1,tx:0,ty:0};
+let growth = 99;          // aktuell sichtbare Etagen (fließend)
+let growing = false, growStart = 0;
+let windPhase = 0, lastTs = 0;
+let rafId = null;
+let areas = [], counts = 0, smallest = 1, baseSide = 1;
+
+/* ---------------- Hilfsfunktionen ---------------- */
+function mulberry32(a){return function(){a|=0;a=a+0x6D2B79F5|0;let t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296;};}
+let rng = mulberry32(S.seed);
+
+function hexToRgb(h){const n=parseInt(h.slice(1),16);return [n>>16&255,n>>8&255,n&255];}
+function mix(a,b,t){return [a[0]+(b[0]-a[0])*t, a[1]+(b[1]-a[1])*t, a[2]+(b[2]-a[2])*t];}
+function rgbStr(c){return 'rgb('+(c[0]|0)+','+(c[1]|0)+','+(c[2]|0)+')';}
+function luminance(hex){const c=hexToRgb(hex);return (0.2126*c[0]+0.7152*c[1]+0.0722*c[2])/255;}
+
+const NATURE_A = hexToRgb('#6E4A2C'), NATURE_B = hexToRgb('#57A85E'), NATURE_C = hexToRgb('#BFD955');
+
+function colorFor(d){
+  const md = Math.max(1, S.depth);
+  const t = Math.min(1, d/md);
+  switch(S.scheme){
+    case 'rainbow': return 'hsl('+((S.hue + t*300)%360)+' '+S.sat+'% 56%)';
+    case 'gradient': return rgbStr(mix(hexToRgb(S.c1), hexToRgb(S.c2), t));
+    case 'mono':     return 'hsl('+S.hue+' '+S.sat+'% '+(22+t*46)+'%)';
+    default:
+      return t<0.72 ? rgbStr(mix(NATURE_A,NATURE_B,t/0.72))
+                    : rgbStr(mix(NATURE_B,NATURE_C,(t-0.72)/0.28));
+  }
+}
+
+/* ---------------- Messlauf (für Einpassen) ---------------- */
+// Matrix [a,b,c,d,e,f]: (x,y) -> (a x + c y + e, b x + d y + f)
+function mTranslate(m,tx,ty){return [m[0],m[1],m[2],m[3], m[0]*tx+m[2]*ty+m[4], m[1]*tx+m[3]*ty+m[5]];}
+function mRotate(m,th){const c=Math.cos(th),s=Math.sin(th);
+  return [m[0]*c+m[2]*s, m[1]*c+m[3]*s, -m[0]*s+m[2]*c, -m[1]*s+m[3]*c, m[4], m[5]];}
+
+let bb;
+function bbAdd(m,x,y){
+  const px=m[0]*x+m[2]*y+m[4], py=m[1]*x+m[3]*y+m[5];
+  if(px<bb[0])bb[0]=px; if(py<bb[1])bb[1]=py;
+  if(px>bb[2])bb[2]=px; if(py>bb[3])bb[3]=py;
+}
+function walk(L,d,m){
+  bbAdd(m,0,0); bbAdd(m,L,0); bbAdd(m,L,-L); bbAdd(m,0,-L);
+  if(d>=S.depth || L<MIN_SIDE) return;
+  const a = angleAt(d);
+  const bl = L*Math.cos(a)*S.scale, br = L*Math.sin(a)*S.scale;
+  const tl = S.tilt*Math.PI/180;
+  walk(bl, d+1, mRotate(mTranslate(m,0,-L), -a+tl));
+  walk(br, d+1, mTranslate(mRotate(mTranslate(m,L,-L), Math.PI/2-a+tl), -br, 0));
+}
+function angleAt(){
+  let a = S.alpha;
+  if(S.jitter>0) a += (rng()*2-1)*S.jitter;
+  a = Math.max(3, Math.min(87, a));
+  return a*Math.PI/180;
+}
+
+function computeFit(){
+  if(!W||!H) return;
+  rng = mulberry32(S.seed);
+  const L0 = 100;
+  bb = [Infinity,Infinity,-Infinity,-Infinity];
+  walk(L0, 0, [1,0,0,1,0,0]);
+  const bw = Math.max(1, bb[2]-bb[0]), bh = Math.max(1, bb[3]-bb[1]);
+  const padX = W*0.10 + 24, padY = H*0.10 + 24;
+  const s = Math.min((W-padX)/bw, (H-padY)/bh) * S.zoom;
+  fit.s = s;
+  fit.tx = W/2 - (bb[0]+bb[2])/2*s;
+  fit.ty = H/2 - (bb[1]+bb[3])/2*s;
+  baseSide = L0*s;
+}
+
+/* ---------------- Zeichnen ---------------- */
+function shapePath(c,L){
+  switch(S.shape){
+    case 'circle': c.beginPath(); c.arc(L/2,-L/2,L/2,0,Math.PI*2); break;
+    case 'round': {
+      const r = Math.min(L*0.28, L/2);
+      c.beginPath();
+      if(c.roundRect) c.roundRect(0,-L,L,L,r);
+      else { c.moveTo(r,-L); c.lineTo(L-r,-L); c.quadraticCurveTo(L,-L,L,-L+r); c.lineTo(L,-r);
+             c.quadraticCurveTo(L,0,L-r,0); c.lineTo(r,0); c.quadraticCurveTo(0,0,0,-r);
+             c.lineTo(0,-L+r); c.quadraticCurveTo(0,-L,r,-L); c.closePath(); }
+      break;
+    }
+    case 'leaf':
+      c.beginPath(); c.moveTo(0,0);
+      c.quadraticCurveTo(0,-L,L,-L);
+      c.quadraticCurveTo(L,0,0,0);
+      c.closePath(); break;
+    case 'diamond':
+      c.beginPath(); c.moveTo(L/2,-L); c.lineTo(L,-L/2); c.lineTo(L/2,0); c.lineTo(0,-L/2); c.closePath(); break;
+    default:
+      c.beginPath(); c.rect(0,-L,L,L);
+  }
+}
+
+let strokeCol = 'rgba(0,0,0,.35)';
+
+function branch(L,d){
+  const fade = Math.max(0, Math.min(1, growth - d + 1));
+  if(fade<=0) return;
+  const col = colorFor(d);
+  ctx.globalAlpha = S.opacity * fade;
+
+  areas[d] = (areas[d]||0) + L*L;
+  counts++;
+  if(L<smallest) smallest = L;
+
+  const a = angleAt(d);
+  const bl = L*Math.cos(a)*S.scale, br = L*Math.sin(a)*S.scale;
+  let tl = S.tilt*Math.PI/180;
+  if(S.wind) tl += (S.windAmp*Math.PI/180) * Math.sin(windPhase + d*0.55) * (0.35 + 0.65*d/Math.max(1,S.depth));
+
+  // Dreieck zuerst (liegt hinter den Kindern)
+  if(S.tri){
+    const ca=Math.cos(a), sa=Math.sin(a);
+    ctx.beginPath();
+    ctx.moveTo(0,-L);
+    ctx.lineTo(L*ca*ca, -L - L*sa*ca);
+    ctx.lineTo(L,-L);
+    ctx.closePath();
+    ctx.globalAlpha = S.opacity * fade * 0.42;
+    ctx.fillStyle = col; ctx.fill();
+    ctx.globalAlpha = S.opacity * fade;
+  }
+
+  // Quadrat
+  shapePath(ctx,L);
+  if(S.fill){ ctx.fillStyle = col; ctx.fill(); }
+  if(S.stroke && L*fit.s > 1.2){
+    ctx.strokeStyle = S.fill ? strokeCol : col;
+    ctx.lineWidth = S.lw/fit.s;
+    ctx.stroke();
+  }
+
+  if(d>=S.depth || L<MIN_SIDE) return;
+
+  ctx.save();
+  ctx.translate(0,-L); ctx.rotate(-a+tl);
+  branch(bl,d+1);
+  ctx.restore();
+
+  ctx.save();
+  ctx.translate(L,-L); ctx.rotate(Math.PI/2-a+tl); ctx.translate(-br,0);
+  branch(br,d+1);
+  ctx.restore();
+}
+
+function render(){
+  if(!W||!H) return;
+  ctx.setTransform(dpr,0,0,dpr,0,0);
+  ctx.fillStyle = S.bg;
+  ctx.fillRect(0,0,W,H);
+
+  strokeCol = luminance(S.bg) > 0.5 ? 'rgba(15,25,45,.38)' : 'rgba(255,255,255,.30)';
+
+  rng = mulberry32(S.seed);
+  areas = new Array(S.depth+1).fill(0);
+  counts = 0; smallest = Infinity;
+
+  ctx.setTransform(dpr,0,0,dpr,0,0);
+  ctx.translate(fit.tx, fit.ty);
+  ctx.scale(fit.s, fit.s);
+  ctx.lineJoin='round';
+  branch(100,0);
+  ctx.setTransform(dpr,0,0,dpr,0,0);
+  ctx.globalAlpha = 1;
+
+  updateReadouts();
+}
+
+/* ---------------- Anzeigen ---------------- */
+const barsEl = document.getElementById('bars');
+let barNodes = [];
+function updateReadouts(){
+  document.getElementById('statSquares').textContent = counts.toLocaleString('de-DE');
+  document.getElementById('statLevels').textContent = S.depth;
+  const rel = isFinite(smallest) ? (smallest/100*100) : 100;
+  document.getElementById('statSmall').textContent = rel<0.1 ? rel.toFixed(2)+'%' : rel.toFixed(1)+'%';
+  document.getElementById('axisTop').textContent = 'Etage '+S.depth;
+
+  const n = S.depth+1;
+  if(barNodes.length !== n){
+    barsEl.innerHTML = '';
+    barNodes = [];
+    for(let i=0;i<n;i++){ const b=document.createElement('div'); b.className='bar'; barsEl.appendChild(b); barNodes.push(b); }
+  }
+  const base = areas[0] || 1;
+  for(let i=0;i<n;i++){
+    const r = Math.max(0, Math.min(1.25, (areas[i]||0)/base));
+    barNodes[i].style.height = (r*100/1.25)+'%';
+  }
+  const note = document.getElementById('areaNote');
+  if(Math.abs(S.scale-1) < 0.006){
+    note.textContent = 'Alle Quadrate einer Etage haben zusammen genau so viel Fläche wie der Stamm. Das ist der Satz des Pythagoras — egal, wie du den Winkel drehst.';
+  } else if(S.scale < 1){
+    note.textContent = 'Die Äste sind kleiner als Pythagoras erlaubt: Jede Etage verliert Fläche, der Baum wird nach oben hin dünner.';
+  } else {
+    note.textContent = 'Die Äste sind größer als Pythagoras erlaubt: Jede Etage gewinnt Fläche, der Baum wird nach oben hin schwerer.';
+  }
+}
+
+/* ---------------- Bauplan (kleine Skizze) ---------------- */
+function drawPlan(){
+  const w=planCv.width, h=planCv.height;
+  planCtx.setTransform(1,0,0,1,0,0);
+  planCtx.clearRect(0,0,w,h);
+  planCtx.scale(2,2);           // 230x158 CSS-Pixel
+  const cw=w/2, ch=h/2;
+
+  const a = S.alpha*Math.PI/180;
+  const L = 52;
+  const ox = cw/2 - L/2, oy = ch - 20;
+
+  planCtx.save();
+  planCtx.translate(ox,oy);
+
+  const ca=Math.cos(a), sa=Math.sin(a);
+  const P = [L*ca*ca, -L - L*sa*ca];
+
+  // Dreieck
+  planCtx.beginPath();
+  planCtx.moveTo(0,-L); planCtx.lineTo(P[0],P[1]); planCtx.lineTo(L,-L); planCtx.closePath();
+  planCtx.fillStyle='rgba(232,163,61,.28)'; planCtx.fill();
+  planCtx.strokeStyle='rgba(232,163,61,.9)'; planCtx.lineWidth=1; planCtx.stroke();
+
+  // Stammquadrat
+  planCtx.fillStyle='rgba(79,163,106,.30)';
+  planCtx.strokeStyle='#4FA36A'; planCtx.lineWidth=1.2;
+  planCtx.beginPath(); planCtx.rect(0,-L,L,L); planCtx.fill(); planCtx.stroke();
+
+  // linkes Kind
+  planCtx.save();
+  planCtx.translate(0,-L); planCtx.rotate(-a);
+  const bl=L*ca;
+  planCtx.fillStyle='rgba(140,180,235,.28)'; planCtx.strokeStyle='#8CB4EB';
+  planCtx.beginPath(); planCtx.rect(0,-bl,bl,bl); planCtx.fill(); planCtx.stroke();
+  planCtx.save(); planCtx.translate(bl/2,-bl/2); planCtx.rotate(a);
+  planCtx.fillStyle='#DCE6F5'; planCtx.font='500 11px "IBM Plex Mono",ui-monospace,monospace';
+  planCtx.textAlign='center'; planCtx.textBaseline='middle'; planCtx.fillText('b²',0,0);
+  planCtx.restore();
+  planCtx.restore();
+
+  // rechtes Kind
+  planCtx.save();
+  planCtx.translate(L,-L); planCtx.rotate(Math.PI/2-a);
+  const br=L*sa; planCtx.translate(-br,0);
+  planCtx.fillStyle='rgba(216,120,150,.28)'; planCtx.strokeStyle='#D87896';
+  planCtx.beginPath(); planCtx.rect(0,-br,br,br); planCtx.fill(); planCtx.stroke();
+  planCtx.save(); planCtx.translate(br/2,-br/2); planCtx.rotate(-(Math.PI/2-a));
+  planCtx.fillStyle='#DCE6F5'; planCtx.font='500 11px "IBM Plex Mono",ui-monospace,monospace';
+  planCtx.textAlign='center'; planCtx.textBaseline='middle'; planCtx.fillText('c²',0,0);
+  planCtx.restore();
+  planCtx.restore();
+
+  // Beschriftung Stamm
+  planCtx.fillStyle='#DCE6F5'; planCtx.font='500 11px "IBM Plex Mono",ui-monospace,monospace';
+  planCtx.textAlign='center'; planCtx.textBaseline='middle';
+  planCtx.fillText('a²', L/2, -L/2);
+
+  // rechter Winkel am Scheitel
+  planCtx.save();
+  planCtx.translate(P[0],P[1]);
+  const u1=[(0-P[0]),( -L-P[1])], u2=[(L-P[0]),(-L-P[1])];
+  const n1=Math.hypot(u1[0],u1[1])||1, n2=Math.hypot(u2[0],u2[1])||1;
+  const k=7;
+  planCtx.strokeStyle='rgba(255,255,255,.65)'; planCtx.lineWidth=1;
+  planCtx.beginPath();
+  planCtx.moveTo(u1[0]/n1*k, u1[1]/n1*k);
+  planCtx.lineTo(u1[0]/n1*k+u2[0]/n2*k, u1[1]/n1*k+u2[1]/n2*k);
+  planCtx.lineTo(u2[0]/n2*k, u2[1]/n2*k);
+  planCtx.stroke();
+  planCtx.restore();
+
+  planCtx.restore();
+
+  // Formel
+  planCtx.fillStyle='#E8A33D';
+  planCtx.font='500 12px "IBM Plex Mono",ui-monospace,monospace';
+  planCtx.textAlign='center'; planCtx.textBaseline='alphabetic';
+  planCtx.fillText('a² = b² + c²', cw/2, ch-4);
+}
+
+/* ---------------- Animationsschleife ---------------- */
+function needsLoop(){ return S.wind || growing; }
+function loop(ts){
+  rafId = null;
+  const dt = lastTs ? Math.min(0.05,(ts-lastTs)/1000) : 0.016;
+  lastTs = ts;
+  if(S.wind) windPhase += dt*1.4;
+  if(growing){
+    const p = (ts-growStart)/1500;
+    growth = Math.min(S.depth, p*(S.depth+1));
+    if(p>=1.05){ growing=false; growth=99; }
+  }
+  render();
+  if(needsLoop()) rafId = requestAnimationFrame(loop);
+  else lastTs = 0;
+}
+function kick(){ if(!rafId && needsLoop()) rafId = requestAnimationFrame(loop); }
+
+function update(refit){
+  if(refit!==false) computeFit();
+  drawPlan();
+  if(!needsLoop()) render();
+  kick();
+}
+
+/* ---------------- Größe ---------------- */
+function resize(){
+  const r = cv.getBoundingClientRect();
+  dpr = Math.min(2, window.devicePixelRatio||1);
+  W = Math.max(1, r.width); H = Math.max(1, r.height);
+  cv.width = Math.round(W*dpr); cv.height = Math.round(H*dpr);
+  update();
+}
+new ResizeObserver(resize).observe(cv);
+
+/* ---------------- Bedienelemente ---------------- */
+const fmt = {
+  depth:v=>v, alpha:v=>v.toFixed(v%1?1:0)+'°', tilt:v=>v.toFixed(v%1?1:0)+'°',
+  scale:v=>v.toFixed(2), jitter:v=>v.toFixed(v%1?1:0)+'°', zoom:v=>Math.round(v*100)+'%',
+  lw:v=>v.toFixed(1), opacity:v=>Math.round(v*100)+'%', hue:v=>Math.round(v), sat:v=>Math.round(v)+'%',
+  windAmp:v=>v.toFixed(v%1?1:0)+'°'
+};
+const sliders = ['depth','alpha','tilt','scale','jitter','zoom','lw','opacity','hue','sat','windAmp'];
+sliders.forEach(id=>{
+  const el = document.getElementById(id);
+  el.addEventListener('input', ()=>{
+    S[id] = parseFloat(el.value);
+    document.getElementById(id+'Val').textContent = fmt[id](S[id]);
+    if(!growing) growth = 99;
+    update(['lw','opacity','hue','sat','windAmp'].indexOf(id)<0);
+  });
+});
+
+function segGroup(containerId, key, attr, after){
+  const wrap = document.getElementById(containerId);
+  wrap.addEventListener('click', e=>{
+    const b = e.target.closest('button'); if(!b) return;
+    [...wrap.querySelectorAll('button')].forEach(x=>x.setAttribute('aria-pressed', String(x===b)));
+    S[key] = b.dataset[attr];
+    if(after) after(S[key]);
+    update(key==='shape' ? false : true);
+  });
+}
+segGroup('shapes','shape','shape');
+segGroup('bgs','bg','bg');
+segGroup('schemes','scheme','scheme', schemeVisibility);
+
+function schemeVisibility(){
+  document.querySelectorAll('[data-for]').forEach(el=>{
+    el.hidden = el.dataset.for.split(' ').indexOf(S.scheme) < 0;
+  });
+}
+schemeVisibility();
+
+function toggle(id, key, after){
+  const el = document.getElementById(id);
+  const flip = ()=>{
+    S[key] = !S[key];
+    el.setAttribute('aria-pressed', String(S[key]));
+    if(after) after();
+    update(false);
+  };
+  el.addEventListener('click', flip);
+  el.addEventListener('keydown', e=>{ if(e.key==='Enter'||e.key===' '){ e.preventDefault(); flip(); }});
+}
+toggle('triToggle','tri');
+toggle('strokeToggle','stroke');
+toggle('fillToggle','fill');
+toggle('windToggle','wind', kick);
+
+document.getElementById('c1').addEventListener('input',e=>{S.c1=e.target.value;update(false);});
+document.getElementById('c2').addEventListener('input',e=>{S.c2=e.target.value;update(false);});
+
+/* Presets */
+document.getElementById('presets').addEventListener('click', e=>{
+  const b = e.target.closest('button'); if(!b) return;
+  [...e.currentTarget.querySelectorAll('button')].forEach(x=>x.setAttribute('aria-pressed',String(x===b)));
+  applyState(Object.assign({}, DEFAULTS, PRESETS[b.dataset.preset], {wind:S.wind, windAmp:S.windAmp, seed:S.seed}));
+});
+
+function applyState(next){
+  S = Object.assign({}, S, next);
+  syncUI();
+  growth = 99;
+  update();
+}
+
+function syncUI(){
+  sliders.forEach(id=>{
+    const el=document.getElementById(id);
+    el.value = S[id];
+    document.getElementById(id+'Val').textContent = fmt[id](S[id]);
+  });
+  document.getElementById('c1').value = S.c1;
+  document.getElementById('c2').value = S.c2;
+  [['shapes','shape','shape'],['bgs','bg','bg'],['schemes','scheme','scheme']].forEach(([cid,key,attr])=>{
+    document.querySelectorAll('#'+cid+' button').forEach(b=>b.setAttribute('aria-pressed', String(b.dataset[attr]===S[key])));
+  });
+  [['triToggle','tri'],['strokeToggle','stroke'],['fillToggle','fill'],['windToggle','wind']].forEach(([id,key])=>{
+    document.getElementById(id).setAttribute('aria-pressed', String(!!S[key]));
+  });
+  schemeVisibility();
+}
+
+/* Buttons */
+document.getElementById('growBtn').addEventListener('click',()=>{
+  growing = true; growth = 0; growStart = performance.now(); kick();
+});
+document.getElementById('diceBtn').addEventListener('click',()=>{
+  S.seed = Math.floor(Math.random()*1e9);
+  applyState({
+    alpha: 20+Math.random()*55,
+    tilt: (Math.random()*2-1)*16,
+    jitter: Math.random()*18,
+    scale: 0.92+Math.random()*0.14,
+    hue: Math.floor(Math.random()*360)
+  });
+});
+document.getElementById('resetBtn').addEventListener('click',()=>{
+  document.querySelectorAll('#presets button').forEach((b,i)=>b.setAttribute('aria-pressed',String(i===0)));
+  applyState(Object.assign({}, DEFAULTS));
+});
+document.getElementById('saveBtn').addEventListener('click',()=>{
+  const a=document.createElement('a');
+  a.download='pythagorasbaum.png';
+  a.href=cv.toDataURL('image/png');
+  a.click();
+});
+
+/* Ziehen im Bild: X = Winkel, Y = Neigung */
+let drag=null, hintShown=true;
+cv.addEventListener('pointerdown', e=>{
+  drag={x:e.clientX,y:e.clientY,a:S.alpha,t:S.tilt};
+  cv.setPointerCapture(e.pointerId);
+});
+cv.addEventListener('pointermove', e=>{
+  if(!drag) return;
+  S.alpha = Math.max(5, Math.min(85, drag.a + (e.clientX-drag.x)*0.16));
+  S.tilt  = Math.max(-30, Math.min(30, drag.t + (e.clientY-drag.y)*0.10));
+  document.getElementById('alpha').value = S.alpha;
+  document.getElementById('tilt').value = S.tilt;
+  document.getElementById('alphaVal').textContent = fmt.alpha(S.alpha);
+  document.getElementById('tiltVal').textContent = fmt.tilt(S.tilt);
+  if(hintShown){ hintShown=false; document.getElementById('dragHint').style.opacity=0; }
+  update();
+});
+addEventListener('pointerup', ()=>{ drag=null; });
+
+/* ---------------- Start ---------------- */
+syncUI();
+resize();
+if(!reduceMotion){
+  growing = true; growth = 0; growStart = performance.now()+180; kick();
+}
+})();
+</script>
+</body>
+</html>
