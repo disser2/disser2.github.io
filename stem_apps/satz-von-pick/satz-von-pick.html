@@ -1,0 +1,699 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Der Satz von Pick – Nagelbrett-Werkstatt</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700&family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --board:#0E1F27;
+  --board-deep:#0A171D;
+  --panel:#142933;
+  --panel-2:#1B333E;
+  --line:#27505E;
+  --brass:#C8A24A;
+  --brass-dim:#7A6733;
+  --band:#FF4B6B;
+  --band-soft:rgba(255,75,107,.16);
+  --mint:#48D1B0;
+  --amber:#FFB53D;
+  --ink:#EAF2F4;
+  --muted:#93AFB9;
+  --ok:#48D1B0;
+  --warn:#FF8A5B;
+  --r:14px;
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{
+  background:
+    radial-gradient(1200px 600px at 15% -10%, #16323D 0%, transparent 60%),
+    var(--board-deep);
+  color:var(--ink);
+  font-family:"IBM Plex Sans",-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+  font-size:16px; line-height:1.55;
+  -webkit-font-smoothing:antialiased;
+}
+.wrap{max-width:1180px;margin:0 auto;padding:32px 20px 80px}
+
+/* ---------- Kopf ---------- */
+.eyebrow{
+  font-family:"IBM Plex Mono",monospace;
+  font-size:12px;letter-spacing:.22em;text-transform:uppercase;
+  color:var(--brass);margin:0 0 14px;
+  display:flex;align-items:center;gap:12px;
+}
+.eyebrow::after{content:"";height:1px;flex:1;background:linear-gradient(90deg,var(--brass-dim),transparent)}
+h1{
+  font-family:"Fraunces",Georgia,serif;
+  font-weight:600;font-size:clamp(38px,7vw,72px);
+  line-height:.98;letter-spacing:-.02em;margin:0 0 16px;
+}
+h1 em{font-style:italic;color:var(--band)}
+.lede{max-width:56ch;color:var(--muted);font-size:clamp(16px,2.1vw,19px);margin:0}
+.lede strong{color:var(--ink);font-weight:500}
+
+/* ---------- Formel-Banner ---------- */
+.formula-hero{
+  margin:30px 0 34px;padding:18px 22px;
+  border:1px solid var(--line);border-radius:var(--r);
+  background:linear-gradient(180deg,var(--panel),rgba(20,41,51,.4));
+  display:flex;flex-wrap:wrap;align-items:center;gap:16px 26px;
+}
+.formula-hero .f{
+  font-family:"IBM Plex Mono",monospace;font-size:clamp(20px,3.4vw,30px);
+  font-weight:600;letter-spacing:.01em;white-space:nowrap;
+}
+.f .vA{color:var(--band)} .f .vI{color:var(--mint)} .f .vB{color:var(--amber)}
+.formula-hero .legend{display:flex;gap:20px;flex-wrap:wrap;font-size:14px;color:var(--muted)}
+.legend b{font-weight:500;color:var(--ink)}
+.dot{width:11px;height:11px;border-radius:50%;display:inline-block;vertical-align:-1px;margin-right:7px}
+.dot.i{background:var(--mint)} .dot.b{background:var(--amber)} .dot.o{background:var(--brass-dim)}
+
+/* ---------- Werkstatt ---------- */
+.studio{display:grid;grid-template-columns:minmax(0,1.55fr) minmax(280px,1fr);gap:22px;align-items:start}
+@media(max-width:940px){.studio{grid-template-columns:1fr}}
+
+.board-card{
+  background:linear-gradient(180deg,#12262F,#0D1F27);
+  border:1px solid var(--line);border-radius:var(--r);
+  padding:14px 14px 10px;position:relative;overflow:hidden;
+}
+canvas{display:block;width:100%;border-radius:8px;touch-action:none;cursor:crosshair}
+.hint{
+  display:flex;align-items:center;gap:10px;
+  font-size:13.5px;color:var(--muted);padding:10px 6px 4px;min-height:38px;
+}
+.hint .badge{
+  font-family:"IBM Plex Mono",monospace;font-size:11px;letter-spacing:.1em;
+  text-transform:uppercase;color:var(--board-deep);background:var(--brass);
+  padding:2px 7px;border-radius:4px;font-weight:600;flex:none;
+}
+.hint.warn .badge{background:var(--warn)}
+.hint.warn{color:#FFD3C2}
+
+.toolbar{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}
+button{
+  font-family:"IBM Plex Sans",sans-serif;font-size:13.5px;font-weight:500;
+  color:var(--ink);background:var(--panel-2);
+  border:1px solid var(--line);border-radius:9px;
+  padding:8px 13px;cursor:pointer;transition:background .15s,border-color .15s,transform .1s;
+}
+button:hover{background:#24404D;border-color:#3C6A7B}
+button:active{transform:translateY(1px)}
+button:focus-visible{outline:2px solid var(--brass);outline-offset:2px}
+button.ghost{background:transparent}
+.tool-label{
+  font-family:"IBM Plex Mono",monospace;font-size:11px;letter-spacing:.16em;
+  text-transform:uppercase;color:var(--muted);width:100%;margin:8px 0 0;
+}
+
+/* ---------- Zähler ---------- */
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:var(--r);padding:18px}
+.panel + .panel{margin-top:16px}
+.panel h2{
+  font-family:"IBM Plex Mono",monospace;font-size:11px;letter-spacing:.18em;
+  text-transform:uppercase;color:var(--muted);margin:0 0 16px;font-weight:500;
+}
+.count{display:flex;align-items:baseline;gap:12px;padding:11px 0;border-bottom:1px dashed rgba(39,80,94,.75)}
+.count:last-of-type{border-bottom:none}
+.count .num{
+  font-family:"IBM Plex Mono",monospace;font-size:34px;font-weight:600;
+  line-height:1;min-width:2.4ch;text-align:right;transition:color .2s;
+}
+.count .num.pop{animation:pop .32s ease}
+@keyframes pop{0%{transform:scale(1)}40%{transform:scale(1.18)}100%{transform:scale(1)}}
+.count .lbl{font-size:14.5px;color:var(--muted)}
+.count .lbl b{display:block;color:var(--ink);font-weight:500;font-size:15px}
+.num.i{color:var(--mint)} .num.b{color:var(--amber)}
+
+.calc{
+  margin-top:18px;padding:14px;border-radius:10px;background:var(--board-deep);
+  border:1px solid var(--line);font-family:"IBM Plex Mono",monospace;
+}
+.calc .row{font-size:15px;color:var(--muted);letter-spacing:.01em}
+.calc .row + .row{margin-top:7px}
+.calc .result{font-size:26px;color:var(--band);font-weight:600;margin-top:10px}
+.calc .result small{font-family:"IBM Plex Sans",sans-serif;font-size:13px;color:var(--muted);font-weight:400;margin-left:8px}
+.check{margin-top:12px;font-size:13.5px;color:var(--ok);display:flex;gap:8px;align-items:flex-start}
+.check.off{color:var(--warn)}
+
+/* ---------- Abschnitte ---------- */
+section{margin-top:64px}
+.sec-head{margin-bottom:26px}
+.sec-head .eyebrow{margin-bottom:10px}
+h3{font-family:"Fraunces",Georgia,serif;font-weight:600;font-size:clamp(24px,4vw,34px);margin:0 0 8px;letter-spacing:-.01em}
+.sec-head p{margin:0;color:var(--muted);max-width:62ch}
+
+.cards{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
+@media(max-width:860px){.cards{grid-template-columns:1fr}}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:var(--r);padding:16px;display:flex;flex-direction:column}
+.card canvas{background:var(--board-deep)}
+.card .step{
+  font-family:"IBM Plex Mono",monospace;font-size:11px;letter-spacing:.16em;
+  color:var(--brass);text-transform:uppercase;margin-bottom:10px;
+}
+.card h4{font-family:"Fraunces",Georgia,serif;font-size:20px;font-weight:600;margin:14px 0 6px}
+.card p{margin:0;font-size:14.5px;color:var(--muted)}
+.card .eq{
+  margin-top:12px;font-family:"IBM Plex Mono",monospace;font-size:13.5px;
+  color:var(--ink);background:var(--board-deep);border-radius:8px;padding:8px 10px;
+  border:1px solid var(--line);
+}
+
+/* ---------- Übung ---------- */
+.quiz{display:grid;grid-template-columns:minmax(0,1.2fr) minmax(260px,1fr);gap:22px;align-items:start}
+@media(max-width:860px){.quiz{grid-template-columns:1fr}}
+.quiz-board{background:var(--panel);border:1px solid var(--line);border-radius:var(--r);padding:14px}
+.fields{display:flex;gap:12px;flex-wrap:wrap}
+.field{flex:1;min-width:120px}
+.field label{display:block;font-size:13px;color:var(--muted);margin-bottom:6px}
+.field input{
+  width:100%;font-family:"IBM Plex Mono",monospace;font-size:22px;font-weight:600;
+  color:var(--ink);background:var(--board-deep);border:1px solid var(--line);
+  border-radius:9px;padding:9px 12px;
+}
+.field input:focus{outline:2px solid var(--brass);outline-offset:1px}
+.feedback{margin-top:16px;font-size:14.5px;min-height:52px}
+.feedback .good{color:var(--ok)} .feedback .bad{color:var(--warn)}
+.feedback .sol{font-family:"IBM Plex Mono",monospace;color:var(--ink);margin-top:6px;display:block}
+
+footer{
+  margin-top:72px;padding-top:22px;border-top:1px solid var(--line);
+  font-size:13px;color:var(--muted);display:flex;justify-content:space-between;flex-wrap:wrap;gap:10px;
+}
+@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header>
+    <p class="eyebrow">Nagelbrett-Werkstatt · Schulung</p>
+    <h1>Der Satz<br>von <em>Pick</em></h1>
+    <p class="lede">Spanne ein Gummiband über die Nägel eines Bretts. Du musst die Fläche der Figur nicht ausrechnen – <strong>es genügt, Punkte zu zählen.</strong></p>
+
+    <div class="formula-hero">
+      <div class="f">Fläche&nbsp;<span class="vA">A</span> = <span class="vI">I</span> + <span class="vB">B</span>&thinsp;/&thinsp;2 − 1</div>
+      <div class="legend">
+        <span><span class="dot i"></span><b>I</b> – Punkte innen</span>
+        <span><span class="dot b"></span><b>B</b> – Punkte auf dem Rand</span>
+        <span><span class="dot o"></span>Punkte außerhalb zählen nicht</span>
+      </div>
+    </div>
+  </header>
+
+  <div class="studio">
+    <div class="board-card">
+      <canvas id="board" aria-label="Nagelbrett zum Zeichnen einer Figur"></canvas>
+      <p class="hint" id="hint"><span class="badge">Start</span><span id="hintText">Klicke Nägel an, um eine Figur zu spannen. Zum Schließen den ersten Nagel noch einmal treffen.</span></p>
+      <div class="toolbar">
+        <button id="btnUndo">Letzter Punkt zurück</button>
+        <button id="btnClear" class="ghost">Neu zeichnen</button>
+        <p class="tool-label">Fertige Beispiele</p>
+        <button data-preset="rechteck">Rechteck</button>
+        <button data-preset="dreieck">Dreieck</button>
+        <button data-preset="haus">Haus</button>
+        <button data-preset="zacken">Zacken</button>
+        <button data-preset="winzling">Winzling</button>
+      </div>
+    </div>
+
+    <aside>
+      <div class="panel">
+        <h2>Gezählt</h2>
+        <div class="count">
+          <span class="num i" id="numI">0</span>
+          <span class="lbl"><b>Punkte innen</b>liegen komplett in der Figur</span>
+        </div>
+        <div class="count">
+          <span class="num b" id="numB">0</span>
+          <span class="lbl"><b>Punkte auf dem Rand</b>Ecken und alles, was das Band berührt</span>
+        </div>
+
+        <div class="calc">
+          <div class="row" id="calcRow1">A = I + B / 2 − 1</div>
+          <div class="row" id="calcRow2">A = – + – / 2 − 1</div>
+          <div class="result"><span id="calcArea">–</span><small>Kästchen</small></div>
+          <div class="check" id="check"><span>·</span><span id="checkText">Noch keine geschlossene Figur.</span></div>
+        </div>
+      </div>
+
+      <div class="panel">
+        <h2>Beobachte</h2>
+        <p style="margin:0;font-size:14.5px;color:var(--muted)">Zieh eine Ecke über das Brett. Fläche und Punkte ändern sich – die Formel stimmt trotzdem in jedem Moment. Auch bei ganz schmalen oder stark gezackten Figuren.</p>
+      </div>
+    </aside>
+  </div>
+
+  <section>
+    <div class="sec-head">
+      <p class="eyebrow">Warum das stimmt</p>
+      <h3>In drei Schritten einleuchtend</h3>
+      <p>Kein Beweis mit Formeln – nur der Gedankengang, in der Reihenfolge, in der er auch historisch funktioniert hat.</p>
+    </div>
+    <div class="cards">
+      <div class="card">
+        <p class="step">Schritt 1</p>
+        <canvas class="mini" id="mini1"></canvas>
+        <h4>Beim Rechteck sieht man es</h4>
+        <p>4 × 3 Kästchen. Innen liegen 6 Punkte, auf dem Rand 14. Nachzählen genügt.</p>
+        <div class="eq">6 + 14/2 − 1 = <b>12</b></div>
+      </div>
+      <div class="card">
+        <p class="step">Schritt 2</p>
+        <canvas class="mini" id="mini2"></canvas>
+        <h4>Jedes Rechteck lässt sich halbieren</h4>
+        <p>Die Diagonale macht aus dem Rechteck zwei gleiche Dreiecke. Die Formel liefert genau die halbe Fläche.</p>
+        <div class="eq">3 + 8/2 − 1 = <b>6</b></div>
+      </div>
+      <div class="card">
+        <p class="step">Schritt 3</p>
+        <canvas class="mini" id="mini3"></canvas>
+        <h4>Teile zusammensetzen</h4>
+        <p>Klebt man zwei Figuren an einer Kante zusammen, werden aus Randpunkten innere Punkte – genau so, dass die Rechnung wieder aufgeht. Jede Figur lässt sich aus Dreiecken bauen.</p>
+        <div class="eq">12 + 12 = <b>24</b></div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="sec-head">
+      <p class="eyebrow">Selbst zählen</p>
+      <h3>Die Übung</h3>
+      <p>Hier sind die Punkte nicht eingefärbt. Zähl selbst, trag die Zahlen ein und prüfe.</p>
+    </div>
+    <div class="quiz">
+      <div class="quiz-board">
+        <canvas id="quizCanvas" aria-label="Übungsfigur auf dem Nagelbrett"></canvas>
+      </div>
+      <div class="panel" style="margin-top:0">
+        <h2><span id="quizNr">Figur 1 von 3</span></h2>
+        <div class="fields">
+          <div class="field">
+            <label for="qI">Punkte innen (I)</label>
+            <input id="qI" type="number" min="0" inputmode="numeric" placeholder="0">
+          </div>
+          <div class="field">
+            <label for="qB">Punkte am Rand (B)</label>
+            <input id="qB" type="number" min="0" inputmode="numeric" placeholder="0">
+          </div>
+        </div>
+        <div class="toolbar" style="margin-top:14px">
+          <button id="quizCheck">Prüfen</button>
+          <button id="quizNext" class="ghost">Nächste Figur</button>
+        </div>
+        <div class="feedback" id="quizFeedback"></div>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    <span>Georg Alexander Pick, 1899 · gilt für jede Figur mit geraden Kanten, deren Ecken auf Gitterpunkten liegen und deren Rand sich nicht selbst kreuzt.</span>
+    <span style="font-family:'IBM Plex Mono',monospace">A = I + B/2 − 1</span>
+  </footer>
+</div>
+
+<script>
+(() => {
+  "use strict";
+  const C = {
+    grid:"#22454F", gridStrong:"#2E5A69", brass:"#C8A24A", brassDim:"#6E5D31",
+    band:"#FF4B6B", bandFill:"rgba(255,75,107,.15)", mint:"#48D1B0", amber:"#FFB53D",
+    boardBg:"#0A171D", ghost:"rgba(255,75,107,.45)"
+  };
+
+  /* ---------- Geometrie ---------- */
+  const gcd = (a,b)=>{a=Math.abs(a);b=Math.abs(b);while(b){[a,b]=[b,a%b];}return a;};
+  const ori = (a,b,c)=>{const v=(b.x-a.x)*(c.y-a.y)-(b.y-a.y)*(c.x-a.x);return v>0?1:v<0?-1:0;};
+  const onSeg=(p,a,b)=>ori(a,b,p)===0 &&
+      Math.min(a.x,b.x)<=p.x&&p.x<=Math.max(a.x,b.x)&&
+      Math.min(a.y,b.y)<=p.y&&p.y<=Math.max(a.y,b.y);
+  function segInt(a,b,c,d){
+    const o1=ori(a,b,c),o2=ori(a,b,d),o3=ori(c,d,a),o4=ori(c,d,b);
+    if(o1!==o2&&o3!==o4) return true;
+    if(o1===0&&onSeg(c,a,b))return true;
+    if(o2===0&&onSeg(d,a,b))return true;
+    if(o3===0&&onSeg(a,c,d))return true;
+    if(o4===0&&onSeg(b,c,d))return true;
+    return false;
+  }
+  function area(pts){
+    let s=0;for(let i=0;i<pts.length;i++){const a=pts[i],b=pts[(i+1)%pts.length];s+=a.x*b.y-b.x*a.y;}
+    return Math.abs(s)/2;
+  }
+  function boundaryCount(pts){
+    let s=0;for(let i=0;i<pts.length;i++){const a=pts[i],b=pts[(i+1)%pts.length];s+=gcd(b.x-a.x,b.y-a.y);}
+    return s;
+  }
+  function onBoundary(p,pts){
+    for(let i=0;i<pts.length;i++){const a=pts[i],b=pts[(i+1)%pts.length];if(onSeg(p,a,b))return true;}
+    return false;
+  }
+  function inside(p,pts){
+    let c=false;
+    for(let i=0,j=pts.length-1;i<pts.length;j=i++){
+      const a=pts[i],b=pts[j];
+      if(((a.y>p.y)!==(b.y>p.y)) && (p.x < (b.x-a.x)*(p.y-a.y)/(b.y-a.y)+a.x)) c=!c;
+    }
+    return c;
+  }
+  function classify(pts,W,H){
+    const inner=[],bnd=[];
+    if(pts.length<3) return {inner,bnd};
+    for(let x=0;x<=W;x++) for(let y=0;y<=H;y++){
+      const p={x,y};
+      if(onBoundary(p,pts)) bnd.push(p);
+      else if(inside(p,pts)) inner.push(p);
+    }
+    return {inner,bnd};
+  }
+  function isSimple(pts){
+    const n=pts.length;
+    if(n<3) return false;
+    for(let i=0;i<n;i++) for(let j=i+1;j<n;j++)
+      if(pts[i].x===pts[j].x&&pts[i].y===pts[j].y) return false;
+    for(let i=0;i<n;i++){
+      const a=pts[i],b=pts[(i+1)%n];
+      for(let j=i+1;j<n;j++){
+        const c=pts[j],d=pts[(j+1)%n];
+        const adj=(j===i+1)||(i===0&&j===n-1);
+        if(adj){
+          if(ori(a,b,d)===0&&ori(a,b,c)===0){
+            if(onSeg(d,a,b)||onSeg(a,c,d)) return false;
+          }
+        } else if(segInt(a,b,c,d)) return false;
+      }
+    }
+    return area(pts)>0;
+  }
+
+  /* ---------- Zeichnen ---------- */
+  function fit(canvas,W,H,pad){
+    const cssW=canvas.clientWidth||canvas.parentElement.clientWidth;
+    const cell=(cssW-2*pad)/W;
+    const cssH=cell*H+2*pad;
+    const dpr=window.devicePixelRatio||1;
+    canvas.width=Math.round(cssW*dpr);
+    canvas.height=Math.round(cssH*dpr);
+    canvas.style.height=cssH+"px";
+    const ctx=canvas.getContext("2d");
+    ctx.setTransform(dpr,0,0,dpr,0,0);
+    return {ctx,cell,cssW,cssH,pad,W,H};
+  }
+  const toX=(g,x)=>g.pad+x*g.cell;
+  const toY=(g,y)=>g.pad+(g.H-y)*g.cell;
+
+  function nail(ctx,px,py,r,color,glow){
+    if(glow){
+      ctx.beginPath();ctx.arc(px,py,r*3.1,0,7);
+      const gr=ctx.createRadialGradient(px,py,0,px,py,r*3.1);
+      gr.addColorStop(0,glow);gr.addColorStop(1,"rgba(0,0,0,0)");
+      ctx.fillStyle=gr;ctx.fill();
+    }
+    ctx.beginPath();ctx.arc(px,py,r,0,7);ctx.fillStyle=color;ctx.fill();
+  }
+
+  function drawBoard(canvas,cfg){
+    const g=fit(canvas,cfg.W,cfg.H,cfg.pad||18);
+    const ctx=g.ctx;
+    ctx.clearRect(0,0,g.cssW,g.cssH);
+    ctx.fillStyle=C.boardBg;
+    ctx.fillRect(0,0,g.cssW,g.cssH);
+
+    // Gitternetz
+    ctx.lineWidth=1;
+    for(let x=0;x<=cfg.W;x++){
+      ctx.strokeStyle=C.grid;ctx.beginPath();
+      ctx.moveTo(Math.round(toX(g,x))+.5,toY(g,0));ctx.lineTo(Math.round(toX(g,x))+.5,toY(g,cfg.H));ctx.stroke();
+    }
+    for(let y=0;y<=cfg.H;y++){
+      ctx.strokeStyle=C.grid;ctx.beginPath();
+      ctx.moveTo(toX(g,0),Math.round(toY(g,y))+.5);ctx.lineTo(toX(g,cfg.W),Math.round(toY(g,y))+.5);ctx.stroke();
+    }
+
+    // Figuren
+    (cfg.polys||[]).forEach(poly=>{
+      const pts=poly.pts;if(!pts||pts.length<2)return;
+      ctx.beginPath();
+      ctx.moveTo(toX(g,pts[0].x),toY(g,pts[0].y));
+      for(let i=1;i<pts.length;i++) ctx.lineTo(toX(g,pts[i].x),toY(g,pts[i].y));
+      if(poly.closed!==false){
+        ctx.closePath();
+        ctx.fillStyle=poly.fill||C.bandFill;ctx.fill();
+      }
+      ctx.lineJoin="round";ctx.lineCap="round";
+      ctx.lineWidth=Math.max(3,g.cell*.11);
+      ctx.strokeStyle=poly.stroke||C.band;
+      ctx.shadowColor=poly.stroke||C.band;ctx.shadowBlur=10;
+      ctx.stroke();
+      ctx.shadowBlur=0;
+      if(poly.dashed){
+        ctx.setLineDash([6,7]);ctx.lineWidth=2;ctx.strokeStyle=poly.dashed;
+        ctx.beginPath();
+        ctx.moveTo(toX(g,poly.dashFrom.x),toY(g,poly.dashFrom.y));
+        ctx.lineTo(toX(g,poly.dashTo.x),toY(g,poly.dashTo.y));
+        ctx.stroke();ctx.setLineDash([]);
+      }
+    });
+
+    // Vorschau-Linie
+    if(cfg.preview){
+      ctx.setLineDash([5,6]);ctx.lineWidth=2;ctx.strokeStyle=C.ghost;
+      ctx.beginPath();
+      ctx.moveTo(toX(g,cfg.preview.from.x),toY(g,cfg.preview.from.y));
+      ctx.lineTo(toX(g,cfg.preview.to.x),toY(g,cfg.preview.to.y));
+      ctx.stroke();ctx.setLineDash([]);
+    }
+
+    // Nägel
+    const key=p=>p.x+","+p.y;
+    const innerSet=new Set((cfg.inner||[]).map(key));
+    const bndSet=new Set((cfg.bnd||[]).map(key));
+    const r=Math.max(2.2,g.cell*.075);
+    for(let x=0;x<=cfg.W;x++) for(let y=0;y<=cfg.H;y++){
+      const k=x+","+y,px=toX(g,x),py=toY(g,y);
+      if(innerSet.has(k)) nail(ctx,px,py,r*1.55,C.mint,"rgba(72,209,176,.28)");
+      else if(bndSet.has(k)) nail(ctx,px,py,r*1.55,C.amber,"rgba(255,181,61,.26)");
+      else nail(ctx,px,py,r,C.brassDim);
+    }
+
+    // Ecken
+    (cfg.polys||[]).forEach(poly=>{
+      (poly.pts||[]).forEach(p=>{
+        const px=toX(g,p.x),py=toY(g,p.y);
+        ctx.beginPath();ctx.arc(px,py,Math.max(4,g.cell*.13),0,7);
+        ctx.fillStyle="#0A171D";ctx.fill();
+        ctx.lineWidth=2.5;ctx.strokeStyle=poly.stroke||C.band;ctx.stroke();
+      });
+    });
+    return g;
+  }
+
+  /* ---------- Hauptbrett ---------- */
+  const W=14,H=10,PAD=20;
+  const canvas=document.getElementById("board");
+  let pts=[],closed=false,hover=null,drag=-1,geo=null;
+
+  const PRESETS={
+    rechteck:[[2,2],[10,2],[10,7],[2,7]],
+    dreieck:[[2,2],[11,2],[6,8]],
+    haus:[[3,2],[11,2],[11,6],[7,9],[3,6]],
+    zacken:[[2,2],[12,2],[12,6],[10,3],[8,7],[6,3],[4,7],[2,4]],
+    winzling:[[6,4],[8,4],[7,6]]
+  };
+  const load=n=>{pts=PRESETS[n].map(([x,y])=>({x,y}));closed=true;render();};
+
+  function render(){
+    let inner=[],bnd=[],simple=true;
+    if(closed&&pts.length>=3){
+      simple=isSimple(pts);
+      if(simple){const c=classify(pts,W,H);inner=c.inner;bnd=c.bnd;}
+    }
+    geo=drawBoard(canvas,{
+      W,H,pad:PAD,
+      polys:pts.length?[{pts,closed}]:[],
+      inner,bnd,
+      preview:(!closed&&pts.length&&hover)?{from:pts[pts.length-1],to:hover}:null
+    });
+    update(inner.length,bnd.length,simple);
+  }
+
+  const elI=document.getElementById("numI"),elB=document.getElementById("numB");
+  const r1=document.getElementById("calcRow1"),r2=document.getElementById("calcRow2");
+  const elArea=document.getElementById("calcArea"),chk=document.getElementById("check");
+  const chkT=document.getElementById("checkText"),hint=document.getElementById("hint"),hintT=document.getElementById("hintText");
+  let lastI=-1,lastB=-1;
+
+  function pop(el){el.classList.remove("pop");void el.offsetWidth;el.classList.add("pop");}
+  const fmt=n=>Number.isInteger(n)?n:n.toFixed(1).replace(".",",");
+
+  function update(I,B,simple){
+    if(I!==lastI){elI.textContent=I;pop(elI);lastI=I;}
+    if(B!==lastB){elB.textContent=B;pop(elB);lastB=B;}
+    hint.classList.remove("warn");
+    if(!closed){
+      hint.querySelector(".badge").textContent=pts.length?"Weiter":"Start";
+      hintT.textContent=pts.length>=3
+        ? "Weitere Nägel anklicken – oder den ersten Nagel treffen, um die Figur zu schließen."
+        : "Klicke Nägel an, um eine Figur zu spannen. Zum Schließen den ersten Nagel noch einmal treffen.";
+      r1.textContent="A = I + B / 2 − 1";
+      r2.textContent="A = – + – / 2 − 1";
+      elArea.textContent="–";
+      chk.classList.remove("off");chkT.textContent="Noch keine geschlossene Figur.";
+      return;
+    }
+    if(!simple){
+      hint.classList.add("warn");
+      hint.querySelector(".badge").textContent="Achtung";
+      hintT.textContent="Der Rand kreuzt sich selbst. Für solche Figuren gilt der Satz von Pick nicht.";
+      r2.textContent="A = – + – / 2 − 1";
+      elArea.textContent="–";
+      chk.classList.add("off");chkT.textContent="Zieh eine Ecke, bis sich die Linien nicht mehr überschneiden.";
+      return;
+    }
+    const pick=I+B/2-1, real=area(pts);
+    hint.querySelector(".badge").textContent="Fertig";
+    hintT.textContent="Figur geschlossen. Zieh die Ecken mit der Maus oder dem Finger und beobachte die Zahlen.";
+    r1.textContent="A = I + B / 2 − 1";
+    r2.textContent=`A = ${I} + ${B} / 2 − 1`;
+    elArea.textContent=fmt(pick);
+    const ok=Math.abs(pick-real)<1e-9;
+    chk.classList.toggle("off",!ok);
+    chkT.textContent=ok
+      ? `Nachgemessen ergibt die Figur ebenfalls ${fmt(real)} Kästchen.`
+      : `Abweichung: gemessen ${fmt(real)}.`;
+  }
+
+  /* ---------- Eingabe ---------- */
+  function nearest(ev){
+    const r=canvas.getBoundingClientRect();
+    const mx=ev.clientX-r.left,my=ev.clientY-r.top;
+    if(!geo) return null;
+    const x=Math.round((mx-geo.pad)/geo.cell);
+    const y=Math.round(geo.H-(my-geo.pad)/geo.cell);
+    if(x<0||x>W||y<0||y>H) return null;
+    const dx=mx-toX(geo,x),dy=my-toY(geo,y);
+    if(Math.hypot(dx,dy)>geo.cell*.55) return {x,y,far:true};
+    return {x,y,far:false};
+  }
+  const same=(a,b)=>a&&b&&a.x===b.x&&a.y===b.y;
+
+  canvas.addEventListener("pointerdown",e=>{
+    const p=nearest(e);if(!p||p.far)return;
+    canvas.setPointerCapture(e.pointerId);
+    const hit=pts.findIndex(q=>same(q,p));
+    if(closed){ if(hit>=0) drag=hit; return; }
+    if(hit===0&&pts.length>=3){closed=true;render();return;}
+    if(hit>=0) return;
+    pts.push({x:p.x,y:p.y});render();
+  });
+  canvas.addEventListener("pointermove",e=>{
+    const p=nearest(e);
+    if(drag>=0&&p&&!p.far){
+      if(!same(pts[drag],p)){
+        if(pts.some((q,i)=>i!==drag&&same(q,p))) return;
+        pts[drag]={x:p.x,y:p.y};render();
+      }
+      return;
+    }
+    if(!closed){
+      const h=(p&&!p.far)?p:null;
+      const changed = (!!h!==!!hover) || (h&&hover&&!same(h,hover));
+      if(changed){hover=h;render();}
+    }
+    canvas.style.cursor = (closed && p && !p.far && pts.some(q=>same(q,p))) ? "grab" : "crosshair";
+  });
+  const stop=()=>{drag=-1;};
+  canvas.addEventListener("pointerup",stop);
+  canvas.addEventListener("pointercancel",stop);
+  canvas.addEventListener("pointerleave",()=>{stop();if(hover){hover=null;render();}});
+
+  document.getElementById("btnUndo").addEventListener("click",()=>{
+    if(closed){closed=false;} else pts.pop();
+    render();
+  });
+  document.getElementById("btnClear").addEventListener("click",()=>{pts=[];closed=false;hover=null;render();});
+  document.querySelectorAll("[data-preset]").forEach(b=>b.addEventListener("click",()=>load(b.dataset.preset)));
+
+  /* ---------- Mini-Bretter ---------- */
+  const rect=[[1,1],[5,1],[5,4],[1,4]].map(([x,y])=>({x,y}));
+  const tri=[[1,1],[5,1],[5,4]].map(([x,y])=>({x,y}));
+  const left=[[1,1],[3,1],[3,4],[1,4]].map(([x,y])=>({x,y}));
+  const right=[[3,1],[5,1],[5,4],[3,4]].map(([x,y])=>({x,y}));
+
+  function mini(){
+    const cfgA={W:6,H:5,pad:14,polys:[{pts:rect}]};
+    const cA=classify(rect,6,5);
+    drawBoard(document.getElementById("mini1"),{...cfgA,inner:cA.inner,bnd:cA.bnd});
+
+    const cB=classify(tri,6,5);
+    drawBoard(document.getElementById("mini2"),{
+      W:6,H:5,pad:14,inner:cB.inner,bnd:cB.bnd,
+      polys:[{pts:tri,dashed:"rgba(200,162,74,.8)",dashFrom:{x:1,y:1},dashTo:{x:1,y:4}},
+             {pts:[{x:1,y:1},{x:1,y:4},{x:5,y:4}],closed:false,stroke:"rgba(200,162,74,.55)"}]
+    });
+
+    drawBoard(document.getElementById("mini3"),{
+      W:6,H:5,pad:14,
+      polys:[{pts:left,stroke:C.band,fill:"rgba(255,75,107,.15)"},
+             {pts:right,stroke:C.mint,fill:"rgba(72,209,176,.13)"}],
+      inner:classify(left,6,5).inner.concat(classify(right,6,5).inner),
+      bnd:[]
+    });
+  }
+
+  /* ---------- Übung ---------- */
+  const QW=8,QH=6;
+  const QUIZ=[
+    {pts:[[1,1],[6,1],[6,4],[1,4]],name:"Ein Rechteck zum Warmwerden."},
+    {pts:[[1,1],[7,2],[4,5]],name:"Ein schiefes Dreieck – hier hilft Zählen mehr als Messen."},
+    {pts:[[1,1],[6,1],[6,3],[3,3],[3,5],[1,5]],name:"Eine Stufenfigur."}
+  ].map(q=>({...q,pts:q.pts.map(([x,y])=>({x,y}))}));
+  let qi=0;
+
+  const qCanvas=document.getElementById("quizCanvas"),qFb=document.getElementById("quizFeedback");
+  const qIn=document.getElementById("qI"),qBn=document.getElementById("qB"),qNr=document.getElementById("quizNr");
+
+  function drawQuiz(){
+    const q=QUIZ[qi];
+    drawBoard(qCanvas,{W:QW,H:QH,pad:16,polys:[{pts:q.pts}],inner:[],bnd:[]});
+    qNr.textContent=`Figur ${qi+1} von ${QUIZ.length}`;
+  }
+  function newQuiz(){
+    qi=(qi+1)%QUIZ.length;qIn.value="";qBn.value="";
+    qFb.innerHTML=`<span style="color:var(--muted)">${QUIZ[qi].name}</span>`;
+    drawQuiz();
+  }
+  document.getElementById("quizNext").addEventListener("click",newQuiz);
+  document.getElementById("quizCheck").addEventListener("click",()=>{
+    const q=QUIZ[qi],c=classify(q.pts,QW,QH);
+    const I=c.inner.length,B=boundaryCount(q.pts),A=I+B/2-1;
+    const gI=parseInt(qIn.value,10),gB=parseInt(qBn.value,10);
+    if(Number.isNaN(gI)||Number.isNaN(gB)){
+      qFb.innerHTML='<span class="bad">Trag beide Zahlen ein, dann prüfe ich.</span>';return;
+    }
+    const okI=gI===I,okB=gB===B;
+    let msg = okI&&okB
+      ? '<span class="good">Beides richtig gezählt.</span>'
+      : `<span class="bad">${okI?"I stimmt.":"I stimmt noch nicht."} ${okB?"B stimmt.":"B stimmt noch nicht."}</span>`;
+    msg += `<span class="sol">I = ${I} · B = ${B} → A = ${I} + ${B}/2 − 1 = ${fmt(A)} Kästchen</span>`;
+    qFb.innerHTML=msg;
+    // Auflösung einfärben
+    drawBoard(qCanvas,{W:QW,H:QH,pad:16,polys:[{pts:q.pts}],inner:c.inner,bnd:c.bnd});
+  });
+
+  /* ---------- Start ---------- */
+  function drawAll(){render();mini();drawQuiz();}
+  let t;window.addEventListener("resize",()=>{clearTimeout(t);t=setTimeout(drawAll,120);});
+  load("haus");
+  mini();
+  qFb.innerHTML=`<span style="color:var(--muted)">${QUIZ[0].name}</span>`;
+  drawQuiz();
+})();
+</script>
+</body>
+</html>

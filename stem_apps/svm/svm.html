@@ -1,0 +1,1152 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Support Vector Machines — interaktive Schulung</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,400..800&family=Newsreader:opsz,wght@6..72,300..600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#E4E8E3;
+  --paper:#F7F9F6;
+  --ink:#132019;
+  --soft:#4C5C54;
+  --faint:#8A968F;
+  --rule:#CAD1CA;
+  --blue:#2B3FA8;
+  --rose:#C22E5A;
+  --amber:#C97F14;
+  --amber-bright:#E5A02E;
+  --shadow:0 1px 0 rgba(19,32,25,.06), 0 12px 30px -22px rgba(19,32,25,.5);
+  --mono:"IBM Plex Mono",ui-monospace,SFMono-Regular,Menlo,monospace;
+  --disp:"Archivo","Helvetica Neue",Arial,sans-serif;
+  --body:"Newsreader",Georgia,"Times New Roman",serif;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}*{animation-duration:.001ms!important;transition-duration:.001ms!important}}
+body{
+  margin:0;background:var(--bg);color:var(--ink);
+  font-family:var(--body);font-size:17px;line-height:1.62;
+  -webkit-font-smoothing:antialiased;
+}
+.wrap{max-width:1180px;margin:0 auto;padding:0 28px}
+@media(max-width:640px){.wrap{padding:0 18px}}
+
+h1,h2,h3,.disp{font-family:var(--disp);font-variation-settings:"wdth" 112;letter-spacing:-.015em}
+.eyebrow{
+  font-family:var(--mono);font-size:11.5px;letter-spacing:.18em;text-transform:uppercase;
+  color:var(--amber);font-weight:500;
+}
+
+/* ---------- Hero ---------- */
+header.hero{padding:48px 0 8px;border-bottom:1px solid var(--rule)}
+.hero-grid{display:grid;grid-template-columns:minmax(0,.92fr) minmax(0,1.08fr);gap:52px;align-items:center}
+@media(max-width:920px){.hero-grid{grid-template-columns:1fr;gap:30px}}
+h1{
+  font-size:clamp(40px,7.4vw,74px);line-height:.94;font-weight:800;
+  font-variation-settings:"wdth" 118;margin:14px 0 0;text-transform:uppercase;
+}
+h1 .thin{display:block;font-weight:400;font-variation-settings:"wdth" 92;
+  font-size:.42em;letter-spacing:.02em;text-transform:none;color:var(--soft);margin-top:16px;line-height:1.35}
+.lede{font-size:19px;color:var(--soft);margin:22px 0 0;max-width:44ch}
+.hero-meta{display:flex;gap:18px;flex-wrap:wrap;margin-top:26px;font-family:var(--mono);font-size:12px;color:var(--faint)}
+.hero-meta span{display:flex;align-items:center;gap:7px}
+.hero-meta span::before{content:"";width:6px;height:6px;background:var(--amber-bright);border-radius:50%}
+
+/* ---------- Instrument / cards ---------- */
+.panel{
+  background:var(--paper);border:1px solid var(--rule);border-radius:3px;
+  box-shadow:var(--shadow);overflow:hidden;
+}
+.panel-head{
+  display:flex;justify-content:space-between;align-items:baseline;gap:14px;
+  padding:12px 16px;border-bottom:1px solid var(--rule);
+  font-family:var(--mono);font-size:11.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--faint);
+}
+.panel-head b{color:var(--ink);font-weight:500;letter-spacing:.08em}
+.cv-hold{position:relative;aspect-ratio:4/3;width:100%}
+canvas{display:block;width:100%;height:100%;touch-action:none;cursor:crosshair}
+.hint{
+  position:absolute;left:14px;bottom:12px;font-family:var(--mono);font-size:11px;
+  color:var(--faint);background:rgba(247,249,246,.82);padding:3px 8px;border-radius:2px;
+  pointer-events:none;letter-spacing:.03em;
+}
+
+/* readouts */
+.readout{display:flex;border-top:1px solid var(--rule)}
+.readout div{flex:1;padding:11px 14px;border-right:1px solid var(--rule)}
+.readout div:last-child{border-right:0}
+.readout .k{font-family:var(--mono);font-size:10.5px;letter-spacing:.11em;text-transform:uppercase;color:var(--faint);display:block}
+.readout .v{font-family:var(--disp);font-variation-settings:"wdth" 100;font-size:23px;font-weight:700;line-height:1.25;display:block;font-variant-numeric:tabular-nums}
+.readout .v small{font-size:12px;font-weight:400;color:var(--faint);font-family:var(--mono)}
+
+/* gauge */
+.gauge{padding:13px 16px 15px;border-top:1px solid var(--rule)}
+.gauge-lab{display:flex;justify-content:space-between;font-family:var(--mono);font-size:10.5px;
+  letter-spacing:.1em;text-transform:uppercase;color:var(--faint);margin-bottom:8px}
+.gauge-track{position:relative;height:9px;background:#E1E5DF;border-radius:1px;overflow:hidden}
+.gauge-fill{position:absolute;inset:0 auto 0 0;width:0;background:var(--amber-bright);transition:width .12s linear}
+.gauge-track.max .gauge-fill{background:var(--blue)}
+
+/* ---------- Chapters ---------- */
+main{padding-bottom:10px}
+section.chapter{padding:64px 0;border-bottom:1px solid var(--rule)}
+.ch-head{display:grid;grid-template-columns:76px 1fr;gap:20px;align-items:start;margin-bottom:34px}
+.ch-num{
+  font-family:var(--mono);font-size:12px;color:var(--paper);background:var(--ink);
+  padding:5px 0;text-align:center;letter-spacing:.08em;border-radius:2px;margin-top:9px;
+}
+.ch-head h2{font-size:clamp(27px,3.6vw,40px);font-weight:700;margin:0;line-height:1.06;font-variation-settings:"wdth" 108}
+.ch-head p{margin:10px 0 0;color:var(--soft);font-size:19px;max-width:60ch}
+@media(max-width:640px){.ch-head{grid-template-columns:1fr;gap:10px}.ch-num{width:64px;margin-top:0}}
+
+.split{display:grid;grid-template-columns:minmax(0,.72fr) minmax(0,1.28fr);gap:40px;align-items:start}
+@media(max-width:920px){.split{grid-template-columns:1fr;gap:26px}}
+.split.rev{grid-template-columns:minmax(0,1.28fr) minmax(0,.72fr)}
+@media(max-width:920px){.split.rev{grid-template-columns:1fr}.split.rev>.prose{order:2}}
+.prose p{margin:0 0 16px}
+.prose p:last-child{margin-bottom:0}
+.prose strong{font-weight:600}
+
+.term{
+  display:inline-block;font-family:var(--mono);font-size:11px;letter-spacing:.06em;
+  background:rgba(201,127,20,.12);color:var(--amber);padding:1px 6px;border-radius:2px;
+  white-space:nowrap;
+}
+.aside{
+  border-left:2px solid var(--amber-bright);padding:2px 0 2px 16px;margin:22px 0 0;
+  font-size:15.5px;color:var(--soft);
+}
+.aside b{font-family:var(--mono);font-size:10.5px;letter-spacing:.12em;text-transform:uppercase;
+  color:var(--amber);display:block;margin-bottom:5px;font-weight:500}
+
+/* ---------- Controls ---------- */
+.controls{padding:15px 16px;border-top:1px solid var(--rule);display:grid;gap:15px}
+.ctrl{display:grid;gap:7px}
+.ctrl-lab{display:flex;justify-content:space-between;align-items:baseline;gap:12px;
+  font-family:var(--mono);font-size:11px;letter-spacing:.09em;text-transform:uppercase;color:var(--soft)}
+.ctrl-lab output{font-size:13px;color:var(--ink);font-variant-numeric:tabular-nums;letter-spacing:0}
+.ctrl-note{font-family:var(--body);font-size:14px;color:var(--faint);letter-spacing:0;text-transform:none}
+input[type=range]{-webkit-appearance:none;appearance:none;width:100%;height:20px;background:transparent;cursor:pointer;margin:0}
+input[type=range]::-webkit-slider-runnable-track{height:3px;background:var(--rule)}
+input[type=range]::-moz-range-track{height:3px;background:var(--rule)}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:17px;height:17px;border-radius:50%;
+  background:var(--ink);border:3px solid var(--paper);box-shadow:0 0 0 1px var(--ink);margin-top:-7px}
+input[type=range]::-moz-range-thumb{width:12px;height:12px;border-radius:50%;background:var(--ink);
+  border:3px solid var(--paper);box-shadow:0 0 0 1px var(--ink)}
+input[type=range]:focus-visible{outline:2px solid var(--amber);outline-offset:4px}
+
+.btnrow{display:flex;gap:8px;flex-wrap:wrap}
+button{
+  font-family:var(--mono);font-size:11.5px;letter-spacing:.07em;text-transform:uppercase;
+  background:var(--paper);color:var(--ink);border:1px solid var(--ink);border-radius:2px;
+  padding:8px 13px;cursor:pointer;transition:background .14s,color .14s;
+}
+button:hover{background:var(--ink);color:var(--paper)}
+button:focus-visible{outline:2px solid var(--amber);outline-offset:2px}
+button[aria-pressed=true]{background:var(--ink);color:var(--paper)}
+button.ghost{border-color:var(--rule);color:var(--soft)}
+button.ghost:hover{border-color:var(--ink);background:var(--ink);color:var(--paper)}
+
+.legend{display:flex;gap:18px;flex-wrap:wrap;padding:12px 16px;border-top:1px solid var(--rule);
+  font-family:var(--mono);font-size:11px;color:var(--soft);letter-spacing:.03em}
+.legend i{display:inline-block;width:11px;height:11px;border-radius:50%;margin-right:6px;vertical-align:-1px}
+.legend .sv{background:transparent;border:2px solid var(--ink);width:13px;height:13px}
+.legend .band{border-radius:1px;background:rgba(229,160,46,.35);border:1px solid var(--amber);width:22px;height:10px}
+
+/* ---------- Merkzettel ---------- */
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(255px,1fr));gap:1px;background:var(--rule);
+  border:1px solid var(--rule);border-radius:3px;overflow:hidden}
+.card{background:var(--paper);padding:22px 20px}
+.card h3{margin:0 0 9px;font-size:17px;font-weight:700;font-variation-settings:"wdth" 104}
+.card p{margin:0;font-size:15.5px;color:var(--soft)}
+.card .tag{font-family:var(--mono);font-size:10.5px;letter-spacing:.12em;text-transform:uppercase;
+  color:var(--amber);display:block;margin-bottom:11px}
+
+table.cmp{width:100%;border-collapse:collapse;margin-top:6px;font-size:15.5px}
+table.cmp th,table.cmp td{text-align:left;padding:12px 14px;border-bottom:1px solid var(--rule);vertical-align:top}
+table.cmp th{font-family:var(--mono);font-size:10.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--faint);font-weight:500}
+table.cmp td:first-child{font-family:var(--disp);font-weight:600;font-size:15px;width:34%}
+table.cmp tr:last-child td{border-bottom:0}
+
+footer{padding:40px 0 60px;color:var(--faint);font-family:var(--mono);font-size:11.5px;letter-spacing:.05em}
+
+/* skip link */
+.skip{position:absolute;left:-9999px}
+.skip:focus{left:28px;top:12px;position:fixed;z-index:99;background:var(--ink);color:var(--paper);padding:9px 14px;font-family:var(--mono);font-size:12px}
+</style>
+</head>
+<body>
+<a class="skip" href="#kap1">Zum Inhalt springen</a>
+
+<header class="hero">
+  <div class="wrap">
+    <div class="hero-grid">
+      <div>
+        <div class="eyebrow">Schulung · Maschinelles Lernen</div>
+        <h1>Support<br>Vector<br>Machines
+          <span class="thin">Wie man zwei Gruppen mit möglichst viel Abstand trennt — und warum genau das gut funktioniert.</span>
+        </h1>
+        <p class="lede">Alles auf dieser Seite rechnet live im Browser. Zieh an den Punkten, dreh die Linie, schieb die Regler. Kein Vorwissen nötig.</p>
+        <div class="hero-meta">
+          <span>6 Kapitel</span><span>ca. 25 Minuten</span><span>alles anfassbar</span>
+        </div>
+      </div>
+
+      <div class="panel" id="heroPanel">
+        <div class="panel-head"><b>Der Korridor</b><span>Ziehen zum Drehen</span></div>
+        <div class="cv-hold"><canvas id="cvHero" role="img" aria-label="Streudiagramm zweier Punktgruppen mit drehbarer Trennlinie und farbig hervorgehobenem Korridor dazwischen."></canvas>
+          <div class="hint">Ziehen Sie irgendwo im Feld</div>
+        </div>
+        <div class="readout">
+          <div><span class="k">Breite des Korridors</span><span class="v" id="hWidth">0.00</span></div>
+          <div><span class="k">Bestmögliche Breite</span><span class="v" id="hBest">0.00</span></div>
+          <div><span class="k">Punkte am Rand</span><span class="v" id="hTouch">0</span></div>
+        </div>
+        <div class="gauge">
+          <div class="gauge-lab"><span id="hGaugeLab">Wie nah am Optimum?</span><span id="hPct">0 %</span></div>
+          <div class="gauge-track" id="hTrack"><div class="gauge-fill" id="hFill"></div></div>
+          <div class="btnrow" style="margin-top:13px">
+            <button id="hSolve">Bestes Ergebnis zeigen</button>
+            <button class="ghost" id="hReset">Zurück</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</header>
+
+<main>
+<div class="wrap">
+
+<!-- ===== 01 ===== -->
+<section class="chapter" id="kap1">
+  <div class="ch-head">
+    <div class="ch-num">01</div>
+    <div>
+      <h2>Viele Linien trennen. Nur eine trennt mit Abstand.</h2>
+      <p>Wenn zwei Gruppen sauber auseinanderliegen, gibt es unendlich viele Trennlinien. Die SVM wählt die eine, die zu beiden Seiten den größten Sicherheitsabstand lässt.</p>
+    </div>
+  </div>
+
+  <div class="split">
+    <div class="prose">
+      <p>Stellen Sie sich zwei Lager im Gelände vor. Sie sollen eine Grenze ziehen. Eine Linie knapp am linken Lager vorbei trennt zwar korrekt — aber schon ein neuer Punkt, der etwas weiter rechts liegt, fällt auf die falsche Seite.</p>
+      <p>Deshalb sucht die SVM nicht irgendeine Grenze, sondern die <strong>Mitte des breitesten freien Korridors</strong>. Je breiter dieser Korridor, desto robuster ist die Entscheidung gegenüber neuen, leicht abweichenden Fällen.</p>
+      <div class="aside">
+        <b>Fachbegriff</b>
+        Der halbe Korridor heißt <span class="term">Margin</span>. Die SVM maximiert ihn — daher der Name <span class="term">Maximum-Margin-Klassifikator</span>.
+      </div>
+      <p style="margin-top:22px">Probieren Sie es aus: Ziehen Sie Punkte im Feld herum oder legen Sie neue an. Die Grenze wird jedes Mal neu berechnet.</p>
+    </div>
+
+    <div class="panel">
+      <div class="panel-head"><b>Klassifikations-Labor</b><span>Punkte ziehen · Klicken legt an</span></div>
+      <div class="cv-hold"><canvas id="cvLab" role="img" aria-label="Interaktives Streudiagramm: zwei Punktgruppen, berechnete Trennlinie und Randlinien. Punkte sind verschiebbar."></canvas>
+        <div class="hint">Klick ins Leere = neuer Punkt · Umschalt+Klick = löschen</div>
+      </div>
+      <div class="controls">
+        <div class="btnrow">
+          <button id="labA" aria-pressed="true">Neue Punkte: Gruppe A</button>
+          <button id="labB" aria-pressed="false">Gruppe B</button>
+          <button class="ghost" id="labMargin" aria-pressed="true">Korridor anzeigen</button>
+          <button class="ghost" id="labReset">Zurücksetzen</button>
+        </div>
+      </div>
+      <div class="readout">
+        <div><span class="k">Korridorbreite</span><span class="v" id="labW">–</span></div>
+        <div><span class="k">Stützvektoren</span><span class="v" id="labSV">–</span></div>
+        <div><span class="k">Punkte gesamt</span><span class="v" id="labN">–</span></div>
+      </div>
+      <div class="legend">
+        <span><i style="background:var(--blue)"></i>Gruppe A</span>
+        <span><i style="background:var(--rose)"></i>Gruppe B</span>
+        <span><i class="sv"></i>Stützvektor</span>
+        <span><i class="band"></i>Korridor</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== 02 ===== -->
+<section class="chapter" id="kap2">
+  <div class="ch-head">
+    <div class="ch-num">02</div>
+    <div>
+      <h2>Nur die Grenzfälle zählen</h2>
+      <p>Das ist die eigentliche Pointe der Methode: Die meisten Ihrer Daten haben auf das Ergebnis überhaupt keinen Einfluss.</p>
+    </div>
+  </div>
+
+  <div class="split rev">
+    <div class="panel">
+      <div class="panel-head"><b>Wer bestimmt die Grenze?</b><span>Punkt anklicken = entfernen</span></div>
+      <div class="cv-hold"><canvas id="cvSV" role="img" aria-label="Streudiagramm mit Trennlinie; entfernte Punkte erscheinen als Kreuz. Zeigt, welche Punkte die Grenze bestimmen."></canvas>
+        <div class="hint">Entfernte Punkte bleiben als Kreuz sichtbar</div>
+      </div>
+      <div class="controls">
+        <div class="btnrow">
+          <button id="svDropFar">Alle Punkte ohne Einfluss entfernen</button>
+          <button class="ghost" id="svReset">Zurücksetzen</button>
+        </div>
+      </div>
+      <div class="readout">
+        <div><span class="k">Aktive Punkte</span><span class="v" id="svActive">–</span></div>
+        <div><span class="k">davon Stützvektoren</span><span class="v" id="svCount">–</span></div>
+        <div><span class="k">Grenze verschoben um</span><span class="v" id="svShift">0.00</span></div>
+      </div>
+    </div>
+
+    <div class="prose">
+      <p>Löschen Sie einen Punkt, der weit weg vom Korridor liegt: Die Grenze bleibt <strong>exakt</strong> stehen. Löschen Sie einen der eingekreisten Randpunkte: Sie springt sofort.</p>
+      <p>Diese wenigen Randpunkte tragen die Entscheidung — sie <em>stützen</em> die Grenze. Daher <span class="term">Support Vectors</span>, im Deutschen Stützvektoren. Alles andere könnte man wegwerfen, ohne dass sich das Modell ändert.</p>
+      <div class="aside">
+        <b>Warum das praktisch ist</b>
+        Das Modell besteht am Ende nur aus einer Handvoll Datenpunkten. Das macht SVMs sparsam und erklärbar: Man kann konkret zeigen, welche Fälle die Entscheidung tragen.
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== 03 ===== -->
+<section class="chapter" id="kap3">
+  <div class="ch-head">
+    <div class="ch-num">03</div>
+    <div>
+      <h2>Echte Daten überlappen sich</h2>
+      <p>In der Praxis liegt nie alles sauber getrennt. Die SVM darf deshalb Fehler machen — sie muss nur dafür bezahlen. Der Preis heißt C.</p>
+    </div>
+  </div>
+
+  <div class="split">
+    <div class="prose">
+      <p>Bei überlappenden Gruppen gibt es keinen freien Korridor mehr. Also erlaubt man einzelnen Punkten, hineinzuragen oder sogar auf der falschen Seite zu liegen — gegen einen Strafpreis.</p>
+      <p><strong>Kleines C</strong> heißt: Fehler sind billig. Die SVM nimmt lieber ein paar falsche Punkte in Kauf und behält einen breiten, ruhigen Korridor. <strong>Großes C</strong> heißt: Fehler sind teuer. Die Grenze schlängelt sich um jeden einzelnen Punkt herum.</p>
+      <div class="aside">
+        <b>Der klassische Zielkonflikt</b>
+        Links im Regler: einfacheres Modell, das Ausreißer ignoriert. Rechts: ein Modell, das die Trainingsdaten auswendig lernt — und bei neuen Daten oft schlechter abschneidet. <span class="term">Overfitting</span>
+      </div>
+      <p style="margin-top:22px">Achten Sie auf die Zahl der Stützvektoren: Sie fällt, wenn C steigt. Ein Modell, das nur noch an wenigen Punkten hängt, ist nicht automatisch das bessere.</p>
+    </div>
+
+    <div class="panel">
+      <div class="panel-head"><b>Weicher Rand</b><span>Regler bewegen</span></div>
+      <div class="cv-hold"><canvas id="cvC" role="img" aria-label="Streudiagramm zweier überlappender Punktwolken mit Trennlinie und Randbereich, abhängig vom Regler C."></canvas></div>
+      <div class="controls">
+        <div class="ctrl">
+          <div class="ctrl-lab"><span>C — Preis für einen Fehler</span><output id="cVal">0.32</output></div>
+          <input type="range" id="cSlider" min="-2.5" max="1" step="0.02" value="-0.5">
+          <div class="ctrl-lab"><span class="ctrl-note" id="cNote">Ausgewogen.</span></div>
+        </div>
+        <div class="btnrow"><button class="ghost" id="cNewData">Andere Daten würfeln</button></div>
+      </div>
+      <div class="readout">
+        <div><span class="k">Korridorbreite</span><span class="v" id="cW">–</span></div>
+        <div><span class="k">Stützvektoren</span><span class="v" id="cSV">–</span></div>
+        <div><span class="k">Falsch einsortiert</span><span class="v" id="cErr">–</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== 04 ===== -->
+<section class="chapter" id="kap4">
+  <div class="ch-head">
+    <div class="ch-num">04</div>
+    <div>
+      <h2>Wenn keine gerade Linie mehr hilft</h2>
+      <p>Manche Gruppen umschließen einander. Der Trick: die Punkte in eine zusätzliche Dimension anheben — dort reicht wieder eine flache Trennung.</p>
+    </div>
+  </div>
+
+  <div class="split rev">
+    <div class="panel">
+      <div class="panel-head"><b>Anheben statt verbiegen</b><span id="k4mode">Ansicht: von oben</span></div>
+      <div class="cv-hold"><canvas id="cvK" role="img" aria-label="Zwei ineinanderliegende Ringe von Punkten mit gekrümmter Trennlinie; umschaltbar auf eine räumliche Seitenansicht."></canvas></div>
+      <div class="controls">
+        <div class="btnrow">
+          <button id="kLift">Punkte anheben</button>
+          <button class="ghost" id="kLin" aria-pressed="false">Gerade Linie</button>
+          <button class="ghost" id="kRbf" aria-pressed="true">Gekrümmt (RBF)</button>
+        </div>
+        <div class="ctrl" id="kGammaWrap">
+          <div class="ctrl-lab"><span>Gamma — wie kleinteilig darf die Grenze sein?</span><output id="kgVal">0.50</output></div>
+          <input type="range" id="kGamma" min="0.05" max="3" step="0.01" value="0.5">
+          <div class="ctrl-lab"><span class="ctrl-note" id="kNote">Glatte, runde Grenze.</span></div>
+        </div>
+      </div>
+      <div class="readout">
+        <div><span class="k">Trainingsdaten</span><span class="v" id="kAcc">–</span></div>
+        <div><span class="k">Neue, ungesehene Daten</span><span class="v" id="kAccNew">–</span></div>
+        <div><span class="k">Stützvektoren</span><span class="v" id="kSV">–</span></div>
+      </div>
+    </div>
+
+    <div class="prose">
+      <p>Links liegt eine Gruppe als Ring um die andere. Keine Gerade der Welt trennt das sauber.</p>
+      <p>Drücken Sie <strong>Punkte anheben</strong>: Die inneren Punkte steigen nach oben, die äußeren bleiben unten. Aus der Seitenansicht lassen sie sich nun mit einer <strong>waagerechten Ebene</strong> trennen. Zurück in der Draufsicht erscheint dieselbe Ebene als Kreis.</p>
+      <p>Genau das macht der <span class="term">Kernel-Trick</span> — nur rechnerisch, ohne die Punkte je wirklich anzuheben.</p>
+      <div class="aside">
+        <b>Achtung beim Gamma-Regler</b>
+        Im Datensatz stecken vier Punkte mit falschem Etikett. Schieben Sie Gamma nach rechts: Die Grenze baut um jeden davon eine eigene Insel. Die Trefferquote auf den Trainingsdaten steigt auf 100 % — die auf neuen Daten fällt. Das ist <span class="term">Overfitting</span>, live und in Zahlen.
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== 05 ===== -->
+<section class="chapter" id="kap5">
+  <div class="ch-head">
+    <div class="ch-num">05</div>
+    <div>
+      <h2>Dasselbe Prinzip, umgedreht: Regression</h2>
+      <p>Bei der Klassifikation soll der Korridor möglichst leer bleiben. Bei der Regression soll er möglichst alles enthalten.</p>
+    </div>
+  </div>
+
+  <div class="split">
+    <div class="prose">
+      <p>Statt zwei Gruppen zu trennen, sagt eine SVM hier einen Zahlenwert vorher — etwa eine Liegedauer oder einen Messwert.</p>
+      <p>Die Idee bleibt: Um die vorhergesagte Kurve wird ein <strong>Schlauch</strong> gelegt. Alles, was darin liegt, gilt als richtig genug und wird komplett ignoriert. Nur Punkte außerhalb ziehen an der Kurve.</p>
+      <div class="aside">
+        <b>Fachbegriff</b>
+        Die halbe Schlauchbreite heißt <span class="term">Epsilon</span>, das Verfahren <span class="term">Support Vector Regression</span>. „Fast richtig“ kostet hier gar nichts — das macht die Methode unempfindlich gegen Rauschen.
+      </div>
+      <p style="margin-top:22px">Ziehen Sie einen Punkt weit nach oben. Sie werden sehen: Die Kurve folgt ihm nur widerwillig. Ein einzelner Ausreißer reißt das Modell nicht mit — anders als bei einer klassischen Regression der kleinsten Quadrate.</p>
+    </div>
+
+    <div class="panel">
+      <div class="panel-head"><b>Regressions-Labor</b><span>Punkte nach oben/unten ziehen</span></div>
+      <div class="cv-hold"><canvas id="cvR" role="img" aria-label="Streudiagramm mit vorhergesagter Kurve und einem Schlauch aus Toleranzgrenzen darum."></canvas></div>
+      <div class="controls">
+        <div class="ctrl">
+          <div class="ctrl-lab"><span>Epsilon — Breite des Schlauchs</span><output id="rEVal">0.40</output></div>
+          <input type="range" id="rEps" min="0.02" max="2.2" step="0.02" value="0.4">
+        </div>
+        <div class="ctrl">
+          <div class="ctrl-lab"><span>C — wie stark ziehen Ausreißer?</span><output id="rCVal">32</output></div>
+          <input type="range" id="rC" min="-1.3" max="2" step="0.02" value="1.5">
+        </div>
+        <div class="btnrow">
+          <button id="rRbf" aria-pressed="true">Gekrümmt</button>
+          <button id="rLin" aria-pressed="false">Gerade</button>
+          <button class="ghost" id="rReset">Zurücksetzen</button>
+        </div>
+      </div>
+      <div class="readout">
+        <div><span class="k">Im Schlauch</span><span class="v" id="rIn">–</span></div>
+        <div><span class="k">Ziehen an der Kurve</span><span class="v" id="rOut">–</span></div>
+      </div>
+      <div class="legend">
+        <span><i class="band"></i>Schlauch (Epsilon)</span>
+        <span><i style="background:var(--blue)"></i>ignoriert</span>
+        <span><i style="background:var(--rose)"></i>zieht an der Kurve</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== 06 ===== -->
+<section class="chapter" id="kap6" style="border-bottom:0">
+  <div class="ch-head">
+    <div class="ch-num">06</div>
+    <div>
+      <h2>Merkzettel</h2>
+      <p>Vier Sätze, die von dieser Schulung hängenbleiben sollten.</p>
+    </div>
+  </div>
+
+  <div class="cards">
+    <div class="card">
+      <span class="tag">Kernidee</span>
+      <h3>Abstand halten</h3>
+      <p>Die SVM legt die Grenze in die Mitte des breitesten freien Korridors — nicht irgendwohin, wo es gerade passt.</p>
+    </div>
+    <div class="card">
+      <span class="tag">Modell</span>
+      <h3>Wenige Punkte tragen alles</h3>
+      <p>Nur die Grenzfälle bestimmen das Ergebnis. Das Modell ist am Ende eine kurze Liste konkreter Datenpunkte.</p>
+    </div>
+    <div class="card">
+      <span class="tag">Stellschrauben</span>
+      <h3>C und Gamma</h3>
+      <p>C bestimmt, wie teuer Fehler sind. Gamma, wie kleinteilig die Grenze werden darf. Beide zu groß = auswendig gelernt.</p>
+    </div>
+    <div class="card">
+      <span class="tag">Regression</span>
+      <h3>Fast richtig genügt</h3>
+      <p>Alles innerhalb des Schlauchs zählt als richtig. Deshalb stören einzelne Ausreißer kaum.</p>
+    </div>
+  </div>
+
+  <div style="margin-top:44px" class="split">
+    <div class="prose">
+      <h3 style="font-size:20px;margin:0 0 14px">Wann lohnt sich eine SVM?</h3>
+      <p>SVMs sind kein Auslaufmodell. Sie sind stark genau dort, wo neuronale Netze schwach sind: bei <strong>wenigen, gut beschriebenen Fällen</strong>.</p>
+      <div class="aside">
+        <b>Vor dem Training</b>
+        Merkmale immer auf eine vergleichbare Größenordnung bringen. Eine SVM misst Abstände — ungleiche Skalen verzerren jede Entscheidung.
+      </div>
+    </div>
+    <div class="panel">
+      <table class="cmp">
+        <tr><th>Situation</th><th>Einschätzung</th></tr>
+        <tr><td>Wenige hundert Fälle, viele Merkmale</td><td>Sehr gut geeignet. Klarer Vorteil gegenüber datenhungrigen Verfahren.</td></tr>
+        <tr><td>Ergebnis muss begründbar sein</td><td>Gut. Man kann die tragenden Fälle konkret benennen.</td></tr>
+        <tr><td>Sehr viele Daten (&gt; 100.000 Fälle)</td><td>Eher ungeeignet. Das Training wird spürbar langsam.</td></tr>
+        <tr><td>Kalibrierte Wahrscheinlichkeiten nötig</td><td>Nur mit Nacharbeit. Die SVM liefert erst einmal nur eine Seite der Grenze.</td></tr>
+        <tr><td>Bilder, Sprache, rohe Signale</td><td>Andere Verfahren sind heute deutlich stärker.</td></tr>
+      </table>
+    </div>
+  </div>
+</section>
+
+</div>
+</main>
+
+<footer><div class="wrap">Alle Modelle werden live im Browser trainiert · Schulungsmaterial</div></footer>
+
+<script>
+"use strict";
+const REDUCED = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+const CLR = {ink:'#132019', soft:'#4C5C54', faint:'#8A968F', rule:'#CAD1CA',
+  blue:'#2B3FA8', rose:'#C22E5A', amber:'#C97F14', amberB:'#E5A02E', paper:'#F7F9F6'};
+
+/* ---------------- Kernels & SVM ---------------- */
+function dot(a,b){let s=0;for(let i=0;i<a.length;i++)s+=a[i]*b[i];return s;}
+function makeKernel(t,g){
+  if(t==='linear') return (a,b)=>dot(a,b);
+  return (a,b)=>{let s=0;for(let i=0;i<a.length;i++){const d=a[i]-b[i];s+=d*d;}return Math.exp(-g*s);};
+}
+function trainSVC(X,y,C,kern,maxPasses){
+  maxPasses=maxPasses||25;
+  const n=X.length; if(!n) return null;
+  const K=[]; for(let i=0;i<n;i++) K.push(new Float64Array(n));
+  for(let i=0;i<n;i++)for(let j=i;j<n;j++){const v=kern(X[i],X[j]);K[i][j]=v;K[j][i]=v;}
+  const alpha=new Float64Array(n); let b=0; const tol=1e-3; let passes=0,iter=0;
+  const f=i=>{let s=b;for(let k=0;k<n;k++) if(alpha[k]!==0) s+=alpha[k]*y[k]*K[k][i];return s;};
+  while(passes<maxPasses && iter<30000){
+    let changed=0;
+    for(let i=0;i<n;i++){
+      const Ei=f(i)-y[i];
+      if((y[i]*Ei<-tol&&alpha[i]<C)||(y[i]*Ei>tol&&alpha[i]>0)){
+        let j=i; if(n<2) break;
+        while(j===i) j=(Math.random()*n)|0;
+        const Ej=f(j)-y[j], ai=alpha[i], aj=alpha[j];
+        let L,H;
+        if(y[i]!==y[j]){L=Math.max(0,aj-ai);H=Math.min(C,C+aj-ai);}
+        else{L=Math.max(0,ai+aj-C);H=Math.min(C,ai+aj);}
+        if(L>=H) continue;
+        const eta=2*K[i][j]-K[i][i]-K[j][j];
+        if(eta>=-1e-12) continue;
+        let ajn=Math.min(H,Math.max(L,aj-y[j]*(Ei-Ej)/eta));
+        if(Math.abs(ajn-aj)<1e-7) continue;
+        const ain=ai+y[i]*y[j]*(aj-ajn);
+        alpha[i]=ain; alpha[j]=ajn;
+        const b1=b-Ei-y[i]*(ain-ai)*K[i][i]-y[j]*(ajn-aj)*K[i][j];
+        const b2=b-Ej-y[i]*(ain-ai)*K[i][j]-y[j]*(ajn-aj)*K[j][j];
+        if(ain>1e-9&&ain<C-1e-9) b=b1; else if(ajn>1e-9&&ajn<C-1e-9) b=b2; else b=(b1+b2)/2;
+        changed++; iter++;
+      }
+    }
+    if(!changed) passes++; else passes=0;
+  }
+  const sv=[]; let maxA=0;
+  for(let i=0;i<n;i++) if(alpha[i]>maxA) maxA=alpha[i];
+  const thr=Math.max(1e-7, maxA*1e-5);
+  for(let i=0;i<n;i++) if(alpha[i]>thr) sv.push(i);
+  // ||w|| for margin width (2/||w||)
+  let ww=0;
+  for(const i of sv) for(const j of sv) ww+=alpha[i]*alpha[j]*y[i]*y[j]*K[i][j];
+  const norm=Math.sqrt(Math.max(ww,1e-12));
+  return {alpha,b,sv,marginWidth:2/norm,
+    predict(x){let s=b;for(const i of sv) s+=alpha[i]*y[i]*kern(X[i],x);return s;}};
+}
+function trainSVR(Xraw,yraw,C,epsRaw,kType,gamma,iters){
+  iters=iters||1400;
+  const n=Xraw.length, d=Xraw[0].length;
+  const mu=new Array(d).fill(0), sd=new Array(d).fill(0);
+  for(let j=0;j<d;j++){for(let i=0;i<n;i++)mu[j]+=Xraw[i][j];mu[j]/=n;
+    for(let i=0;i<n;i++)sd[j]+=Math.pow(Xraw[i][j]-mu[j],2); sd[j]=Math.sqrt(sd[j]/n)||1;}
+  let ym=0; for(let i=0;i<n;i++)ym+=yraw[i]; ym/=n;
+  let ys=0; for(let i=0;i<n;i++)ys+=Math.pow(yraw[i]-ym,2); ys=Math.sqrt(ys/n)||1;
+  const X=Xraw.map(r=>r.map((v,j)=>(v-mu[j])/sd[j]));
+  const y=yraw.map(v=>(v-ym)/ys);
+  const eps=epsRaw/ys, kern=makeKernel(kType,gamma);
+  const K=[]; for(let i=0;i<n;i++) K.push(new Float64Array(n));
+  for(let i=0;i<n;i++)for(let j=i;j<n;j++){const v=kern(X[i],X[j]);K[i][j]=v;K[j][i]=v;}
+  let lam=0; for(let i=0;i<n;i++){let s=0;for(let j=0;j<n;j++)s+=Math.abs(K[i][j]);if(s>lam)lam=s;}
+  const delta=0.06, L=lam+(C/delta)*lam*lam+1, step=1/L, stepB=1/(1+n*C/delta);
+  let beta=new Float64Array(n), betaPrev=new Float64Array(n), b=0, bPrev=0, tk=1;
+  for(let t=0;t<iters;t++){
+    const tk1=(1+Math.sqrt(1+4*tk*tk))/2, mom=(tk-1)/tk1;
+    const zb=new Float64Array(n);
+    for(let i=0;i<n;i++) zb[i]=beta[i]+mom*(beta[i]-betaPrev[i]);
+    const zbias=b+mom*(b-bPrev);
+    const g=new Float64Array(n); let gb=0;
+    for(let i=0;i<n;i++){
+      let fv=zbias; for(let j=0;j<n;j++) fv+=zb[j]*K[j][i];
+      const r=fv-y[i], a=Math.abs(r); let dl=0;
+      if(a>eps+delta) dl=Math.sign(r); else if(a>eps) dl=Math.sign(r)*(a-eps)/delta;
+      if(dl){const c=C*dl; for(let j=0;j<n;j++) g[j]+=c*K[i][j]; gb+=c;}
+    }
+    for(let j=0;j<n;j++){let reg=0;for(let k=0;k<n;k++)reg+=zb[k]*K[k][j];g[j]+=reg;}
+    betaPrev=beta; bPrev=b;
+    const nb=new Float64Array(n);
+    for(let j=0;j<n;j++) nb[j]=zb[j]-step*g[j];
+    beta=nb; b=zbias-stepB*gb; tk=tk1;
+  }
+  return {predict(xr){const xs=xr.map((v,j)=>(v-mu[j])/sd[j]);
+    let s=b; for(let i=0;i<n;i++) if(beta[i]!==0) s+=beta[i]*kern(X[i],xs);
+    return s*ys+ym;}};
+}
+
+/* ---------------- Plot helper ---------------- */
+class Plot{
+  constructor(cv,xmin,xmax,ymin,ymax){
+    this.cv=cv; this.ctx=cv.getContext('2d');
+    this.xmin=xmin;this.xmax=xmax;this.ymin=ymin;this.ymax=ymax;
+    this.w=0;this.h=0;
+    const ro=new ResizeObserver(()=>{this.resize(); this.onresize&&this.onresize();});
+    ro.observe(cv.parentElement||cv);
+    this.resize();
+  }
+  resize(){
+    const r=this.cv.getBoundingClientRect();
+    const dpr=Math.min(window.devicePixelRatio||1,2);
+    this.w=Math.max(r.width,10); this.h=Math.max(r.height,10);
+    this.cv.width=Math.round(this.w*dpr); this.cv.height=Math.round(this.h*dpr);
+    this.ctx.setTransform(dpr,0,0,dpr,0,0);
+  }
+  X(x){return (x-this.xmin)/(this.xmax-this.xmin)*this.w;}
+  Y(y){return this.h-(y-this.ymin)/(this.ymax-this.ymin)*this.h;}
+  iX(p){return this.xmin+p/this.w*(this.xmax-this.xmin);}
+  iY(p){return this.ymin+(this.h-p)/this.h*(this.ymax-this.ymin);}
+  clear(){const c=this.ctx;c.clearRect(0,0,this.w,this.h);c.fillStyle=CLR.paper;c.fillRect(0,0,this.w,this.h);}
+  grid(stepX,stepY){
+    const c=this.ctx; c.save(); c.strokeStyle='rgba(19,32,25,.07)'; c.lineWidth=1;
+    c.beginPath();
+    for(let x=Math.ceil(this.xmin/stepX)*stepX;x<=this.xmax;x+=stepX){const p=Math.round(this.X(x))+.5;c.moveTo(p,0);c.lineTo(p,this.h);}
+    for(let y=Math.ceil(this.ymin/stepY)*stepY;y<=this.ymax;y+=stepY){const p=Math.round(this.Y(y))+.5;c.moveTo(0,p);c.lineTo(this.w,p);}
+    c.stroke(); c.restore();
+  }
+  pt(x,y,color,r,ring){
+    const c=this.ctx, px=this.X(x), py=this.Y(y);
+    if(ring){c.beginPath();c.arc(px,py,r+4.5,0,6.2832);c.strokeStyle=CLR.ink;c.lineWidth=1.6;c.stroke();}
+    c.beginPath();c.arc(px,py,r,0,6.2832);
+    c.fillStyle=color;c.fill();
+    c.strokeStyle=CLR.paper;c.lineWidth=1.6;c.stroke();
+  }
+  cross(x,y){
+    const c=this.ctx,px=this.X(x),py=this.Y(y),s=4;
+    c.save();c.strokeStyle='rgba(19,32,25,.28)';c.lineWidth=1.4;c.beginPath();
+    c.moveTo(px-s,py-s);c.lineTo(px+s,py+s);c.moveTo(px+s,py-s);c.lineTo(px-s,py+s);c.stroke();c.restore();
+  }
+  hatch(clipPath,color){
+    const c=this.ctx;c.save();c.clip(clipPath);
+    c.strokeStyle=color;c.lineWidth=1;c.beginPath();
+    const span=this.w+this.h;
+    for(let i=-this.h;i<span;i+=9){c.moveTo(i,0);c.lineTo(i+this.h,this.h);}
+    c.stroke();c.restore();
+  }
+}
+function field(plot,fn,opts){
+  const c=plot.ctx, stepPx=opts.step||6;
+  const cols=Math.ceil(plot.w/stepPx)+1, rows=Math.ceil(plot.h/stepPx)+1;
+  const vals=new Float64Array(cols*rows);
+  for(let r=0;r<rows;r++){const yv=plot.iY(r*stepPx);
+    for(let cc=0;cc<cols;cc++) vals[r*cols+cc]=fn(plot.iX(cc*stepPx),yv);}
+  if(opts.fill!==false){
+    for(let r=0;r<rows-1;r++)for(let cc=0;cc<cols-1;cc++){
+      const v=vals[r*cols+cc];
+      const a=Math.min(Math.abs(v),1.6)/1.6*0.17+0.03;
+      c.fillStyle=(v>=0?'rgba(194,46,90,':'rgba(43,63,168,')+a.toFixed(3)+')';
+      c.fillRect(cc*stepPx,r*stepPx,stepPx+1,stepPx+1);
+    }
+  }
+  const contour=(level)=>{
+    c.beginPath();
+    for(let r=0;r<rows-1;r++)for(let cc=0;cc<cols-1;cc++){
+      const v00=vals[r*cols+cc],v10=vals[r*cols+cc+1],v01=vals[(r+1)*cols+cc],v11=vals[(r+1)*cols+cc+1];
+      const P=[];
+      if((v00-level)*(v10-level)<0){const t=(level-v00)/(v10-v00);P.push([(cc+t)*stepPx,r*stepPx]);}
+      if((v01-level)*(v11-level)<0){const t=(level-v01)/(v11-v01);P.push([(cc+t)*stepPx,(r+1)*stepPx]);}
+      if((v00-level)*(v01-level)<0){const t=(level-v00)/(v01-v00);P.push([cc*stepPx,(r+t)*stepPx]);}
+      if((v10-level)*(v11-level)<0){const t=(level-v10)/(v11-v10);P.push([(cc+1)*stepPx,(r+t)*stepPx]);}
+      if(P.length>=2){c.moveTo(P[0][0],P[0][1]);c.lineTo(P[1][0],P[1][1]);
+        if(P.length===4){c.moveTo(P[2][0],P[2][1]);c.lineTo(P[3][0],P[3][1]);}}
+    }
+    c.stroke();
+  };
+  if(opts.margins){
+    c.save();c.strokeStyle=CLR.amber;c.lineWidth=1.4;c.setLineDash([5,4]);
+    contour(1);contour(-1);c.restore();
+  }
+  c.save();c.strokeStyle=CLR.ink;c.lineWidth=2.2;c.setLineDash([]);contour(0);c.restore();
+}
+function hit(plot,pts,mx,my,rad){
+  let best=-1,bd=rad*rad;
+  for(let i=0;i<pts.length;i++){
+    const dx=plot.X(pts[i][0])-mx, dy=plot.Y(pts[i][1])-my, d=dx*dx+dy*dy;
+    if(d<bd){bd=d;best=i;}
+  }
+  return best;
+}
+function evt(cv,e){const r=cv.getBoundingClientRect();return [e.clientX-r.left,e.clientY-r.top];}
+function fmt(v,d){return (Math.round(v*Math.pow(10,d))/Math.pow(10,d)).toFixed(d);}
+
+/* ================= HERO: corridor instrument ================= */
+(function(){
+  const cv=document.getElementById('cvHero');
+  const P=new Plot(cv,-6,6,-4.5,4.5);
+  const A=[[-3.4,1.2],[-2.6,2.5],[-4.1,-.4],[-2.2,.4],[-3.1,-1.6],[-1.4,1.9],[-4.4,1.9],[-2.0,-2.4]];
+  const B=[[2.4,-1.1],[3.4,.4],[1.6,-2.3],[3.0,-2.6],[4.2,-.8],[2.0,.9],[4.3,1.5],[3.3,2.3]];
+  let theta=3.28, target=null, best=0, bestTheta=0;
+  const widthAt=(th)=>{
+    const ux=Math.cos(th),uy=Math.sin(th);
+    let minA=1e9,maxB=-1e9;
+    for(const p of A){const v=p[0]*ux+p[1]*uy; if(v<minA)minA=v;}
+    for(const p of B){const v=p[0]*ux+p[1]*uy; if(v>maxB)maxB=v;}
+    return {w:minA-maxB, off:(minA+maxB)/2, ux, uy, minA, maxB};
+  };
+  for(let i=0;i<1440;i++){const th=i/1440*Math.PI*2; const r=widthAt(th); if(r.w>best){best=r.w;bestTheta=th;}}
+  document.getElementById('hBest').textContent=fmt(best,2);
+
+  function draw(){
+    P.clear(); P.grid(1,1);
+    const c=P.ctx, r=widthAt(theta), ok=r.w>0;
+    const {ux,uy,off,w}=r;
+    const px=-uy, py=ux; // direction along the boundary
+    const big=20;
+    const line=(d)=>{
+      const cx=ux*d, cy=uy*d;
+      return [[cx-px*big,cy-py*big],[cx+px*big,cy+py*big]];
+    };
+    if(ok){
+      const l1=line(off-w/2), l2=line(off+w/2);
+      const band=new Path2D();
+      band.moveTo(P.X(l1[0][0]),P.Y(l1[0][1]));
+      band.lineTo(P.X(l1[1][0]),P.Y(l1[1][1]));
+      band.lineTo(P.X(l2[1][0]),P.Y(l2[1][1]));
+      band.lineTo(P.X(l2[0][0]),P.Y(l2[0][1]));
+      band.closePath();
+      c.fillStyle='rgba(229,160,46,.15)'; c.fill(band);
+      P.hatch(band,'rgba(229,160,46,.28)');
+      c.strokeStyle=CLR.amber;c.lineWidth=1.3;c.setLineDash([5,4]);c.stroke(band);c.setLineDash([]);
+    }
+    // boundary
+    const lb=line(off);
+    c.beginPath();c.moveTo(P.X(lb[0][0]),P.Y(lb[0][1]));c.lineTo(P.X(lb[1][0]),P.Y(lb[1][1]));
+    c.strokeStyle=ok?CLR.ink:CLR.rose;c.lineWidth=2.4;c.stroke();
+    // points
+    const tol=1e-6; let touch=0;
+    for(const p of A){const v=p[0]*ux+p[1]*uy; const on=ok&&Math.abs(v-r.minA)<0.02; if(on)touch++;
+      P.pt(p[0],p[1],CLR.blue,6,on);}
+    for(const p of B){const v=p[0]*ux+p[1]*uy; const on=ok&&Math.abs(v-r.maxB)<0.02; if(on)touch++;
+      P.pt(p[0],p[1],CLR.rose,6,on);}
+    // angle dial
+    c.save();
+    const dx=P.w-46, dy=46, rad=24;
+    c.beginPath();c.arc(dx,dy,rad,0,6.2832);c.strokeStyle='rgba(19,32,25,.16)';c.lineWidth=1;c.stroke();
+    c.beginPath();c.moveTo(dx,dy);c.lineTo(dx+Math.cos(-theta+Math.PI/2)*rad,dy+Math.sin(-theta+Math.PI/2)*rad);
+    c.strokeStyle=CLR.ink;c.lineWidth=1.8;c.stroke();
+    c.beginPath();c.moveTo(dx,dy);c.lineTo(dx+Math.cos(-bestTheta+Math.PI/2)*rad,dy+Math.sin(-bestTheta+Math.PI/2)*rad);
+    c.strokeStyle=CLR.amberB;c.lineWidth=1.4;c.setLineDash([3,3]);c.stroke();c.setLineDash([]);
+    c.restore();
+
+    document.getElementById('hWidth').textContent = ok?fmt(w,2):'—';
+    document.getElementById('hTouch').textContent = ok?String(touch):'0';
+    const pct=ok?Math.max(0,w/best):0;
+    document.getElementById('hFill').style.width=(pct*100).toFixed(1)+'%';
+    document.getElementById('hPct').textContent=Math.round(pct*100)+' %';
+    const tr=document.getElementById('hTrack');
+    const atMax=pct>0.995;
+    tr.classList.toggle('max',atMax);
+    document.getElementById('hGaugeLab').textContent =
+      !ok?'Diese Richtung trennt die Gruppen nicht':
+      atMax?'Maximaler Korridor erreicht':'Wie nah am Optimum?';
+  }
+  P.onresize=draw;
+
+  let dragging=false, startAng=0, startTheta=0;
+  const angOf=(mx,my)=>Math.atan2(P.iY(my),P.iX(mx));
+  cv.addEventListener('pointerdown',e=>{
+    const [mx,my]=evt(cv,e); dragging=true; target=null;
+    startAng=angOf(mx,my); startTheta=theta; cv.setPointerCapture(e.pointerId);
+  });
+  cv.addEventListener('pointermove',e=>{
+    if(!dragging)return;
+    const [mx,my]=evt(cv,e);
+    theta=startTheta+(angOf(mx,my)-startAng); draw();
+  });
+  cv.addEventListener('pointerup',()=>dragging=false);
+  cv.addEventListener('pointercancel',()=>dragging=false);
+
+  document.getElementById('hSolve').addEventListener('click',()=>{
+    let d=bestTheta-theta; d=Math.atan2(Math.sin(d),Math.cos(d));
+    if(REDUCED){theta=bestTheta;draw();return;}
+    const t0=performance.now(), th0=theta, dur=650;
+    (function step(t){
+      const k=Math.min(1,(t-t0)/dur), e=1-Math.pow(1-k,3);
+      theta=th0+d*e; draw();
+      if(k<1) requestAnimationFrame(step);
+    })(t0);
+  });
+  document.getElementById('hReset').addEventListener('click',()=>{theta=3.28;draw();});
+  draw();
+})();
+
+/* ================= 01 Classification lab ================= */
+(function(){
+  const cv=document.getElementById('cvLab');
+  const P=new Plot(cv,-6,6,-4.5,4.5);
+  const START=[
+    [-3.2,1.4,-1],[-2.4,2.6,-1],[-4.0,-.2,-1],[-2.0,.5,-1],[-3.0,-1.5,-1],[-1.6,2.0,-1],[-4.3,1.7,-1],
+    [2.6,-1.0,1],[3.3,.6,1],[1.8,-2.2,1],[3.1,-2.5,1],[4.0,-.6,1],[2.2,1.0,1],[4.1,1.7,1]
+  ];
+  let pts=START.map(p=>p.slice());
+  let cls=-1, showMargin=true, model=null, drag=-1, moved=false;
+
+  function fit(){
+    const X=pts.map(p=>[p[0],p[1]]), y=pts.map(p=>p[2]);
+    const hasBoth=y.some(v=>v>0)&&y.some(v=>v<0);
+    model=hasBoth?trainSVC(X,y,50,makeKernel('linear')):null;
+  }
+  function draw(){
+    P.clear(); P.grid(1,1);
+    if(model) field(P,(x,y)=>model.predict([x,y]),{step:7,margins:showMargin});
+    const svset=new Set(model?model.sv:[]);
+    pts.forEach((p,i)=>P.pt(p[0],p[1],p[2]>0?CLR.rose:CLR.blue,6.5,svset.has(i)));
+    document.getElementById('labW').textContent = model?fmt(model.marginWidth,2):'—';
+    document.getElementById('labSV').textContent = model?String(model.sv.length):'—';
+    document.getElementById('labN').textContent = String(pts.length);
+  }
+  P.onresize=draw;
+  function refresh(){fit();draw();}
+
+  cv.addEventListener('pointerdown',e=>{
+    const [mx,my]=evt(cv,e); moved=false;
+    const i=hit(P,pts,mx,my,16);
+    if(e.shiftKey){ if(i>=0){pts.splice(i,1);refresh();} return; }
+    if(i>=0){drag=i;cv.setPointerCapture(e.pointerId);}
+    else{pts.push([P.iX(mx),P.iY(my),cls]);refresh();}
+  });
+  cv.addEventListener('pointermove',e=>{
+    if(drag<0)return; moved=true;
+    const [mx,my]=evt(cv,e);
+    pts[drag][0]=Math.max(-5.8,Math.min(5.8,P.iX(mx)));
+    pts[drag][1]=Math.max(-4.3,Math.min(4.3,P.iY(my)));
+    refresh();
+  });
+  const up=()=>{drag=-1;};
+  cv.addEventListener('pointerup',up); cv.addEventListener('pointercancel',up);
+
+  const bA=document.getElementById('labA'), bB=document.getElementById('labB');
+  bA.addEventListener('click',()=>{cls=-1;bA.setAttribute('aria-pressed','true');bB.setAttribute('aria-pressed','false');});
+  bB.addEventListener('click',()=>{cls=1;bB.setAttribute('aria-pressed','true');bA.setAttribute('aria-pressed','false');});
+  const bM=document.getElementById('labMargin');
+  bM.addEventListener('click',()=>{showMargin=!showMargin;bM.setAttribute('aria-pressed',String(showMargin));draw();});
+  document.getElementById('labReset').addEventListener('click',()=>{pts=START.map(p=>p.slice());refresh();});
+  refresh();
+})();
+
+/* ================= 02 Support vectors ================= */
+(function(){
+  const cv=document.getElementById('cvSV');
+  const P=new Plot(cv,-6,6,-4.5,4.5);
+  const DATA=[];
+  (function(){
+    const seedA=[[-4.6,2.9],[-4.0,1.0],[-5.0,-1.2],[-3.4,3.2],[-2.9,-2.6],[-4.6,-2.9],[-2.3,1.5],[-3.6,-.6],[-5.2,1.9],[-2.5,-.5],[-1.8,2.9],[-3.0,-3.6]];
+    const seedB=[[2.2,-1.6],[3.2,.2],[1.9,1.6],[4.2,-2.4],[3.6,2.8],[5.0,.9],[2.6,3.3],[4.4,1.0],[3.0,-3.2],[5.2,-1.1],[1.7,-3.3],[4.9,3.0]];
+    seedA.forEach(p=>DATA.push([p[0],p[1],-1]));
+    seedB.forEach(p=>DATA.push([p[0],p[1],1]));
+  })();
+  let active=DATA.map(()=>true), model=null, baseB=null;
+  function fit(){
+    const idx=[]; DATA.forEach((p,i)=>{if(active[i])idx.push(i);});
+    const X=idx.map(i=>[DATA[i][0],DATA[i][1]]), y=idx.map(i=>DATA[i][2]);
+    if(!(y.some(v=>v>0)&&y.some(v=>v<0))){model=null;return;}
+    const m=trainSVC(X,y,50,makeKernel('linear'));
+    model={m,idx,svGlobal:new Set(m.sv.map(k=>idx[k]))};
+  }
+  function boundaryRef(){
+    if(!model) return null;
+    // sample decision values along a probe line to measure shift
+    return model.m;
+  }
+  function draw(){
+    P.clear(); P.grid(1,1);
+    if(model) field(P,(x,y)=>model.m.predict([x,y]),{step:7,margins:true});
+    DATA.forEach((p,i)=>{
+      if(!active[i]){P.cross(p[0],p[1]);return;}
+      P.pt(p[0],p[1],p[2]>0?CLR.rose:CLR.blue,6.5,model?model.svGlobal.has(i):false);
+    });
+    document.getElementById('svActive').textContent=String(active.filter(Boolean).length);
+    document.getElementById('svCount').textContent=model?String(model.svGlobal.size):'—';
+    if(model&&baseB){
+      // signed distance = f(x) * marginWidth/2  -> vergleichbare Einheiten
+      const sA=model.m.marginWidth/2, sB=baseB.marginWidth/2;
+      let d=0;
+      for(let k=0;k<9;k++){const x=-5+k*1.25;
+        d=Math.max(d,Math.abs(model.m.predict([x,0])*sA - baseB.predict([x,0])*sB));}
+      document.getElementById('svShift').textContent=fmt(d,2);
+    }
+  }
+  P.onresize=draw;
+  function refresh(){fit();draw();}
+  cv.addEventListener('pointerdown',e=>{
+    const [mx,my]=evt(cv,e);
+    const live=[]; DATA.forEach((p,i)=>{if(active[i])live.push([p[0],p[1],i]);});
+    const k=hit(P,live,mx,my,16);
+    if(k>=0){active[live[k][2]]=false;refresh();}
+  });
+  document.getElementById('svReset').addEventListener('click',()=>{active=DATA.map(()=>true);refresh();});
+  document.getElementById('svDropFar').addEventListener('click',()=>{
+    if(!model)return;
+    DATA.forEach((p,i)=>{ if(active[i]&&!model.svGlobal.has(i)) active[i]=false; });
+    refresh();
+  });
+  fit(); baseB=model?model.m:null; draw();
+})();
+
+/* ================= 03 Soft margin / C ================= */
+(function(){
+  const cv=document.getElementById('cvC');
+  const P=new Plot(cv,-6,6,-4.5,4.5);
+  let pts=[], model=null, C=1;
+  function rnd(){
+    // deterministic-ish overlapping clouds
+    pts=[];
+    const g=(mx,my,lab)=>{
+      for(let i=0;i<19;i++){
+        let u=Math.random(),v=Math.random();
+        const r=Math.sqrt(-2*Math.log(u||1e-9));
+        pts.push([mx+r*Math.cos(6.2832*v)*1.55, my+r*Math.sin(6.2832*v)*1.5, lab]);
+      }
+    };
+    g(-1.7,.7,-1); g(1.7,-.7,1);
+    pts=pts.map(p=>[Math.max(-5.6,Math.min(5.6,p[0])),Math.max(-4.2,Math.min(4.2,p[1])),p[2]]);
+  }
+  function fit(){
+    const X=pts.map(p=>[p[0],p[1]]), y=pts.map(p=>p[2]);
+    model=trainSVC(X,y,C,makeKernel('linear'));
+  }
+  function draw(){
+    P.clear(); P.grid(1,1);
+    if(model) field(P,(x,y)=>model.predict([x,y]),{step:7,margins:true});
+    const svset=new Set(model?model.sv:[]);
+    let err=0;
+    pts.forEach((p,i)=>{
+      const inside=svset.has(i);
+      if(model&&Math.sign(model.predict([p[0],p[1]]))!==p[2]) err++;
+      P.pt(p[0],p[1],p[2]>0?CLR.rose:CLR.blue,6,inside);
+    });
+    document.getElementById('cW').textContent=model?fmt(model.marginWidth,2):'—';
+    document.getElementById('cSV').textContent=model?String(model.sv.length):'—';
+    document.getElementById('cErr').textContent=String(err);
+  }
+  P.onresize=draw;
+  const note=document.getElementById('cNote');
+  function setNote(){
+    if(C<0.02) note.textContent='Fehler sind fast gratis. Der Korridor wird sehr breit — fast alle Punkte ragen hinein.';
+    else if(C<0.2) note.textContent='Viel Toleranz. Breiter Korridor, viele Stützvektoren.';
+    else if(C<2) note.textContent='Ausgewogen. Ein paar Ausreißer werden geduldet.';
+    else note.textContent='Fehler werden teuer. Der Korridor schrumpft auf das Nötigste zusammen.';
+  }
+  const sl=document.getElementById('cSlider'), out=document.getElementById('cVal');
+  function upd(){
+    C=Math.pow(10,parseFloat(sl.value));
+    out.textContent=C<1?fmt(C,2):(C<10?fmt(C,1):String(Math.round(C)));
+    setNote(); fit(); draw();
+  }
+  sl.addEventListener('input',upd);
+  document.getElementById('cNewData').addEventListener('click',()=>{rnd();upd();});
+  rnd(); upd();
+})();
+
+/* ================= 04 Kernel trick ================= */
+(function(){
+  const cv=document.getElementById('cvK');
+  const P=new Plot(cv,-6,6,-4.5,4.5);
+  const X=[],y=[],TX=[],TY=[];
+  (function(){
+    let s=7; const rand=()=>{s=(s*16807)%2147483647;return s/2147483647;};
+    for(let i=0;i<24;i++){const a=rand()*6.2832,r=.6+rand()*1.05;X.push([r*Math.cos(a),r*Math.sin(a)]);y.push(1);}
+    for(let i=0;i<32;i++){const a=rand()*6.2832,r=2.8+rand()*.9;X.push([r*Math.cos(a),r*Math.sin(a)]);y.push(-1);}
+    // vier falsch etikettierte Punkte - daran zeigt sich Überanpassung
+    X.push([3.1,0.5]); y.push(1);
+    X.push([-2.9,-1.2]); y.push(1);
+    X.push([0.7,-0.9]); y.push(-1);
+    X.push([-0.4,1.1]); y.push(-1);
+    // unabhängige Testdaten (nicht sichtbar, nur für die Kennzahl)
+    let t=2024; const r2=()=>{t=(t*16807)%2147483647;return t/2147483647;};
+    for(let i=0;i<140;i++){const a=r2()*6.2832,r=.6+r2()*1.05;TX.push([r*Math.cos(a),r*Math.sin(a)]);TY.push(1);}
+    for(let i=0;i<160;i++){const a=r2()*6.2832,r=2.8+r2()*.9;TX.push([r*Math.cos(a),r*Math.sin(a)]);TY.push(-1);}
+  })();
+  let gamma=.5, kType='rbf', lift=0, anim=null, model=null;
+  function fit(){ model=trainSVC(X,y,10,makeKernel(kType,gamma)); }
+  function drawFlat(){
+    P.clear(); P.grid(1,1);
+    if(model) field(P,(a,b)=>model.predict([a,b]),{step:7,margins:false});
+    const svset=new Set(model?model.sv:[]);
+    X.forEach((p,i)=>P.pt(p[0],p[1],y[i]>0?CLR.rose:CLR.blue,5.5,svset.has(i)));
+  }
+  function drawLift(t){
+    P.clear();
+    const c=P.ctx;
+    const cx=P.w/2, cy=P.h*0.60, ax=P.w*0.072, ay=P.w*0.036, az=P.h*0.115;
+    const proj=(x,yv,z)=>[cx+(x-yv)*ax, cy+(x+yv)*ay-z*az];
+    // ground grid (isometric)
+    c.save();c.strokeStyle='rgba(19,32,25,.12)';c.lineWidth=1;c.beginPath();
+    for(let g=-4;g<=4;g++){
+      let a=proj(g,-4,0),b=proj(g,4,0);c.moveTo(a[0],a[1]);c.lineTo(b[0],b[1]);
+      a=proj(-4,g,0);b=proj(4,g,0);c.moveTo(a[0],a[1]);c.lineTo(b[0],b[1]);
+    }
+    c.stroke();c.restore();
+    const height=p=>{const r2=p[0]*p[0]+p[1]*p[1];return Math.max(0,3.6-r2*0.34);};
+    // separating plane at z=level
+    const level=1.55*t;
+    if(t>0.15){
+      const corners=[proj(-4,-4,level),proj(4,-4,level),proj(4,4,level),proj(-4,4,level)];
+      c.beginPath();c.moveTo(corners[0][0],corners[0][1]);
+      for(let i=1;i<4;i++)c.lineTo(corners[i][0],corners[i][1]);
+      c.closePath();
+      c.fillStyle='rgba(229,160,46,'+(0.20*t).toFixed(3)+')';c.fill();
+      c.strokeStyle='rgba(201,127,20,'+(0.85*t).toFixed(3)+')';c.lineWidth=1.4;c.stroke();
+    }
+    // points, painter's order by depth (x+y)
+    const order=X.map((p,i)=>i).sort((a,b)=>(X[a][0]+X[a][1])-(X[b][0]+X[b][1]));
+    for(const i of order){
+      const p=X[i], z=height(p)*t, s=proj(p[0],p[1],z), g0=proj(p[0],p[1],0);
+      if(t>0.02){c.beginPath();c.moveTo(g0[0],g0[1]);c.lineTo(s[0],s[1]);
+        c.strokeStyle='rgba(19,32,25,.16)';c.lineWidth=1;c.stroke();}
+      c.beginPath();c.arc(s[0],s[1],5.5,0,6.2832);
+      c.fillStyle=y[i]>0?CLR.rose:CLR.blue;c.fill();
+      c.strokeStyle=CLR.paper;c.lineWidth=1.5;c.stroke();
+    }
+  }
+  function draw(){ if(lift>0.001) drawLift(lift); else drawFlat();
+    document.getElementById('k4mode').textContent = lift>0.5?'Ansicht: von der Seite':'Ansicht: von oben';
+  }
+  P.onresize=draw;
+  function stats(){
+    if(!model) return;
+    let ok=0, okT=0;
+    for(let i=0;i<X.length;i++) if(Math.sign(model.predict(X[i]))===y[i]) ok++;
+    for(let i=0;i<TX.length;i++) if(Math.sign(model.predict(TX[i]))===TY[i]) okT++;
+    document.getElementById('kAcc').innerHTML=Math.round(ok/X.length*100)+' <small>%</small>';
+    document.getElementById('kAccNew').innerHTML=Math.round(okT/TX.length*100)+' <small>%</small>';
+    document.getElementById('kSV').textContent=String(model.sv.length);
+  }
+  const gw=document.getElementById('kGammaWrap'), note=document.getElementById('kNote');
+  function setNote(){
+    if(gamma<.35) note.textContent='Glatte, runde Grenze.';
+    else if(gamma<1.1) note.textContent='Passt sich der Ringform gut an.';
+    else if(gamma<2) note.textContent='Wird kleinteilig — Vorsicht.';
+    else note.textContent='Jeder Punkt bekommt seine eigene Insel. Auswendig gelernt.';
+  }
+  document.getElementById('kGamma').addEventListener('input',e=>{
+    gamma=parseFloat(e.target.value);
+    document.getElementById('kgVal').textContent=fmt(gamma,2);
+    setNote(); fit(); stats(); if(lift<0.001) draw();
+  });
+  const bL=document.getElementById('kLin'), bR=document.getElementById('kRbf');
+  function mode(t){
+    kType=t; bL.setAttribute('aria-pressed',String(t==='linear'));
+    bR.setAttribute('aria-pressed',String(t==='rbf'));
+    gw.style.opacity=t==='rbf'?'1':'.35';
+    document.getElementById('kGamma').disabled=(t!=='rbf');
+    lift=0; fit(); stats(); draw();
+  }
+  bL.addEventListener('click',()=>mode('linear'));
+  bR.addEventListener('click',()=>mode('rbf'));
+  const bLift=document.getElementById('kLift');
+  bLift.addEventListener('click',()=>{
+    const to=lift>0.5?0:1;
+    bLift.textContent=to?'Zurück zur Draufsicht':'Punkte anheben';
+    if(REDUCED){lift=to;draw();return;}
+    if(anim)cancelAnimationFrame(anim);
+    const from=lift, t0=performance.now(), dur=900;
+    (function step(t){
+      const k=Math.min(1,(t-t0)/dur), e=k<.5?4*k*k*k:1-Math.pow(-2*k+2,3)/2;
+      lift=from+(to-from)*e; draw();
+      if(k<1) anim=requestAnimationFrame(step);
+    })(t0);
+  });
+  fit(); stats(); setNote(); draw();
+})();
+
+/* ================= 05 SVR ================= */
+(function(){
+  const cv=document.getElementById('cvR');
+  const P=new Plot(cv,0,10,-3.75,3.75);
+  const BASE=[];
+  (function(){
+    let s=11; const rand=()=>{s=(s*48271)%2147483647;return s/2147483647;};
+    for(let i=0;i<18;i++){const x=0.5+i*0.53;
+      BASE.push([x, -1.8+0.42*x+0.75*Math.sin(1.05*x)+(rand()-0.5)*0.55]);}
+  })();
+  let pts=BASE.map(p=>p.slice());
+  let eps=0.4, C=31.6, kType='rbf', model=null, drag=-1;
+  function fit(){
+    model=trainSVR(pts.map(p=>[p[0]]),pts.map(p=>p[1]),C,eps,kType,0.9,2000);
+  }
+  function draw(){
+    P.clear(); P.grid(1,.5);
+    const c=P.ctx, N=90, xs=[],ys=[];
+    for(let i=0;i<=N;i++){const x=P.xmin+(P.xmax-P.xmin)*i/N;xs.push(x);ys.push(model.predict([x]));}
+    // tube
+    const band=new Path2D();
+    band.moveTo(P.X(xs[0]),P.Y(ys[0]+eps));
+    for(let i=1;i<=N;i++) band.lineTo(P.X(xs[i]),P.Y(ys[i]+eps));
+    for(let i=N;i>=0;i--) band.lineTo(P.X(xs[i]),P.Y(ys[i]-eps));
+    band.closePath();
+    c.fillStyle='rgba(229,160,46,.16)';c.fill(band);
+    P.hatch(band,'rgba(229,160,46,.26)');
+    c.strokeStyle=CLR.amber;c.lineWidth=1.3;c.setLineDash([5,4]);c.stroke(band);c.setLineDash([]);
+    // curve
+    c.beginPath();c.moveTo(P.X(xs[0]),P.Y(ys[0]));
+    for(let i=1;i<=N;i++)c.lineTo(P.X(xs[i]),P.Y(ys[i]));
+    c.strokeStyle=CLR.ink;c.lineWidth=2.4;c.stroke();
+    // points
+    let inside=0;
+    pts.forEach(p=>{
+      const r=Math.abs(model.predict([p[0]])-p[1]);
+      const out=r>eps+1e-3; if(!out)inside++;
+      P.pt(p[0],p[1],out?CLR.rose:CLR.blue,6,out);
+    });
+    document.getElementById('rIn').textContent=String(inside);
+    document.getElementById('rOut').textContent=String(pts.length-inside);
+  }
+  P.onresize=draw;
+  function refresh(){fit();draw();}
+  cv.addEventListener('pointerdown',e=>{
+    const [mx,my]=evt(cv,e); const i=hit(P,pts,mx,my,18);
+    if(i>=0){drag=i;cv.setPointerCapture(e.pointerId);}
+  });
+  cv.addEventListener('pointermove',e=>{
+    if(drag<0)return; const [,my]=evt(cv,e);
+    pts[drag][1]=Math.max(-3.5,Math.min(3.5,P.iY(my))); refresh();
+  });
+  const up=()=>{drag=-1;};
+  cv.addEventListener('pointerup',up); cv.addEventListener('pointercancel',up);
+  document.getElementById('rEps').addEventListener('input',e=>{
+    eps=parseFloat(e.target.value);
+    document.getElementById('rEVal').textContent=fmt(eps,2); refresh();
+  });
+  document.getElementById('rC').addEventListener('input',e=>{
+    C=Math.pow(10,parseFloat(e.target.value));
+    document.getElementById('rCVal').textContent=C<1?fmt(C,2):String(Math.round(C)); refresh();
+  });
+  const bR=document.getElementById('rRbf'), bL=document.getElementById('rLin');
+  bR.addEventListener('click',()=>{kType='rbf';bR.setAttribute('aria-pressed','true');bL.setAttribute('aria-pressed','false');refresh();});
+  bL.addEventListener('click',()=>{kType='linear';bL.setAttribute('aria-pressed','true');bR.setAttribute('aria-pressed','false');refresh();});
+  document.getElementById('rReset').addEventListener('click',()=>{pts=BASE.map(p=>p.slice());refresh();});
+  refresh();
+})();
+</script>
+</body>
+</html>
