@@ -1,0 +1,1050 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Turing-Muster · Wie aus Chemie Flecken und Streifen werden</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@100..125,500..800&family=Inter+Tight:wght@400;500;600&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --paper:#E4EBE8;
+  --paper-2:#F6F9F7;
+  --panel:#FFFFFF;
+  --ink:#0C1E1D;
+  --ink-2:#4A605D;
+  --ink-3:#7C908D;
+  --line:#C6D3CF;
+  --line-2:#DDE6E3;
+  --violet:#3A2AC9;
+  --violet-soft:#EAE7FB;
+  --hot:#DD156F;
+  --radius:3px;
+}
+
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{
+  background:var(--paper);
+  background-image:
+    linear-gradient(to right, rgba(12,30,29,.045) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(12,30,29,.045) 1px, transparent 1px),
+    linear-gradient(to right, rgba(12,30,29,.10) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(12,30,29,.10) 1px, transparent 1px);
+  background-size:9px 9px, 9px 9px, 45px 45px, 45px 45px;
+  color:var(--ink);
+  font-family:"Inter Tight",system-ui,-apple-system,"Segoe UI",sans-serif;
+  font-size:15.5px;
+  line-height:1.55;
+  -webkit-font-smoothing:antialiased;
+}
+.wrap{max-width:1360px;margin:0 auto;padding:28px 22px 80px}
+
+/* ---------- typography ---------- */
+h1,h2,h3,.disp{
+  font-family:"Archivo",system-ui,sans-serif;
+  font-variation-settings:"wdth" 118;
+  font-weight:700;
+  letter-spacing:-.015em;
+  margin:0;
+}
+.eyebrow{
+  font-family:"JetBrains Mono",ui-monospace,monospace;
+  font-size:11px;
+  letter-spacing:.22em;
+  text-transform:uppercase;
+  color:var(--ink-3);
+}
+.mono{font-family:"JetBrains Mono",ui-monospace,monospace;font-variant-numeric:tabular-nums}
+
+/* ---------- header ---------- */
+header{border-bottom:1px solid var(--line);padding-bottom:22px;margin-bottom:26px}
+.brandline{display:flex;gap:14px;align-items:baseline;flex-wrap:wrap;margin-bottom:16px}
+h1{font-size:clamp(30px,5.2vw,58px);line-height:.98;max-width:16ch}
+h1 em{font-style:normal;color:var(--hot)}
+.lede{max-width:56ch;color:var(--ink-2);margin:16px 0 0;font-size:17px}
+
+/* ---------- layout ---------- */
+.stage{
+  display:grid;
+  grid-template-columns:minmax(240px,300px) minmax(320px,1fr) minmax(280px,380px);
+  gap:22px;
+  align-items:start;
+}
+@media(max-width:1100px){.stage{grid-template-columns:1fr 1fr}.col-dish{order:-1;grid-column:1/-1}}
+@media(max-width:760px){.stage{grid-template-columns:1fr}}
+
+.panel{
+  background:var(--panel);
+  border:1px solid var(--line);
+  border-radius:var(--radius);
+  padding:16px 16px 18px;
+}
+.panel + .panel{margin-top:18px}
+.panel h2{font-size:13px;letter-spacing:.12em;text-transform:uppercase;font-variation-settings:"wdth" 112;font-weight:700}
+.panel-head{display:flex;justify-content:space-between;align-items:center;gap:10px;border-bottom:1px solid var(--line-2);padding-bottom:10px;margin-bottom:14px}
+.panel-head .tag{font-family:"JetBrains Mono",monospace;font-size:10.5px;color:var(--ink-3);letter-spacing:.08em}
+
+/* ---------- petri / slide frame ---------- */
+.slide{position:relative;padding:14px}
+.slide::before,.slide::after{
+  content:"";position:absolute;width:16px;height:16px;pointer-events:none;
+  border-color:var(--ink);border-style:solid;
+}
+.slide::before{top:0;left:0;border-width:1px 0 0 1px}
+.slide::after{bottom:0;right:0;border-width:0 1px 1px 0}
+.slide .tick-tr,.slide .tick-bl{position:absolute;width:16px;height:16px;border-color:var(--ink);border-style:solid;pointer-events:none}
+.slide .tick-tr{top:0;right:0;border-width:1px 1px 0 0}
+.slide .tick-bl{bottom:0;left:0;border-width:0 0 1px 1px}
+#dish{
+  display:block;width:100%;height:auto;aspect-ratio:1;
+  background:#08110F;border-radius:2px;cursor:crosshair;touch-action:none;
+  box-shadow:0 1px 0 rgba(255,255,255,.5), 0 18px 40px -22px rgba(8,17,15,.85);
+}
+.dish-foot{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-top:10px;flex-wrap:wrap}
+.scalebar{display:flex;align-items:center;gap:7px;font-family:"JetBrains Mono",monospace;font-size:10.5px;color:var(--ink-3)}
+.scalebar i{display:block;width:46px;height:5px;border:1px solid var(--ink-3);border-top:0}
+
+/* ---------- controls ---------- */
+.row{display:flex;gap:8px;flex-wrap:wrap}
+button,select{font-family:inherit;font-size:13px;color:var(--ink);background:var(--paper-2);
+  border:1px solid var(--line);border-radius:var(--radius);padding:7px 11px;cursor:pointer;
+  transition:background .12s ease,border-color .12s ease,transform .12s ease}
+button:hover,select:hover{background:#fff;border-color:var(--ink-3)}
+button:active{transform:translateY(1px)}
+button.primary{background:var(--violet);border-color:var(--violet);color:#fff}
+button.primary:hover{background:#2f21a8;border-color:#2f21a8}
+button.ghost{background:transparent}
+select{padding:6px 8px;width:100%}
+:focus-visible{outline:2px solid var(--hot);outline-offset:2px}
+
+.field{margin:0 0 15px}
+.field:last-child{margin-bottom:0}
+.field-top{display:flex;justify-content:space-between;align-items:baseline;gap:8px}
+.field label{font-size:13.5px;font-weight:600}
+.field .val{font-family:"JetBrains Mono",monospace;font-size:12px;background:var(--violet-soft);
+  color:var(--violet);padding:1px 6px;border-radius:2px}
+.field .hint{font-size:12px;color:var(--ink-3);margin-top:2px;line-height:1.4}
+input[type=range]{-webkit-appearance:none;appearance:none;width:100%;height:22px;background:transparent;margin:2px 0 0;cursor:pointer}
+input[type=range]::-webkit-slider-runnable-track{height:3px;background:var(--line);border-radius:2px}
+input[type=range]::-moz-range-track{height:3px;background:var(--line);border-radius:2px}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:15px;height:15px;margin-top:-6px;
+  border-radius:50%;background:var(--violet);border:2px solid #fff;box-shadow:0 0 0 1px var(--violet)}
+input[type=range]::-moz-range-thumb{width:13px;height:13px;border-radius:50%;background:var(--violet);border:2px solid #fff}
+
+/* ---------- presets ---------- */
+.chips{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+.chip{display:flex;flex-direction:column;align-items:flex-start;gap:1px;padding:7px 9px;text-align:left;line-height:1.25}
+.chip b{font-size:12.5px;font-weight:600}
+.chip span{font-family:"JetBrains Mono",monospace;font-size:9.5px;color:var(--ink-3);letter-spacing:.02em}
+.chip.on{background:var(--violet);border-color:var(--violet)}
+.chip.on b{color:#fff}
+.chip.on span{color:#c9c3f5}
+
+/* ---------- map ---------- */
+.mapwrap{position:relative}
+#map{display:block;width:100%;height:auto;aspect-ratio:8/5;border:1px solid var(--line);border-radius:2px;cursor:crosshair;touch-action:none}
+.axis{display:flex;justify-content:space-between;font-family:"JetBrains Mono",monospace;font-size:10px;color:var(--ink-3);margin-top:5px}
+
+.verdict{border-left:3px solid var(--hot);padding:2px 0 2px 12px;margin-top:14px}
+.verdict .name{font-family:"Archivo",sans-serif;font-variation-settings:"wdth" 115;font-weight:700;font-size:21px;line-height:1.15}
+.verdict .desc{font-size:13.5px;color:var(--ink-2);margin-top:3px}
+.readouts{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:14px}
+.ro{background:var(--paper-2);border:1px solid var(--line-2);border-radius:2px;padding:7px 9px}
+.ro dt{font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-3);font-family:"JetBrains Mono",monospace}
+.ro dd{margin:2px 0 0;font-family:"JetBrains Mono",monospace;font-size:14px;font-weight:600}
+#spark{display:block;width:100%;height:44px;margin-top:12px;background:var(--paper-2);border:1px solid var(--line-2);border-radius:2px}
+
+/* ---------- tour ---------- */
+.tour{margin-top:26px;border:1px solid var(--ink);border-radius:var(--radius);background:var(--panel);overflow:hidden}
+.tour-bar{display:flex;align-items:center;justify-content:space-between;gap:12px;background:var(--ink);color:#EAF1EE;padding:9px 16px;flex-wrap:wrap}
+.tour-bar .eyebrow{color:#8FA9A4}
+.tour-body{display:grid;grid-template-columns:auto 1fr auto;gap:20px;align-items:center;padding:18px 16px}
+@media(max-width:760px){.tour-body{grid-template-columns:1fr;gap:12px}}
+.tour-num{font-family:"Archivo",sans-serif;font-variation-settings:"wdth" 120;font-weight:800;font-size:52px;line-height:.8;color:var(--line)}
+.tour-body h3{font-size:19px;margin-bottom:4px}
+.tour-body p{margin:0;color:var(--ink-2);max-width:70ch;font-size:14.5px}
+.tour-nav{display:flex;gap:8px}
+.dots{display:flex;gap:5px;align-items:center}
+.dots i{width:7px;height:7px;border-radius:50%;background:#3C5250;display:block}
+.dots i.on{background:var(--hot);transform:scale(1.35)}
+
+/* ---------- explain ---------- */
+.explain{margin-top:34px;border-top:1px solid var(--line);padding-top:26px}
+.explain-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:18px;margin-top:18px}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:18px}
+.card h3{font-size:16px;margin-bottom:8px}
+.card p{margin:0 0 10px;color:var(--ink-2);font-size:14.5px}
+.card p:last-child{margin-bottom:0}
+.card ul{margin:0;padding-left:18px;color:var(--ink-2);font-size:14.5px}
+.card li{margin-bottom:5px}
+details{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:12px 16px;margin-top:12px}
+details summary{cursor:pointer;font-weight:600;font-size:14.5px}
+details summary::marker{color:var(--hot)}
+details .inner{padding-top:10px;color:var(--ink-2);font-size:14.5px}
+.eq{font-family:"JetBrains Mono",monospace;font-size:13px;background:var(--paper-2);border:1px solid var(--line-2);
+  padding:12px;border-radius:2px;overflow-x:auto;white-space:pre;color:var(--ink);line-height:1.8}
+.legend{display:flex;flex-wrap:wrap;gap:10px;margin-top:10px}
+.legend span{display:flex;align-items:center;gap:6px;font-size:12px;color:var(--ink-2);font-family:"JetBrains Mono",monospace}
+.legend i{width:11px;height:11px;border-radius:2px;display:block;border:1px solid rgba(0,0,0,.15)}
+
+footer{margin-top:44px;border-top:1px solid var(--line);padding-top:16px;display:flex;justify-content:space-between;
+  gap:16px;flex-wrap:wrap;font-family:"JetBrains Mono",monospace;font-size:11px;color:var(--ink-3);letter-spacing:.03em}
+kbd{font-family:"JetBrains Mono",monospace;background:var(--panel);border:1px solid var(--line);
+  border-bottom-width:2px;border-radius:3px;padding:1px 5px;font-size:10.5px;color:var(--ink)}
+
+@media(prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header>
+  <div class="brandline">
+    <span class="eyebrow">Reaktion + Diffusion</span>
+    <span class="eyebrow">Gray-Scott-Modell</span>
+    <span class="eyebrow">Interaktive Schulungsstation</span>
+  </div>
+  <h1>Zwei Stoffe, zwei Regeln — und plötzlich <em>Muster</em>.</h1>
+  <p class="lede">Ein Leopard hat Flecken, ein Zebra hat Streifen. Beide brauchen dafür keinen Bauplan, der jeden Punkt einzeln festlegt. Es genügen zwei Stoffe, die miteinander reagieren und sich unterschiedlich schnell ausbreiten. Drehen Sie an den Reglern und sehen Sie zu, wie sich das Muster verändert.</p>
+</header>
+
+<div class="stage">
+
+  <!-- ============ LEFT: controls ============ -->
+  <div class="col-controls">
+    <section class="panel">
+      <div class="panel-head"><h2>Fertige Rezepte</h2><span class="tag">anklicken</span></div>
+      <div class="chips" id="chips"></div>
+      <p class="hint" style="font-size:12px;color:var(--ink-3);margin:11px 0 0">Jedes Rezept ist nur eine andere Einstellung derselben zwei Regler. Nach dem Klick startet das Gefäß neu.</p>
+    </section>
+
+    <section class="panel">
+      <div class="panel-head"><h2>Die zwei Hauptregler</h2><span class="tag">F &amp; k</span></div>
+
+      <div class="field">
+        <div class="field-top"><label for="fF">Nachschub an Stoff A</label><span class="val mono" id="vF">0.0367</span></div>
+        <input type="range" id="fF" min="0.005" max="0.11" step="0.0005">
+        <div class="hint">Wie viel frisches „Futter" ständig ins Gefäß nachfließt. Mehr Nachschub heißt: das Muster wächst kräftiger und füllt mehr Fläche.</div>
+      </div>
+
+      <div class="field">
+        <div class="field-top"><label for="fK">Abbau von Stoff B</label><span class="val mono" id="vK">0.0649</span></div>
+        <input type="range" id="fK" min="0.03" max="0.075" step="0.0002">
+        <div class="hint">Wie schnell der musterbildende Stoff wieder verschwindet. Mehr Abbau heißt: die Strukturen werden kleiner, zerfallen in Punkte — und irgendwann bleibt gar nichts mehr übrig.</div>
+      </div>
+    </section>
+
+    <section class="panel">
+      <div class="panel-head"><h2>Feineinstellung</h2><span class="tag">optional</span></div>
+
+      <div class="field">
+        <div class="field-top"><label for="fDu">Ausbreitung Stoff A</label><span class="val mono" id="vDu">0.160</span></div>
+        <input type="range" id="fDu" min="0.05" max="0.30" step="0.005">
+        <div class="hint">Wie weit sich das Futter im Gefäß verteilt.</div>
+      </div>
+
+      <div class="field">
+        <div class="field-top"><label for="fDv">Ausbreitung Stoff B</label><span class="val mono" id="vDv">0.080</span></div>
+        <input type="range" id="fDv" min="0.02" max="0.20" step="0.005">
+        <div class="hint">Entscheidend ist der Unterschied: Stoff B muss langsamer unterwegs sein als Stoff A. Stellen Sie beide gleich ein — das Muster verschwindet.</div>
+      </div>
+
+      <div class="field">
+        <div class="field-top"><label for="fSpeed">Tempo</label><span class="val mono" id="vSpeed">10×</span></div>
+        <input type="range" id="fSpeed" min="0" max="30" step="1">
+        <div class="hint">Rechenschritte pro Bild. Auf 0 steht die Zeit still.</div>
+      </div>
+
+      <div class="field">
+        <div class="field-top"><label for="fBrush">Pinsel</label><span class="val mono" id="vBrush">10</span></div>
+        <input type="range" id="fBrush" min="2" max="40" step="1">
+        <div class="hint">Ins Bild klicken und ziehen setzt Stoff B ein. Mit gedrückter <kbd>Shift</kbd>-Taste wischen Sie ihn wieder weg.</div>
+      </div>
+    </section>
+
+    <section class="panel">
+      <div class="panel-head"><h2>Darstellung</h2></div>
+      <div class="field">
+        <div class="field-top"><label for="fPal">Farben</label></div>
+        <select id="fPal">
+          <option value="0">Petrol — kühl und klar</option>
+          <option value="1">Magma — heiß und kontrastreich</option>
+          <option value="2">Tinte — wie auf Papier</option>
+          <option value="3">Schwarz-Weiß — hart getrennt</option>
+          <option value="4">Koralle — warm</option>
+        </select>
+      </div>
+      <div class="field">
+        <div class="field-top"><label for="fShow">Angezeigter Stoff</label></div>
+        <select id="fShow">
+          <option value="v">Stoff B — der Musterbildner</option>
+          <option value="u">Stoff A — das Futter</option>
+        </select>
+      </div>
+      <div class="field">
+        <div class="field-top"><label for="fRes">Auflösung</label></div>
+        <select id="fRes">
+          <option value="160">Grob — 160 × 160 (flüssig)</option>
+          <option value="240" selected>Mittel — 240 × 240</option>
+          <option value="320">Fein — 320 × 320 (rechenintensiv)</option>
+        </select>
+      </div>
+      <div class="field">
+        <div class="field-top"><label for="fEdge">Gefäßrand</label></div>
+        <select id="fEdge">
+          <option value="wrap">Endlos — links stößt an rechts</option>
+          <option value="wall">Wand — Muster staut sich am Rand</option>
+        </select>
+      </div>
+    </section>
+  </div>
+
+  <!-- ============ MIDDLE: the dish ============ -->
+  <div class="col-dish">
+    <section class="panel slide">
+      <span class="tick-tr"></span><span class="tick-bl"></span>
+      <canvas id="dish" width="820" height="820"></canvas>
+      <div class="dish-foot">
+        <div class="row">
+          <button id="btnPlay" class="primary">Pause</button>
+          <button id="btnSeedCenter" class="ghost">Tropfen in die Mitte</button>
+          <button id="btnSeedRandom" class="ghost">Zufällig aussäen</button>
+          <button id="btnSeedDense" class="ghost">Dicht aussäen</button>
+          <button id="btnSeedRing" class="ghost">Ring</button>
+          <button id="btnClear" class="ghost">Leeren</button>
+          <button id="btnSave" class="ghost">Bild speichern</button>
+        </div>
+        <div class="scalebar"><i></i><span id="gridLabel">240 × 240 Zellen</span></div>
+      </div>
+    </section>
+  </div>
+
+  <!-- ============ RIGHT: map + verdict ============ -->
+  <div class="col-map">
+    <section class="panel">
+      <div class="panel-head"><h2>Die Musterkarte</h2><span class="tag">ziehen</span></div>
+      <div class="mapwrap">
+        <canvas id="map" width="760" height="475"></canvas>
+      </div>
+      <div class="axis"><span>Abbau 0.030</span><span>→ mehr Abbau</span><span>0.075</span></div>
+      <p style="font-size:12.5px;color:var(--ink-3);margin:10px 0 0">Jeder Punkt dieser Karte ist eine Kombination der beiden Hauptregler — und jeder Punkt wurde einzeln durchgerechnet. Ziehen Sie das Fadenkreuz herum: links füllt der Musterstoff die ganze Fläche, rechts verschwindet er, und dazwischen liegt das schmale Band, in dem Muster entstehen. Die gestrichelte <b>Kippkante</b> trennt die beiden Welten: darunter breiten sich Streifen über die ganze Fläche aus, darüber halten sich nur noch einzelne, in sich abgeschlossene Flecken.</p>
+      <div class="legend" id="legend"></div>
+
+      <div class="verdict">
+        <div class="name" id="regName">Zellteilung</div>
+        <div class="desc" id="regDesc">Flecken wachsen, werden zu groß und teilen sich in zwei — wie Zellen unter dem Mikroskop.</div>
+      </div>
+
+      <div class="readouts">
+        <dl class="ro"><dt>Nachschub F</dt><dd id="roF">0.0367</dd></dl>
+        <dl class="ro"><dt>Abbau k</dt><dd id="roK">0.0649</dd></dl>
+        <dl class="ro"><dt>Stoff B gesamt</dt><dd id="roMass">0.0 %</dd></dl>
+        <dl class="ro"><dt>Schritte</dt><dd id="roSteps">0</dd></dl>
+      </div>
+      <canvas id="spark" width="700" height="90"></canvas>
+      <p style="font-size:11.5px;color:var(--ink-3);margin:6px 0 0">Verlauf: wie viel Stoff B gerade im Gefäß ist. Fällt die Kurve auf null, ist das Muster gestorben.</p>
+    </section>
+  </div>
+</div>
+
+<!-- ============ guided tour ============ -->
+<section class="tour" id="tour">
+  <div class="tour-bar">
+    <span class="eyebrow">Geführte Runde durch die Muster</span>
+    <div class="dots" id="dots"></div>
+  </div>
+  <div class="tour-body">
+    <div class="tour-num mono" id="tourNum">01</div>
+    <div>
+      <h3 id="tourTitle"></h3>
+      <p id="tourText"></p>
+    </div>
+    <div class="tour-nav">
+      <button id="tourPrev">Zurück</button>
+      <button id="tourNext" class="primary">Weiter</button>
+    </div>
+  </div>
+</section>
+
+<!-- ============ explanations ============ -->
+<section class="explain">
+  <span class="eyebrow">Zum Nachlesen</span>
+  <h2 style="font-size:26px;margin-top:8px">Was hier eigentlich passiert</h2>
+
+  <div class="explain-grid">
+    <article class="card">
+      <h3>Die Idee in vier Sätzen</h3>
+      <p>Im Gefäß sind zwei Stoffe. <b>Stoff A</b> ist das Futter und wird ständig nachgefüllt. <b>Stoff B</b> frisst A und macht dabei mehr von sich selbst — je mehr B da ist, desto schneller wird noch mehr B.</p>
+      <p>Gleichzeitig zerfällt B laufend und verschwindet. Beide Stoffe verteilen sich im Gefäß, aber A ist deutlich schneller unterwegs als B.</p>
+      <p>Aus diesem Wechselspiel entsteht das Muster ganz von allein: Wo B sich sammelt, verbraucht es das Futter der Umgebung — und schneidet damit seinen Nachbarn die Versorgung ab. Es bleibt Abstand. Regelmäßiger Abstand ist ein Muster.</p>
+    </article>
+
+    <article class="card">
+      <h3>Warum Abstand Muster erzeugt</h3>
+      <p>Das Prinzip heißt <b>„Nahe verstärken, fern bremsen"</b>. Ein Fleck fördert sich selbst an Ort und Stelle und behindert alles, was zu nah dran ist.</p>
+      <ul>
+        <li>Ist der Abstand kurz und gleichmäßig, entstehen <b>Punkte</b>.</li>
+        <li>Können die Flecken sich in eine Richtung ausdehnen, werden daraus <b>Streifen</b>.</li>
+        <li>Wachsen die Streifen ungeordnet weiter, entsteht ein <b>Labyrinth</b>.</li>
+      </ul>
+      <p>Entscheidend ist nur, dass der bremsende Stoff sich <i>weiter</i> ausbreitet als der verstärkende. Genau das können Sie unter „Feineinstellung" ausprobieren.</p>
+    </article>
+
+    <article class="card">
+      <h3>Wo das in der Natur vorkommt</h3>
+      <ul>
+        <li>Fellzeichnung bei Leopard, Gepard und Giraffe</li>
+        <li>Streifen bei Zebra, Tiger und Kaiserfisch</li>
+        <li>Muster auf Muschelschalen</li>
+        <li>Anordnung der Haarfollikel und der Finger in der Embryonalentwicklung</li>
+        <li>Regelmäßige Vegetationsstreifen in Trockengebieten, sichtbar auf Satellitenbildern</li>
+      </ul>
+      <p>Alan Turing beschrieb den Mechanismus 1952 in seiner Arbeit über die chemische Grundlage der Formbildung — Jahrzehnte bevor man ihn im Labor nachweisen konnte.</p>
+    </article>
+
+    <article class="card">
+      <h3>Was Sie in der Schulung zeigen können</h3>
+      <ul>
+        <li>Zwei winzige Regleränderungen führen zu völlig anderen Ergebnissen — kleine Ursache, große Wirkung.</li>
+        <li>Das Muster ist nirgends gespeichert. Es entsteht aus lokalen Regeln, ohne zentrale Steuerung.</li>
+        <li>Der Übergang „Streifen → Punkte → nichts" passiert plötzlich, nicht allmählich. Genau das macht solche Systeme schwer vorhersagbar.</li>
+        <li>Gleiche Regeln, anderer Startpunkt: das Muster sieht jedes Mal anders aus, gehört aber zur selben Familie.</li>
+      </ul>
+    </article>
+  </div>
+
+  <details>
+    <summary>Für Neugierige: die beiden Gleichungen</summary>
+    <div class="inner">
+      <p>Das Modell geht auf Gray und Scott (1983) zurück. <code>u</code> ist die Konzentration von Stoff A, <code>v</code> die von Stoff B, <code>Δ</code> steht für die räumliche Ausbreitung (Diffusion):</p>
+      <div class="eq">∂u/∂t  =  D_A · Δu  −  u·v²  +  F · (1 − u)
+∂v/∂t  =  D_B · Δv  +  u·v²  −  (F + k) · v</div>
+      <p style="margin-top:12px">Der Term <code>u·v²</code> ist die Reaktion: zwei Teile B verwandeln ein Teil A in ein weiteres B — daher das Quadrat, daher die Selbstverstärkung. <code>F·(1−u)</code> ist der Nachschub, <code>(F+k)·v</code> der Abbau plus Abfluss.</p>
+      <p>Die gestrichelte Linie auf der Musterkarte ist die Kurve <code>k = √F⁄2 − F</code>. Nur unterhalb davon existiert überhaupt ein gleichmäßiger Zustand mit <code>v &gt; 0</code>; oberhalb bleibt als Ruhelage nur <code>v = 0</code> — dort können sich ausschließlich lokalisierte Strukturen halten. Deshalb liegen die Flecken-Rezepte fast alle knapp über der Linie und die Labyrinth-Rezepte darunter.</p>
+      <p>Numerisch gerechnet wird mit explizitem Euler-Verfahren auf einem regelmäßigen Gitter, die Ausbreitung über einen 9-Punkt-Stern.</p>
+    </div>
+  </details>
+
+  <details>
+    <summary>Woher die Musterkarte kommt</summary>
+    <div class="inner">
+      <p>Die Karte ist nicht gezeichnet, sondern gemessen. Das Parameterfeld wurde in 36 × 28 Punkte zerlegt; für jeden Punkt lief eine eigene Simulation auf einem 64 × 64-Gitter über gut 2000 Schritte, alle mit derselben Startbedingung.</p>
+      <p>Aus dem Endzustand wurden vier Kennzahlen bestimmt: der Flächenanteil des Musterstoffs, die Veränderung über die letzten 300 Schritte (bewegt oder erstarrt), die Anzahl zusammenhängender Strukturen und deren Umfang im Verhältnis zur Fläche (rund oder langgezogen). Daraus ergibt sich die Einordnung in eine der sieben Familien.</p>
+      <p>Die Grenzen sind deshalb keine scharfen Linien, sondern Übergangszonen — und in der Nähe der Übergänge hängt das Ergebnis spürbar davon ab, womit man startet. Genau das können Sie ausprobieren: gleicher Punkt auf der Karte, verschiedene Aussaat.</p>
+    </div>
+  </details>
+
+  <details>
+    <summary>Warum verschwindet manchmal alles?</summary>
+    <div class="inner">
+      <p>Stoff B braucht sich selbst, um zu entstehen. Sinkt seine Menge irgendwo unter eine kritische Schwelle, kann sie sich nicht mehr erholen — die Stelle kippt zurück auf null und bleibt dort. Das passiert, wenn der Abbau zu hoch oder der Nachschub zu klein ist.</p>
+      <p>Praktisch heißt das: ganz rechts oder ganz unten auf der Musterkarte stirbt jedes Muster, egal wie lange Sie warten. Ein leeres Gefäß bekommen Sie nur wieder in Gang, indem Sie neu aussäen oder mit der Maus Stoff B hineinmalen.</p>
+    </div>
+  </details>
+</section>
+
+<footer>
+  <span>Tastatur: <kbd>Leertaste</kbd> Pause · <kbd>R</kbd> neu starten · <kbd>Shift</kbd> + ziehen radiert</span>
+  <span>Gray-Scott-Modell (1983) · Grundidee: A. M. Turing (1952)</span>
+</footer>
+
+</div>
+
+<script>
+"use strict";
+
+/* ============================================================
+   1. Simulation
+   ============================================================ */
+const S = {
+  W: 240, H: 240,
+  u: null, v: null, u2: null, v2: null,
+  xm: null, xp: null, ym: null, yp: null,
+  F: 0.0367, k: 0.0649, Du: 0.16, Dv: 0.08, dt: 1.0,
+  speed: 10, running: true, steps: 0,
+  edge: "wrap", show: "v", pal: 0, brush: 10
+};
+
+function buildNeighbours(){
+  const {W,H,edge} = S;
+  S.xm = new Int32Array(W); S.xp = new Int32Array(W);
+  S.ym = new Int32Array(H); S.yp = new Int32Array(H);
+  for(let x=0;x<W;x++){
+    S.xm[x] = edge === "wrap" ? (x-1+W)%W : Math.max(0,x-1);
+    S.xp[x] = edge === "wrap" ? (x+1)%W   : Math.min(W-1,x+1);
+  }
+  for(let y=0;y<H;y++){
+    const ym = edge === "wrap" ? (y-1+H)%H : Math.max(0,y-1);
+    const yp = edge === "wrap" ? (y+1)%H   : Math.min(H-1,y+1);
+    S.ym[y] = ym*W; S.yp[y] = yp*W;
+  }
+}
+
+function allocate(n){
+  S.W = S.H = n;
+  const N = n*n;
+  S.u = new Float32Array(N); S.v = new Float32Array(N);
+  S.u2 = new Float32Array(N); S.v2 = new Float32Array(N);
+  buildNeighbours();
+  makeImage();
+}
+
+function clearDish(){
+  S.u.fill(1); S.v.fill(0); S.steps = 0; massHistory.length = 0;
+}
+
+function blob(cx, cy, r, uVal, vVal){
+  const {W,H,u,v} = S;
+  for(let y=Math.max(0,cy-r); y<Math.min(H,cy+r+1); y++){
+    for(let x=Math.max(0,cx-r); x<Math.min(W,cx+r+1); x++){
+      const dx=x-cx, dy=y-cy;
+      if(dx*dx+dy*dy <= r*r){
+        const i=y*W+x;
+        u[i]=uVal; v[i]=vVal;
+      }
+    }
+  }
+}
+
+function noise(amount){
+  const {u,v} = S;
+  for(let i=0;i<u.length;i++){
+    u[i] = Math.min(1, Math.max(0, u[i] + (Math.random()-0.5)*amount));
+    v[i] = Math.min(1, Math.max(0, v[i] + (Math.random()-0.5)*amount*0.5));
+  }
+}
+
+function seedCenter(){
+  clearDish();
+  blob(S.W>>1, S.H>>1, Math.max(4, Math.round(S.W*0.05)), 0.5, 0.28);
+  noise(0.04);
+}
+function seedRandom(){
+  clearDish();
+  for(let i=0;i<14;i++){
+    blob((Math.random()*S.W)|0, (Math.random()*S.H)|0,
+         Math.max(3, Math.round(S.W*0.02 + Math.random()*S.W*0.03)), 0.5, 0.28);
+  }
+  noise(0.04);
+}
+function seedDense(){
+  clearDish();
+  const n = Math.round(S.W*S.H/560);
+  for(let i=0;i<n;i++){
+    blob((Math.random()*S.W)|0, (Math.random()*S.H)|0,
+         3 + ((Math.random()*3)|0), 0.5, 0.28);
+  }
+  noise(0.04);
+}
+function seedRing(){
+  clearDish();
+  const cx=S.W>>1, cy=S.H>>1, R=S.W*0.3;
+  for(let a=0; a<Math.PI*2; a+=0.02){
+    blob(Math.round(cx+Math.cos(a)*R), Math.round(cy+Math.sin(a)*R), Math.max(2,Math.round(S.W*0.012)), 0.5, 0.28);
+  }
+  noise(0.04);
+}
+
+function step(){
+  const {W,H,u,v,u2,v2,xm,xp,ym,yp,Du,Dv,dt,F,k} = S;
+  const fk = F + k;
+  for(let y=0;y<H;y++){
+    const r0=y*W, rm=ym[y], rp=yp[y];
+    for(let x=0;x<W;x++){
+      const i=r0+x, xl=xm[x], xr=xp[x];
+      const cu=u[i], cv=v[i];
+      const lu = 0.2*(u[r0+xl]+u[r0+xr]+u[rm+x]+u[rp+x])
+               + 0.05*(u[rm+xl]+u[rm+xr]+u[rp+xl]+u[rp+xr]) - cu;
+      const lv = 0.2*(v[r0+xl]+v[r0+xr]+v[rm+x]+v[rp+x])
+               + 0.05*(v[rm+xl]+v[rm+xr]+v[rp+xl]+v[rp+xr]) - cv;
+      const uvv = cu*cv*cv;
+      let nu = cu + dt*(Du*lu - uvv + F*(1-cu));
+      let nv = cv + dt*(Dv*lv + uvv - fk*cv);
+      u2[i] = nu<0?0:(nu>1?1:nu);
+      v2[i] = nv<0?0:(nv>1?1:nv);
+    }
+  }
+  S.u = u2; S.u2 = u;
+  S.v = v2; S.v2 = v;
+  S.steps++;
+}
+
+/* ============================================================
+   2. Palettes & rendering
+   ============================================================ */
+const PALETTES = [
+  { name:"Petrol",  stops:[[0,[7,17,16]],[0.25,[10,50,62]],[0.5,[16,110,120]],[0.75,[92,196,190]],[1,[233,250,246]]] },
+  { name:"Magma",   stops:[[0,[4,3,12]],[0.3,[62,17,86]],[0.55,[158,32,90]],[0.78,[240,110,50]],[1,[252,238,190]]] },
+  { name:"Tinte",   stops:[[0,[246,249,247]],[0.4,[176,192,205]],[0.7,[58,42,201]],[1,[8,12,40]]] },
+  { name:"S/W",     stops:[[0,[8,10,10]],[0.46,[16,20,20]],[0.52,[242,246,244]],[1,[255,255,255]]] },
+  { name:"Koralle", stops:[[0,[10,18,34]],[0.3,[30,70,120]],[0.55,[224,90,80]],[0.8,[247,160,90]],[1,[255,246,214]]] }
+];
+let LUT = new Uint8Array(256*3);
+
+function buildLUT(idx){
+  const stops = PALETTES[idx].stops;
+  for(let i=0;i<256;i++){
+    const t = i/255;
+    let a = stops[0], b = stops[stops.length-1];
+    for(let s=0;s<stops.length-1;s++){
+      if(t >= stops[s][0] && t <= stops[s+1][0]){ a=stops[s]; b=stops[s+1]; break; }
+    }
+    const span = (b[0]-a[0]) || 1;
+    const f = (t-a[0])/span;
+    LUT[i*3]   = a[1][0] + (b[1][0]-a[1][0])*f;
+    LUT[i*3+1] = a[1][1] + (b[1][1]-a[1][1])*f;
+    LUT[i*3+2] = a[1][2] + (b[1][2]-a[1][2])*f;
+  }
+}
+
+const dish = document.getElementById("dish");
+const dctx = dish.getContext("2d");
+let off, octx, imgData;
+
+function makeImage(){
+  off = document.createElement("canvas");
+  off.width = S.W; off.height = S.H;
+  octx = off.getContext("2d");
+  imgData = octx.createImageData(S.W, S.H);
+  const d = imgData.data;
+  for(let i=3;i<d.length;i+=4) d[i]=255;
+  document.getElementById("gridLabel").textContent = S.W + " × " + S.H + " Zellen";
+}
+
+function render(){
+  const d = imgData.data;
+  const field = S.show === "v" ? S.v : S.u;
+  const lo = S.show === "v" ? 0.0 : 0.2;
+  const hi = S.show === "v" ? 0.42 : 1.0;
+  const inv = 1/(hi-lo);
+  for(let i=0, p=0; i<field.length; i++, p+=4){
+    let t = (field[i]-lo)*inv;
+    if(S.show === "u") t = 1-t;
+    t = t<0?0:(t>1?1:t);
+    const c = ((t*255)|0)*3;
+    d[p]=LUT[c]; d[p+1]=LUT[c+1]; d[p+2]=LUT[c+2];
+  }
+  octx.putImageData(imgData, 0, 0);
+  dctx.imageSmoothingEnabled = true;
+  dctx.imageSmoothingQuality = "high";
+  dctx.drawImage(off, 0, 0, dish.width, dish.height);
+}
+
+/* ============================================================
+   3. Regime classification & map
+   ============================================================ */
+/* Die Musterkarte ist nicht geschätzt, sondern ausgerechnet: für 36 × 28 Punkte
+   im Parameterfeld lief je eine eigene Simulation über gut 2000 Schritte. Bewertet
+   wurden Bedeckung, Bewegung sowie Anzahl und Form der entstandenen Strukturen. */
+const MAP_NX = 36, MAP_NY = 28;
+const K_MIN = 0.030, K_MAX = 0.075, F_MIN = 0.005, F_MAX = 0.110;
+const CLASS_GRID = "000000004440000000000000000000000000540000000044444400000000000000000000555555444444444444400000000000000000555555555544444444441400000000000000555555555555544444444110000000000000555555555555555546222441400000000000555555555555555555462244114000000000555555555555555555556644411000000000555555555555555555555644442100000000555555555555555555555564442210000000555555555555555555555554442230000000555555555555555555555554422211000000555555555555555555555554422211000000555555555555555555555554422221000000555555555555555555555544222220000000555555555555555555555542322220000000555555555555555555555443322210000000555555555555555555553433322100000000555555555555555555554333223000000000555555555555555555543333230000000000555555555555555555433333100000000000555555555555555554333333000000000000555555555555555543333100000000000000555555555555555433331000000000000000555555555555554333100000000000000000555555555555543333000000000000000000555555555555433100000000000000000000555555555534330000000000000000000000";
+
+const CLASSES = [
+  {n:"Alles verschwindet", c:[168,184,180],
+   d:"Der Abbau überwiegt den Nachschub. Was Sie hineinmalen, löst sich innerhalb weniger Momente wieder auf."},
+  {n:"Flecken", c:[228,158,48],
+   d:"Einzelne runde Flecken, die Abstand voneinander halten. Sie wachsen, teilen sich und füllen die Fläche trotzdem nie ganz — das Fellmuster eines Leoparden."},
+  {n:"Streifen und Labyrinth", c:[52,118,192],
+   d:"Zusammenhängende Bänder von überall gleicher Breite, die sich winden und verzweigen — wie ein Fingerabdruck oder ein Gehirnrelief."},
+  {n:"Flecken und Bänder gemischt", c:[142,108,200],
+   d:"Punkte und kurze Streifen nebeneinander, ohne klare Ordnung. Der Übergangsbereich zwischen beiden Musterarten."},
+  {n:"Ständig in Bewegung", c:[26,160,148],
+   d:"Hier kommt das System nie zur Ruhe: Wellen laufen durchs Gefäß, Strukturen entstehen, stoßen zusammen und vergehen."},
+  {n:"Gleichmäßig gefüllt", c:[148,166,161],
+   d:"Zu wenig Abbau: Der Musterstoff überzieht fast die ganze Fläche. Es bleibt kaum Struktur übrig."},
+  {n:"Löcher im Feld", c:[132,166,62],
+   d:"Das Gegenstück zu den Flecken: eine geschlossene Fläche mit runden Aussparungen darin."}
+];
+
+const kCrit = F => 0.5*Math.sqrt(F) - F;
+
+function classAt(F,k){
+  const i = Math.min(MAP_NX-1, Math.max(0, Math.round((k-K_MIN)/(K_MAX-K_MIN)*(MAP_NX-1))));
+  const j = Math.min(MAP_NY-1, Math.max(0, Math.round((F-F_MIN)/(F_MAX-F_MIN)*(MAP_NY-1))));
+  return CLASSES[+CLASS_GRID[j*MAP_NX+i]];
+}
+function nearestPreset(F,k){
+  let best=null, bd=Infinity;
+  for(const p of PRESETS){
+    const dF=(p.F-F)/(F_MAX-F_MIN), dK=(p.k-k)/(K_MAX-K_MIN);
+    const dist=dF*dF+dK*dK;
+    if(dist<bd){bd=dist;best=p;}
+  }
+  return bd < 0.0016 ? best : null;
+}
+
+const map = document.getElementById("map");
+const mctx = map.getContext("2d");
+let mapBase = null;
+
+function drawMapBase(){
+  const w=map.width, h=map.height;
+  // gemessenes Klassenfeld als kleines Bild, weich hochskaliert
+  const small = document.createElement("canvas");
+  small.width = MAP_NX; small.height = MAP_NY;
+  const sc = small.getContext("2d");
+  const img = sc.createImageData(MAP_NX, MAP_NY);
+  for(let j=0;j<MAP_NY;j++){
+    for(let i=0;i<MAP_NX;i++){
+      const cl = CLASSES[+CLASS_GRID[j*MAP_NX+i]];
+      const p = ((MAP_NY-1-j)*MAP_NX+i)*4;   // Bildzeile 0 = höchstes F
+      for(let ch=0;ch<3;ch++) img.data[p+ch] = 255 - (255-cl.c[ch])*0.42;
+      img.data[p+3]=255;
+    }
+  }
+  sc.putImageData(img,0,0);
+  mctx.imageSmoothingEnabled = true;
+  mctx.imageSmoothingQuality = "high";
+  const ox = w/(MAP_NX-1)/2, oy = h/(MAP_NY-1)/2;
+  mctx.drawImage(small, -ox, -oy, w+2*ox, h+2*oy);
+
+  // Kippkante: k = sqrt(F)/2 - F, direkt über F parametrisiert
+  mctx.save();
+  mctx.setLineDash([7,5]);
+  mctx.lineWidth=2;
+  mctx.strokeStyle="rgba(12,30,29,.6)";
+  mctx.beginPath();
+  let started=false;
+  for(let F=F_MIN; F<=F_MAX+1e-9; F+=0.0004){
+    const k = kCrit(F);
+    if(k < K_MIN || k > K_MAX){ started=false; continue; }
+    const px = (k-K_MIN)/(K_MAX-K_MIN)*(w-1);
+    const py = (F_MAX-F)/(F_MAX-F_MIN)*(h-1);
+    if(!started){ mctx.moveTo(px,py); started=true; } else mctx.lineTo(px,py);
+  }
+  mctx.stroke();
+  mctx.restore();
+
+  // Gitterlinien
+  mctx.strokeStyle="rgba(12,30,29,.10)";
+  mctx.lineWidth=1;
+  for(let g=0.035; g<K_MAX; g+=0.005){
+    const px=Math.round((g-K_MIN)/(K_MAX-K_MIN)*(w-1))+0.5;
+    mctx.beginPath(); mctx.moveTo(px,0); mctx.lineTo(px,h); mctx.stroke();
+  }
+  for(let g=0.02; g<F_MAX; g+=0.02){
+    const py=Math.round((F_MAX-g)/(F_MAX-F_MIN)*(h-1))+0.5;
+    mctx.beginPath(); mctx.moveTo(0,py); mctx.lineTo(w,py); mctx.stroke();
+  }
+
+  // Beschriftung
+  mctx.save();
+  mctx.fillStyle="rgba(12,30,29,.62)";
+  mctx.font="600 15px 'JetBrains Mono', monospace";
+  mctx.textBaseline="top";
+  mctx.fillText("Nachschub 0.110", 10, 9);
+  mctx.textBaseline="bottom";
+  mctx.fillText("Nachschub 0.005", 10, h-9);
+  mctx.restore();
+
+  const lblF = 0.078, lblK = kCrit(lblF);
+  const lx = (lblK-K_MIN)/(K_MAX-K_MIN)*(w-1);
+  const ly = (F_MAX-lblF)/(F_MAX-F_MIN)*(h-1);
+  mctx.save();
+  mctx.font="600 15px 'JetBrains Mono', monospace";
+  mctx.fillStyle="rgba(255,255,255,.88)";
+  mctx.fillRect(lx+9, ly-11, 100, 22);
+  mctx.fillStyle="rgba(12,30,29,.8)";
+  mctx.textBaseline="middle";
+  mctx.fillText("Kippkante", lx+16, ly);
+  mctx.restore();
+
+  mapBase = mctx.getImageData(0,0,w,h);
+}
+
+function mapPos(F,k){
+  return {
+    x: (k-K_MIN)/(K_MAX-K_MIN)*(map.width-1),
+    y: (F_MAX-F)/(F_MAX-F_MIN)*(map.height-1)
+  };
+}
+
+function drawMapOverlay(){
+  mctx.putImageData(mapBase,0,0);
+  for(const p of PRESETS){
+    const {x,y} = mapPos(p.F,p.k);
+    mctx.beginPath(); mctx.arc(x,y,3.4,0,Math.PI*2);
+    mctx.fillStyle="rgba(255,255,255,.75)"; mctx.fill();
+    mctx.lineWidth=1.4; mctx.strokeStyle="rgba(12,30,29,.55)"; mctx.stroke();
+  }
+  const {x,y} = mapPos(S.F,S.k);
+  mctx.save();
+  mctx.strokeStyle="#DD156F"; mctx.lineWidth=1.8;
+  mctx.beginPath();
+  mctx.moveTo(x-17,y); mctx.lineTo(x-7,y);
+  mctx.moveTo(x+7,y);  mctx.lineTo(x+17,y);
+  mctx.moveTo(x,y-17); mctx.lineTo(x,y-7);
+  mctx.moveTo(x,y+7);  mctx.lineTo(x,y+17);
+  mctx.stroke();
+  mctx.beginPath(); mctx.arc(x,y,7.5,0,Math.PI*2); mctx.stroke();
+  mctx.fillStyle="#DD156F"; mctx.beginPath(); mctx.arc(x,y,2.8,0,Math.PI*2); mctx.fill();
+  mctx.restore();
+}
+
+function drawLegend(){
+  const el = document.getElementById("legend");
+  el.innerHTML = "";
+  for(const cl of CLASSES){
+    const s = document.createElement("span");
+    const i = document.createElement("i");
+    i.style.background = `rgb(${255-(255-cl.c[0])*0.42},${255-(255-cl.c[1])*0.42},${255-(255-cl.c[2])*0.42})`;
+    s.appendChild(i);
+    s.appendChild(document.createTextNode(cl.n));
+    el.appendChild(s);
+  }
+}
+
+/* ============================================================
+   4. Presets
+   ============================================================ */
+const PRESETS = [
+  {n:"Flecken",        F:0.030,  k:0.062,  seed:"random"},
+  {n:"Labyrinth",      F:0.029,  k:0.057,  seed:"random"},
+  {n:"Korallen",       F:0.0545, k:0.062,  seed:"dense"},
+  {n:"Zellteilung",    F:0.0367, k:0.0649, seed:"center"},
+  {n:"Würmer",         F:0.075,  k:0.0621, seed:"dense"},
+  {n:"Löcher",         F:0.039,  k:0.058,  seed:"random"},
+  {n:"Wandernde Wellen",F:0.014, k:0.045,  seed:"center"},
+  {n:"Chaos",          F:0.026,  k:0.051,  seed:"random"},
+  {n:"Gleiter",        F:0.0556, k:0.0609, seed:"dense"},
+  {n:"Große Blasen",   F:0.090,  k:0.057,  seed:"dense"}
+];
+
+function buildChips(){
+  const box = document.getElementById("chips");
+  PRESETS.forEach((p,idx) => {
+    const b = document.createElement("button");
+    b.className = "chip";
+    b.dataset.i = idx;
+    b.innerHTML = `<b>${p.n}</b><span>F ${p.F.toFixed(3)} · k ${p.k.toFixed(3)}</span>`;
+    b.addEventListener("click", () => applyPreset(idx));
+    box.appendChild(b);
+  });
+}
+function applyPreset(idx){
+  const p = PRESETS[idx];
+  S.F = p.F; S.k = p.k;
+  syncInputs();
+  applySeed(p.seed);
+  S.running = true; updatePlayButton();
+  markActiveChip();
+}
+function applySeed(mode){
+  if(mode === "center") seedCenter();
+  else if(mode === "dense") seedDense();
+  else seedRandom();
+}
+function markActiveChip(){
+  document.querySelectorAll(".chip").forEach(c => {
+    const p = PRESETS[+c.dataset.i];
+    c.classList.toggle("on", Math.abs(p.F-S.F)<1e-6 && Math.abs(p.k-S.k)<1e-6);
+  });
+}
+
+/* ============================================================
+   5. Guided tour
+   ============================================================ */
+const TOUR = [
+  {t:"Ein Tropfen im Nährmedium",
+   x:"Das Gefäß ist voll Futter (Stoff A). In die Mitte kommt ein kleiner Tropfen von Stoff B. Sehen Sie zu: B frisst sich nach außen, verbraucht dabei das Futter — und weil hinter der Front nichts mehr übrig ist, bleibt eine Struktur zurück statt einer vollen Fläche.",
+   F:0.0367, k:0.0649, seed:"center"},
+  {t:"Am Nachschub drehen",
+   x:"Jetzt fließt deutlich mehr Futter nach. Das Muster wird kräftiger und verzweigt sich wie eine Koralle, bis es das ganze Gefäß ausfüllt. Ziehen Sie den oberen Regler langsam hin und her und beobachten Sie, wie die Äste dicker und dünner werden.",
+   F:0.0545, k:0.062, seed:"dense"},
+  {t:"Am Abbau drehen",
+   x:"Umgekehrt: Der Nachschub bleibt niedrig, dafür verschwindet Stoff B schneller. Die zusammenhängenden Strukturen zerfallen in einzelne Punkte, die voneinander Abstand halten. Das ist das Fellmuster eines Leoparden.",
+   F:0.030, k:0.062, seed:"random"},
+  {t:"Streifen statt Punkte",
+   x:"Eine winzige Änderung an beiden Reglern — und aus Punkten werden gewundene Streifen, die überall gleich breit sind. Punkte und Streifen sind nicht zwei verschiedene Dinge, sondern zwei Zustände desselben Systems.",
+   F:0.029, k:0.057, seed:"random"},
+  {t:"Über die Kippkante",
+   x:"Noch etwas mehr Abbau, und das System kippt. Egal was Sie hineinmalen, es löst sich wieder auf. Solche Übergänge passieren plötzlich, nicht allmählich — deshalb sind Systeme dieser Art so schwer vorherzusagen.",
+   F:0.020, k:0.070, seed:"random"},
+  {t:"Leben, das sich bewegt",
+   x:"Zum Schluss ein Bereich, in dem nie Ruhe einkehrt: Wellenfronten laufen durchs Gefäß, treffen aufeinander und löschen sich aus. Dieselben zwei Gleichungen, ein anderer Punkt auf der Karte.",
+   F:0.014, k:0.045, seed:"center"}
+];
+let tourIdx = -1;
+
+function showTour(i){
+  tourIdx = (i + TOUR.length) % TOUR.length;
+  const s = TOUR[tourIdx];
+  document.getElementById("tourNum").textContent = String(tourIdx+1).padStart(2,"0");
+  document.getElementById("tourTitle").textContent = s.t;
+  document.getElementById("tourText").textContent = s.x;
+  document.querySelectorAll("#dots i").forEach((d,j)=>d.classList.toggle("on", j===tourIdx));
+  S.F = s.F; S.k = s.k;
+  syncInputs();
+  applySeed(s.seed);
+  S.running = true; updatePlayButton();
+  markActiveChip();
+}
+function buildDots(){
+  const box = document.getElementById("dots");
+  TOUR.forEach((_,i)=>{
+    const d = document.createElement("i");
+    box.appendChild(d);
+  });
+}
+
+/* ============================================================
+   6. UI wiring
+   ============================================================ */
+const el = id => document.getElementById(id);
+const inF=el("fF"), inK=el("fK"), inDu=el("fDu"), inDv=el("fDv"),
+      inSpeed=el("fSpeed"), inBrush=el("fBrush"),
+      inPal=el("fPal"), inShow=el("fShow"), inRes=el("fRes"), inEdge=el("fEdge");
+
+function syncInputs(){
+  inF.value=S.F; inK.value=S.k; inDu.value=S.Du; inDv.value=S.Dv;
+  inSpeed.value=S.speed; inBrush.value=S.brush;
+  el("vF").textContent=(+S.F).toFixed(4);
+  el("vK").textContent=(+S.k).toFixed(4);
+  el("vDu").textContent=(+S.Du).toFixed(3);
+  el("vDv").textContent=(+S.Dv).toFixed(3);
+  el("vSpeed").textContent=S.speed+"×";
+  el("vBrush").textContent=S.brush;
+  el("roF").textContent=(+S.F).toFixed(4);
+  el("roK").textContent=(+S.k).toFixed(4);
+  const r = classAt(S.F,S.k);
+  el("regName").textContent = r.n;
+  const np = nearestPreset(S.F,S.k);
+  el("regDesc").textContent = r.d + (np ? "  Entspricht dem Rezept „" + np.n + "\u201C." : "");
+  drawMapOverlay();
+}
+
+inF.addEventListener("input", ()=>{ S.F=+inF.value; syncInputs(); markActiveChip(); });
+inK.addEventListener("input", ()=>{ S.k=+inK.value; syncInputs(); markActiveChip(); });
+inDu.addEventListener("input", ()=>{ S.Du=+inDu.value; syncInputs(); });
+inDv.addEventListener("input", ()=>{ S.Dv=+inDv.value; syncInputs(); });
+inSpeed.addEventListener("input", ()=>{ S.speed=+inSpeed.value; el("vSpeed").textContent=S.speed+"×"; });
+inBrush.addEventListener("input", ()=>{ S.brush=+inBrush.value; el("vBrush").textContent=S.brush; });
+inPal.addEventListener("change", ()=>{ S.pal=+inPal.value; buildLUT(S.pal); render(); });
+inShow.addEventListener("change", ()=>{ S.show=inShow.value; render(); });
+inEdge.addEventListener("change", ()=>{ S.edge=inEdge.value; buildNeighbours(); });
+inRes.addEventListener("change", ()=>{ allocate(+inRes.value); seedRandom(); });
+
+el("btnSeedCenter").addEventListener("click", ()=>{ seedCenter(); S.running=true; updatePlayButton(); });
+el("btnSeedRandom").addEventListener("click", ()=>{ seedRandom(); S.running=true; updatePlayButton(); });
+el("btnSeedDense").addEventListener("click", ()=>{ seedDense(); S.running=true; updatePlayButton(); });
+el("btnSeedRing").addEventListener("click", ()=>{ seedRing(); S.running=true; updatePlayButton(); });
+el("btnClear").addEventListener("click", ()=>{ clearDish(); render(); });
+el("btnSave").addEventListener("click", ()=>{
+  const a = document.createElement("a");
+  a.download = `turing-muster_F${(+S.F).toFixed(4)}_k${(+S.k).toFixed(4)}.png`;
+  a.href = dish.toDataURL("image/png");
+  a.click();
+});
+
+const btnPlay = el("btnPlay");
+function updatePlayButton(){ btnPlay.textContent = S.running ? "Pause" : "Weiter"; }
+btnPlay.addEventListener("click", ()=>{ S.running=!S.running; updatePlayButton(); });
+
+el("tourNext").addEventListener("click", ()=>showTour(tourIdx+1));
+el("tourPrev").addEventListener("click", ()=>showTour(tourIdx-1));
+
+document.addEventListener("keydown", e=>{
+  if(e.target.tagName === "INPUT" || e.target.tagName === "SELECT") return;
+  if(e.code === "Space"){ e.preventDefault(); S.running=!S.running; updatePlayButton(); }
+  if(e.key === "r" || e.key === "R"){ seedRandom(); }
+});
+
+/* painting on the dish */
+let painting=false, erasing=false;
+function paintAt(ev){
+  const r = dish.getBoundingClientRect();
+  const gx = Math.floor((ev.clientX-r.left)/r.width * S.W);
+  const gy = Math.floor((ev.clientY-r.top)/r.height * S.H);
+  if(gx<0||gy<0||gx>=S.W||gy>=S.H) return;
+  if(erasing) blob(gx,gy,S.brush,1.0,0.0);
+  else blob(gx,gy,S.brush,0.5,0.28);
+}
+dish.addEventListener("pointerdown", e=>{
+  painting=true; erasing=e.shiftKey||e.button===2;
+  dish.setPointerCapture(e.pointerId); paintAt(e);
+});
+dish.addEventListener("pointermove", e=>{ if(painting){ erasing=e.shiftKey; paintAt(e);} });
+dish.addEventListener("pointerup", ()=>{ painting=false; });
+dish.addEventListener("pointercancel", ()=>{ painting=false; });
+dish.addEventListener("contextmenu", e=>e.preventDefault());
+
+/* map dragging */
+let dragging=false;
+function mapPick(ev){
+  const r = map.getBoundingClientRect();
+  let px = (ev.clientX-r.left)/r.width;
+  let py = (ev.clientY-r.top)/r.height;
+  px = Math.min(1,Math.max(0,px)); py = Math.min(1,Math.max(0,py));
+  S.k = K_MIN + px*(K_MAX-K_MIN);
+  S.F = F_MAX - py*(F_MAX-F_MIN);
+  syncInputs(); markActiveChip();
+}
+map.addEventListener("pointerdown", e=>{ dragging=true; map.setPointerCapture(e.pointerId); mapPick(e); });
+map.addEventListener("pointermove", e=>{ if(dragging) mapPick(e); });
+map.addEventListener("pointerup", ()=>{ dragging=false; });
+map.addEventListener("pointercancel", ()=>{ dragging=false; });
+
+/* ============================================================
+   7. Sparkline + loop
+   ============================================================ */
+const spark = document.getElementById("spark");
+const sctx = spark.getContext("2d");
+const massHistory = [];
+
+function measure(){
+  let sum=0, n=0;
+  for(let i=0;i<S.v.length;i+=7){ sum+=S.v[i]; n++; }
+  const m = sum/n;
+  massHistory.push(m);
+  if(massHistory.length>180) massHistory.shift();
+  el("roMass").textContent = (m*100).toFixed(1)+" %";
+  el("roSteps").textContent = S.steps.toLocaleString("de-DE");
+}
+
+function drawSpark(){
+  const w=spark.width, h=spark.height;
+  sctx.clearRect(0,0,w,h);
+  if(massHistory.length<2) return;
+  const max = Math.max(0.05, ...massHistory);
+  sctx.beginPath();
+  massHistory.forEach((m,i)=>{
+    const x = i/(180-1)*w;
+    const y = h - (m/max)*(h-12) - 6;
+    i? sctx.lineTo(x,y) : sctx.moveTo(x,y);
+  });
+  sctx.strokeStyle="#DD156F"; sctx.lineWidth=3; sctx.lineJoin="round"; sctx.stroke();
+  sctx.lineTo(massHistory.length/(180-1)*w, h); sctx.lineTo(0,h); sctx.closePath();
+  sctx.fillStyle="rgba(221,21,111,.10)"; sctx.fill();
+}
+
+let frame=0;
+function loop(){
+  if(S.running){
+    for(let i=0;i<S.speed;i++) step();
+  }
+  render();
+  frame++;
+  if(frame % 8 === 0){ measure(); drawSpark(); }
+  requestAnimationFrame(loop);
+}
+
+/* ============================================================
+   8. Boot
+   ============================================================ */
+buildChips();
+buildDots();
+buildLUT(0);
+drawLegend();
+drawMapBase();
+allocate(240);
+syncInputs();
+markActiveChip();
+showTour(0);
+updatePlayButton();
+loop();
+</script>
+</body>
+</html>

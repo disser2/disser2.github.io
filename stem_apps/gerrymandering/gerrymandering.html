@@ -1,0 +1,981 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Wahlkreise nach Maß — Gerrymandering interaktiv</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper:#E6EBE6;
+    --card:#F7F9F6;
+    --ink:#131A17;
+    --ink-soft:#3A4741;
+    --muted:#66756D;
+    --rule:#C7D0C8;
+
+    --tuerkis:#0E7C7B;
+    --tuerkis-tint:#C6DEDC;
+    --bernstein:#C2721B;
+    --bernstein-tint:#F0DBBC;
+
+    --display:"Bricolage Grotesque","Trebuchet MS",system-ui,sans-serif;
+    --body:"IBM Plex Sans",system-ui,-apple-system,sans-serif;
+    --mono:"IBM Plex Mono",ui-monospace,"SFMono-Regular",monospace;
+  }
+
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0}
+  body{
+    background:var(--paper);
+    color:var(--ink);
+    font-family:var(--body);
+    font-size:15px;
+    line-height:1.5;
+    -webkit-font-smoothing:antialiased;
+  }
+  h1,h2,h3{font-family:var(--display);font-weight:800;letter-spacing:-0.02em;margin:0}
+  .mono{font-family:var(--mono)}
+
+  /* ---------- Steuerpult ---------- */
+  .deck{
+    position:sticky;top:0;z-index:40;
+    background:var(--ink);color:#EDF1EC;
+    padding:10px 18px 12px;
+    box-shadow:0 6px 18px rgba(19,26,23,.22);
+  }
+  .deck-top{
+    display:flex;align-items:baseline;gap:14px;flex-wrap:wrap;
+    padding-bottom:9px;margin-bottom:9px;
+    border-bottom:1px solid rgba(237,241,236,.18);
+  }
+  .brand{font-family:var(--display);font-weight:800;font-size:17px;letter-spacing:-0.02em;white-space:nowrap}
+  .brand span{color:#8FB3AC}
+  .kicker{
+    font-family:var(--mono);font-size:10.5px;letter-spacing:.14em;
+    text-transform:uppercase;color:#8B9C94;
+  }
+  .scenarios{display:flex;gap:6px;flex-wrap:wrap;margin-left:auto}
+
+  .rowset{display:flex;gap:16px 22px;flex-wrap:wrap;align-items:flex-start}
+  .group{display:flex;flex-direction:column;gap:5px}
+  .group.dimmed{opacity:.38}
+  .group-label{
+    font-family:var(--mono);font-size:10px;letter-spacing:.13em;
+    text-transform:uppercase;color:#93A49B;white-space:nowrap;
+  }
+  .opts{display:flex;gap:4px;flex-wrap:wrap}
+
+  button{font:inherit;cursor:pointer}
+  .pill{
+    font-family:var(--body);font-size:12.5px;font-weight:500;line-height:1.35;
+    color:#DDE5DE;background:transparent;
+    border:1px solid rgba(221,229,222,.34);
+    border-radius:999px;padding:4px 11px;
+    transition:background .15s,color .15s,border-color .15s;
+    white-space:nowrap;
+  }
+  .pill:hover{background:rgba(221,229,222,.13)}
+  .pill[aria-pressed="true"]{background:#EDF1EC;color:var(--ink);border-color:#EDF1EC;font-weight:600}
+  .pill.tk[aria-pressed="true"]{background:var(--tuerkis);border-color:var(--tuerkis);color:#fff}
+  .pill.bs[aria-pressed="true"]{background:var(--bernstein);border-color:var(--bernstein);color:#fff}
+  .pill.ghost{border-style:dashed}
+  .pill:disabled{cursor:not-allowed}
+  .pill:focus-visible,.chip:focus-visible{outline:2px solid #7FD3C8;outline-offset:2px}
+
+  /* ---------- Layout ---------- */
+  .wrap{max-width:1280px;margin:0 auto;padding:20px 18px 60px}
+  .stage{display:grid;grid-template-columns:minmax(0,1.25fr) minmax(300px,.85fr);gap:18px;align-items:start}
+
+  .card{
+    background:var(--card);border:1px solid var(--rule);border-radius:4px;
+    padding:16px 18px;
+  }
+  .card + .card{margin-top:16px}
+  .card-head{display:flex;justify-content:space-between;align-items:baseline;gap:10px;margin-bottom:10px}
+  .card-title{font-family:var(--display);font-weight:600;font-size:15px;letter-spacing:-0.01em}
+  .card-note{font-family:var(--mono);font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+
+  /* ---------- Karte ---------- */
+  .mapbox{background:var(--card);border:1px solid var(--rule);border-radius:4px;padding:14px}
+  svg.map{display:block;width:100%;height:auto;max-height:64vh;touch-action:none}
+  .cell-tint{transition:fill .35s ease}
+  .voter{transition:fill .35s ease}
+  .border-ink{fill:none;stroke:var(--ink);stroke-width:.085;stroke-linecap:round;stroke-linejoin:round}
+  .border-outer{stroke-width:.06;opacity:.55}
+  .hair{stroke:#000;stroke-width:.012;opacity:.14}
+  .hit{fill:transparent}
+  .dnum{font-family:var(--mono);font-size:.3px;fill:var(--ink);opacity:.45;text-anchor:middle;pointer-events:none}
+  .faded{opacity:.28;transition:opacity .2s}
+
+  @media (prefers-reduced-motion: no-preference){
+    .border-ink{stroke-dasharray:1;animation:draw .5s ease-out both}
+    svg.map[data-anim="off"] .border-ink{animation:none}
+    @keyframes draw{from{stroke-dashoffset:1}to{stroke-dashoffset:0}}
+  }
+
+  .maplegend{
+    display:flex;gap:16px;flex-wrap:wrap;align-items:center;
+    margin-top:12px;padding-top:11px;border-top:1px solid var(--rule);
+    font-size:12.5px;color:var(--ink-soft);
+  }
+  .lg{display:flex;align-items:center;gap:6px}
+  .dot{width:11px;height:11px;border-radius:50%;display:inline-block}
+  .swatch{width:15px;height:11px;border-radius:2px;display:inline-block;border:1px solid rgba(0,0,0,.14)}
+
+  /* ---------- Manuell ---------- */
+  .manualbar{margin-top:12px;padding-top:11px;border-top:1px solid var(--rule)}
+  .manualbar[hidden]{display:none}
+  .chips{display:flex;gap:5px;flex-wrap:wrap;margin-top:7px}
+  .chip{
+    font-family:var(--mono);font-size:12px;padding:3px 9px;border-radius:3px;
+    border:1px solid var(--rule);background:#fff;color:var(--ink-soft);
+  }
+  .chip[aria-pressed="true"]{background:var(--ink);color:var(--card);border-color:var(--ink)}
+  .chip.bad{border-color:#B4462E;color:#B4462E}
+  .hint{font-size:12.5px;color:var(--muted)}
+
+  /* ---------- Ergebnis ---------- */
+  .verdict{
+    font-family:var(--display);font-weight:600;font-size:19px;line-height:1.28;
+    letter-spacing:-0.015em;margin:0 0 8px;
+  }
+  .verdict em{font-style:normal;padding:0 2px;border-bottom:3px solid var(--tuerkis)}
+  .verdict em.bs{border-color:var(--bernstein)}
+  .subverdict{font-size:13.5px;color:var(--ink-soft);margin:0}
+
+  .barblock{margin-top:14px}
+  .barlabel{
+    display:flex;justify-content:space-between;align-items:baseline;
+    font-family:var(--mono);font-size:10.5px;letter-spacing:.11em;
+    text-transform:uppercase;color:var(--muted);margin-bottom:4px;
+  }
+  .bar{display:flex;height:24px;border-radius:3px;overflow:hidden;border:1px solid var(--rule)}
+  .bar div{transition:flex-grow .45s cubic-bezier(.4,0,.2,1);min-width:0}
+  .bar .b-t{background:var(--tuerkis)}
+  .bar .b-b{background:var(--bernstein)}
+  .bar .b-x{background:#9AA79F}
+  .barnums{display:flex;justify-content:space-between;font-size:12px;color:var(--ink-soft);margin-top:3px}
+
+  .seatstrip{display:flex;gap:3px;flex-wrap:wrap;margin-top:5px}
+  .seat{width:18px;height:18px;border-radius:2px;border:1px solid rgba(0,0,0,.16)}
+
+  .stats{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:16px}
+  .stat{background:#fff;border:1px solid var(--rule);border-radius:3px;padding:9px 10px}
+  .stat .k{font-family:var(--mono);font-size:9.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);display:block}
+  .stat .v{font-family:var(--display);font-weight:600;font-size:20px;letter-spacing:-0.02em;display:block;margin-top:2px}
+  .stat .d{font-size:11.5px;color:var(--muted);display:block;line-height:1.35}
+
+  /* ---------- Wahlkreisliste ---------- */
+  .dlist{display:flex;flex-direction:column;gap:5px;margin-top:2px}
+  .drow{display:grid;grid-template-columns:26px 1fr 74px;gap:9px;align-items:center;font-size:12.5px}
+  .drow .dn{font-family:var(--mono);font-size:11px;color:var(--muted)}
+  .dbar{display:flex;height:15px;border-radius:2px;overflow:hidden;border:1px solid var(--rule);background:#fff}
+  .dbar span{display:block;transition:flex-grow .4s ease}
+  .dres{font-family:var(--mono);font-size:11.5px;text-align:right;white-space:nowrap}
+  .drow.win-t .dres{color:var(--tuerkis)}
+  .drow.win-b .dres{color:var(--bernstein)}
+  .drow.hl .dbar{outline:2px solid var(--ink);outline-offset:1px}
+
+  /* ---------- Lehrteil ---------- */
+  .teach{margin-top:24px}
+  .teach h2{font-size:24px;letter-spacing:-0.025em}
+  .lead{max-width:62ch;color:var(--ink-soft);margin:6px 0 16px}
+  .grid3{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:14px}
+  .tcard{background:var(--card);border:1px solid var(--rule);border-radius:4px;padding:15px 16px}
+  .tcard h3{font-size:15px;font-weight:600;margin-bottom:5px}
+  .tcard p{margin:0;font-size:13.5px;color:var(--ink-soft)}
+  .tcard .try{
+    margin-top:10px;font-family:var(--mono);font-size:11px;color:var(--muted);
+    border-top:1px dashed var(--rule);padding-top:8px;
+  }
+  .tcard .try b{font-weight:500;color:var(--ink)}
+  details{background:var(--card);border:1px solid var(--rule);border-radius:4px;padding:12px 16px;margin-top:14px}
+  summary{font-family:var(--display);font-weight:600;font-size:15px;cursor:pointer}
+  details ul{margin:10px 0 2px;padding-left:20px;font-size:13.5px;color:var(--ink-soft)}
+  details li{margin-bottom:6px}
+  dl{margin:10px 0 0;font-size:13.5px}
+  dt{font-weight:600;margin-top:9px}
+  dd{margin:2px 0 0;color:var(--ink-soft)}
+  footer{margin-top:28px;font-size:12px;color:var(--muted);border-top:1px solid var(--rule);padding-top:12px}
+
+  @media (max-width:900px){
+    .stage{grid-template-columns:1fr}
+    .deck{position:static}
+    .scenarios{margin-left:0;width:100%}
+  }
+</style>
+</head>
+<body>
+
+<div class="deck">
+  <div class="deck-top">
+    <div class="brand">Wahlkreise nach Maß <span>· Gerrymandering</span></div>
+    <div class="kicker">Grenzen verschieben, Mehrheiten verschieben</div>
+    <div class="scenarios" id="scenarios"></div>
+  </div>
+  <div class="rowset" id="controls"></div>
+</div>
+
+<div class="wrap">
+  <div class="stage">
+    <!-- linke Spalte -->
+    <div>
+      <div class="mapbox">
+        <svg class="map" id="map" role="img" aria-label="Wahlkarte mit Wählern und Wahlkreisgrenzen"></svg>
+        <div class="maplegend">
+          <div class="lg"><span class="dot" style="background:var(--tuerkis)"></span> Wähler Türkis</div>
+          <div class="lg"><span class="dot" style="background:var(--bernstein)"></span> Wähler Bernstein</div>
+          <div class="lg"><span class="swatch" style="background:var(--tuerkis-tint)"></span> Wahlkreis geht an Türkis</div>
+          <div class="lg"><span class="swatch" style="background:var(--bernstein-tint)"></span> Wahlkreis geht an Bernstein</div>
+          <div class="lg" style="color:var(--muted)">Dicke Linie = Wahlkreisgrenze</div>
+        </div>
+        <div class="manualbar" id="manualbar" hidden>
+          <div class="hint" id="manualhint">Wahlkreis auswählen, dann auf Felder klicken oder ziehen. Jeder Wahlkreis braucht gleich viele Wähler.</div>
+          <div class="chips" id="districtchips"></div>
+        </div>
+      </div>
+
+      <div class="card" style="margin-top:16px">
+        <div class="card-head">
+          <div class="card-title">Ergebnis je Wahlkreis</div>
+          <div class="card-note" id="dlistnote"></div>
+        </div>
+        <div class="dlist" id="dlist"></div>
+      </div>
+    </div>
+
+    <!-- rechte Spalte -->
+    <div>
+      <div class="card">
+        <p class="verdict" id="verdict"></p>
+        <p class="subverdict" id="subverdict"></p>
+
+        <div class="barblock">
+          <div class="barlabel"><span>Stimmen im ganzen Land</span><span id="votenums"></span></div>
+          <div class="bar" id="votebar"><div class="b-t"></div><div class="b-b"></div></div>
+        </div>
+
+        <div class="barblock">
+          <div class="barlabel"><span>Sitze im Parlament</span><span id="seatnums"></span></div>
+          <div class="bar" id="seatbar"><div class="b-t"></div><div class="b-b"></div><div class="b-x"></div></div>
+          <div class="seatstrip" id="seatstrip"></div>
+        </div>
+
+        <div class="stats">
+          <div class="stat">
+            <span class="k">Verzerrung</span>
+            <span class="v" id="skew"></span>
+            <span class="d">Abstand zwischen Sitzanteil und Stimmenanteil</span>
+          </div>
+          <div class="stat">
+            <span class="k">Verschenkte Stimmen</span>
+            <span class="v" id="eg"></span>
+            <span class="d" id="egd"></span>
+          </div>
+          <div class="stat">
+            <span class="k">Türkis gewinnt mit</span>
+            <span class="v" id="marT"></span>
+            <span class="d" id="marTd"></span>
+          </div>
+          <div class="stat">
+            <span class="k">Bernstein gewinnt mit</span>
+            <span class="v" id="marB"></span>
+            <span class="d" id="marBd"></span>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-head"><div class="card-title">Was gerade passiert</div></div>
+        <p id="explain" style="margin:0;font-size:13.5px;color:var(--ink-soft)"></p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Lehrteil -->
+  <section class="teach">
+    <h2>Die zwei Tricks</h2>
+    <p class="lead">Wer die Grenzen zieht, entscheidet mit. Fast jede Manipulation läuft auf eine von zwei Bewegungen hinaus — oder auf beide gleichzeitig.</p>
+    <div class="grid3">
+      <div class="tcard">
+        <h3>Packing — einsperren</h3>
+        <p>Die Anhänger der Gegenseite werden in wenige Wahlkreise gestopft. Dort gewinnt sie mit 90 %. Alles über 50 % ist aber wirkungslos: Ein Sitz bleibt ein Sitz. In allen übrigen Wahlkreisen fehlen ihr dann die Stimmen.</p>
+        <div class="try"><b>Ausprobieren:</b> Verteilung „Zwei Ballungsräume“ + Methode „Packing“.</div>
+      </div>
+      <div class="tcard">
+        <h3>Cracking — zerschneiden</h3>
+        <p>Eine Hochburg wird auf viele Wahlkreise aufgeteilt. Überall ist die Gegenseite dann knapp in der Minderheit und gewinnt nirgends. Aus einer starken Region wird so eine Region ohne einen einzigen Sitz.</p>
+        <div class="try"><b>Ausprobieren:</b> Verteilung „Stadt &amp; Land“ + Methode „Cracking“.</div>
+      </div>
+      <div class="tcard">
+        <h3>Das Warnsignal</h3>
+        <p>Eine manipulierte Karte erkennt man an den Siegabständen: Die begünstigte Partei gewinnt viele Wahlkreise knapp, die andere gewinnt wenige haushoch. Vergleichen Sie dazu die beiden Kacheln „gewinnt mit“.</p>
+        <div class="try"><b>Achten Sie auf:</b> 55 % gegen 90 %.</div>
+      </div>
+    </div>
+
+    <details>
+      <summary>Fragen für die Diskussionsrunde</summary>
+      <ul>
+        <li>Bei „Stadt &amp; Land“ mit kompakten Blöcken verliert Türkis Sitze, ganz ohne böse Absicht. Ist eine Karte schon unfair, wenn niemand manipuliert hat?</li>
+        <li>Stellen Sie 50 % Stimmenanteil ein und probieren Sie alle Methoden durch. Wie viele Sitze sind bei exakt gleichem Wahlergebnis möglich?</li>
+        <li>Die Methode „Proportional“ liefert das fairste Sitzergebnis — dafür sehen die Wahlkreise oft zerfranst aus. Kompakte Form oder faires Ergebnis: Was ist wichtiger?</li>
+        <li>Woran ließe sich Manipulation nachweisen, wenn man nur die fertige Karte sieht und nicht die Absicht dahinter?</li>
+        <li>Zeichnen Sie mit „Selbst ziehen“ eine Karte, die Türkis maximal schadet. Wie schwer ist das — und wie unauffällig bekommen Sie es hin?</li>
+      </ul>
+    </details>
+
+    <details>
+      <summary>Begriffe in einem Satz</summary>
+      <dl>
+        <dt>Gerrymandering</dt><dd>Wahlkreisgrenzen so ziehen, dass eine bestimmte Partei möglichst viele Sitze bekommt. Benannt nach Gouverneur Elbridge Gerry, dessen Wahlkreis 1812 aussah wie ein Salamander.</dd>
+        <dt>Mehrheitswahl im Wahlkreis</dt><dd>Wer im Wahlkreis vorn liegt, bekommt den Sitz. Alle anderen Stimmen zählen für die Sitzverteilung nicht mehr.</dd>
+        <dt>Verschenkte Stimmen</dt><dd>Stimmen für Verlierer plus die Stimmen des Gewinners, die über die knappe Mehrheit hinausgehen. Beide bewirken nichts.</dd>
+        <dt>Effizienzlücke</dt><dd>Der Unterschied zwischen den verschenkten Stimmen beider Parteien, geteilt durch alle Stimmen. Über 7 % gilt in der Forschung als auffällig.</dd>
+        <dt>Kompaktheit</dt><dd>Wie „rund“ und zusammenhängend ein Wahlkreis ist. Lange Ausläufer und dünne Verbindungen sind ein Verdachtsmoment — mehr aber auch nicht.</dd>
+      </dl>
+    </details>
+
+    <footer>
+      Vereinfachtes Modell für Schulungszwecke: ein Feld = ein Wähler, zwei Parteien, alle Wahlkreise gleich groß, jeder Wahlkreis vergibt einen Sitz. Reale Wahlkreiseinteilungen müssen zusätzlich Verwaltungsgrenzen, Bevölkerungsentwicklung und Minderheitenschutz berücksichtigen.
+    </footer>
+  </section>
+</div>
+
+<script>
+"use strict";
+
+/* ============ Grundlagen ============ */
+const T = 0, B = 1; // 0 = Türkis, 1 = Bernstein
+const PARTY = [
+  {name:"Türkis",    color:"#0E7C7B", tint:"#C6DEDC"},
+  {name:"Bernstein", color:"#C2721B", tint:"#F0DBBC"}
+];
+
+const MAPS = [
+  {key:"m5",  label:"5 × 5 · 5 Kreise",   w:5,  h:5,  d:5},
+  {key:"m7",  label:"7 × 7 · 7 Kreise",   w:7,  h:7,  d:7},
+  {key:"m9",  label:"9 × 9 · 9 Kreise",   w:9,  h:9,  d:9},
+  {key:"m12", label:"12 × 12 · 16 Kreise",w:12, h:12, d:16}
+];
+
+const SHARES  = [0.40,0.45,0.50,0.55,0.60];
+const PATTERNS = [
+  {key:"mix",   label:"Gleichmäßig gemischt"},
+  {key:"rand",  label:"Zufällig verstreut"},
+  {key:"city",  label:"Stadt & Land"},
+  {key:"two",   label:"Zwei Ballungsräume"},
+  {key:"west",  label:"West–Ost-Gefälle"}
+];
+const METHODS = [
+  {key:"blocks", label:"Kompakte Blöcke", partisan:false},
+  {key:"strips", label:"Streifen",        partisan:false},
+  {key:"prop",   label:"Proportional",    partisan:false},
+  {key:"pack",   label:"Packing",         partisan:true},
+  {key:"crack",  label:"Cracking",        partisan:true},
+  {key:"manual", label:"Selbst ziehen",   partisan:false}
+];
+
+const SCENARIOS = [
+  {label:"Klassiker",         s:{map:"m5",  share:0.60, pattern:"mix",  method:"strips", favor:T}},
+  {label:"Stadt gegen Land",  s:{map:"m9",  share:0.45, pattern:"city", method:"blocks", favor:T}},
+  {label:"Faire Karte",       s:{map:"m9",  share:0.55, pattern:"two",  method:"prop",   favor:T}},
+  {label:"Maximal manipuliert",s:{map:"m9", share:0.55, pattern:"two",  method:"pack",   favor:B}}
+];
+
+const state = {
+  map:"m9", share:0.55, pattern:"two", method:"blocks", favor:T,
+  seed:20260804, voters:[], assign:[], activeDistrict:0, hover:-1
+};
+
+const mapDef = () => MAPS.find(m=>m.key===state.map);
+const isManual = () => state.method==="manual";
+
+function mulberry32(a){return function(){a|=0;a=a+0x6D2B79F5|0;let t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296;};}
+const clamp=(v,lo,hi)=>Math.max(lo,Math.min(hi,v));
+const pct = v => Math.round(v*100);
+
+/* ============ Wähler erzeugen ============ */
+function generateVoters(){
+  const {w,h} = mapDef();
+  const N = w*h, rnd = mulberry32(state.seed*7919 + w*131 + Math.round(state.share*100));
+  const nT = Math.round(state.share*N);
+  const cx=(w-1)/2, cy=(h-1)/2, maxD=Math.hypot(cx,cy)||1;
+  const scored=[];
+  for(let y=0;y<h;y++) for(let x=0;x<w;x++){
+    let s;
+    switch(state.pattern){
+      case "mix":  s = ((x+y)%2)*0.75 + rnd()*0.45; break;
+      case "rand": s = rnd(); break;
+      case "city": s = 1 - Math.hypot(x-cx,y-cy)/maxD + rnd()*0.42; break;
+      case "two": {
+        const b1 = Math.exp(-(Math.hypot(x-w*0.24, y-h*0.28)**2)/(2*(w*0.2)**2));
+        const b2 = Math.exp(-(Math.hypot(x-w*0.76, y-h*0.72)**2)/(2*(w*0.17)**2));
+        s = Math.max(b1,b2) + rnd()*0.38; break;
+      }
+      case "west": s = (1 - x/Math.max(1,w-1)) + rnd()*0.42; break;
+      default: s = rnd();
+    }
+    scored.push([y*w+x, s]);
+  }
+  scored.sort((a,b)=>b[1]-a[1]);
+  const v = new Array(N).fill(B);
+  for(let i=0;i<nT;i++) v[scored[i][0]] = T;
+  return v;
+}
+
+/* ============ Nachbarn ============ */
+function nbrs(i,w,h){
+  const x=i%w, y=(i/w)|0, out=[];
+  if(x>0) out.push(i-1);
+  if(x<w-1) out.push(i+1);
+  if(y>0) out.push(i-w);
+  if(y<h-1) out.push(i+w);
+  return out;
+}
+
+/* ============ Zielvorgaben je Wahlkreis ============ */
+// Gibt für jeden Wahlkreis vor, wie viele Wähler der *benachteiligten* Partei er enthalten soll.
+function buildTargets(voters, D, size, method, favor){
+  const opp = 1-favor;
+  const totalOpp = voters.reduce((a,p)=>a+(p===opp?1:0),0);
+  const N = voters.length;
+  const need = Math.floor(size/2)+1;   // Stimmen für den Sieg im Wahlkreis
+  const maxLose = size - need;         // höchste Zahl, mit der man noch verliert
+  const targets = new Array(D).fill(0);
+
+  if(method==="pack"){
+    // Gegner in möglichst wenige, dafür randvolle Wahlkreise stopfen
+    let k=0;
+    const kMax=Math.min(D, Math.floor(totalOpp/size));
+    while(k<kMax && (totalOpp - k*size) > (D-k)*maxLose) k++;
+    const rest=Math.max(0, totalOpp - k*size), others=D-k;
+    for(let d=0;d<D;d++){
+      if(d<k) targets[d]=size;
+      else targets[d]= others>0 ? Math.floor(rest/others) + ((d-k)<(rest%others)?1:0) : 0;
+    }
+  } else if(method==="crack"){
+    // Gegner überall knapp unter die Mehrheit drücken
+    const base=Math.min(maxLose, Math.floor(totalOpp/D));
+    for(let d=0;d<D;d++) targets[d]=base;
+    let rest=totalOpp - base*D;
+    for(let d=0; rest>0 && d<D; d++){ if(targets[d]<maxLose){ targets[d]++; rest--; } }
+  } else if(method==="prop"){
+    // Sitze sollen zum Stimmenanteil passen
+    const shareFav = 1 - totalOpp/N;
+    // t = Wahlkreise für die begünstigte Partei; dort 0..maxLose Gegner, sonst need..size
+    const feasible = tt => {
+      const oth=D-tt;
+      return totalOpp >= oth*need && totalOpp <= tt*maxLose + oth*size;
+    };
+    let t=clamp(Math.round(shareFav*D),0,D), found=feasible(t);
+    for(let off=1; off<=D && !found; off++){
+      for(const cand of [t-off, t+off]){
+        if(cand>=0 && cand<=D && feasible(cand)){ t=cand; found=true; break; }
+      }
+    }
+    const oth=D-t, caps=new Array(D);
+    for(let d=0;d<D;d++){ targets[d] = d<t ? 0 : need; caps[d] = d<t ? maxLose : size; }
+    let rest = totalOpp - oth*need, guard=0;
+    while(rest>0 && guard++<5000){
+      let moved=false;
+      for(let d=0; d<D && rest>0; d++) if(targets[d]<caps[d]){ targets[d]++; rest--; moved=true; }
+      if(!moved) break;
+    }
+  } else {
+    const base=Math.floor(totalOpp/D);
+    for(let d=0;d<D;d++) targets[d]=base;
+  }
+  return {targets, opp};
+}
+
+/* ============ Wahlkreise zeichnen (Algorithmus) ============ */
+function partitionSnake(w,h,D,size){
+  const order=[];
+  for(let y=0;y<h;y++){
+    if(y%2===0){ for(let x=0;x<w;x++) order.push(y*w+x); }
+    else { for(let x=w-1;x>=0;x--) order.push(y*w+x); }
+  }
+  const assign=new Array(w*h).fill(-1);
+  order.forEach((cell,idx)=>{ assign[cell]=Math.min(D-1, Math.floor(idx/size)); });
+  return assign;
+}
+
+function components(free,w,h){
+  const seen=new Set(), comps=[];
+  for(const s of free){
+    if(seen.has(s)) continue;
+    const stack=[s], comp=[]; seen.add(s);
+    while(stack.length){
+      const c=stack.pop(); comp.push(c);
+      for(const n of nbrs(c,w,h)) if(free.has(n) && !seen.has(n)){ seen.add(n); stack.push(n); }
+    }
+    comps.push(comp);
+  }
+  return comps;
+}
+
+function isConnected(assign,d,w,h,size){
+  let start=-1;
+  for(let i=0;i<assign.length;i++) if(assign[i]===d){ start=i; break; }
+  if(start<0) return false;
+  const seen=new Uint8Array(assign.length); seen[start]=1;
+  const st=[start]; let n=1;
+  while(st.length){
+    const c=st.pop();
+    for(const nb of nbrs(c,w,h)) if(assign[nb]===d && !seen[nb]){ seen[nb]=1; st.push(nb); n++; }
+  }
+  return n===size;
+}
+
+function perimeter(assign,w,h){
+  let p=0;
+  for(let i=0;i<w*h;i++){
+    const x=i%w, y=(i/w)|0;
+    if(x<w-1 && assign[i]!==assign[i+1]) p++;
+    if(y<h-1 && assign[i]!==assign[i+w]) p++;
+  }
+  return p;
+}
+
+function partisanCost(assign,voters,D,targets,opp){
+  const c=new Array(D).fill(0);
+  for(let i=0;i<assign.length;i++) if(voters[i]===opp) c[assign[i]]++;
+  const a=c.slice().sort((x,y)=>x-y), b=targets.slice().sort((x,y)=>x-y);
+  let s=0; for(let i=0;i<D;i++) s+=Math.abs(a[i]-b[i]);
+  return s;
+}
+
+// Kontaktstellen: welche Zellen eines Wahlkreises grenzen an welchen anderen?
+function contactMap(assign,w,h,D){
+  const m=new Map();
+  for(let i=0;i<w*h;i++){
+    const a=assign[i];
+    for(const n of nbrs(i,w,h)){
+      const b=assign[n];
+      if(b===a) continue;
+      const k=a*D+b;
+      if(!m.has(k)) m.set(k,[]);
+      const arr=m.get(k);
+      if(arr[arr.length-1]!==i) arr.push(i);
+    }
+  }
+  return m;
+}
+
+/* Startkarte ist immer gültig; danach werden Zellen paarweise getauscht.
+   Tauschen erhält die Größe der Wahlkreise, geprüft wird nur der Zusammenhang. */
+function optimize(assign,voters,w,h,D,size,method,favor,seed){
+  const rnd=mulberry32(seed);
+  const {targets,opp}=buildTargets(voters,D,size,method,favor);
+  const pw = (method==="blocks") ? 0 : 20;
+  const cost = a => pw*partisanCost(a,voters,D,targets,opp) + perimeter(a,w,h);
+  let cur=cost(assign);
+  const iters=Math.round(w*h*110);
+  const T0=(method==="blocks")?2.5:9, T1=0.04;
+  let cm=contactMap(assign,w,h,D), keys=[...cm.keys()];
+
+  for(let it=0; it<iters; it++){
+    if(it%20===0){ cm=contactMap(assign,w,h,D); keys=[...cm.keys()]; }
+    if(!keys.length) break;
+    const k=keys[(rnd()*keys.length)|0];
+    const a=Math.floor(k/D), b=k%D;
+    const back=cm.get(b*D+a);
+    const fwd=cm.get(k);
+    if(!back||!fwd||!back.length||!fwd.length) continue;
+    const i=fwd[(rnd()*fwd.length)|0], j=back[(rnd()*back.length)|0];
+    if(assign[i]!==a||assign[j]!==b||i===j) continue;
+
+    assign[i]=b; assign[j]=a;
+    let ok = isConnected(assign,a,w,h,size) && isConnected(assign,b,w,h,size);
+    if(ok){
+      const nc=cost(assign);
+      const delta=nc-cur;
+      const temp=T0*Math.pow(T1/T0, it/iters);
+      if(delta<=0 || rnd()<Math.exp(-delta/temp)){ cur=nc; continue; }
+    }
+    assign[i]=a; assign[j]=b;
+  }
+  return assign;
+}
+
+function computeDistricts(){
+  const {w,h,d}=mapDef(), size=(w*h)/d;
+  const base=partitionSnake(w,h,d,size);
+  if(state.method==="strips") return base;
+  return optimize(base,state.voters,w,h,d,size,state.method,state.favor,state.seed+11);
+}
+
+/* ============ Auswertung ============ */
+function analyse(){
+  const {w,h,d}=mapDef(), size=(w*h)/d, N=w*h;
+  const cnt=Array.from({length:d},()=>[0,0]);
+  state.voters.forEach((p,i)=>{ const dd=state.assign[i]; if(dd>=0&&dd<d) cnt[dd][p]++; });
+  const seats=[0,0], wasted=[0,0], margins=[[],[]];
+  let ties=0;
+  cnt.forEach(c=>{
+    const tot=c[0]+c[1]; if(tot===0) return;
+    const need=Math.floor(tot/2)+1;
+    if(c[0]>c[1]){ seats[T]++; wasted[T]+=c[0]-need; wasted[B]+=c[1]; margins[T].push(c[0]/tot); }
+    else if(c[1]>c[0]){ seats[B]++; wasted[B]+=c[1]-need; wasted[T]+=c[0]; margins[B].push(c[1]/tot); }
+    else { ties++; wasted[T]+=c[0]; wasted[B]+=c[1]; }
+  });
+  const votes=[state.voters.filter(p=>p===T).length, state.voters.filter(p=>p===B).length];
+  const eg=(wasted[T]-wasted[B])/N;
+  const avg=a=>a.length? a.reduce((x,y)=>x+y,0)/a.length : null;
+  return {cnt,seats,wasted,ties,votes,eg,size,N,d,
+          voteShare:votes[T]/N, seatShare:seats[T]/d,
+          avgMargin:[avg(margins[T]),avg(margins[B])], winCount:[margins[T].length,margins[B].length]};
+}
+
+/* ============ Bedienelemente ============ */
+function pill(label,pressed,onClick,cls){
+  const b=document.createElement("button");
+  b.className="pill"+(cls?" "+cls:""); b.type="button";
+  b.textContent=label; b.setAttribute("aria-pressed",pressed?"true":"false");
+  b.addEventListener("click",onClick);
+  return b;
+}
+function group(label,opts,dim){
+  const g=document.createElement("div");
+  g.className="group"+(dim?" dimmed":"");
+  const l=document.createElement("div"); l.className="group-label"; l.textContent=label;
+  const o=document.createElement("div"); o.className="opts";
+  opts.forEach(b=>{ if(dim) b.disabled=true; o.appendChild(b); });
+  g.appendChild(l); g.appendChild(o); return g;
+}
+
+function buildControls(){
+  const host=document.getElementById("controls");
+  host.innerHTML="";
+
+  host.appendChild(group("Karte", MAPS.map(m=>
+    pill(m.label, state.map===m.key, ()=>{ state.map=m.key; state.activeDistrict=0; regenerate(true); })
+  )));
+
+  host.appendChild(group("Stimmen für Türkis", SHARES.map(s=>
+    pill(pct(s)+" %", Math.abs(state.share-s)<1e-6, ()=>{ state.share=s; regenerate(true); }, "tk")
+  )));
+
+  host.appendChild(group("Wo wohnen die Wähler?", PATTERNS.map(p=>
+    pill(p.label, state.pattern===p.key, ()=>{ state.pattern=p.key; regenerate(true); })
+  )));
+
+  host.appendChild(group("Wie werden die Grenzen gezogen?", METHODS.map(m=>
+    pill(m.label, state.method===m.key, ()=>{ state.method=m.key; regenerate(false); }, m.key==="manual"?"ghost":"")
+  )));
+
+  const partisan = METHODS.find(m=>m.key===state.method).partisan;
+  host.appendChild(group("Zugunsten von", [
+    pill("Türkis", state.favor===T, ()=>{ state.favor=T; regenerate(false); }, "tk"),
+    pill("Bernstein", state.favor===B, ()=>{ state.favor=B; regenerate(false); }, "bs")
+  ], !partisan));
+
+  const shuffle=pill("Neu verteilen", false, ()=>{ state.seed=(Math.random()*1e9)|0; regenerate(true); });
+  host.appendChild(group("Wähler", [shuffle]));
+}
+
+function buildScenarios(){
+  const host=document.getElementById("scenarios");
+  host.innerHTML="";
+  SCENARIOS.forEach(sc=>{
+    const active = state.map===sc.s.map && Math.abs(state.share-sc.s.share)<1e-6
+                && state.pattern===sc.s.pattern && state.method===sc.s.method && state.favor===sc.s.favor;
+    host.appendChild(pill(sc.label, active, ()=>{ Object.assign(state,{map:sc.s.map,share:sc.s.share,pattern:sc.s.pattern,method:sc.s.method,favor:sc.s.favor,activeDistrict:0}); regenerate(true); }));
+  });
+}
+
+/* ============ Karte zeichnen ============ */
+let cellRects=[], tintRects=[];
+
+let suppressAnim=false;
+
+function renderMap(a){
+  const {w,h,d}=mapDef();
+  const svg=document.getElementById("map");
+  svg.dataset.anim = suppressAnim ? "off" : "on";
+  const rnd=mulberry32(state.seed+404);
+  svg.setAttribute("viewBox",`-0.35 -0.35 ${w+0.7} ${h+0.7}`);
+  svg.innerHTML="";
+  cellRects=[]; tintRects=[];
+  const NS="http://www.w3.org/2000/svg";
+  const el=(t,attrs)=>{const e=document.createElementNS(NS,t);for(const k in attrs)e.setAttribute(k,attrs[k]);return e;};
+
+  const winner = a.cnt.map(c=> c[0]>c[1] ? T : (c[1]>c[0] ? B : -1));
+
+  // Flächen
+  const gTint=el("g",{});
+  for(let i=0;i<w*h;i++){
+    const x=i%w, y=(i/w)|0, dd=state.assign[i];
+    const win = dd>=0 ? winner[dd] : -1;
+    const r=el("rect",{x,y,width:1,height:1,class:"cell-tint",
+      fill: win===-1 ? "#E4E8E3" : PARTY[win].tint});
+    tintRects.push(r); gTint.appendChild(r);
+  }
+  svg.appendChild(gTint);
+
+  // Feine Rasterlinien
+  const gHair=el("g",{});
+  for(let x=1;x<w;x++) gHair.appendChild(el("line",{x1:x,y1:0,x2:x,y2:h,class:"hair"}));
+  for(let y=1;y<h;y++) gHair.appendChild(el("line",{x1:0,y1:y,x2:w,y2:y,class:"hair"}));
+  svg.appendChild(gHair);
+
+  // Wähler
+  const gV=el("g",{});
+  for(let i=0;i<w*h;i++){
+    const x=i%w, y=(i/w)|0;
+    gV.appendChild(el("circle",{cx:x+0.5,cy:y+0.5,r:0.235,class:"voter",fill:PARTY[state.voters[i]].color,
+      stroke:"rgba(0,0,0,.18)","stroke-width":0.02}));
+  }
+  svg.appendChild(gV);
+
+  // Grenzen mit leichtem Zittern (gezeichnete Linie)
+  const wobble=(x1,y1,x2,y2)=>{
+    const segs=3, pts=[];
+    const vx=x2-x1, vy=y2-y1, len=Math.hypot(vx,vy)||1;
+    const nx=-vy/len, ny=vx/len;
+    for(let i=0;i<=segs;i++){
+      const t=i/segs; let px=x1+vx*t, py=y1+vy*t;
+      if(i>0&&i<segs){ const j=(rnd()-0.5)*0.09; px+=nx*j; py+=ny*j; }
+      pts.push(px.toFixed(3)+" "+py.toFixed(3));
+    }
+    return "M"+pts.join(" L ");
+  };
+  const gB=el("g",{});
+  let delay=0;
+  for(let i=0;i<w*h;i++){
+    const x=i%w, y=(i/w)|0, dd=state.assign[i];
+    const edges=[
+      [x,y,x+1,y,     y>0   ? i-w : -1],
+      [x+1,y,x+1,y+1, x<w-1 ? i+1 : -1],
+      [x,y+1,x+1,y+1, y<h-1 ? i+w : -1],
+      [x,y,x,y+1,     x>0   ? i-1 : -1]
+    ];
+    for(const [x1,y1,x2,y2,nb] of edges){
+      const outer = nb===-1;
+      if(!outer && state.assign[nb]===dd) continue;
+      if(!outer && nb<i) continue; // Kante nur einmal zeichnen
+      const p=el("path",{d:wobble(x1,y1,x2,y2),class:"border-ink"+(outer?" border-outer":""),pathLength:1,
+        style:`animation-delay:${(delay=(delay+7)%320)}ms`});
+      gB.appendChild(p);
+    }
+  }
+  svg.appendChild(gB);
+
+  // Nummern der Wahlkreise (nur beim eigenen Zeichnen)
+  if(isManual()){
+    const sum=Array.from({length:d},()=>[0,0,0]);
+    for(let i=0;i<w*h;i++){ const dd=state.assign[i]; if(dd<0) continue;
+      sum[dd][0]+=(i%w)+0.5; sum[dd][1]+=((i/w)|0)+0.5; sum[dd][2]++; }
+    const gN=el("g",{});
+    sum.forEach((v,i)=>{
+      if(!v[2]) return;
+      const t=el("text",{x:v[0]/v[2], y:v[1]/v[2]+0.1, class:"dnum"});
+      t.textContent=i+1; gN.appendChild(t);
+    });
+    svg.appendChild(gN);
+  }
+
+  // Interaktionsflächen
+  const gHit=el("g",{});
+  for(let i=0;i<w*h;i++){
+    const x=i%w, y=(i/w)|0;
+    const r=el("rect",{x,y,width:1,height:1,class:"hit"});
+    r.style.cursor = isManual() ? "crosshair" : "default";
+    r.addEventListener("pointerenter",ev=>{
+      state.hover=state.assign[i]; highlight();
+      if(isManual() && ev.buttons===1) paint(i);
+    });
+    r.addEventListener("pointerdown",ev=>{ if(isManual()){ ev.preventDefault(); paint(i); } });
+    cellRects.push(r); gHit.appendChild(r);
+  }
+  gHit.addEventListener("pointerleave",()=>{ state.hover=-1; highlight(); });
+  svg.appendChild(gHit);
+}
+
+function highlight(){
+  const rows=document.querySelectorAll(".drow");
+  rows.forEach(r=>r.classList.toggle("hl", Number(r.dataset.d)===state.hover));
+  tintRects.forEach((r,i)=>{
+    r.classList.toggle("faded", state.hover>=0 && state.assign[i]!==state.hover);
+  });
+}
+
+function paint(i){
+  if(state.assign[i]===state.activeDistrict) return;
+  state.assign[i]=state.activeDistrict;
+  suppressAnim=true; render(false); suppressAnim=false;
+}
+
+/* ============ Manuell-Leiste ============ */
+function renderManual(a){
+  const bar=document.getElementById("manualbar");
+  bar.hidden=!isManual();
+  if(!isManual()) return;
+  const {d}=mapDef();
+  const host=document.getElementById("districtchips");
+  host.innerHTML="";
+  const winner=a.cnt.map(c=> c[0]>c[1]?T:(c[1]>c[0]?B:-1));
+  let problems=0;
+  for(let i=0;i<d;i++){
+    const n=a.cnt[i][0]+a.cnt[i][1];
+    const cells=[]; state.assign.forEach((v,idx)=>{ if(v===i) cells.push(idx); });
+    const connected = cells.length? components(new Set(cells),mapDef().w,mapDef().h).length===1 : false;
+    const ok = n===a.size && connected;
+    if(!ok) problems++;
+    const c=document.createElement("button");
+    c.type="button"; c.className="chip"+(ok?"":" bad");
+    c.setAttribute("aria-pressed", state.activeDistrict===i?"true":"false");
+    c.innerHTML=`<span style="color:${winner[i]>=0?PARTY[winner[i]].color:"#888"}">■</span> Kreis ${i+1} · ${n}/${a.size}`+(connected?"":" ⚠");
+    c.addEventListener("click",()=>{ state.activeDistrict=i; renderManual(a); });
+    host.appendChild(c);
+  }
+  document.getElementById("manualhint").textContent = problems
+    ? "Noch nicht gültig: Jeder Wahlkreis braucht genau "+a.size+" Wähler und muss zusammenhängen (⚠ = unterbrochen)."
+    : "Gültige Karte. Wahlkreis wählen, dann auf Felder klicken oder ziehen.";
+}
+
+/* ============ Ergebnisanzeige ============ */
+function renderResults(a){
+  const {d}=mapDef();
+  const vT=a.voteShare, sT=a.seatShare;
+
+  // Bänder
+  const vb=document.getElementById("votebar").children;
+  vb[0].style.flexGrow=a.votes[T]; vb[1].style.flexGrow=a.votes[B];
+  document.getElementById("votenums").textContent = pct(vT)+" % / "+(100-pct(vT))+" %";
+
+  const sb=document.getElementById("seatbar").children;
+  sb[0].style.flexGrow=a.seats[T]; sb[1].style.flexGrow=a.seats[B]; sb[2].style.flexGrow=a.ties;
+  document.getElementById("seatnums").textContent = a.seats[T]+" / "+a.seats[B]+" Sitze";
+
+  const strip=document.getElementById("seatstrip"); strip.innerHTML="";
+  const winner=a.cnt.map(c=> c[0]>c[1]?T:(c[1]>c[0]?B:-1));
+  const sorted=[...winner].sort((x,y)=>x-y);
+  sorted.forEach(win=>{
+    const s=document.createElement("div"); s.className="seat";
+    s.style.background = win===-1?"#9AA79F":PARTY[win].color;
+    strip.appendChild(s);
+  });
+
+  // Kennzahlen
+  const skew=(sT-vT)*100;
+  const skewEl=document.getElementById("skew");
+  skewEl.textContent=(skew>=0?"+":"−")+Math.abs(Math.round(skew))+" Pp.";
+  skewEl.style.color = Math.abs(skew)<6 ? "var(--ink)" : (skew>0?PARTY[T].color:PARTY[B].color);
+
+  const egv=a.eg*100;
+  const egEl=document.getElementById("eg");
+  egEl.textContent=Math.abs(Math.round(egv))+" %";
+  egEl.style.color = Math.abs(egv)<7 ? "var(--ink)" : (egv>0?PARTY[B].color:PARTY[T].color);
+  document.getElementById("egd").textContent = Math.abs(egv)<1
+    ? "Beide Seiten verschenken gleich viele Stimmen."
+    : "Effizienzlücke zugunsten von "+(egv>0?"Bernstein":"Türkis")+" (auffällig ab 7 %).";
+
+  [[T,"marT","marTd"],[B,"marB","marBd"]].forEach(([p,idV,idD])=>{
+    const m=a.avgMargin[p];
+    document.getElementById(idV).textContent = m===null ? "—" : pct(m)+" %";
+    document.getElementById(idV).style.color = m===null?"var(--muted)":PARTY[p].color;
+    document.getElementById(idD).textContent = m===null
+      ? "gewinnt keinen Wahlkreis" 
+      : "im Schnitt, in "+a.winCount[p]+" von "+d+" Wahlkreisen";
+  });
+
+  // Urteil
+  const diff=Math.abs(skew);
+  let head, sub;
+  const lead = sT>vT ? T : B;
+  if(diff<6){
+    head = `Die Sitze bilden das Wahlergebnis fast genau ab.`;
+    sub = `Türkis: ${pct(vT)} % der Stimmen, ${pct(sT)} % der Sitze.`;
+  } else {
+    const cls = lead===T?"":' class="bs"';
+    head = `<em${cls}>${PARTY[lead].name}</em> bekommt ${Math.round(diff)} Prozentpunkte mehr Sitze als Stimmen.`;
+    sub = `Türkis holt ${pct(vT)} % der Stimmen und ${a.seats[T]} von ${d} Sitzen (${pct(sT)} %). `
+        + (diff>20 ? "Das ist eine massive Verzerrung — allein durch den Grenzverlauf." : "Der Grenzverlauf verschiebt das Ergebnis spürbar.");
+  }
+  document.getElementById("verdict").innerHTML=head;
+  document.getElementById("subverdict").textContent=sub;
+
+  // Liste
+  const list=document.getElementById("dlist"); list.innerHTML="";
+  document.getElementById("dlistnote").textContent=a.size+" Wähler je Wahlkreis";
+  a.cnt.forEach((c,i)=>{
+    const row=document.createElement("div");
+    const win=winner[i];
+    row.className="drow"+(win===T?" win-t":win===B?" win-b":"");
+    row.dataset.d=i;
+    row.innerHTML=`<div class="dn">${i+1}</div>
+      <div class="dbar"><span style="flex-grow:${c[0]};background:${PARTY[T].color}"></span><span style="flex-grow:${c[1]};background:${PARTY[B].color}"></span></div>
+      <div class="dres">${c[0]}:${c[1]} ${win===-1?"unentschieden":"→ "+PARTY[win].name.slice(0,1)}</div>`;
+    row.addEventListener("pointerenter",()=>{ state.hover=i; highlight(); });
+    row.addEventListener("pointerleave",()=>{ state.hover=-1; highlight(); });
+    list.appendChild(row);
+  });
+
+  // Erläuterung
+  document.getElementById("explain").innerHTML = explainText(a);
+}
+
+function explainText(a){
+  const opp=PARTY[1-state.favor].name, fav=PARTY[state.favor].name;
+  const patternText={
+    mix:"Die Wähler sind gleichmäßig durchmischt — für Manipulation der schwierigste Fall, weil jede Region gleich aussieht.",
+    rand:"Die Wähler sind zufällig verteilt, ohne erkennbares Muster.",
+    city:"Türkis ballt sich in der Mitte, Bernstein sitzt am Rand — das klassische Stadt-Land-Muster.",
+    two:"Es gibt zwei Hochburgen. Wer die Grenzen zieht, entscheidet, ob sie zusammenbleiben oder zerschnitten werden.",
+    west:"Von West nach Ost dreht sich die Mehrheit. Grenzen quer zum Gefälle wirken anders als längs dazu."
+  }[state.pattern];
+
+  const methodText={
+    blocks:"<b>Kompakte Blöcke:</b> Der Zuschnitt schaut nur auf die Form, nicht auf die Parteien. Trotzdem entsteht oft eine Verzerrung — je nachdem, wo die Wähler wohnen.",
+    strips:"<b>Streifen:</b> Die Karte wird stur in gleich große Streifen zerlegt. Ein Verfahren ohne Absicht — mit teilweise überraschendem Ergebnis.",
+    prop:"<b>Proportional:</b> Die Grenzen werden so gesucht, dass die Sitze möglichst genau zum Stimmenanteil passen. Preis dafür: unruhige Formen.",
+    pack:`<b>Packing zugunsten ${fav}:</b> ${opp} wird in möglichst wenige Wahlkreise gestopft und gewinnt dort haushoch. In allen anderen Wahlkreisen reicht es dann knapp für ${fav}.`,
+    crack:`<b>Cracking zugunsten ${fav}:</b> Die Hochburgen von ${opp} werden zerschnitten und auf viele Wahlkreise verteilt. Überall knapp in der Minderheit — nirgends ein Sitz.`,
+    manual:"<b>Selbst ziehen:</b> Sie zeichnen die Grenzen. Achten Sie darauf, dass alle Wahlkreise gleich viele Wähler haben und zusammenhängen."
+  }[state.method];
+
+  let signal="";
+  const oppShare = (1-state.favor)===T ? a.voteShare : 1-a.voteShare;
+  if(state.method==="crack" && oppShare>0.5){
+    signal += ` <br><br><b>Hinweis:</b> Gegen eine echte Mehrheit läuft Cracking ins Leere — wer überall verdünnt wird, ist am Ende trotzdem überall vorn. Dagegen hilft nur Packing.`;
+  }
+  const mT=a.avgMargin[T], mB=a.avgMargin[B];
+  if(mT!==null && mB!==null && Math.abs(mT-mB)>0.18){
+    const knapp = mT<mB ? "Türkis":"Bernstein", hoch = mT<mB ? "Bernstein":"Türkis";
+    signal = ` <br><br><b>Warnsignal:</b> ${knapp} gewinnt viele Wahlkreise knapp, ${hoch} wenige sehr deutlich. Genau dieses Muster hinterlässt Packing.`;
+  }
+  return patternText+"<br><br>"+methodText+signal;
+}
+
+/* ============ Ablauf ============ */
+function render(full){
+  const a=analyse();
+  renderMap(a);
+  renderResults(a);
+  renderManual(a);
+  if(full!==false){ buildControls(); buildScenarios(); }
+  highlight();
+}
+
+function regenerate(newVoters){
+  const {w,h,d}=mapDef();
+  if(newVoters || state.voters.length!==w*h) state.voters=generateVoters();
+  if(!isManual() || state.assign.length!==w*h){
+    const keep=state.method;
+    if(isManual()) state.method="blocks";
+    state.assign=computeDistricts();
+    state.method=keep;
+  }
+  state.activeDistrict=clamp(state.activeDistrict,0,d-1);
+  render();
+}
+
+regenerate(true);
+</script>
+</body>
+</html>

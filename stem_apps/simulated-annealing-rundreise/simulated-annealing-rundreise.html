@@ -1,0 +1,1437 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Simulated Annealing am Rundreiseproblem</title>
+<style>
+:root{
+  --b1:#CCF2FF;   /* CMYK 20/5/0/0 */
+  --b2:#80D9FF;   /* CMYK 50/15/0/0 */
+  --b3:#3399FF;   /* CMYK 80/40/0/0 */
+  --b4:#1360BF;   /* CMYK 90/50/0/25 */
+  --b5:#002A8C;   /* CMYK 100/70/0/45 */
+  --ink:#1a1d21;
+  --ink-2:#4a5158;
+  --line:#c8cfd6;
+  --line-2:#e2e7ec;
+  --bg:#f4f6f8;
+  --panel:#ffffff;
+  --signal:#C87A00;
+  --font:"Frutiger","Frutiger Linotype","Univers","Helvetica Neue",Helvetica,Arial,sans-serif;
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{
+  font-family:var(--font);
+  background:var(--bg);
+  color:var(--ink);
+  font-size:15px;
+  line-height:1.5;
+  -webkit-font-smoothing:antialiased;
+}
+h1,h2,h3,h4{margin:0;font-weight:600;letter-spacing:-0.01em}
+p{margin:0 0 .6em 0}
+a{color:var(--b4)}
+
+/* ---------- Kopf ---------- */
+.app-header{
+  background:var(--b5);
+  color:#fff;
+  padding:18px 28px;
+  display:flex;
+  align-items:flex-start;
+  justify-content:space-between;
+  gap:24px;
+  border-bottom:4px solid var(--b3);
+}
+.app-header h1{font-size:22px;line-height:1.25}
+.app-header .sub{font-size:13.5px;color:var(--b1);margin-top:4px}
+.logo{height:38px;display:block}
+.logo-fallback{
+  display:none;font-size:12px;letter-spacing:.16em;font-weight:600;
+  border-left:3px solid var(--b2);padding-left:10px;white-space:nowrap;
+}
+
+/* ---------- Einstieg ---------- */
+.intro{
+  display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:1px;
+  background:var(--line);border-bottom:1px solid var(--line);
+}
+.intro .card{background:var(--panel);padding:16px 20px}
+.intro .card h3{font-size:13px;text-transform:uppercase;letter-spacing:.08em;color:var(--b4);margin-bottom:6px}
+.intro .card p{font-size:14px;color:var(--ink-2);margin:0}
+
+/* ---------- Layout ---------- */
+.layout{
+  display:grid;grid-template-columns:340px minmax(0,1fr);
+  gap:16px;padding:16px 20px 8px 20px;align-items:start;
+}
+.panel{background:var(--panel);border:1px solid var(--line)}
+.panel > h2{
+  font-size:12.5px;text-transform:uppercase;letter-spacing:.08em;
+  padding:9px 14px;background:#eef2f6;border-bottom:1px solid var(--line);color:var(--b5);
+}
+.panel .body{padding:12px 14px}
+
+/* ---------- Steuerung ---------- */
+.group{border-bottom:1px solid var(--line-2);padding:12px 14px}
+.group:last-child{border-bottom:none}
+.group > h3{
+  font-size:12.5px;text-transform:uppercase;letter-spacing:.07em;
+  color:var(--b4);margin-bottom:9px;
+}
+.ctrl{margin-bottom:11px}
+.ctrl:last-child{margin-bottom:0}
+.ctrl label.lab{display:flex;justify-content:space-between;align-items:baseline;font-size:13px;margin-bottom:3px}
+.ctrl label.lab .val{font-variant-numeric:tabular-nums;font-weight:600;color:var(--b5)}
+.hint-s{font-size:11.5px;color:var(--ink-2);margin-top:2px;line-height:1.35}
+input[type=range]{width:100%;margin:0;accent-color:var(--b4);height:18px}
+select{
+  width:100%;font-family:var(--font);font-size:13.5px;padding:5px 6px;
+  border:1px solid var(--line);background:#fff;color:var(--ink);border-radius:0;
+}
+.chk{display:flex;gap:8px;align-items:flex-start;font-size:13.5px;margin-bottom:7px;cursor:pointer}
+.chk input{accent-color:var(--b4);margin:2px 0 0 0;flex:none}
+.chk:last-child{margin-bottom:0}
+button{
+  font-family:var(--font);font-size:13.5px;border-radius:0;cursor:pointer;
+  border:1px solid var(--b4);background:#fff;color:var(--b4);padding:6px 10px;
+}
+button:hover{background:var(--b1)}
+button.primary{background:var(--b4);color:#fff;border-color:var(--b4);font-weight:600}
+button.primary:hover{background:var(--b5);border-color:var(--b5)}
+button.ghost{border-color:var(--line);color:var(--ink-2)}
+button.ghost:hover{background:#eef2f6}
+button[aria-pressed=true]{background:var(--b5);border-color:var(--b5);color:#fff}
+.btn-row{display:flex;gap:6px;flex-wrap:wrap}
+.btn-row.grid2{display:grid;grid-template-columns:1fr 1fr}
+.btn-row.grid2 button{width:100%}
+
+/* ---------- Bühne ---------- */
+.stage{display:grid;gap:16px}
+.board-wrap{position:relative;background:var(--panel);border:1px solid var(--line)}
+canvas{display:block;width:100%}
+#board{background:#fbfcfd;cursor:crosshair}
+.legend{
+  display:flex;gap:18px;flex-wrap:wrap;font-size:12.5px;color:var(--ink-2);
+  padding:8px 14px;border-top:1px solid var(--line-2);background:#fafbfc;
+}
+.legend span{display:flex;align-items:center;gap:7px}
+.swatch{width:22px;height:0;border-top-width:4px;border-top-style:solid;display:inline-block}
+.sq{width:9px;height:9px;display:inline-block;border:1.5px solid var(--b5);background:#fff}
+
+.stats{
+  display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:1px;background:var(--line);
+  border:1px solid var(--line);
+}
+.stat{background:var(--panel);padding:9px 12px}
+.stat .k{font-size:11px;text-transform:uppercase;letter-spacing:.06em;color:var(--ink-2)}
+.stat .v{font-size:19px;font-weight:600;font-variant-numeric:tabular-nums;color:var(--b5);line-height:1.25}
+.stat .v small{font-size:12px;font-weight:400;color:var(--ink-2)}
+.status{
+  border:1px solid var(--line);border-left:4px solid var(--b3);background:#fff;
+  padding:9px 13px;font-size:13.5px;
+}
+.status b{color:var(--b5)}
+
+.two{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+@media (max-width:1180px){
+  .layout{grid-template-columns:1fr}
+  .intro{grid-template-columns:1fr}
+  .two{grid-template-columns:1fr}
+}
+
+/* ---------- Annahme-Rechner ---------- */
+.accept-grid{display:grid;grid-template-columns:1fr 190px;gap:16px;align-items:center}
+@media (max-width:700px){.accept-grid{grid-template-columns:1fr}}
+.bar{height:22px;background:#eef2f6;border:1px solid var(--line);position:relative}
+.bar i{position:absolute;left:0;top:0;bottom:0;background:var(--b3);display:block}
+.bigp{font-size:30px;font-weight:600;color:var(--b5);font-variant-numeric:tabular-nums;line-height:1.1}
+.formula{
+  font-family:"Courier New",monospace;font-size:13px;background:#eef2f6;
+  border:1px solid var(--line-2);padding:7px 10px;color:var(--b5);
+}
+
+/* ---------- Erklärungen ---------- */
+.explain{padding:8px 20px 24px 20px}
+details.exp{background:var(--panel);border:1px solid var(--line);margin-bottom:8px}
+details.exp > summary{
+  padding:10px 14px;cursor:pointer;font-weight:600;font-size:14.5px;color:var(--b5);
+  list-style:none;display:flex;justify-content:space-between;gap:12px;
+}
+details.exp > summary::-webkit-details-marker{display:none}
+details.exp > summary::after{content:"+";color:var(--b3);font-weight:700}
+details.exp[open] > summary::after{content:"–"}
+details.exp > summary:hover{background:#f7f9fb}
+details.exp .inner{padding:2px 14px 14px 14px;font-size:14px;color:var(--ink-2);border-top:1px solid var(--line-2)}
+details.exp .inner h4{font-size:13.5px;color:var(--b5);margin:12px 0 4px 0}
+details.exp .inner ul,details.exp .inner ol{margin:0 0 .6em 0;padding-left:20px}
+details.exp .inner li{margin-bottom:3px}
+table.t{border-collapse:collapse;width:100%;font-size:13.5px;margin:6px 0 10px 0}
+table.t th,table.t td{border:1px solid var(--line);padding:6px 8px;text-align:left;vertical-align:top}
+table.t th{background:#eef2f6;color:var(--b5);font-weight:600}
+.mono{font-family:"Courier New",monospace}
+.tag{
+  display:inline-block;background:var(--b1);color:var(--b5);font-size:11.5px;
+  padding:1px 6px;border:1px solid var(--b2);
+}
+
+/* ---------- Fuß ---------- */
+footer{
+  border-top:1px solid var(--line);background:var(--panel);
+  padding:14px 20px;font-size:12.5px;color:var(--ink-2);
+  display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap;
+}
+</style>
+</head>
+<body>
+
+<header class="app-header">
+  <div>
+    <h1>Simulated Annealing am Rundreiseproblem</h1>
+    <div class="sub">Interaktive Lernumgebung: Wie findet ein Computer eine kurze Rundreise durch viele Städte?</div>
+  </div>
+  <img src="logo.png" alt="Fraunhofer IAIS" class="logo"
+       onerror="this.style.display='none';document.getElementById('logoFallback').style.display='block';">
+  <div class="logo-fallback" id="logoFallback">FRAUNHOFER<br>IAIS</div>
+</header>
+
+<section class="intro">
+  <div class="card">
+    <h3>Die Aufgabe</h3>
+    <p>Ein Fahrzeug soll alle Städte auf der Karte genau einmal besuchen und danach zum Start zurückkehren.
+       Gesucht ist die Reihenfolge mit der kürzesten Gesamtstrecke.</p>
+  </div>
+  <div class="card">
+    <h3>Warum das schwer ist</h3>
+    <p>Die Zahl möglicher Reihenfolgen wächst explosionsartig. Bei <b id="introN">60</b> Städten sind es
+       etwa <b id="introPerm">–</b> Rundreisen. Alle durchzuprobieren ist unmöglich.</p>
+  </div>
+  <div class="card">
+    <h3>Die Idee</h3>
+    <p>Wir starten mit einer beliebigen Route und verändern sie in kleinen Schritten. Anfangs erlauben wir
+       auch Verschlechterungen, später immer weniger &ndash; wie bei abkühlendem Metall.</p>
+  </div>
+</section>
+
+<main class="layout">
+
+  <!-- ============ Steuerung ============ -->
+  <aside class="panel" style="position:sticky;top:12px">
+    <h2>Steuerung</h2>
+
+    <div class="group">
+      <h3>Ablauf</h3>
+      <div class="btn-row grid2" style="margin-bottom:6px">
+        <button id="btnRun" class="primary">Start</button>
+        <button id="btnStep" class="ghost" title="Genau einen Änderungsvorschlag prüfen">Ein Schritt</button>
+      </div>
+      <div class="btn-row grid2" style="margin-bottom:6px">
+        <button id="btnRound" class="ghost" title="Eine komplette Temperaturstufe rechnen">Eine Stufe</button>
+        <button id="btnReheat" class="ghost" title="Temperatur zurück auf Startwert">Aufheizen</button>
+      </div>
+      <div class="btn-row grid2">
+        <button id="btnReset" class="ghost">Neu starten</button>
+        <button id="btnNewCities" class="ghost">Neue Städte</button>
+      </div>
+      <div class="hint-s">Leertaste startet und pausiert. „Neu starten“ setzt Route, Temperatur und Diagramme
+        zurück, behält aber die Städte.</div>
+    </div>
+
+    <div class="group">
+      <h3>Voreinstellungen</h3>
+      <div class="btn-row">
+        <button class="ghost" data-preset="good">Gut eingestellt</button>
+        <button class="ghost" data-preset="hot">Viel zu heiß</button>
+        <button class="ghost" data-preset="cold">Viel zu kalt</button>
+        <button class="ghost" data-preset="fast">Zu schnell abgekühlt</button>
+        <button class="ghost" data-preset="greedy">Nur bergab</button>
+      </div>
+      <div class="hint-s">Jede Voreinstellung zeigt ein typisches Verhalten. Der Beobachtungstipp erscheint
+        über der Karte.</div>
+    </div>
+
+    <div class="group">
+      <h3>Städte</h3>
+      <div class="ctrl">
+        <label class="lab" for="rgCount">Anzahl Städte <span class="val" id="outCount">60</span></label>
+        <input type="range" id="rgCount" min="5" max="250" step="1" value="60">
+      </div>
+      <div class="ctrl">
+        <label class="lab" for="selLayout">Anordnung</label>
+        <select id="selLayout">
+          <option value="random">Zufällig verteilt</option>
+          <option value="cluster">Ballungsräume</option>
+          <option value="circle">Auf einem Kreis</option>
+          <option value="grid">Gitter</option>
+        </select>
+        <div class="hint-s">Beim Kreis kennen Sie die perfekte Lösung: der Kreis selbst. Gut zum Vergleichen.</div>
+      </div>
+      <div class="hint-s">Klick auf freie Fläche fügt eine Stadt hinzu, Klick auf eine Stadt entfernt sie.</div>
+    </div>
+
+    <div class="group">
+      <h3>Temperatur und Abkühlung</h3>
+      <div class="ctrl">
+        <label class="lab" for="rgT0">Starttemperatur <span class="val" id="outT0">800</span></label>
+        <input type="range" id="rgT0" min="1" max="5000" step="1" value="800">
+        <div class="btn-row" style="margin-top:5px">
+          <button id="btnAutoT0" class="ghost" style="font-size:12.5px">Passenden Startwert vorschlagen</button>
+        </div>
+        <div class="hint-s">Hoch = die Route wird am Anfang stark durchgemischt. Niedrig = es werden fast nur
+          Verbesserungen übernommen.</div>
+      </div>
+      <div class="ctrl">
+        <label class="lab" for="rgAlpha">Abkühlfaktor je Stufe <span class="val" id="outAlpha">0,995</span></label>
+        <input type="range" id="rgAlpha" min="0.800" max="0.9995" step="0.0005" value="0.995">
+        <div class="hint-s">0,999 kühlt sehr langsam ab (gründlich, dauert länger), 0,90 kühlt sehr schnell ab.</div>
+      </div>
+      <div class="ctrl">
+        <label class="lab" for="rgSteps">Schritte je Temperaturstufe <span class="val" id="outSteps">200</span></label>
+        <input type="range" id="rgSteps" min="10" max="2000" step="10" value="200">
+        <div class="hint-s">Wie viele Änderungsvorschläge werden geprüft, bevor die Temperatur sinkt?</div>
+      </div>
+      <div class="ctrl">
+        <label class="lab" for="rgTmin">Endtemperatur (Stopp) <span class="val" id="outTmin">0,50</span></label>
+        <input type="range" id="rgTmin" min="0.01" max="20" step="0.01" value="0.5">
+      </div>
+      <div class="ctrl">
+        <label class="lab" for="selSchedule">Abkühlplan</label>
+        <select id="selSchedule">
+          <option value="geo">Geometrisch (üblich)</option>
+          <option value="lin">Linear</option>
+          <option value="log">Logarithmisch (sehr langsam)</option>
+        </select>
+      </div>
+      <label class="chk"><input type="checkbox" id="chkGreedy">
+        <span>Nur bergab: Verschlechterungen grundsätzlich ablehnen
+          <span class="hint-s" style="display:block">Zeigt, warum reines Verbessern in einer Sackgasse endet.</span>
+        </span>
+      </label>
+    </div>
+
+    <div class="group">
+      <h3>Erlaubte Änderungsschritte</h3>
+      <label class="chk"><input type="checkbox" id="chkRev" checked>
+        <span>Teilstrecke umdrehen <span class="hint-s" style="display:block">Fachbegriff: 2-opt. Löst Überkreuzungen sehr wirksam auf.</span></span>
+      </label>
+      <label class="chk"><input type="checkbox" id="chkMove" checked>
+        <span>Eine Stadt an anderer Stelle einfügen</span>
+      </label>
+      <label class="chk"><input type="checkbox" id="chkSwap">
+        <span>Zwei Städte tauschen <span class="hint-s" style="display:block">Wirkt eher grob, allein oft schwächer.</span></span>
+      </label>
+    </div>
+
+    <div class="group">
+      <h3>Darstellung</h3>
+      <div class="ctrl">
+        <label class="lab" for="rgSpeed">Tempo: Schritte je Bild <span class="val" id="outSpeed">300</span></label>
+        <input type="range" id="rgSpeed" min="1" max="3000" step="1" value="300">
+      </div>
+      <label class="chk"><input type="checkbox" id="chkShowBest" checked><span>Beste bisher gefundene Route anzeigen</span></label>
+      <label class="chk"><input type="checkbox" id="chkSlow"><span>Vorgeschlagene Änderung hervorheben (Zeitlupe)</span></label>
+      <label class="chk"><input type="checkbox" id="chkNumbers"><span>Städte nummerieren</span></label>
+    </div>
+
+    <div class="group">
+      <h3>Export</h3>
+      <div class="btn-row grid2">
+        <button id="btnExportJSON" class="ghost">JSON</button>
+        <button id="btnExportMD" class="ghost">Markdown</button>
+      </div>
+      <div class="hint-s">Speichert Einstellungen, Kennzahlen, Städte und die beste Route.</div>
+    </div>
+  </aside>
+
+  <!-- ============ Bühne ============ -->
+  <section class="stage">
+
+    <div class="status" id="hint">
+      Willkommen. Drücken Sie <b>Start</b> und beobachten Sie, wie sich die Route ordnet.
+      Zum Einstieg empfiehlt sich die Voreinstellung <b>Gut eingestellt</b>.
+    </div>
+
+    <div class="board-wrap">
+      <canvas id="board" width="1000" height="620"></canvas>
+      <div class="legend">
+        <span><i class="swatch" style="border-top-color:var(--b2)"></i> beste gefundene Route</span>
+        <span><i class="swatch" style="border-top-color:var(--b5)"></i> aktuelle Route</span>
+        <span><i class="swatch" style="border-top-color:var(--signal);border-top-style:dashed"></i> gerade geprüfte Änderung</span>
+        <span><i class="sq"></i> Stadt</span>
+        <span><i class="sq" style="background:var(--b5)"></i> Startstadt</span>
+      </div>
+    </div>
+
+    <div class="stats">
+      <div class="stat"><div class="k">Temperatur</div><div class="v" id="stT">–</div></div>
+      <div class="stat"><div class="k">Aktuelle Länge</div><div class="v" id="stCur">–<small> km</small></div></div>
+      <div class="stat"><div class="k">Beste Länge</div><div class="v" id="stBest">–<small> km</small></div></div>
+      <div class="stat"><div class="k">Verbesserung</div><div class="v" id="stImp">–<small> %</small></div></div>
+      <div class="stat"><div class="k">Geprüfte Schritte</div><div class="v" id="stIter">0</div></div>
+      <div class="stat"><div class="k">Temperaturstufe</div><div class="v" id="stStage">0</div></div>
+      <div class="stat"><div class="k">Angenommen</div><div class="v" id="stAcc">–<small> %</small></div></div>
+      <div class="stat"><div class="k">davon Verschlechterungen</div><div class="v" id="stWorse">0</div></div>
+    </div>
+
+    <div class="two">
+      <div class="panel">
+        <h2>Länge der Route über die Zeit</h2>
+        <div class="body" style="padding:8px 10px">
+          <canvas id="chartLen" width="620" height="230"></canvas>
+          <div class="hint-s">Dunkel = beste gefundene Länge, hell = aktuelle Länge. Die helle Linie zappelt
+            am Anfang stark: das sind die absichtlich erlaubten Verschlechterungen.</div>
+        </div>
+      </div>
+      <div class="panel">
+        <h2>Temperaturverlauf (logarithmisch)</h2>
+        <div class="body" style="padding:8px 10px">
+          <canvas id="chartTemp" width="620" height="230"></canvas>
+          <div class="hint-s">Die Temperatur steuert die Risikofreude. Sie fällt Stufe für Stufe, bis der
+            Stoppwert erreicht ist.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="panel">
+      <h2>Annahme-Rechner: Wird eine schlechtere Route übernommen?</h2>
+      <div class="body">
+        <div class="accept-grid">
+          <div>
+            <div class="ctrl">
+              <label class="lab" for="rgDelta">Angenommene Verschlechterung
+                <span class="val"><span id="outDelta">50</span> km länger</span></label>
+              <input type="range" id="rgDelta" min="0" max="500" step="1" value="50">
+            </div>
+            <div class="bar" style="margin-bottom:8px"><i id="barP" style="width:0%"></i></div>
+            <div class="formula" id="formulaP">Wahrscheinlichkeit = e^(-50 / 800) = 0,94</div>
+            <div class="hint-s" id="acceptWords">Bei hoher Temperatur wird fast alles akzeptiert.</div>
+          </div>
+          <div>
+            <div class="bigp" id="outP">–</div>
+            <div class="hint-s" style="margin-bottom:8px">Wahrscheinlichkeit für die Annahme</div>
+            <canvas id="curveP" width="380" height="150"></canvas>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </section>
+</main>
+
+<section class="explain">
+  <div style="display:flex;justify-content:space-between;align-items:center;gap:12px;margin:8px 0 10px 0;flex-wrap:wrap">
+    <h2 style="font-size:16px;color:var(--b5)">Erklärungen und Schulungsmaterial</h2>
+    <div class="btn-row">
+      <button id="btnOpenAll" class="ghost">Alle öffnen</button>
+      <button id="btnCloseAll" class="ghost">Alle schließen</button>
+    </div>
+  </div>
+
+  <details class="exp" open>
+    <summary>1. Das Rundreiseproblem in einfachen Worten</summary>
+    <div class="inner">
+      <p>Auf der Karte liegen Städte. Ein Fahrzeug startet in einer Stadt, besucht jede andere Stadt genau
+         einmal und kommt am Ende zum Start zurück. Diese geschlossene Tour nennt man Rundreise.
+         Gesucht ist die Reihenfolge der Städte mit der kürzesten Gesamtstrecke.</p>
+      <p>Wichtig für das Verständnis: Es geht nicht um den Weg zwischen zwei Städten, der ist hier immer die
+         Luftlinie. Es geht ausschließlich um die <b>Reihenfolge</b>. Zwei Routen mit denselben Städten können
+         sich in der Länge um ein Vielfaches unterscheiden.</p>
+      <p>Ein gutes Erkennungsmerkmal für eine schlechte Route: Linien, die sich kreuzen. Eine Rundreise mit
+         Überkreuzungen kann man immer verkürzen, indem man ein Stück umdreht. Genau das macht der
+         Änderungsschritt „Teilstrecke umdrehen“.</p>
+    </div>
+  </details>
+
+  <details class="exp">
+    <summary>2. Warum probiert man nicht einfach alles durch?</summary>
+    <div class="inner">
+      <p>Weil die Zahl der Möglichkeiten mit jeder zusätzlichen Stadt explodiert. Bei <b id="expN">60</b>
+         Städten gibt es etwa <b id="expPerm">–</b> verschiedene Rundreisen.</p>
+      <table class="t">
+        <tr><th>Städte</th><th>Mögliche Rundreisen</th><th>Rechenzeit bei 1 Milliarde Prüfungen pro Sekunde</th></tr>
+        <tr><td>10</td><td>etwa 181.000</td><td>ein Wimpernschlag</td></tr>
+        <tr><td>15</td><td>etwa 44 Milliarden</td><td>etwa eine Minute</td></tr>
+        <tr><td>20</td><td>etwa 6 · 10<sup>16</sup></td><td>etwa 2 Jahre</td></tr>
+        <tr><td>25</td><td>etwa 3 · 10<sup>23</sup></td><td>länger als das Alter des Universums</td></tr>
+        <tr><td>60</td><td>etwa 7 · 10<sup>79</sup></td><td>praktisch unerreichbar</td></tr>
+      </table>
+      <p>Deshalb sucht man nicht die beweisbar beste Lösung, sondern eine <b>sehr gute Lösung in vertretbarer
+         Zeit</b>. Simulated Annealing ist ein Verfahren dieser Art. In der Praxis liegt es bei solchen
+         Aufgaben oft wenige Prozent über dem theoretischen Optimum &ndash; und das in Sekunden.</p>
+    </div>
+  </details>
+
+  <details class="exp">
+    <summary>3. Die Grundidee: kontrolliertes Abkühlen</summary>
+    <div class="inner">
+      <p>Der Name kommt aus der Metallverarbeitung. Wenn man heißes Metall oder Glas sehr langsam abkühlt,
+         ordnen sich die Atome zu einer gleichmäßigen, spannungsarmen Struktur. Schreckt man es dagegen
+         schnell ab, bleibt es in einem ungünstigen Zustand „stecken“.</p>
+      <p>Dasselbe Prinzip nutzt das Verfahren für die Route:</p>
+      <ul>
+        <li><b>Heiß</b>: Die Route wird stark verändert, auch deutlich schlechtere Varianten werden übernommen.
+            Das Verfahren erkundet die Landschaft der Möglichkeiten weiträumig.</li>
+        <li><b>Mittel</b>: Große Verschlechterungen werden abgelehnt, kleine noch akzeptiert. Die Grundstruktur
+            der Route bildet sich heraus.</li>
+        <li><b>Kalt</b>: Fast nur noch Verbesserungen werden übernommen. Das Verfahren feilt an Details.</li>
+      </ul>
+      <p>Der Trick besteht also nicht darin, immer den besten Schritt zu machen, sondern darin, die
+         <b>Risikofreude über die Zeit zu senken</b>.</p>
+    </div>
+  </details>
+
+  <details class="exp">
+    <summary>4. Was passiert in einem einzelnen Schritt?</summary>
+    <div class="inner">
+      <p>Jeder Schritt ist immer derselbe kurze Ablauf. Mit „Ein Schritt“ in der Steuerung können Sie ihn
+         einzeln nachvollziehen:</p>
+      <ol>
+        <li><b>Vorschlagen</b>: Die aktuelle Route wird zufällig leicht verändert, zum Beispiel wird eine
+            Teilstrecke umgedreht.</li>
+        <li><b>Vergleichen</b>: Die neue Länge wird mit der alten verglichen. Die Differenz nennen wir hier
+            kurz <span class="mono">Delta</span>.</li>
+        <li><b>Ist die Route kürzer?</b> Dann wird sie immer übernommen.</li>
+        <li><b>Ist die Route länger?</b> Dann wird gewürfelt. Die Annahmewahrscheinlichkeit ist
+            <span class="mono">e^(-Delta / Temperatur)</span>. Kleine Verschlechterungen und hohe Temperatur
+            bedeuten hohe Chance, große Verschlechterungen und niedrige Temperatur bedeuten kleine Chance.</li>
+        <li><b>Merken</b>: Die kürzeste je gesehene Route wird separat gespeichert und nie wieder verschlechtert.
+            Das ist die hellblaue Linie auf der Karte und am Ende das Ergebnis.</li>
+      </ol>
+      <p>Der Annahme-Rechner unter den Diagrammen zeigt Punkt 4 direkt: Schieben Sie die Verschlechterung
+         hin und her und beobachten Sie, wie sich die Wahrscheinlichkeit mit sinkender Temperatur ändert.</p>
+    </div>
+  </details>
+
+  <details class="exp">
+    <summary>5. Lokales Minimum: warum reines Verbessern nicht genügt</summary>
+    <div class="inner">
+      <p>Stellen Sie sich eine hügelige Landschaft vor, in der Sie im Nebel den tiefsten Punkt suchen.
+         Wenn Sie nur bergab gehen, landen Sie in der nächsten Senke. Ob es hinter dem nächsten Hügel eine
+         viel tiefere Senke gibt, erfahren Sie nie. Diese Senke ist ein <b>lokales Minimum</b>.</p>
+      <p>Übertragen: Es gibt Routen, die man mit keiner einzelnen kleinen Änderung mehr verbessern kann,
+         die aber trotzdem weit vom Optimum entfernt sind. Wer nur Verbesserungen zulässt, bleibt dort hängen.</p>
+      <p>Simulated Annealing darf bewusst „bergauf“ gehen und so Hügel überqueren. Genau das ist der Grund
+         für die Würfel-Regel.</p>
+      <h4>Übung zum Zeigen</h4>
+      <p>Voreinstellung <b>Nur bergab</b> wählen, laufen lassen bis das Verfahren stoppt, Ergebnis notieren.
+         Dann <b>Gut eingestellt</b> wählen (gleiche Städte). Der Unterschied in der besten Länge ist der Kern
+         der ganzen Schulung: typisch sind einige Prozent, und in der reinen Bergab-Lösung bleiben meist
+         sichtbare Überkreuzungen zurück.</p>
+      <p>Verstärken lässt sich der Effekt, indem man zusätzlich nur den Änderungsschritt
+         <b>Zwei Städte tauschen</b> zulässt. Dann sind die möglichen kleinen Änderungen schwächer, es gibt mehr
+         Sackgassen &ndash; und der Vorteil des Abkühlens wird sehr deutlich.</p>
+    </div>
+  </details>
+
+  <details class="exp">
+    <summary>6. Die Parameter und was sie bewirken</summary>
+    <div class="inner">
+      <table class="t">
+        <tr><th>Einstellung</th><th>Zu hoch / zu langsam</th><th>Zu niedrig / zu schnell</th><th>Praxisregel</th></tr>
+        <tr>
+          <td><b>Starttemperatur</b></td>
+          <td>Die Route mischt sich lange nur zufällig, Rechenzeit wird verschwendet</td>
+          <td>Verfahren verhält sich wie „nur bergab“ und bleibt hängen</td>
+          <td>So wählen, dass am Anfang etwa 70 bis 90 Prozent der Vorschläge angenommen werden
+              (Schaltfläche „Passenden Startwert vorschlagen“)</td>
+        </tr>
+        <tr>
+          <td><b>Abkühlfaktor</b></td>
+          <td>Sehr gute Ergebnisse, aber lange Laufzeit</td>
+          <td>Ergebnis „friert“ zu früh ein, oft deutlich schlechter</td>
+          <td>0,99 bis 0,999</td>
+        </tr>
+        <tr>
+          <td><b>Schritte je Stufe</b></td>
+          <td>Jede Temperatur wird gründlich ausgenutzt, dauert länger</td>
+          <td>Auf jeder Stufe zu wenig Erkundung</td>
+          <td>Etwa so viele Schritte wie Städte, mindestens ein bis zwei Dutzend</td>
+        </tr>
+        <tr>
+          <td><b>Endtemperatur</b></td>
+          <td>Verfahren stoppt zu früh, letzte Politur fehlt</td>
+          <td>Läuft lange ohne Gewinn weiter</td>
+          <td>So klein, dass kaum noch Verschlechterungen angenommen werden</td>
+        </tr>
+      </table>
+      <p>Merksatz für die Schulung: <b>Nicht die Starttemperatur entscheidet, sondern das Verhältnis von
+         Abkühlgeschwindigkeit zur verfügbaren Zeit.</b> Wer doppelt so viel Rechenzeit hat, kühlt langsamer ab.</p>
+    </div>
+  </details>
+
+  <details class="exp">
+    <summary>7. Vorgeschlagener Ablauf für eine Schulungseinheit (etwa 30 Minuten)</summary>
+    <div class="inner">
+      <h4>Schritt 1: Aufgabe verstehen (5 Minuten)</h4>
+      <p>Städtezahl auf 12 stellen, „Ein Schritt“ mehrfach klicken, Zeitlupe einschalten. Die Gruppe soll
+         benennen, was sich verändert und warum eine Änderung angenommen oder abgelehnt wird.</p>
+      <h4>Schritt 2: Sackgasse zeigen (7 Minuten)</h4>
+      <p>Städtezahl auf 80, Voreinstellung <b>Nur bergab</b>, laufen lassen bis nichts mehr passiert. Beste
+         Länge auf dem Flipchart notieren. Frage an die Gruppe: Was fehlt dem Verfahren?</p>
+      <h4>Schritt 3: Temperatur einführen (8 Minuten)</h4>
+      <p><b>Neu starten</b>, Voreinstellung <b>Gut eingestellt</b>. Ergebnis vergleichen. Am Annahme-Rechner
+         zeigen, wie die Risikofreude über die Zeit sinkt.</p>
+      <h4>Schritt 4: Fehlerbilder sammeln (7 Minuten)</h4>
+      <p><b>Viel zu heiß</b> und <b>Zu schnell abgekühlt</b> vorführen. Die Gruppe soll die typischen Muster in
+         den Diagrammen beschreiben: dauerhaftes Zappeln gegen frühes Einfrieren.</p>
+      <h4>Schritt 5: Übertragung (3 Minuten)</h4>
+      <p>Sammeln, wo im eigenen Arbeitsumfeld ähnliche Aufgaben stecken: Tourenplanung, Dienst- und
+         Schichtpläne, Belegung von Geräten und Räumen, Reihenfolge von Aufträgen, Zuschnittplanung.</p>
+    </div>
+  </details>
+
+  <details class="exp">
+    <summary>8. Wo das Verfahren in der Praxis eingesetzt wird</summary>
+    <div class="inner">
+      <ul>
+        <li><b>Logistik und Außendienst</b>: Reihenfolge von Anfahrten, Touren mit Zeitfenstern.</li>
+        <li><b>Personalplanung</b>: Dienst- und Schichtpläne unter vielen Regeln und Wünschen.</li>
+        <li><b>Produktion</b>: Reihenfolge von Aufträgen an Maschinen, Rüstzeiten minimieren.</li>
+        <li><b>Ressourcenbelegung</b>: Zuordnung von Terminen zu Räumen und Geräten.</li>
+        <li><b>Technische Auslegung</b>: Platzierung von Bauteilen, Leitungsführung, Parametersuche.</li>
+      </ul>
+      <p>Der gemeinsame Kern: Es gibt sehr viele erlaubte Lösungen, eine Bewertungsgröße, die man ausrechnen
+         kann, und kleine Änderungen, mit denen man von einer Lösung zur nächsten kommt. Sobald diese drei
+         Dinge vorliegen, ist Simulated Annealing anwendbar &ndash; unabhängig vom Fachgebiet.</p>
+      <p>Grenzen ehrlich benennen: Das Verfahren liefert keine Garantie für die beste Lösung, es braucht eine
+         gut gewählte Abkühlung, und bei sehr harten Nebenbedingungen (etwas ist strikt verboten) muss man
+         die Bewertung sorgfältig entwerfen.</p>
+    </div>
+  </details>
+
+  <details class="exp">
+    <summary>9. Fachbegriffe zum Nachlesen</summary>
+    <div class="inner">
+      <table class="t">
+        <tr><th>Hier verwendet</th><th>Fachbegriff</th></tr>
+        <tr><td>Rundreiseproblem</td><td>Travelling Salesman Problem (TSP)</td></tr>
+        <tr><td>Teilstrecke umdrehen</td><td>2-opt-Zug</td></tr>
+        <tr><td>Eine Stadt anders einfügen</td><td>Or-opt- bzw. Insertion-Zug</td></tr>
+        <tr><td>Änderungsvorschlag</td><td>Nachbarschaftsoperator, Move</td></tr>
+        <tr><td>Würfel-Regel für Verschlechterungen</td><td>Metropolis-Kriterium</td></tr>
+        <tr><td>Abkühlplan</td><td>Cooling Schedule, Annealing Schedule</td></tr>
+        <tr><td>Sackgasse beim reinen Verbessern</td><td>lokales Optimum, Hill Climbing</td></tr>
+        <tr><td>Kürzeste je gefundene Route</td><td>Best-so-far-Lösung, Elitismus</td></tr>
+      </table>
+    </div>
+  </details>
+</section>
+
+<footer>
+  <div>(c) Dario Antweiler, Fraunhofer IAIS &ndash; <span id="footDate">4. August 2026</span></div>
+  <div>Eigenständige Anwendung, offline nutzbar. Legen Sie <span class="mono">logo.png</span> neben diese
+       Datei, damit das Logo erscheint.</div>
+</footer>
+
+<script>
+"use strict";
+/* =========================================================================
+   Simulated Annealing am Rundreiseproblem
+   (c) Dario Antweiler, Fraunhofer IAIS
+   Teil A: Zustand, Geometrie, Suchverfahren
+   ========================================================================= */
+
+const $ = function(id){ return document.getElementById(id); };
+const nf0 = new Intl.NumberFormat('de-DE', {maximumFractionDigits:0});
+const nf1 = new Intl.NumberFormat('de-DE', {minimumFractionDigits:1, maximumFractionDigits:1});
+const nf2 = new Intl.NumberFormat('de-DE', {minimumFractionDigits:2, maximumFractionDigits:2});
+const nf4 = new Intl.NumberFormat('de-DE', {minimumFractionDigits:3, maximumFractionDigits:4});
+const ri  = function(n){ return Math.floor(Math.random()*n); };
+const clamp = function(v,a,b){ return v<a?a:(v>b?b:v); };
+
+const WW = 1000, WH = 620, PAD = 34;
+const LIN_HORIZON = 1000;
+
+const S = {
+  cities: [], n: 0, D: null,
+  tour: [], best: [], curLen: 0, bestLen: 0, startLen: 0, bestIter: 0,
+  T: 800, T0: 800, alpha: 0.995, stepsPerStage: 200, Tmin: 0.5, schedule: 'geo',
+  greedy: false, kinds: ['rev','move'],
+  stage: 0, stageSteps: 0, iter: 0, acc: 0, accWorse: 0,
+  winAcc: [], hist: [], lastMove: null,
+  running: false, done: false, speed: 300, layout: 'random'
+};
+
+/* ---------- Städte erzeugen ---------- */
+function makeCities(count, layout){
+  const c = [];
+  const x0 = PAD, x1 = WW-PAD, y0 = PAD, y1 = WH-PAD;
+  if(layout === 'circle'){
+    const cx=(x0+x1)/2, cy=(y0+y1)/2, r=Math.min(x1-x0, y1-y0)/2 - 6;
+    const order = [];
+    for(let i=0;i<count;i++) order.push(i);
+    for(let i=order.length-1;i>0;i--){ const j=ri(i+1); const t=order[i]; order[i]=order[j]; order[j]=t; }
+    for(let k=0;k<count;k++){
+      const a = 2*Math.PI*order[k]/count;
+      c.push({x: cx + r*Math.cos(a), y: cy + r*Math.sin(a)*0.92});
+    }
+  } else if(layout === 'grid'){
+    const cols = Math.ceil(Math.sqrt(count*(x1-x0)/(y1-y0)));
+    const rows = Math.ceil(count/cols);
+    let k=0;
+    for(let r0=0;r0<rows && k<count;r0++){
+      for(let c0=0;c0<cols && k<count;c0++,k++){
+        c.push({
+          x: x0 + (cols<2?0.5:c0/(cols-1))*(x1-x0),
+          y: y0 + (rows<2?0.5:r0/(rows-1))*(y1-y0)
+        });
+      }
+    }
+  } else if(layout === 'cluster'){
+    const groups = clamp(Math.round(Math.sqrt(count)/1.4), 2, 8);
+    const centers = [];
+    for(let g=0;g<groups;g++){
+      centers.push({x: x0+60+Math.random()*(x1-x0-120), y: y0+60+Math.random()*(y1-y0-120)});
+    }
+    const spread = Math.min(x1-x0, y1-y0)/(groups+3);
+    for(let i=0;i<count;i++){
+      const g = centers[ri(groups)];
+      c.push({
+        x: clamp(g.x + (Math.random()+Math.random()-1)*spread, x0, x1),
+        y: clamp(g.y + (Math.random()+Math.random()-1)*spread, y0, y1)
+      });
+    }
+  } else {
+    for(let i=0;i<count;i++) c.push({x: x0+Math.random()*(x1-x0), y: y0+Math.random()*(y1-y0)});
+  }
+  return c;
+}
+
+function buildDistances(){
+  const n = S.cities.length;
+  S.n = n;
+  const D = new Float64Array(n*n);
+  for(let i=0;i<n;i++){
+    for(let j=i+1;j<n;j++){
+      const dx = S.cities[i].x - S.cities[j].x;
+      const dy = S.cities[i].y - S.cities[j].y;
+      const v = Math.sqrt(dx*dx + dy*dy);
+      D[i*n+j] = v; D[j*n+i] = v;
+    }
+  }
+  S.D = D;
+}
+function d(a,b){ return S.D[a*S.n + b]; }
+
+function tourLength(t){
+  let s = 0;
+  for(let k=0;k<t.length;k++) s += d(t[k], t[(k+1)%t.length]);
+  return s;
+}
+
+/* ---------- Neustart der Suche ---------- */
+function resetRun(keepMessage){
+  const n = S.n;
+  const t = [];
+  for(let i=0;i<n;i++) t.push(i);
+  for(let i=n-1;i>1;i--){ const j=1+ri(i); const x=t[i]; t[i]=t[j]; t[j]=x; }
+  S.tour = t;
+  S.curLen = tourLength(t);
+  S.startLen = S.curLen;
+  S.best = t.slice();
+  S.bestLen = S.curLen;
+  S.bestIter = 0;
+  S.T = S.T0;
+  S.stage = 0; S.stageSteps = 0; S.iter = 0; S.acc = 0; S.accWorse = 0;
+  S.winAcc = []; S.hist = []; S.lastMove = null;
+  S.done = false;
+  record();
+  if(!keepMessage) setStatus('Zurückgesetzt. Zufällige Startroute mit <b>' + nf0.format(Math.round(S.curLen)) +
+    ' km</b>. Mit <b>Start</b> beginnt die Suche.');
+}
+
+function record(){
+  S.hist.push({i:S.iter, cur:S.curLen, best:S.bestLen, T:S.T});
+  if(S.hist.length > 1600){
+    const keep = [];
+    for(let k=0;k<S.hist.length;k++) if(k%2===0 || k===S.hist.length-1) keep.push(S.hist[k]);
+    S.hist = keep;
+  }
+}
+
+/* ---------- Änderungsvorschläge ---------- */
+function edgeSum(t, ps){
+  const n = t.length, seen = [];
+  for(let q=0;q<ps.length;q++){
+    const p = ps[q];
+    const a = (p-1+n)%n;
+    if(seen.indexOf(a) < 0) seen.push(a);
+    if(seen.indexOf(p) < 0) seen.push(p);
+  }
+  let s = 0;
+  for(let q=0;q<seen.length;q++) s += d(t[seen[q]], t[(seen[q]+1)%n]);
+  return s;
+}
+
+function propose(){
+  const t = S.tour, n = t.length;
+  if(n < 4) return null;
+  const kinds = S.kinds.length ? S.kinds : ['rev'];
+  const kind = kinds[ri(kinds.length)];
+
+  if(kind === 'rev'){
+    let i = 1 + ri(n-1), j = 1 + ri(n-1);
+    if(i === j) return null;
+    if(i > j){ const k=i; i=j; j=k; }
+    const a=t[i-1], b=t[i], cc=t[j], e=t[(j+1)%n];
+    if(a === e) return null;
+    const delta = d(a,cc) + d(b,e) - d(a,b) - d(cc,e);
+    return {kind:'rev', delta:delta, hi:[[a,b],[cc,e]],
+      apply:function(){ let lo=i, hi=j; while(lo<hi){ const x=t[lo]; t[lo]=t[hi]; t[hi]=x; lo++; hi--; } }};
+  }
+
+  if(kind === 'swap'){
+    const i = ri(n), j = ri(n);
+    if(i === j) return null;
+    const sw = function(){ const x=t[i]; t[i]=t[j]; t[j]=x; };
+    const before = edgeSum(t,[i,j]);
+    sw();
+    const after = edgeSum(t,[i,j]);
+    sw();
+    return {kind:'swap', delta:after-before,
+      hi:[[t[(i-1+n)%n],t[i]],[t[i],t[(i+1)%n]],[t[(j-1+n)%n],t[j]],[t[j],t[(j+1)%n]]],
+      apply:sw};
+  }
+
+  /* eine Stadt an anderer Stelle einfügen */
+  const i = ri(n);
+  const b = t[i], a = t[(i-1+n)%n], cc = t[(i+1)%n];
+  const gain = d(a,b) + d(b,cc) - d(a,cc);
+  const red = t.slice(); red.splice(i,1);
+  const m = red.length;
+  const k = ri(m);
+  const x = red[k], y = red[(k+1)%m];
+  if(x === a && y === cc) return null;
+  const cost = d(x,b) + d(b,y) - d(x,y);
+  return {kind:'move', delta:cost-gain, hi:[[a,b],[b,cc],[x,y]],
+    apply:function(){ red.splice(k+1,0,b); S.tour = red; }};
+}
+
+/* ---------- Ein einzelner Schritt ---------- */
+function step(){
+  const p = propose();
+  S.iter++; S.stageSteps++;
+  if(p){
+    const worse = p.delta > 1e-9;
+    let accept;
+    if(!worse) accept = true;
+    else if(S.greedy || S.T <= 0) accept = false;
+    else accept = Math.random() < Math.exp(-p.delta / S.T);
+
+    if(accept){
+      p.apply();
+      S.curLen += p.delta;
+      S.acc++;
+      if(worse) S.accWorse++;
+      if(S.curLen < S.bestLen - 1e-9){
+        S.bestLen = S.curLen;
+        S.best = S.tour.slice();
+        S.bestIter = S.iter;
+      }
+    }
+    S.lastMove = {hi:p.hi, accepted:accept, delta:p.delta, worse:worse, kind:p.kind};
+    S.winAcc.push(accept?1:0);
+    if(S.winAcc.length > 500) S.winAcc.shift();
+  }
+  if(S.stageSteps >= S.stepsPerStage) cool();
+}
+
+function cool(){
+  S.stageSteps = 0; S.stage++;
+  if(S.schedule === 'geo')      S.T = S.T0 * Math.pow(S.alpha, S.stage);
+  else if(S.schedule === 'lin') S.T = Math.max(0, S.T0 * (1 - S.stage/LIN_HORIZON));
+  else                          S.T = S.T0 / (1 + Math.log(1+S.stage));
+  S.curLen = tourLength(S.tour);
+  record();
+  if(S.greedy){
+    if(S.iter - S.bestIter > Math.max(25*S.stepsPerStage, 8000))
+      finish('nur bergab, es wurde lange keine Verbesserung mehr gefunden');
+    return;
+  }
+  if(S.T < S.Tmin){ S.T = 0; finish('Endtemperatur erreicht'); }
+}
+
+function finish(reason){
+  if(S.done) return;
+  S.done = true; S.running = false;
+  $('btnRun').textContent = 'Start';
+  const imp = S.startLen > 0 ? (1 - S.bestLen/S.startLen)*100 : 0;
+  setStatus('<b>Suche beendet</b> (' + reason + '). Beste Route: <b>' + nf0.format(Math.round(S.bestLen)) +
+    ' km</b>, das sind ' + nf1.format(imp) + ' Prozent weniger als die zufällige Startroute. ' +
+    'Gefunden nach ' + nf0.format(S.bestIter) + ' geprüften Schritten. Mit <b>Aufheizen</b> kann weitergesucht werden.');
+}
+
+/* ---------- Passende Starttemperatur schätzen ---------- */
+function suggestT0(){
+  let sum = 0, cnt = 0;
+  for(let k=0;k<400;k++){
+    const p = propose();
+    if(p && p.delta > 0){ sum += p.delta; cnt++; }
+  }
+  const mean = cnt ? sum/cnt : 100;
+  return clamp(Math.round(mean / Math.log(1/0.8)), 1, 5000);
+}
+
+/* ---------- Zahl der möglichen Rundreisen ---------- */
+function tourCountText(n){
+  if(n < 3) return 'nur eine';
+  let lg = 0;
+  for(let k=2;k<=n-1;k++) lg += Math.log10(k);
+  lg -= Math.log10(2);
+  if(lg < 12) return nf0.format(Math.round(Math.pow(10, lg)));
+  const e = Math.floor(lg);
+  const m = Math.pow(10, lg-e);
+  return nf1.format(m) + ' \u00b7 10^' + e;
+}
+</script>
+
+<script>
+"use strict";
+/* =========================================================================
+   Teil B: Darstellung, Diagramme, Bedienung, Export
+   ========================================================================= */
+
+/* ---------- Canvas-Hilfen ---------- */
+function fit(cv, ww, wh){
+  const dpr = window.devicePixelRatio || 1;
+  const cssW = cv.clientWidth || ww;
+  if(cv._w !== cssW || cv._dpr !== dpr){
+    cv._w = cssW; cv._dpr = dpr;
+    cv.style.height = (cssW*wh/ww) + 'px';
+    cv.width  = Math.max(1, Math.round(cssW*dpr));
+    cv.height = Math.max(1, Math.round(cssW*wh/ww*dpr));
+  }
+  const ctx = cv.getContext('2d');
+  const s = cv.width/ww;
+  ctx.setTransform(s,0,0,s,0,0);
+  ctx.clearRect(0,0,ww,wh);
+  return ctx;
+}
+const COL = {b1:'#CCF2FF', b2:'#80D9FF', b3:'#3399FF', b4:'#1360BF', b5:'#002A8C',
+             ink:'#1a1d21', ink2:'#4a5158', line:'#c8cfd6', line2:'#e2e7ec', sig:'#C87A00'};
+
+/* ---------- Karte zeichnen ---------- */
+function drawPath(ctx, t){
+  if(t.length < 2) return;
+  ctx.beginPath();
+  ctx.moveTo(S.cities[t[0]].x, S.cities[t[0]].y);
+  for(let k=1;k<t.length;k++) ctx.lineTo(S.cities[t[k]].x, S.cities[t[k]].y);
+  ctx.closePath();
+  ctx.stroke();
+}
+
+function render(){
+  const cv = $('board');
+  const ctx = fit(cv, WW, WH);
+  ctx.lineJoin = 'round';
+
+  if($('chkShowBest').checked && S.best.length){
+    ctx.strokeStyle = COL.b2; ctx.lineWidth = 5;
+    drawPath(ctx, S.best);
+  }
+  ctx.strokeStyle = COL.b5; ctx.lineWidth = 1.6;
+  drawPath(ctx, S.tour);
+
+  if($('chkSlow').checked && S.lastMove){
+    ctx.strokeStyle = S.lastMove.accepted ? COL.sig : COL.line;
+    ctx.lineWidth = 2.6; ctx.setLineDash([7,5]);
+    ctx.beginPath();
+    for(let k=0;k<S.lastMove.hi.length;k++){
+      const e = S.lastMove.hi[k];
+      ctx.moveTo(S.cities[e[0]].x, S.cities[e[0]].y);
+      ctx.lineTo(S.cities[e[1]].x, S.cities[e[1]].y);
+    }
+    ctx.stroke();
+    ctx.setLineDash([]);
+  }
+
+  /* Städte */
+  const numbers = $('chkNumbers').checked;
+  ctx.font = '10px sans-serif'; ctx.fillStyle = COL.ink2;
+  for(let i=0;i<S.n;i++){
+    const c = S.cities[i], r = (i===0) ? 5 : 3.6;
+    ctx.beginPath();
+    ctx.rect(c.x-r, c.y-r, 2*r, 2*r);
+    ctx.fillStyle = (i===0) ? COL.b5 : '#ffffff';
+    ctx.fill();
+    ctx.strokeStyle = COL.b5; ctx.lineWidth = 1.4; ctx.stroke();
+    if(numbers && S.n <= 120){
+      ctx.fillStyle = COL.ink2;
+      ctx.fillText(String(i), c.x + r + 2, c.y - r - 1);
+    }
+  }
+
+  /* Thermometer */
+  const frac = (S.T > 0 && S.T0 > 0) ? clamp(Math.log10(1+S.T)/Math.log10(1+S.T0), 0, 1) : 0;
+  ctx.fillStyle = '#ffffff'; ctx.strokeStyle = COL.line; ctx.lineWidth = 1;
+  ctx.fillRect(14, 14, 190, 34); ctx.strokeRect(14, 14, 190, 34);
+  ctx.fillStyle = COL.ink2; ctx.font = '11px sans-serif';
+  ctx.fillText('Temperatur  ' + (S.T>0 ? nf1.format(S.T) : '0') + (S.greedy ? '  (nur bergab)' : ''), 21, 27);
+  ctx.fillStyle = '#eef2f6'; ctx.fillRect(21, 32, 176, 10);
+  ctx.fillStyle = frac > 0.5 ? COL.b3 : COL.b4;
+  ctx.fillRect(21, 32, 176*frac, 10);
+  ctx.strokeStyle = COL.line; ctx.strokeRect(21, 32, 176, 10);
+}
+
+/* ---------- Achsenraster ---------- */
+function axes(ctx, m, w, h, yLabels, xLabels){
+  ctx.strokeStyle = COL.line2; ctx.lineWidth = 1;
+  ctx.font = '10px sans-serif'; ctx.fillStyle = COL.ink2;
+  ctx.textAlign = 'right'; ctx.textBaseline = 'middle';
+  for(let k=0;k<yLabels.length;k++){
+    const y = m.t + (h - m.t - m.b) * (k/(yLabels.length-1));
+    ctx.beginPath(); ctx.moveTo(m.l, y); ctx.lineTo(w-m.r, y); ctx.stroke();
+    ctx.fillText(yLabels[k], m.l-6, y);
+  }
+  ctx.textAlign = 'center'; ctx.textBaseline = 'top';
+  for(let k=0;k<xLabels.length;k++){
+    const x = m.l + (w - m.l - m.r) * (k/(xLabels.length-1));
+    ctx.fillText(xLabels[k], x, h - m.b + 6);
+  }
+  ctx.textAlign = 'left'; ctx.textBaseline = 'alphabetic';
+}
+
+function drawLenChart(){
+  const w = 620, h = 230, m = {l:58, r:10, t:12, b:28};
+  const ctx = fit($('chartLen'), w, h);
+  if(S.hist.length < 2){
+    ctx.fillStyle = COL.ink2; ctx.font = '12px sans-serif';
+    ctx.fillText('Noch keine Daten. Mit „Start“ beginnt die Aufzeichnung.', m.l, h/2);
+    return;
+  }
+  let ymin = Infinity, ymax = -Infinity, xmax = 1;
+  for(let k=0;k<S.hist.length;k++){
+    const p = S.hist[k];
+    if(p.best < ymin) ymin = p.best;
+    if(p.cur  > ymax) ymax = p.cur;
+    if(p.i    > xmax) xmax = p.i;
+  }
+  ymin = ymin*0.97; ymax = ymax*1.02;
+  if(ymax - ymin < 1) ymax = ymin + 1;
+  const yl = [], N = 5;
+  for(let k=0;k<N;k++) yl.push(nf0.format(Math.round(ymax - (ymax-ymin)*k/(N-1))));
+  axes(ctx, m, w, h, yl, ['0', nf0.format(Math.round(xmax/2)), nf0.format(xmax) + ' Schritte']);
+
+  const X = function(i){ return m.l + (w-m.l-m.r) * (i/xmax); };
+  const Y = function(v){ return m.t + (h-m.t-m.b) * (1 - (v-ymin)/(ymax-ymin)); };
+
+  ctx.strokeStyle = COL.b2; ctx.lineWidth = 1.2; ctx.beginPath();
+  for(let k=0;k<S.hist.length;k++){ const p=S.hist[k]; if(k) ctx.lineTo(X(p.i), Y(p.cur)); else ctx.moveTo(X(p.i), Y(p.cur)); }
+  ctx.stroke();
+  ctx.strokeStyle = COL.b5; ctx.lineWidth = 2; ctx.beginPath();
+  for(let k=0;k<S.hist.length;k++){ const p=S.hist[k]; if(k) ctx.lineTo(X(p.i), Y(p.best)); else ctx.moveTo(X(p.i), Y(p.best)); }
+  ctx.stroke();
+
+  ctx.font = '10px sans-serif';
+  ctx.fillStyle = COL.b5; ctx.fillText('beste Länge', m.l+6, m.t+11);
+  ctx.fillStyle = COL.b3; ctx.fillText('aktuelle Länge', m.l+6, m.t+24);
+}
+
+function drawTempChart(){
+  const w = 620, h = 230, m = {l:58, r:10, t:12, b:28};
+  const ctx = fit($('chartTemp'), w, h);
+  if(S.hist.length < 2){
+    ctx.fillStyle = COL.ink2; ctx.font = '12px sans-serif';
+    ctx.fillText('Noch keine Daten.', m.l, h/2);
+    return;
+  }
+  const lo = Math.max(0.01, Math.min(S.Tmin*0.5, 1)), hi = Math.max(S.T0, lo*10);
+  const L = function(v){ return Math.log10(Math.max(v, lo)); };
+  let xmax = 1;
+  for(let k=0;k<S.hist.length;k++) if(S.hist[k].i > xmax) xmax = S.hist[k].i;
+  const yl = [], N = 5;
+  for(let k=0;k<N;k++){
+    const lv = L(hi) - (L(hi)-L(lo))*k/(N-1);
+    yl.push(nf1.format(Math.pow(10, lv)));
+  }
+  axes(ctx, m, w, h, yl, ['0', nf0.format(Math.round(xmax/2)), nf0.format(xmax) + ' Schritte']);
+
+  const X = function(i){ return m.l + (w-m.l-m.r)*(i/xmax); };
+  const Y = function(v){ return m.t + (h-m.t-m.b)*(1 - (L(v)-L(lo))/(L(hi)-L(lo))); };
+
+  ctx.strokeStyle = COL.sig; ctx.lineWidth = 1; ctx.setLineDash([5,4]);
+  ctx.beginPath(); ctx.moveTo(m.l, Y(S.Tmin)); ctx.lineTo(w-m.r, Y(S.Tmin)); ctx.stroke();
+  ctx.setLineDash([]);
+  ctx.fillStyle = COL.sig; ctx.font = '10px sans-serif';
+  ctx.fillText('Stopp bei ' + nf2.format(S.Tmin), w-m.r-108, Y(S.Tmin)-4);
+
+  ctx.strokeStyle = COL.b4; ctx.lineWidth = 2; ctx.beginPath();
+  for(let k=0;k<S.hist.length;k++){ const p=S.hist[k]; if(k) ctx.lineTo(X(p.i), Y(p.T)); else ctx.moveTo(X(p.i), Y(p.T)); }
+  ctx.stroke();
+}
+
+function drawAcceptCurve(delta){
+  const w = 380, h = 150, m = {l:38, r:8, t:10, b:22};
+  const ctx = fit($('curveP'), w, h);
+  const dmax = Number($('rgDelta').max);
+  axes(ctx, m, w, h, ['100 %','50 %','0 %'], ['0 km', nf0.format(dmax/2), nf0.format(dmax)]);
+  const X = function(v){ return m.l + (w-m.l-m.r)*(v/dmax); };
+  const Y = function(p){ return m.t + (h-m.t-m.b)*(1-p); };
+  ctx.strokeStyle = COL.b4; ctx.lineWidth = 2; ctx.beginPath();
+  for(let k=0;k<=120;k++){
+    const v = dmax*k/120;
+    const p = (S.greedy || S.T <= 0) ? (v<=0?1:0) : Math.exp(-v/S.T);
+    if(k) ctx.lineTo(X(v), Y(p)); else ctx.moveTo(X(v), Y(p));
+  }
+  ctx.stroke();
+  const p0 = (S.greedy || S.T <= 0) ? (delta<=0?1:0) : Math.exp(-delta/S.T);
+  ctx.strokeStyle = COL.sig; ctx.lineWidth = 1; ctx.setLineDash([4,3]);
+  ctx.beginPath(); ctx.moveTo(X(delta), h-m.b); ctx.lineTo(X(delta), Y(p0)); ctx.stroke();
+  ctx.setLineDash([]);
+  ctx.fillStyle = COL.sig;
+  ctx.fillRect(X(delta)-3, Y(p0)-3, 6, 6);
+  return p0;
+}
+
+/* ---------- Kennzahlen ---------- */
+function updateStats(){
+  $('stT').innerHTML = S.greedy ? '0 <small>bergab</small>' : (S.T>0 ? nf1.format(S.T) : '0');
+  $('stCur').innerHTML  = nf0.format(Math.round(S.curLen))  + '<small> km</small>';
+  $('stBest').innerHTML = nf0.format(Math.round(S.bestLen)) + '<small> km</small>';
+  const imp = S.startLen>0 ? (1 - S.bestLen/S.startLen)*100 : 0;
+  $('stImp').innerHTML = nf1.format(imp) + '<small> %</small>';
+  $('stIter').textContent = nf0.format(S.iter);
+  $('stStage').textContent = nf0.format(S.stage);
+  let r = 0;
+  for(let k=0;k<S.winAcc.length;k++) r += S.winAcc[k];
+  const rate = S.winAcc.length ? r/S.winAcc.length*100 : 0;
+  $('stAcc').innerHTML = (S.winAcc.length ? nf0.format(rate) : '–') + '<small> %</small>';
+  $('stWorse').innerHTML = nf0.format(S.accWorse) + '<small> von ' + nf0.format(S.acc) + '</small>';
+
+  const delta = Number($('rgDelta').value);
+  $('outDelta').textContent = nf0.format(delta);
+  const p = drawAcceptCurve(delta);
+  $('outP').textContent = (p >= 0.001 || p === 0) ? nf1.format(p*100) + ' %' : '< 0,1 %';
+  $('barP').style.width = clamp(p*100, 0, 100) + '%';
+  if(S.greedy || S.T <= 0){
+    $('formulaP').textContent = 'Temperatur 0: längere Routen werden immer abgelehnt';
+  } else {
+    $('formulaP').textContent = 'Wahrscheinlichkeit = e^(-' + nf0.format(delta) + ' / ' + nf1.format(S.T) + ') = ' + nf4.format(p);
+  }
+  let words;
+  if(S.greedy || S.T <= 0) words = 'Es werden ausschließlich Verbesserungen übernommen. Das Verfahren kann keine Hügel mehr überqueren.';
+  else if(p >= 0.5)  words = 'Ein solcher Umweg wird derzeit meist akzeptiert. Die Suche erkundet noch weiträumig.';
+  else if(p >= 0.1)  words = 'Ein solcher Umweg wird gelegentlich akzeptiert. Die Suche wird wählerischer.';
+  else if(p >= 0.01) words = 'Ein solcher Umweg wird nur noch selten akzeptiert.';
+  else               words = 'Ein solcher Umweg wird praktisch nicht mehr akzeptiert. Es wird nur noch nachgebessert.';
+  $('acceptWords').textContent = words;
+}
+
+function setStatus(html){ $('hint').innerHTML = html; }
+
+/* ---------- Hauptschleife ---------- */
+let tick = 0;
+function loop(){
+  if(S.running && !S.done){
+    const slow = $('chkSlow').checked;
+    const per = slow ? 1 : S.speed;
+    for(let k=0;k<per && S.running; k++) step();
+  }
+  render();
+  if(tick % 3 === 0){ drawLenChart(); drawTempChart(); }
+  updateStats();
+  tick++;
+  requestAnimationFrame(loop);
+}
+
+/* ---------- Bedienung ---------- */
+function readControls(){
+  S.T0 = Number($('rgT0').value);
+  S.alpha = Number($('rgAlpha').value);
+  S.stepsPerStage = Number($('rgSteps').value);
+  S.Tmin = Number($('rgTmin').value);
+  S.schedule = $('selSchedule').value;
+  S.greedy = $('chkGreedy').checked;
+  S.speed = Number($('rgSpeed').value);
+  S.layout = $('selLayout').value;
+  const k = [];
+  if($('chkRev').checked)  k.push('rev');
+  if($('chkMove').checked) k.push('move');
+  if($('chkSwap').checked) k.push('swap');
+  S.kinds = k;
+  $('outT0').textContent = nf0.format(S.T0);
+  $('outAlpha').textContent = nf4.format(S.alpha);
+  $('outSteps').textContent = nf0.format(S.stepsPerStage);
+  $('outTmin').textContent = nf2.format(S.Tmin);
+  $('outSpeed').textContent = nf0.format(S.speed);
+  $('outCount').textContent = nf0.format(Number($('rgCount').value));
+  if(S.iter === 0) S.T = S.T0;
+  if(!k.length) setStatus('Bitte mindestens einen Änderungsschritt aktivieren. Ohne Änderungen kann die Route nicht verbessert werden.');
+}
+
+function refreshCounts(){
+  const n = S.n;
+  $('introN').textContent = nf0.format(n);
+  $('expN').textContent = nf0.format(n);
+  const txt = tourCountText(n);
+  $('introPerm').textContent = txt;
+  $('expPerm').textContent = txt;
+}
+
+function rebuildCities(){
+  const count = Number($('rgCount').value);
+  S.cities = makeCities(count, $('selLayout').value);
+  buildDistances();
+  refreshCounts();
+  resetRun();
+  S.running = false;
+  $('btnRun').textContent = 'Start';
+}
+
+function toggleRun(){
+  if(S.done){
+    setStatus('Die Suche ist abgekühlt. Mit <b>Aufheizen</b> weitersuchen oder mit <b>Neu starten</b> von vorn beginnen.');
+    return;
+  }
+  S.running = !S.running;
+  $('btnRun').textContent = S.running ? 'Pause' : 'Start';
+}
+
+const PRESETS = {
+  good: function(){
+    $('rgAlpha').value = 0.995;
+    $('rgSteps').value = clamp(Math.round(S.n*4/10)*10, 60, 800);
+    $('rgTmin').value = 0.5;
+    $('selSchedule').value = 'geo';
+    $('chkGreedy').checked = false;
+    $('chkRev').checked = true; $('chkMove').checked = true; $('chkSwap').checked = false;
+    $('rgSpeed').value = 400;
+    readControls();
+    $('rgT0').value = suggestT0();
+    readControls();
+    return 'Solide Einstellung. Beobachten Sie: die aktuelle Länge zappelt zuerst stark, sortiert sich dann ' +
+           'und legt sich schließlich auf die beste Route. Am Ende sollten keine Linien mehr kreuzen.';
+  },
+  hot: function(){
+    $('rgT0').value = 5000; $('rgAlpha').value = 0.9995; $('rgSteps').value = 200;
+    $('rgTmin').value = 0.5; $('selSchedule').value = 'geo'; $('chkGreedy').checked = false;
+    $('rgSpeed').value = 800; readControls();
+    return 'Viel zu heiß: die Temperatur bleibt lange sehr hoch, deshalb wird fast jede Verschlechterung ' +
+           'übernommen. Die Route bleibt ein Knäuel, die helle Linie zappelt dauerhaft. Rechenzeit ohne Fortschritt.';
+  },
+  cold: function(){
+    $('rgT0').value = 1; $('rgAlpha').value = 0.99; $('rgSteps').value = 200;
+    $('rgTmin').value = 0.1; $('selSchedule').value = 'geo'; $('chkGreedy').checked = false;
+    $('rgSpeed').value = 400; readControls();
+    return 'Viel zu kalt: das Verfahren nimmt praktisch nur Verbesserungen an und bleibt früh stehen. ' +
+           'Achten Sie auf verbleibende Überkreuzungen und auf die flache beste Linie im Diagramm.';
+  },
+  fast: function(){
+    $('rgAlpha').value = 0.85; $('rgSteps').value = 50; $('rgTmin').value = 0.5;
+    $('selSchedule').value = 'geo'; $('chkGreedy').checked = false; $('rgSpeed').value = 200;
+    readControls();
+    $('rgT0').value = suggestT0(); readControls();
+    return 'Zu schnell abgekühlt: der Start ist richtig, aber die Temperatur fällt in wenigen Stufen auf null. ' +
+           'Das Ergebnis „friert ein“, oft deutlich schlechter als bei langsamer Abkühlung.';
+  },
+  greedy: function(){
+    $('chkGreedy').checked = true; $('rgSpeed').value = 400; readControls();
+    return 'Nur bergab: Verschlechterungen sind verboten. Das Verfahren verbessert schnell, bleibt dann in ' +
+           'einem lokalen Minimum stecken und stoppt. Notieren Sie die beste Länge und vergleichen Sie mit ' +
+           '„Gut eingestellt“ bei denselben Städten &ndash; typisch sind einige Prozent Unterschied und ' +
+           'sichtbar verbleibende Überkreuzungen. Noch deutlicher wird der Effekt, wenn Sie zusätzlich nur ' +
+           'den Änderungsschritt „Zwei Städte tauschen“ zulassen.';
+  }
+};
+
+/* ---------- Export ---------- */
+function download(name, text, mime){
+  const blob = new Blob([text], {type: mime || 'text/plain;charset=utf-8'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = name;
+  document.body.appendChild(a); a.click();
+  setTimeout(function(){ URL.revokeObjectURL(a.href); a.remove(); }, 600);
+}
+function stamp(){
+  const d0 = new Date();
+  const p = function(v){ return String(v).padStart(2,'0'); };
+  return d0.getFullYear() + '-' + p(d0.getMonth()+1) + '-' + p(d0.getDate()) + '_' + p(d0.getHours()) + p(d0.getMinutes());
+}
+function snapshot(){
+  return {
+    werkzeug: 'Simulated Annealing am Rundreiseproblem, Fraunhofer IAIS',
+    zeitpunkt: new Date().toISOString(),
+    einstellungen: {
+      staedte: S.n, anordnung: S.layout, starttemperatur: S.T0, abkuehlfaktor: S.alpha,
+      schritteJeStufe: S.stepsPerStage, endtemperatur: S.Tmin, abkuehlplan: S.schedule,
+      nurBergab: S.greedy, aenderungsschritte: S.kinds
+    },
+    ergebnis: {
+      startlaengeKm: Math.round(S.startLen), besteLaengeKm: Math.round(S.bestLen),
+      aktuelleLaengeKm: Math.round(S.curLen),
+      verbesserungProzent: S.startLen>0 ? Number(((1-S.bestLen/S.startLen)*100).toFixed(2)) : 0,
+      geprueftSchritte: S.iter, temperaturstufen: S.stage,
+      angenommen: S.acc, davonVerschlechterungen: S.accWorse,
+      besteGefundenBeiSchritt: S.bestIter, aktuelleTemperatur: Number(S.T.toFixed(3))
+    },
+    besteRoute: S.best.slice(),
+    staedteKoordinaten: S.cities.map(function(c){ return {x: Math.round(c.x), y: Math.round(c.y)}; })
+  };
+}
+function exportMD(){
+  const s = snapshot();
+  const L = [];
+  L.push('# Simulated Annealing am Rundreiseproblem');
+  L.push('');
+  L.push('Protokoll vom ' + new Date().toLocaleString('de-DE'));
+  L.push('');
+  L.push('## Einstellungen');
+  L.push('');
+  L.push('| Einstellung | Wert |');
+  L.push('| --- | --- |');
+  L.push('| Städte | ' + s.einstellungen.staedte + ' |');
+  L.push('| Anordnung | ' + s.einstellungen.anordnung + ' |');
+  L.push('| Starttemperatur | ' + s.einstellungen.starttemperatur + ' |');
+  L.push('| Abkühlfaktor je Stufe | ' + s.einstellungen.abkuehlfaktor + ' |');
+  L.push('| Schritte je Temperaturstufe | ' + s.einstellungen.schritteJeStufe + ' |');
+  L.push('| Endtemperatur | ' + s.einstellungen.endtemperatur + ' |');
+  L.push('| Abkühlplan | ' + s.einstellungen.abkuehlplan + ' |');
+  L.push('| Nur bergab | ' + (s.einstellungen.nurBergab ? 'ja' : 'nein') + ' |');
+  L.push('| Änderungsschritte | ' + s.einstellungen.aenderungsschritte.join(', ') + ' |');
+  L.push('');
+  L.push('## Ergebnis');
+  L.push('');
+  L.push('| Kennzahl | Wert |');
+  L.push('| --- | --- |');
+  L.push('| Zufällige Startroute | ' + s.ergebnis.startlaengeKm + ' km |');
+  L.push('| Beste gefundene Route | ' + s.ergebnis.besteLaengeKm + ' km |');
+  L.push('| Verbesserung | ' + s.ergebnis.verbesserungProzent + ' Prozent |');
+  L.push('| Geprüfte Schritte | ' + s.ergebnis.geprueftSchritte + ' |');
+  L.push('| Temperaturstufen | ' + s.ergebnis.temperaturstufen + ' |');
+  L.push('| Angenommene Schritte | ' + s.ergebnis.angenommen + ' |');
+  L.push('| darunter Verschlechterungen | ' + s.ergebnis.davonVerschlechterungen + ' |');
+  L.push('| Beste Route gefunden bei Schritt | ' + s.ergebnis.besteGefundenBeiSchritt + ' |');
+  L.push('');
+  L.push('## Beste Route (Reihenfolge der Städte)');
+  L.push('');
+  L.push(s.besteRoute.join(' → ') + ' → ' + s.besteRoute[0]);
+  L.push('');
+  L.push('(c) Dario Antweiler, Fraunhofer IAIS');
+  download('simulated-annealing-protokoll_' + stamp() + '.md', L.join('\n'), 'text/markdown;charset=utf-8');
+}
+
+/* ---------- Verdrahtung ---------- */
+function bind(){
+  const live = ['rgT0','rgAlpha','rgSteps','rgTmin','rgSpeed','selSchedule','chkGreedy','chkRev','chkMove','chkSwap'];
+  live.forEach(function(id){ $(id).addEventListener('input', readControls); });
+
+  $('rgCount').addEventListener('input', function(){ $('outCount').textContent = nf0.format(Number(this.value)); });
+  $('rgCount').addEventListener('change', rebuildCities);
+  $('selLayout').addEventListener('change', rebuildCities);
+  $('btnNewCities').addEventListener('click', rebuildCities);
+
+  $('btnRun').addEventListener('click', toggleRun);
+  $('btnStep').addEventListener('click', function(){
+    if(S.done) return;
+    $('chkSlow').checked = true;
+    S.running = false; $('btnRun').textContent = 'Start';
+    step();
+    if(S.lastMove){
+      const m = S.lastMove;
+      setStatus('Vorschlag: <b>' + ({rev:'Teilstrecke umdrehen', swap:'zwei Städte tauschen', move:'eine Stadt verschieben'})[m.kind] +
+        '</b>. Änderung der Länge: <b>' + (m.delta>=0?'+':'') + nf1.format(m.delta) + ' km</b>. ' +
+        (m.accepted ? (m.worse ? 'Trotz Verschlechterung <b>angenommen</b> (Würfel-Regel).' : '<b>Angenommen</b>, weil kürzer.')
+                    : '<b>Abgelehnt.</b>'));
+    }
+  });
+  $('btnRound').addEventListener('click', function(){
+    if(S.done) return;
+    const target = S.stage + 1;
+    let guard = 0;
+    while(S.stage < target && guard < 200000){ step(); guard++; }
+    setStatus('Eine komplette Temperaturstufe gerechnet. Neue Temperatur: <b>' + nf1.format(S.T) + '</b>.');
+  });
+  $('btnReheat').addEventListener('click', function(){
+    S.done = false; S.stage = 0; S.stageSteps = 0; S.T = S.T0;
+    setStatus('Aufgeheizt auf <b>' + nf0.format(S.T0) + '</b>. Die beste bisher gefundene Route bleibt gespeichert.');
+  });
+  $('btnReset').addEventListener('click', function(){
+    S.running = false; $('btnRun').textContent = 'Start'; resetRun();
+  });
+  $('btnAutoT0').addEventListener('click', function(){
+    const v = suggestT0();
+    $('rgT0').value = v; readControls();
+    if(S.iter === 0) S.T = S.T0;
+    setStatus('Vorschlag für die Starttemperatur: <b>' + nf0.format(v) + '</b>. Damit werden am Anfang etwa ' +
+      '80 Prozent der Verschlechterungen angenommen &ndash; ein guter Ausgangspunkt.');
+  });
+
+  document.querySelectorAll('[data-preset]').forEach(function(b){
+    b.addEventListener('click', function(){
+      const f = PRESETS[b.getAttribute('data-preset')];
+      const msg = f();
+      resetRun(true);
+      S.running = true; $('btnRun').textContent = 'Pause';
+      setStatus('<b>' + b.textContent + ':</b> ' + msg);
+    });
+  });
+
+  $('rgDelta').addEventListener('input', updateStats);
+  $('btnExportJSON').addEventListener('click', function(){
+    download('simulated-annealing-ergebnis_' + stamp() + '.json', JSON.stringify(snapshot(), null, 2), 'application/json');
+  });
+  $('btnExportMD').addEventListener('click', exportMD);
+
+  $('btnOpenAll').addEventListener('click', function(){
+    document.querySelectorAll('details.exp').forEach(function(d0){ d0.open = true; });
+  });
+  $('btnCloseAll').addEventListener('click', function(){
+    document.querySelectorAll('details.exp').forEach(function(d0){ d0.open = false; });
+  });
+
+  /* Städte per Klick bearbeiten */
+  $('board').addEventListener('click', function(ev){
+    const cv = $('board');
+    const r = cv.getBoundingClientRect();
+    const x = (ev.clientX - r.left)/r.width*WW;
+    const y = (ev.clientY - r.top)/r.height*WH;
+    let hit = -1, bestD = 14;
+    for(let i=0;i<S.n;i++){
+      const dd = Math.hypot(S.cities[i].x-x, S.cities[i].y-y);
+      if(dd < bestD){ bestD = dd; hit = i; }
+    }
+    if(hit >= 0 && S.n > 5){
+      S.cities.splice(hit,1);
+      setStatus('Stadt entfernt. Es sind jetzt <b>' + (S.n-1) + '</b> Städte, die Suche beginnt neu.');
+    } else if(hit < 0 && S.n < 400){
+      S.cities.push({x:x, y:y});
+      setStatus('Stadt hinzugefügt. Es sind jetzt <b>' + (S.n+1) + '</b> Städte, die Suche beginnt neu.');
+    } else return;
+    buildDistances();
+    $('rgCount').value = clamp(S.n, 5, 250);
+    $('outCount').textContent = nf0.format(S.n);
+    refreshCounts();
+    resetRun(true);
+    S.running = false; $('btnRun').textContent = 'Start';
+  });
+
+  document.addEventListener('keydown', function(ev){
+    if(ev.code === 'Space'){
+      const t = ev.target.tagName;
+      if(t === 'INPUT' || t === 'BUTTON' || t === 'SELECT' || t === 'TEXTAREA') return;
+      ev.preventDefault(); toggleRun();
+    }
+  });
+
+  window.addEventListener('resize', function(){ render(); drawLenChart(); drawTempChart(); });
+}
+
+/* ---------- Start ---------- */
+(function init(){
+  const d0 = new Date();
+  const M = ['Januar','Februar','März','April','Mai','Juni','Juli','August','September','Oktober','November','Dezember'];
+  $('footDate').textContent = d0.getDate() + '. ' + M[d0.getMonth()] + ' ' + d0.getFullYear();
+  bind();
+  readControls();
+  S.cities = makeCities(Number($('rgCount').value), $('selLayout').value);
+  buildDistances();
+  refreshCounts();
+  resetRun(true);
+  requestAnimationFrame(loop);
+})();
+</script>
+</body>
+</html>

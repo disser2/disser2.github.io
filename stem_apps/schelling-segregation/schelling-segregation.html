@@ -1,0 +1,894 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Das Schelling-Modell — wie aus kleinen Wünschen große Trennung wird</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wdth,wght@12..96,75..100,400;12..96,75..100,600;12..96,75..100,800&family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --paper:#E7EAF0;
+  --board:#DDE2EB;
+  --surface:#FBFCFD;
+  --ink:#14171F;
+  --muted:#5B6376;
+  --line:#CDD4E0;
+  --line-strong:#AEB7C8;
+  --a:#2B4C9B;
+  --b:#D9A017;
+  --c:#B23A78;
+  --ok:#1F7A5C;
+  --warn:#B23A78;
+  --r:3px;
+  --display:"Bricolage Grotesque","Segoe UI",sans-serif;
+  --body:"IBM Plex Sans","Segoe UI",sans-serif;
+  --mono:"IBM Plex Mono",ui-monospace,monospace;
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{
+  background:var(--paper);
+  color:var(--ink);
+  font-family:var(--body);
+  font-size:15px;
+  line-height:1.55;
+  -webkit-font-smoothing:antialiased;
+}
+.wrap{max-width:1260px;margin:0 auto;padding:28px 20px 80px}
+
+/* ---------- Kopf ---------- */
+header.top{
+  border-bottom:2px solid var(--ink);
+  padding-bottom:18px;margin-bottom:22px;
+}
+.eyebrow{
+  font-family:var(--mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--muted);margin:0 0 10px;
+}
+h1{
+  font-family:var(--display);
+  font-variation-settings:'wdth' 90,'opsz' 60;
+  font-weight:800;
+  font-size:clamp(30px,5.2vw,54px);
+  line-height:1.02;
+  letter-spacing:-.02em;
+  margin:0 0 12px;
+  max-width:20ch;
+}
+.thesis{
+  font-family:var(--display);
+  font-variation-settings:'wdth' 90;
+  font-weight:400;font-size:clamp(16px,2vw,20px);
+  color:var(--muted);max-width:62ch;margin:0;
+}
+.thesis b{color:var(--ink);font-weight:600}
+
+/* ---------- Layout ---------- */
+.app{display:grid;grid-template-columns:336px minmax(0,1fr);gap:22px;align-items:start}
+@media(max-width:940px){.app{grid-template-columns:1fr}}
+
+.panel{
+  background:var(--surface);
+  border:1px solid var(--line);
+  border-radius:var(--r);
+}
+aside.controls{position:sticky;top:16px}
+@media(max-width:940px){aside.controls{position:static}}
+
+.sec{padding:16px 16px 18px;border-bottom:1px solid var(--line)}
+.sec:last-child{border-bottom:0}
+.sec > h3{
+  font-family:var(--mono);font-size:10.5px;letter-spacing:.13em;text-transform:uppercase;
+  color:var(--muted);margin:0 0 12px;font-weight:600;
+}
+
+.field{margin-bottom:16px}
+.field:last-child{margin-bottom:0}
+.field > label{display:block;font-weight:600;font-size:13.5px;margin-bottom:2px}
+.hint{font-size:12px;color:var(--muted);margin:0 0 7px;line-height:1.4}
+
+/* Segmentierte Auswahl */
+.seg{display:flex;flex-wrap:wrap;gap:4px}
+.seg button{
+  font:inherit;font-size:12.5px;font-weight:500;
+  padding:5px 9px;border:1px solid var(--line-strong);background:#fff;color:var(--ink);
+  border-radius:2px;cursor:pointer;transition:background .12s,color .12s,border-color .12s;
+  line-height:1.25;
+}
+.seg button:hover{border-color:var(--ink)}
+.seg button[aria-pressed="true"]{background:var(--ink);color:#fff;border-color:var(--ink)}
+.seg button .num{font-family:var(--mono);font-weight:600}
+.seg.wide button{flex:1;min-width:70px;text-align:center}
+
+/* Presets */
+.presets{display:flex;flex-wrap:wrap;gap:5px}
+.presets button{
+  font:inherit;font-size:12.5px;padding:5px 11px;border-radius:999px;cursor:pointer;
+  border:1px dashed var(--line-strong);background:transparent;color:var(--ink);
+  transition:background .12s,border-color .12s;
+}
+.presets button:hover{border-style:solid;border-color:var(--a);background:#fff}
+.presets button[aria-pressed="true"]{background:var(--a);border-color:var(--a);border-style:solid;color:#fff}
+
+/* Buttons */
+.runbar{display:flex;gap:6px;flex-wrap:wrap}
+.btn{
+  font:inherit;font-weight:600;font-size:13.5px;padding:9px 14px;border-radius:2px;cursor:pointer;
+  border:1px solid var(--ink);background:#fff;color:var(--ink);
+}
+.btn:hover{background:#EEF1F6}
+.btn.primary{background:var(--ink);color:#fff}
+.btn.primary:hover{background:#2B3245}
+.btn.grow{flex:1}
+
+.switch{display:flex;align-items:center;gap:8px;font-size:13px;cursor:pointer;margin-top:10px}
+.switch input{accent-color:var(--a);width:15px;height:15px}
+
+/* ---------- Brett ---------- */
+.stage{padding:16px}
+.stage-head{display:flex;justify-content:space-between;align-items:baseline;gap:12px;margin-bottom:12px;flex-wrap:wrap}
+.legend{display:flex;gap:14px;flex-wrap:wrap;font-size:12.5px;color:var(--muted);align-items:center}
+.legend span{display:inline-flex;align-items:center;gap:6px}
+.dot{width:11px;height:11px;border-radius:50%;display:inline-block}
+.status{font-family:var(--mono);font-size:12px;color:var(--muted)}
+.status.done{color:var(--ok);font-weight:600}
+
+.boardwrap{position:relative;background:var(--board);border:1px solid var(--line-strong);border-radius:2px;padding:6px}
+canvas#board{display:block;width:100%;height:auto;cursor:crosshair;border-radius:1px}
+
+/* Kennzahlen */
+.metrics{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--line);margin-top:16px;border:1px solid var(--line)}
+@media(max-width:620px){.metrics{grid-template-columns:repeat(2,1fr)}}
+.metric{background:var(--surface);padding:11px 12px}
+.metric .k{font-family:var(--mono);font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);display:block;margin-bottom:3px}
+.metric .v{font-family:var(--display);font-variation-settings:'wdth' 80;font-weight:600;font-size:26px;line-height:1;letter-spacing:-.01em}
+.metric .s{font-size:11.5px;color:var(--muted);display:block;margin-top:3px}
+
+/* Verlaufsdiagramm */
+.chartbox{margin-top:16px}
+.chartbox h4{font-family:var(--mono);font-size:10.5px;letter-spacing:.13em;text-transform:uppercase;color:var(--muted);margin:0 0 8px;font-weight:600}
+canvas#chart{display:block;width:100%;height:150px}
+.chartlegend{display:flex;gap:16px;flex-wrap:wrap;font-size:12px;color:var(--muted);margin-top:6px}
+.chartlegend i{display:inline-block;width:16px;height:2px;vertical-align:middle;margin-right:5px}
+
+/* Lupe */
+.lens{margin-top:22px;display:grid;grid-template-columns:180px minmax(0,1fr);gap:18px;align-items:start}
+@media(max-width:620px){.lens{grid-template-columns:1fr}}
+.lensgrid{display:grid;gap:3px;background:var(--board);padding:5px;border:1px solid var(--line-strong);border-radius:2px}
+.lenscell{aspect-ratio:1;background:#EFF2F7;border-radius:50%;position:relative}
+.lenscell.empty{background:transparent;box-shadow:inset 0 0 0 1px var(--line)}
+.lenscell.focus{outline:2px solid var(--ink);outline-offset:2px}
+.lenscell.nb::after{content:"";position:absolute;inset:-2px;border-radius:50%;box-shadow:0 0 0 1.5px var(--line-strong)}
+.lenstext p{margin:0 0 8px}
+.lensmath{font-family:var(--mono);font-size:13px;background:#EFF2F7;border-left:3px solid var(--a);padding:9px 12px;border-radius:0 2px 2px 0}
+.verdict{font-weight:600;font-size:15px;margin-top:10px}
+.verdict.ok{color:var(--ok)}
+.verdict.no{color:var(--warn)}
+.placeholder{color:var(--muted);font-size:13.5px;margin:0}
+
+/* ---------- Erklärungen ---------- */
+.explain{margin-top:34px}
+.explain > h2{
+  font-family:var(--display);font-variation-settings:'wdth' 88;font-weight:800;
+  font-size:clamp(22px,3vw,30px);letter-spacing:-.015em;margin:0 0 4px;
+}
+.explain > .lede{color:var(--muted);margin:0 0 18px;max-width:70ch}
+details{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);margin-bottom:8px}
+summary{
+  cursor:pointer;padding:13px 16px;font-weight:600;font-size:15px;list-style:none;
+  display:flex;justify-content:space-between;align-items:center;gap:12px;
+}
+summary::-webkit-details-marker{display:none}
+summary::after{content:"+";font-family:var(--mono);font-size:17px;color:var(--muted)}
+details[open] summary::after{content:"–"}
+details[open] summary{border-bottom:1px solid var(--line)}
+.dbody{padding:14px 16px 18px;color:#2B3245}
+.dbody p{margin:0 0 11px;max-width:76ch}
+.dbody p:last-child{margin-bottom:0}
+.dbody ul{margin:0 0 11px;padding-left:20px;max-width:76ch}
+.dbody li{margin-bottom:6px}
+.dbody strong{font-weight:600}
+.tasks{counter-reset:t}
+.tasks li{margin-bottom:10px}
+.kbd{font-family:var(--mono);font-size:12.5px;background:#EFF2F7;padding:1px 5px;border-radius:2px;border:1px solid var(--line)}
+
+footer{margin-top:44px;padding-top:16px;border-top:1px solid var(--line-strong);font-size:12.5px;color:var(--muted)}
+
+:focus-visible{outline:2px solid var(--a);outline-offset:2px}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header class="top">
+  <p class="eyebrow">Interaktives Modell · Thomas C. Schelling, 1971</p>
+  <h1>Niemand will Trennung. Trotzdem entsteht sie.</h1>
+  <p class="thesis">Auf diesem Brett wohnen zwei Gruppen von Menschen. Keine will unter sich bleiben — jede möchte nur, dass ein <b>kleiner Teil</b> der Nachbarn zur eigenen Gruppe gehört. Wer unzufrieden ist, zieht um. Probieren Sie aus, ab wann daraus getrennte Viertel werden.</p>
+</header>
+
+<div class="app">
+
+  <!-- ============ STEUERUNG ============ -->
+  <aside class="controls panel">
+
+    <div class="sec">
+      <h3>Fertige Situationen</h3>
+      <div class="presets" id="presets"></div>
+    </div>
+
+    <div class="sec">
+      <h3>Die Regel</h3>
+
+      <div class="field">
+        <label for="thr">Gewünschte Nachbarn aus der eigenen Gruppe</label>
+        <p class="hint">Wie viel Prozent der Nachbarn müssen mindestens zur eigenen Gruppe gehören, damit jemand bleibt?</p>
+        <div class="seg wide" id="thr"></div>
+      </div>
+
+      <div class="field">
+        <label for="maxsame">Wunsch nach Mischung</label>
+        <p class="hint">Zusätzlich: Es wird auch dann umgezogen, wenn <em>zu viele</em> Nachbarn zur eigenen Gruppe gehören.</p>
+        <div class="seg wide" id="maxsame"></div>
+      </div>
+
+      <div class="field">
+        <label for="delta">Anspruch der gelben Gruppe</label>
+        <p class="hint">Beide Gruppen können unterschiedlich anspruchsvoll sein.</p>
+        <div class="seg wide" id="delta"></div>
+      </div>
+    </div>
+
+    <div class="sec">
+      <h3>Die Nachbarschaft</h3>
+
+      <div class="field">
+        <label for="nbhd">Wer zählt als Nachbar?</label>
+        <div class="seg wide" id="nbhd"></div>
+      </div>
+
+      <div class="field">
+        <label for="move">Wohin wird umgezogen?</label>
+        <div class="seg wide" id="move"></div>
+      </div>
+    </div>
+
+    <div class="sec">
+      <h3>Die Stadt</h3>
+
+      <div class="field">
+        <label for="mix">Größe der Gruppen</label>
+        <div class="seg wide" id="mix"></div>
+      </div>
+
+      <div class="field">
+        <label for="vac">Freie Wohnungen</label>
+        <p class="hint">Ohne leere Felder kann niemand umziehen.</p>
+        <div class="seg wide" id="vac"></div>
+      </div>
+
+      <div class="field">
+        <label for="size">Stadtgröße</label>
+        <div class="seg wide" id="size"></div>
+      </div>
+    </div>
+
+    <div class="sec">
+      <h3>Ablauf</h3>
+      <div class="field">
+        <label for="speed">Tempo</label>
+        <div class="seg wide" id="speed"></div>
+      </div>
+      <div class="runbar">
+        <button class="btn primary grow" id="play">Start</button>
+        <button class="btn" id="step">1 Runde</button>
+        <button class="btn grow" id="reset">Neu verteilen</button>
+      </div>
+      <label class="switch"><input type="checkbox" id="markUnhappy" checked> Unzufriedene markieren</label>
+      <label class="switch"><input type="checkbox" id="markMoves"> Letzte Umzüge zeigen</label>
+    </div>
+  </aside>
+
+  <!-- ============ BÜHNE ============ -->
+  <main>
+    <section class="panel stage">
+      <div class="stage-head">
+        <div class="legend" id="legend"></div>
+        <div class="status" id="status">Bereit — Start drücken</div>
+      </div>
+
+      <div class="boardwrap">
+        <canvas id="board" width="700" height="700" aria-label="Wohnbrett des Schelling-Modells"></canvas>
+      </div>
+
+      <div class="metrics">
+        <div class="metric">
+          <span class="k">Trennung</span>
+          <span class="v" id="mSeg">–</span>
+          <span class="s" id="mSegSub">Anteil gleicher Nachbarn</span>
+        </div>
+        <div class="metric">
+          <span class="k">Zufrieden</span>
+          <span class="v" id="mHappy">–</span>
+          <span class="s" id="mHappySub">der Bewohner</span>
+        </div>
+        <div class="metric">
+          <span class="k">Umzüge</span>
+          <span class="v" id="mMoves">–</span>
+          <span class="s">in der letzten Runde</span>
+        </div>
+        <div class="metric">
+          <span class="k">Runden</span>
+          <span class="v" id="mRound">0</span>
+          <span class="s">seit dem Start</span>
+        </div>
+      </div>
+
+      <div class="chartbox">
+        <h4>Verlauf</h4>
+        <canvas id="chart" width="900" height="300"></canvas>
+        <div class="chartlegend">
+          <span><i style="background:var(--ink)"></i>Trennung</span>
+          <span><i style="background:var(--a)"></i>Zufriedene</span>
+          <span><i style="background:var(--line-strong)"></i>Zufalls-Niveau (so gemischt wäre reiner Zufall)</span>
+        </div>
+      </div>
+
+      <div class="lens">
+        <div>
+          <div class="lensgrid" id="lensGrid" style="grid-template-columns:repeat(5,1fr)"></div>
+        </div>
+        <div class="lenstext" id="lensText">
+          <p class="placeholder"><strong>Nachbarschafts-Lupe.</strong> Klicken Sie auf einen Bewohner im Brett — hier erscheint dann seine Nachbarschaft und die Rechnung, die über Bleiben oder Umziehen entscheidet.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ ERKLÄRUNGEN ============ -->
+    <section class="explain">
+      <h2>Zum Nachlesen</h2>
+      <p class="lede">Für die Schulung: kurze Erklärungen, Beobachtungsaufgaben und die wichtigsten Grenzen des Modells.</p>
+
+      <details open>
+        <summary>Wie das Modell funktioniert</summary>
+        <div class="dbody">
+          <p>Das Brett ist eine kleine Stadt. Jedes Feld ist eine Wohnung: entweder leer oder von einer Person bewohnt, die zu einer der Gruppen gehört. Die Farben stehen für nichts Bestimmtes — Sie können an beliebige Merkmale denken.</p>
+          <p>In jeder Runde passiert genau drei Dinge:</p>
+          <ul>
+            <li><strong>Umschauen.</strong> Jede Person zählt, wie viele ihrer direkten Nachbarn zur eigenen Gruppe gehören.</li>
+            <li><strong>Entscheiden.</strong> Liegt der Anteil unter dem eingestellten Wunsch, ist die Person unzufrieden.</li>
+            <li><strong>Umziehen.</strong> Alle Unzufriedenen ziehen in eine freie Wohnung. Danach beginnt die nächste Runde.</li>
+          </ul>
+          <p>Mehr Regeln gibt es nicht. Insbesondere gibt es niemanden, der die Stadt plant, und niemanden, der Trennung anstrebt.</p>
+        </div>
+      </details>
+
+      <details>
+        <summary>Was die Kennzahlen bedeuten</summary>
+        <div class="dbody">
+          <ul>
+            <li><strong>Trennung.</strong> Der durchschnittliche Anteil von Nachbarn aus der eigenen Gruppe, über alle Bewohner hinweg. 50 % heißt bei zwei gleich großen Gruppen: perfekt durchmischt. 100 % heißt: jeder wohnt ausschließlich unter seinesgleichen.</li>
+            <li><strong>Zufalls-Niveau.</strong> Der Wert, den die Trennung hätte, wenn alle rein zufällig verteilt wären. Er hängt nur von den Gruppengrößen ab und dient als Vergleichslinie im Verlauf. Alles darüber ist durch die Umzüge entstanden.</li>
+            <li><strong>Zufriedene.</strong> Anteil der Bewohner, deren Wunsch gerade erfüllt ist. Erreicht dieser Wert 100 %, hört die Bewegung auf — die Stadt ist in einem stabilen Zustand.</li>
+            <li><strong>Umzüge.</strong> Wie viele Personen in der letzten Runde die Wohnung gewechselt haben. Der Wert fällt normalerweise schnell ab.</li>
+          </ul>
+        </div>
+      </details>
+
+      <details>
+        <summary>Der überraschende Befund</summary>
+        <div class="dbody">
+          <p>Stellen Sie den Wunsch auf <strong>38 %</strong>. Das bedeutet: Von acht Nachbarn sollen mindestens drei zur eigenen Gruppe gehören — jede Person ist also ausdrücklich damit einverstanden, in der Minderheit zu leben. Niemand auf dem Brett wünscht sich ein getrenntes Viertel.</p>
+          <p>Trotzdem landet die Stadt regelmäßig bei einer Trennung von 70 bis 80 %. Der Grund ist eine Kettenreaktion: Ein Umzug verändert zwei Nachbarschaften — die verlassene und die neue. Dadurch werden Personen unzufrieden, die vorher zufrieden waren. Die Bewegung pflanzt sich fort, bis nur noch große, gleichfarbige Flächen übrig sind.</p>
+          <p>Das ist die Kernaussage: <strong>Aus harmlosen individuellen Wünschen kann ein kollektives Ergebnis entstehen, das niemand gewollt hat.</strong> Man kann von der beobachteten Trennung also nicht auf die Absichten der Beteiligten zurückschließen.</p>
+        </div>
+      </details>
+
+      <details>
+        <summary>Beobachtungsaufgaben für die Schulung</summary>
+        <div class="dbody">
+          <ol class="tasks">
+            <li>Starten Sie mit <span class="kbd">Klassiker</span> und lassen Sie das Modell bis zum Stillstand laufen. Notieren Sie den Endwert der Trennung. Wiederholen Sie das dreimal mit <span class="kbd">Neu verteilen</span> — wie stark schwankt das Ergebnis?</li>
+            <li>Suchen Sie die <strong>Kipp-Stelle</strong>: Erhöhen Sie den Wunsch schrittweise von 13 % auf 63 %. Ab welchem Wert bricht die Durchmischung zusammen? Der Übergang ist nicht sanft.</li>
+            <li>Stellen Sie den Wunsch auf 75 %. Die Stadt kommt am Ende zur Ruhe — aber sie braucht dafür etwa zehnmal so viele Runden wie beim Klassiker, und übrig bleiben zwei riesige Blöcke. Warum dauert es so lange?</li>
+            <li>Wählen Sie <span class="kbd">Kleine Minderheit</span> (70 : 30). Vergleichen Sie, wie stark die Trennung die beiden Gruppen jeweils trifft — welche Gruppe lebt am Ende isolierter?</li>
+            <li>Aktivieren Sie beim <strong>Wunsch nach Mischung</strong> die Obergrenze von 75 %. Die Bewohner wollen jetzt aktiv gemischt wohnen. Wird die Stadt dadurch ruhiger oder unruhiger?</li>
+            <li>Setzen Sie die freien Wohnungen auf 5 %. Wie verändert sich die Geschwindigkeit — und der Endzustand?</li>
+            <li>Klicken Sie während des Laufens einzelne Bewohner an und lesen Sie in der Lupe die Rechnung mit. Suchen Sie eine Person, die knapp zufrieden ist, und beobachten Sie, was der nächste Umzug in ihrer Nähe auslöst.</li>
+          </ol>
+        </div>
+      </details>
+
+      <details>
+        <summary>Grenzen: Was das Modell nicht zeigt</summary>
+        <div class="dbody">
+          <p>Das Modell ist bewusst extrem einfach. Es beweist etwas über <em>Möglichkeiten</em>, nicht über die Wirklichkeit:</p>
+          <ul>
+            <li>Es zeigt, dass milde Präferenzen <strong>ausreichen können</strong>, um Trennung zu erzeugen. Es zeigt nicht, dass reale Segregation so entsteht.</li>
+            <li>Reale Wohnorte hängen an Mieten, Einkommen, Diskriminierung, Verkehrsanbindung, Schulen und Familiennetzwerken. Nichts davon steckt im Modell.</li>
+            <li>Alle Personen sind hier identisch und alle Wohnungen gleich gut. Umzüge kosten nichts.</li>
+            <li>Die Nachbarschaft ist ein sauberes Quadrat ohne Straßen, Flüsse oder Stadtgrenzen.</li>
+          </ul>
+          <p>Der Wert des Modells liegt genau in dieser Kargheit: Wenn schon so wenig genügt, muss man bei realer Trennung sehr vorsichtig sein mit der Frage, was sie über die Einstellungen der Menschen aussagt.</p>
+        </div>
+      </details>
+
+      <details>
+        <summary>Was die Einstellungen genau tun</summary>
+        <div class="dbody">
+          <ul>
+            <li><strong>Gewünschte Nachbarn aus der eigenen Gruppe</strong> — die zentrale Stellschraube. 38 % entspricht 3 von 8 Nachbarn.</li>
+            <li><strong>Wunsch nach Mischung</strong> — eine Obergrenze. Damit wird auch umgezogen, wenn die Nachbarschaft zu einheitlich wird. Modelliert Menschen, denen Vielfalt wichtig ist.</li>
+            <li><strong>Anspruch der gelben Gruppe</strong> — verschiebt den Wunsch nur für die gelbe Gruppe nach oben oder unten. Zeigt, wie sich eine ungleiche Ausgangslage auswirkt.</li>
+            <li><strong>Wer zählt als Nachbar</strong> — die 8 umliegenden Felder, nur die 4 direkt angrenzenden, oder ein größerer Umkreis von 24 Feldern. Größere Nachbarschaften glätten das Bild.</li>
+            <li><strong>Wohin wird umgezogen</strong> — blind in irgendeine freie Wohnung, gezielt in eine passende, oder nur in eine freie Wohnung in der Nähe.</li>
+            <li><strong>Freie Wohnungen</strong> — der Spielraum des Wohnungsmarkts. Bei wenig Leerstand dauert alles länger.</li>
+          </ul>
+          <p>Wer ohne Nachbarn wohnt, gilt als zufrieden — es gibt dann nichts zu vergleichen.</p>
+        </div>
+      </details>
+    </section>
+
+    <footer>
+      Nach Thomas C. Schelling, „Dynamic Models of Segregation“, Journal of Mathematical Sociology 1 (1971), S. 143–186. Alle Zahlen entstehen live in Ihrem Browser.
+    </footer>
+  </main>
+</div>
+</div>
+
+<script>
+(function(){
+"use strict";
+
+/* ================= Einstellungen ================= */
+const OPT = {
+  thr:[
+    {l:"13 %",v:.13,s:"1 von 8"},
+    {l:"25 %",v:.25,s:"2 von 8"},
+    {l:"38 %",v:.375,s:"3 von 8"},
+    {l:"50 %",v:.50,s:"4 von 8"},
+    {l:"63 %",v:.625,s:"5 von 8"},
+    {l:"75 %",v:.75,s:"6 von 8"}
+  ],
+  maxsame:[{l:"aus",v:2},{l:"max. 88 %",v:.88},{l:"max. 75 %",v:.75},{l:"max. 60 %",v:.60}],
+  delta:[{l:"gleich",v:0},{l:"−13 %",v:-.125},{l:"+13 %",v:.125},{l:"+25 %",v:.25}],
+  nbhd:[{l:"8 Felder",v:"m1"},{l:"4 Felder",v:"vn"},{l:"24 Felder",v:"m2"}],
+  move:[{l:"irgendwohin",v:"rand"},{l:"gezielt",v:"picky"},{l:"in die Nähe",v:"near"}],
+  mix:[{l:"50 : 50",v:[.5,.5]},{l:"60 : 40",v:[.6,.4]},{l:"70 : 30",v:[.7,.3]},{l:"3 Gruppen",v:[1/3,1/3,1/3]}],
+  vac:[{l:"5 %",v:.05},{l:"10 %",v:.10},{l:"20 %",v:.20},{l:"30 %",v:.30}],
+  size:[{l:"30 × 30",v:30},{l:"50 × 50",v:50},{l:"70 × 70",v:70}],
+  speed:[{l:"langsam",v:420},{l:"normal",v:150},{l:"schnell",v:45},{l:"turbo",v:0}]
+};
+
+const S = {thr:2, maxsame:0, delta:0, nbhd:0, move:0, mix:0, vac:1, size:1, speed:1};
+
+const PRESET_LIST = [
+  {n:"Klassiker",        d:"38 %, 50:50, 10 % leer",       s:{thr:2,maxsame:0,delta:0,nbhd:0,move:0,mix:0,vac:1,size:1}},
+  {n:"Fast egal",        d:"13 % — bleibt gemischt",       s:{thr:0,maxsame:0,delta:0,nbhd:0,move:0,mix:0,vac:1,size:1}},
+  {n:"Kipp-Punkt",       d:"25 %",                          s:{thr:1,maxsame:0,delta:0,nbhd:0,move:0,mix:0,vac:1,size:1}},
+  {n:"Sehr wählerisch",  d:"75 % — dauert sehr lange",     s:{thr:5,maxsame:0,delta:0,nbhd:0,move:0,mix:0,vac:1,size:1}},
+  {n:"Kleine Minderheit",d:"70 : 30",                       s:{thr:2,maxsame:0,delta:0,nbhd:0,move:0,mix:2,vac:1,size:1}},
+  {n:"Drei Gruppen",     d:"3 × gleich groß",               s:{thr:2,maxsame:0,delta:0,nbhd:0,move:0,mix:3,vac:1,size:1}},
+  {n:"Vielfalt erwünscht",d:"25 % bis 75 %",                s:{thr:1,maxsame:2,delta:0,nbhd:0,move:1,mix:0,vac:1,size:1}},
+  {n:"Enger Wohnungsmarkt",d:"nur 5 % frei",                s:{thr:2,maxsame:0,delta:0,nbhd:0,move:2,mix:0,vac:0,size:1}},
+  {n:"Ungleiche Ansprüche",d:"Gelb +25 %",                  s:{thr:2,maxsame:0,delta:3,nbhd:0,move:0,mix:0,vac:1,size:1}},
+  {n:"Weiter Blick",     d:"24 Nachbarn zählen",            s:{thr:2,maxsame:0,delta:0,nbhd:2,move:0,mix:0,vac:1,size:1}}
+];
+
+const COLORS = ["#2B4C9B","#D9A017","#B23A78"];
+const NAMES  = ["Blau","Gelb","Rosa"];
+
+/* ================= Zustand ================= */
+let N=50, grid=null, empties=[], round=0, moves=0, running=false, timer=null;
+let history=[], baseline=.5, selected=null, lastMoved=new Set(), equilibrium=false;
+
+const OFFS = {
+  m1:[[-1,-1],[-1,0],[-1,1],[0,-1],[0,1],[1,-1],[1,0],[1,1]],
+  vn:[[-1,0],[0,-1],[0,1],[1,0]],
+  m2:(function(){const o=[];for(let a=-2;a<=2;a++)for(let b=-2;b<=2;b++)if(a||b)o.push([a,b]);return o;})()
+};
+
+const $ = id => document.getElementById(id);
+const pct = x => Math.round(x*100)+" %";
+
+/* ================= Steuerelemente bauen ================= */
+function buildSeg(id, key, onChange){
+  const host = $(id);
+  host.innerHTML = "";
+  OPT[key].forEach((o,i)=>{
+    const b = document.createElement("button");
+    b.type = "button";
+    b.innerHTML = o.s ? `<span class="num">${o.l}</span><br><span style="font-size:10.5px;opacity:.7">${o.s}</span>` : o.l;
+    b.setAttribute("aria-pressed", S[key]===i ? "true":"false");
+    b.addEventListener("click", ()=>{
+      S[key]=i;
+      [...host.children].forEach((c,j)=>c.setAttribute("aria-pressed", j===i?"true":"false"));
+      clearPreset();
+      onChange();
+    });
+    host.appendChild(b);
+  });
+}
+function syncSeg(id,key){
+  [...$(id).children].forEach((c,j)=>c.setAttribute("aria-pressed", j===S[key]?"true":"false"));
+}
+function syncAll(){
+  ["thr","maxsame","delta","nbhd","move","mix","vac","size","speed"].forEach(k=>syncSeg(k,k));
+}
+function clearPreset(){
+  [...$("presets").children].forEach(c=>c.setAttribute("aria-pressed","false"));
+}
+
+function buildPresets(){
+  const host = $("presets");
+  PRESET_LIST.forEach((p,i)=>{
+    const b=document.createElement("button");
+    b.type="button"; b.textContent=p.n; b.title=p.d;
+    b.setAttribute("aria-pressed", i===0?"true":"false");
+    b.addEventListener("click",()=>{
+      Object.assign(S,p.s);
+      syncAll();
+      [...host.children].forEach((c,j)=>c.setAttribute("aria-pressed", j===i?"true":"false"));
+      reset();
+    });
+    host.appendChild(b);
+  });
+}
+
+/* ================= Modell ================= */
+function groupCount(){ return OPT.mix[S.mix].v.length; }
+function thrFor(g){
+  let t = OPT.thr[S.thr].v;
+  if(g===2) t += OPT.delta[S.delta].v;
+  return Math.max(0, Math.min(1, t));
+}
+function maxFor(){ return OPT.maxsame[S.maxsame].v; }
+
+function reset(){
+  stop();
+  N = OPT.size[S.size].v;
+  const probs = OPT.mix[S.mix].v;
+  const vac = OPT.vac[S.vac].v;
+  grid = new Int8Array(N*N);
+  empties = [];
+  for(let i=0;i<N*N;i++){
+    if(Math.random()<vac){ grid[i]=0; empties.push(i); }
+    else{
+      let r=Math.random(), acc=0, g=1;
+      for(let k=0;k<probs.length;k++){ acc+=probs[k]; if(r<acc){ g=k+1; break; } g=k+1; }
+      grid[i]=g;
+    }
+  }
+  round=0; moves=0; history=[]; selected=null; lastMoved.clear(); equilibrium=false;
+  computeBaseline();
+  buildLegend();
+  renderLens();
+  update(true);
+}
+
+function computeBaseline(){
+  const counts=new Array(4).fill(0); let tot=0;
+  for(let i=0;i<grid.length;i++) if(grid[i]){counts[grid[i]]++;tot++;}
+  let b=0; for(let g=1;g<=3;g++){ const p=counts[g]/tot; b+=p*p; }
+  baseline=b;
+}
+
+function nbStats(idx){
+  const x = idx % N, y = (idx/N)|0;
+  const offs = OFFS[OPT.nbhd[S.nbhd].v];
+  const me = grid[idx];
+  let same=0, tot=0;
+  for(let k=0;k<offs.length;k++){
+    const nx=x+offs[k][1], ny=y+offs[k][0];
+    if(nx<0||ny<0||nx>=N||ny>=N) continue;
+    const v = grid[ny*N+nx];
+    if(v){ tot++; if(v===me) same++; }
+  }
+  return {same,tot,share: tot? same/tot : null};
+}
+function isHappyAt(idx, group){
+  const x = idx % N, y = (idx/N)|0;
+  const offs = OFFS[OPT.nbhd[S.nbhd].v];
+  let same=0, tot=0;
+  for(let k=0;k<offs.length;k++){
+    const nx=x+offs[k][1], ny=y+offs[k][0];
+    if(nx<0||ny<0||nx>=N||ny>=N) continue;
+    const v = grid[ny*N+nx];
+    if(v){ tot++; if(v===group) same++; }
+  }
+  if(tot===0) return true;
+  const sh = same/tot;
+  return sh >= thrFor(group) - 1e-9 && sh <= maxFor() + 1e-9;
+}
+function isHappy(idx){ return isHappyAt(idx, grid[idx]); }
+
+function step(){
+  if(equilibrium) return;
+  const unhappy=[];
+  for(let i=0;i<grid.length;i++) if(grid[i] && !isHappy(i)) unhappy.push(i);
+
+  if(unhappy.length===0 || empties.length===0){
+    equilibrium = unhappy.length===0;
+    moves=0; round++; stop(); update();
+    return;
+  }
+  shuffle(unhappy);
+  lastMoved.clear();
+  moves=0;
+  const mode = OPT.move[S.move].v;
+
+  for(const from of unhappy){
+    if(empties.length===0) break;
+    const g = grid[from];
+    let pick = -1;
+
+    if(mode==="picky"){
+      const tries = Math.min(40, empties.length);
+      for(let t=0;t<tries;t++){
+        const j = (Math.random()*empties.length)|0;
+        grid[empties[j]] = g;                 // probeweise
+        const ok = isHappyAt(empties[j], g);
+        grid[empties[j]] = 0;
+        if(ok){ pick=j; break; }
+      }
+      if(pick<0) pick = (Math.random()*empties.length)|0;
+    } else if(mode==="near"){
+      const fx=from%N, fy=(from/N)|0;
+      const cand=[];
+      for(let t=0;t<60 && cand.length<8;t++){
+        const j=(Math.random()*empties.length)|0;
+        const ex=empties[j]%N, ey=(empties[j]/N)|0;
+        if(Math.max(Math.abs(ex-fx),Math.abs(ey-fy))<=8) cand.push(j);
+      }
+      pick = cand.length ? cand[(Math.random()*cand.length)|0] : (Math.random()*empties.length)|0;
+    } else {
+      pick = (Math.random()*empties.length)|0;
+    }
+
+    const to = empties[pick];
+    grid[to]=g; grid[from]=0;
+    empties[pick]=from;
+    lastMoved.add(to);
+    moves++;
+  }
+  round++;
+  update();
+}
+function shuffle(a){ for(let i=a.length-1;i>0;i--){ const j=(Math.random()*(i+1))|0; const t=a[i];a[i]=a[j];a[j]=t; } }
+
+/* ================= Kennzahlen ================= */
+function stats(){
+  let happy=0, people=0, segSum=0, segN=0;
+  for(let i=0;i<grid.length;i++){
+    if(!grid[i]) continue;
+    people++;
+    if(isHappy(i)) happy++;
+    const s = nbStats(i);
+    if(s.share!==null){ segSum+=s.share; segN++; }
+  }
+  return {happy:people?happy/people:0, seg:segN?segSum/segN:0, people};
+}
+
+/* ================= Zeichnen ================= */
+const board=$("board"), bx=board.getContext("2d");
+const chart=$("chart"), cx=chart.getContext("2d");
+
+function drawBoard(){
+  const dpr = Math.min(window.devicePixelRatio||1, 2);
+  const w = board.clientWidth || 700;
+  if(board.width !== Math.round(w*dpr)){
+    board.width = Math.round(w*dpr);
+    board.height = Math.round(w*dpr);
+  }
+  const px = board.width;
+  bx.setTransform(dpr,0,0,dpr,0,0);
+  const size = px/dpr;
+  bx.clearRect(0,0,size,size);
+  bx.fillStyle="#DDE2EB"; bx.fillRect(0,0,size,size);
+
+  const cell = size/N;
+  const r = Math.max(1, cell*0.40);
+  const markU = $("markUnhappy").checked;
+  const markM = $("markMoves").checked;
+
+  for(let y=0;y<N;y++){
+    for(let x=0;x<N;x++){
+      const idx=y*N+x, g=grid[idx];
+      const cxp=(x+.5)*cell, cyp=(y+.5)*cell;
+      if(!g){
+        if(cell>6){
+          bx.fillStyle="rgba(255,255,255,.55)";
+          bx.beginPath(); bx.arc(cxp,cyp,Math.max(.7,cell*0.10),0,6.284); bx.fill();
+        }
+        continue;
+      }
+      bx.fillStyle=COLORS[g-1];
+      bx.beginPath(); bx.arc(cxp,cyp,r,0,6.284); bx.fill();
+
+      if(markU && !isHappy(idx)){
+        bx.strokeStyle="#14171F";
+        bx.lineWidth=Math.max(.8,cell*0.11);
+        bx.beginPath(); bx.arc(cxp,cyp,r+cell*0.14,0,6.284); bx.stroke();
+      }
+      if(markM && lastMoved.has(idx)){
+        bx.strokeStyle="rgba(255,255,255,.95)";
+        bx.lineWidth=Math.max(.8,cell*0.14);
+        bx.beginPath(); bx.arc(cxp,cyp,r*0.55,0,6.284); bx.stroke();
+      }
+    }
+  }
+  if(selected!==null){
+    const x=selected%N, y=(selected/N)|0;
+    bx.strokeStyle="#14171F"; bx.lineWidth=2;
+    bx.strokeRect(x*cell-1, y*cell-1, cell+2, cell+2);
+  }
+}
+
+function drawChart(){
+  const dpr=Math.min(window.devicePixelRatio||1,2);
+  const w=chart.clientWidth||900, h=150;
+  if(chart.width!==Math.round(w*dpr)){ chart.width=Math.round(w*dpr); chart.height=Math.round(h*dpr); }
+  cx.setTransform(dpr,0,0,dpr,0,0);
+  cx.clearRect(0,0,w,h);
+  cx.fillStyle="#FBFCFD"; cx.fillRect(0,0,w,h);
+  cx.strokeStyle="#CDD4E0"; cx.lineWidth=1;
+  cx.strokeRect(.5,.5,w-1,h-1);
+
+  // Gitterlinien
+  cx.strokeStyle="#E7EAF0";
+  [.25,.5,.75].forEach(p=>{
+    const y=h-p*h; cx.beginPath(); cx.moveTo(1,y); cx.lineTo(w-1,y); cx.stroke();
+  });
+  cx.fillStyle="#5B6376"; cx.font="10px 'IBM Plex Mono',monospace";
+  cx.fillText("100 %",4,12); cx.fillText("0 %",4,h-5);
+
+  const maxX = Math.max(60, history.length);
+  const X = i => 1 + (i/(maxX-1))*(w-2);
+  const Y = v => h - 1 - v*(h-2);
+
+  // Zufallslinie
+  cx.strokeStyle="#AEB7C8"; cx.setLineDash([4,4]); cx.lineWidth=1.5;
+  cx.beginPath(); cx.moveTo(1,Y(baseline)); cx.lineTo(w-1,Y(baseline)); cx.stroke();
+  cx.setLineDash([]);
+
+  if(history.length>1){
+    const line=(key,color,width)=>{
+      cx.strokeStyle=color; cx.lineWidth=width; cx.beginPath();
+      history.forEach((p,i)=>{ i?cx.lineTo(X(i),Y(p[key])):cx.moveTo(X(i),Y(p[key])); });
+      cx.stroke();
+    };
+    line("happy","#2B4C9B",1.8);
+    line("seg","#14171F",2.2);
+  }
+}
+
+/* ================= Lupe ================= */
+board.addEventListener("click", e=>{
+  const rect=board.getBoundingClientRect();
+  const cell=rect.width/N;
+  const x=Math.floor((e.clientX-rect.left)/cell), y=Math.floor((e.clientY-rect.top)/cell);
+  if(x<0||y<0||x>=N||y>=N) return;
+  const idx=y*N+x;
+  selected = grid[idx] ? idx : null;
+  renderLens(); drawBoard();
+});
+
+function renderLens(){
+  const gEl=$("lensGrid"), tEl=$("lensText");
+  gEl.innerHTML="";
+  if(selected===null || !grid[selected]){
+    gEl.style.opacity=".45";
+    for(let i=0;i<25;i++){ const d=document.createElement("div"); d.className="lenscell empty"; gEl.appendChild(d); }
+    tEl.innerHTML='<p class="placeholder"><strong>Nachbarschafts-Lupe.</strong> Klicken Sie auf einen Bewohner im Brett — hier erscheint dann seine Nachbarschaft und die Rechnung, die über Bleiben oder Umziehen entscheidet.</p>';
+    return;
+  }
+  gEl.style.opacity="1";
+  const cxx=selected%N, cyy=(selected/N)|0;
+  const offs=OFFS[OPT.nbhd[S.nbhd].v];
+  const nbSet=new Set(offs.map(o=>`${o[0]},${o[1]}`));
+
+  for(let dy=-2;dy<=2;dy++){
+    for(let dx=-2;dx<=2;dx++){
+      const d=document.createElement("div");
+      d.className="lenscell";
+      const nx=cxx+dx, ny=cyy+dy;
+      if(nx<0||ny<0||nx>=N||ny>=N){ d.className="lenscell empty"; d.style.opacity=".3"; }
+      else{
+        const v=grid[ny*N+nx];
+        if(v) d.style.background=COLORS[v-1]; else d.className="lenscell empty";
+      }
+      if(dx===0&&dy===0) d.classList.add("focus");
+      else if(nbSet.has(`${dy},${dx}`)) d.classList.add("nb");
+      gEl.appendChild(d);
+    }
+  }
+
+  const g=grid[selected], s=nbStats(selected), t=thrFor(g), mx=maxFor();
+  const name=NAMES[g-1];
+  let html=`<p>Diese Person gehört zur Gruppe <strong style="color:${COLORS[g-1]}">${name}</strong>. Umkreiste Felder sind ihre Nachbarn.</p>`;
+  if(s.tot===0){
+    html+=`<div class="lensmath">Keine Nachbarn — es gibt nichts zu vergleichen.</div>
+           <p class="verdict ok">Bleibt wohnen.</p>`;
+  }else{
+    html+=`<div class="lensmath">${s.same} von ${s.tot} Nachbarn sind ${name} &nbsp;=&nbsp; <strong>${pct(s.share)}</strong><br>
+           gewünscht: mindestens ${pct(t)}${mx<=1?` und höchstens ${pct(mx)}`:""}</div>`;
+    const happy = isHappy(selected);
+    if(happy){
+      html+=`<p class="verdict ok">Zufrieden — bleibt wohnen.</p>`;
+    }else if(s.share<t){
+      html+=`<p class="verdict no">Zu wenige eigene Nachbarn — zieht um.</p>`;
+    }else{
+      html+=`<p class="verdict no">Zu einheitlich — zieht um.</p>`;
+    }
+  }
+  tEl.innerHTML=html;
+}
+
+/* ================= Legende ================= */
+function buildLegend(){
+  const n=groupCount();
+  let h="";
+  for(let i=0;i<n;i++) h+=`<span><i class="dot" style="background:${COLORS[i]}"></i>${NAMES[i]}</span>`;
+  h+=`<span><i class="dot" style="background:#fff;box-shadow:inset 0 0 0 1px #AEB7C8"></i>frei</span>`;
+  h+=`<span><i class="dot" style="background:transparent;box-shadow:0 0 0 1.6px #14171F"></i>unzufrieden</span>`;
+  $("legend").innerHTML=h;
+}
+
+/* ================= Aktualisieren ================= */
+function update(fresh){
+  const st=stats();
+  history.push({seg:st.seg, happy:st.happy});
+  if(history.length>600) history.shift();
+
+  $("mSeg").textContent=pct(st.seg);
+  $("mSegSub").textContent=`Zufall wäre ${pct(baseline)}`;
+  $("mHappy").textContent=pct(st.happy);
+  $("mMoves").textContent=fresh?"–":moves;
+  $("mRound").textContent=round;
+
+  const s=$("status");
+  if(equilibrium){
+    s.textContent=`Stabil nach ${round} Runden — niemand will mehr umziehen`;
+    s.classList.add("done");
+  }else{
+    s.classList.remove("done");
+    s.textContent = running ? `läuft · Runde ${round}` : (round?`angehalten · Runde ${round}`:"Bereit — Start drücken");
+  }
+  drawBoard(); drawChart(); if(selected!==null) renderLens();
+}
+
+/* ================= Ablauf ================= */
+function play(){
+  if(equilibrium) return;
+  running=true; $("play").textContent="Pause";
+  const d=OPT.speed[S.speed].v;
+  clearInterval(timer);
+  timer=setInterval(()=>{ step(); if(equilibrium) stop(); }, Math.max(d,0));
+  update();
+}
+function stop(){
+  running=false; clearInterval(timer); timer=null;
+  const p=$("play"); if(p) p.textContent = equilibrium ? "Stabil" : "Start";
+}
+function toggle(){ running?stop():play(); update(); }
+
+/* ================= Verdrahtung ================= */
+["thr","maxsame","delta","nbhd","move"].forEach(k=>buildSeg(k,k,()=>{ equilibrium=false; if(running){stop();play();} update(); }));
+["mix","vac","size"].forEach(k=>buildSeg(k,k,reset));
+buildSeg("speed","speed",()=>{ if(running){stop();play();} });
+buildPresets();
+
+$("play").addEventListener("click",toggle);
+$("step").addEventListener("click",()=>{ stop(); step(); update(); });
+$("reset").addEventListener("click",reset);
+$("markUnhappy").addEventListener("change",drawBoard);
+$("markMoves").addEventListener("change",drawBoard);
+window.addEventListener("resize",()=>{ drawBoard(); drawChart(); });
+
+reset();
+})();
+</script>
+</body>
+</html>
