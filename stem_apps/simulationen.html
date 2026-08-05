@@ -247,11 +247,9 @@ h1{
   <div class="masthead-text">
     <p class="eyebrow">Interaktive Modelle im Browser</p>
     <h1>Simulationen</h1>
-    <p class="lead">Eigenständige Anwendungen aus Physik, Biologie und Komplexitätsforschung.
-      Jede Kachel rechnet ihr Modell in Miniatur mit; ein Klick öffnet die vollständige Simulation.</p>
+    <p class="lead">Eigenständige Anwendungen aus Mathematik, Informatik, Physik, Biologie, Soziologie und Komplexitätsforschung.</p>
   </div>
   <div class="masthead-side">
-    <img class="logo" src="logo.png" alt="Fraunhofer IAIS" onerror="this.style.display='none'">
     <p class="stats" id="stats"></p>
     <button class="btn" id="settings-toggle" aria-expanded="false" aria-controls="settings">Einstellungen</button>
   </div>
@@ -286,7 +284,7 @@ h1{
 </div>
 
 <footer class="foot">
-  <span>(c) Dario Antweiler, Fraunhofer IAIS &middot; 2. August 2026</span>
+  <span>(c) Dario Antweiler&middot; 2. August 2026</span>
   <span>Alle Modelle laufen lokal, ohne Build-Schritt und ohne Netzverbindung.</span>
 </footer>
 
@@ -348,6 +346,11 @@ const CATALOG = [
       desc:'Schwach gekoppelte Oszillatoren finden ohne Taktgeber in einen gemeinsamen Rhythmus.',
       path:'firefly/firefly_sync.html',
       tags:'Kuramoto-Modell · Chronobiologie' },
+    { id:'turing-muster', sim:'reactiondiffusion',
+      title:'Turing-Muster',
+      desc:'Zwei Stoffe diffundieren und reagieren unterschiedlich schnell — daraus entstehen Flecken und Streifen ohne Bauplan.',
+      path:'turing-muster/turing-muster.html',
+      tags:'Reaktions-Diffusion · Morphogenese' },
   ]},
   { id:'oekologie', name:'Ökologie', apps:[
     { id:'forest-fire', sim:'forestfire',
@@ -398,6 +401,23 @@ const CATALOG = [
       desc:'Karte oder Graph interaktiv einfärben: nie treffen zwei benachbarte Flächen dieselbe Farbe, vier reichen stets.',
       path:'graphenfaerbung/graphenfaerbung.html',
       tags:'Graphentheorie · Kombinatorik' },
+    { id:'simulated-annealing-tsp', sim:'annealing',
+      title:'Simulated Annealing beim Rundreiseproblem',
+      desc:'Anfangs erlaubt die Temperatur auch schlechtere Routen — erst beim Abkühlen setzt sich die kürzeste durch.',
+      path:'simulated-annealing-rundreise/simulated-annealing-rundreise.html',
+      tags:'Metaheuristik · Optimierung' },
+    { id:'kleine-welt', sim:'wattsstrogatz', status:'todo',
+      title:'Kleine Welt (Watts-Strogatz)',
+      desc:'Ein paar zufällig umverdrahtete Kanten genügen: die mittlere Distanz im Netz stürzt ab, die lokale Verklumpung bleibt.',
+      tags:'Netzwerktheorie · Small World' },
+    { id:'skalenfreie-netze', sim:'barabasialbert', status:'todo',
+      title:'Skalenfreie Netze (Barabási-Albert)',
+      desc:'Neue Knoten docken bevorzugt an bereits gut vernetzte an — so wachsen Hubs, ohne dass irgendwer sie plant.',
+      tags:'Netzwerktheorie · Präferentielle Anlagerung' },
+    { id:'pagerank', sim:'pagerank', status:'todo',
+      title:'PageRank',
+      desc:'Ein Zufallssurfer klickt endlos durchs Netz; die Häufigkeit, mit der er auf einer Seite landet, ist ihr Rang.',
+      tags:'Netzwerktheorie · Markov-Ketten' },
     { id:'pythagorasbaum', sim:'pythagorastree',
       title:'Fraktaler Pythagorasbaum',
       desc:'Auf jedem Quadrat sitzt ein rechtwinkliges Dreieck, auf seinen beiden kurzen Seiten wieder Quadrate — und so weiter.',
@@ -415,6 +435,10 @@ const CATALOG = [
       desc:'Wie man zwei Gruppen mit möglichst viel Abstand trennt — und warum genau das gut funktioniert.',
       path:'svm/svm.html',
       tags:'Überwachtes Lernen · Klassifikation' },
+    { id:'gradientenabstieg', sim:'gradientdescent', status:'todo',
+      title:'Gradientenabstieg auf einer Verlustlandschaft',
+      desc:'Lernrate, Momentum und die Form der Landschaft entscheiden, ob der Abstieg im Minimum endet oder daran vorbeischießt.',
+      tags:'Optimierung · Neuronale Netze' },
   ]},
   { id:'sozialwissenschaften', name:'Sozialwissenschaften', apps:[
     { id:'spatial-pd', sim:'spatialpd',
@@ -427,6 +451,16 @@ const CATALOG = [
       desc:'Eine zusätzliche Straße, die jeder für sich nutzt, macht das Netz für alle langsamer.',
       path:'braess-paradoxon/braess-paradoxon.html',
       tags:'Spieltheorie · Netzwerke' },
+    { id:'schelling-segregation', sim:'schelling', 
+      title:'Schelling-Segregation',
+      desc:'Eine milde Präferenz für ähnliche Nachbarn reicht, damit sich Gruppen scharf voneinander trennen.',
+      path:'schelling-segregation/schelling-segregation.html',
+      tags:'Soziale Segregation · Agentenmodelle' },
+    { id:'gerrymandering', sim:'gerrymandering',
+      title:'Gerrymandering',
+      desc:'Dieselben Stimmen, andere Wahlkreisgrenzen: die Mehrheit verschiebt sich, ohne dass sich eine Meinung ändert.',
+      path:'gerrymandering/gerrymandering.html',
+      tags:'Wahlgeometrie · Repräsentation' },
   ]},
   { id:'ingenieurwissenschaften', name:'Ingenieurwissenschaften', apps:[
     { id:'ubahn', sim:'metro',
@@ -434,6 +468,16 @@ const CATALOG = [
       desc:'Linienführung gegen Fahrzeit: welche Verbindung ein Netz wirklich schneller macht.',
       path:'ubahnen/ubahn-optimal.html',
       tags:'Graphenoptimierung · Verkehr' },
+    { id:'stau-aus-dem-nichts', sim:'trafficjam', status:'todo',
+      title:'Stau aus dem Nichts (Nagel-Schreckenberg)',
+      desc:'Ohne Hindernis, ohne Unfall: ein Fahrzeug bremst kurz, und der Stau wandert rückwärts durch die Kolonne.',
+      tags:'Zellulärer Automat · Verkehrsfluss' },
+  ]},
+  { id:'statistik', name:'Statistik und Wahrscheinlichkeit', apps:[
+    { id:'galton-brett', sim:'galton', status:'todo',
+      title:'Galton-Brett',
+      desc:'Tausend Kugeln fallen durch ein Nagelbrett und ordnen sich von selbst zur Glockenkurve.',
+      tags:'Zentraler Grenzwertsatz · Stochastik' },
   ]},
 ];
 
