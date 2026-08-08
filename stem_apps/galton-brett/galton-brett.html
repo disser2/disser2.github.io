@@ -1,0 +1,1156 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Galton-Brett — vom Zufall zur Glockenkurve</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ink:#0A1620;
+  --ink-2:#071019;
+  --ink-3:#12232F;
+  --line:rgba(196,224,236,.14);
+  --line-strong:rgba(196,224,236,.28);
+  --text:#DDEAF1;
+  --text-dim:#8FA6B4;
+  --brass:#D8AC4A;
+  --brass-dim:#8A6E2E;
+  --signal:#FF6B4A;
+  --marble-a:#8FE3F0;
+  --marble-b:#8B7CF0;
+  --paper:#EFE9DC;
+  --paper-2:#E4DCCB;
+  --paper-ink:#17222B;
+  --paper-dim:#5A6672;
+  --r:10px;
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{
+  background:var(--ink);
+  color:var(--text);
+  font-family:"IBM Plex Sans",-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
+  font-size:15px;
+  line-height:1.55;
+  -webkit-font-smoothing:antialiased;
+}
+.wrap{max-width:1360px;margin:0 auto;padding:0 20px}
+
+/* ---------- Masthead ---------- */
+.masthead{
+  display:flex;align-items:flex-end;justify-content:space-between;gap:24px;
+  padding:14px 0 10px;flex-wrap:wrap;
+}
+.title-block{display:flex;align-items:baseline;gap:16px;flex-wrap:wrap}
+h1{
+  font-family:"Instrument Serif",Georgia,serif;
+  font-weight:400;font-size:clamp(30px,4.4vw,46px);
+  line-height:.95;letter-spacing:.005em;margin:0;color:#F2F7FA;
+}
+h1 em{font-style:italic;color:var(--brass)}
+.tagline{
+  font-size:13.5px;color:var(--text-dim);max-width:46ch;margin:0;
+  border-left:1px solid var(--line-strong);padding-left:14px;
+}
+.mast-actions{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+
+/* ---------- Buttons ---------- */
+button{font-family:inherit;font-size:inherit;cursor:pointer;border:none;background:none;color:inherit}
+button:focus-visible,.chip:focus-visible{outline:2px solid var(--brass);outline-offset:2px}
+.btn{
+  border:1px solid var(--line-strong);border-radius:999px;
+  padding:8px 18px;font-weight:600;font-size:13.5px;letter-spacing:.01em;
+  background:rgba(255,255,255,.03);color:var(--text);
+  transition:background .15s,border-color .15s,transform .1s;
+}
+.btn:hover{background:rgba(255,255,255,.08);border-color:var(--line-strong)}
+.btn:active{transform:translateY(1px)}
+.btn-primary{
+  background:linear-gradient(180deg,#E7BE5E,#C4952F);
+  color:#241A05;border-color:#E7BE5E;
+}
+.btn-primary:hover{background:linear-gradient(180deg,#F2CD70,#D0A138)}
+
+/* ---------- Kontrollpult ---------- */
+.deck{
+  position:sticky;top:0;z-index:40;
+  background:linear-gradient(180deg,rgba(7,16,25,.97),rgba(7,16,25,.93));
+  backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);
+  border-top:1px solid var(--line);border-bottom:1px solid var(--line-strong);
+}
+.deck-inner{
+  display:flex;gap:10px 26px;flex-wrap:wrap;align-items:flex-start;
+  padding:11px 0 9px;
+}
+.grp{display:flex;flex-direction:column;gap:5px}
+.grp-label{
+  font-family:"IBM Plex Mono",ui-monospace,monospace;
+  font-size:10px;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--text-dim);
+}
+.chips{display:flex;gap:4px;flex-wrap:wrap}
+.chip{
+  font-family:"IBM Plex Mono",ui-monospace,monospace;
+  font-size:12.5px;font-weight:500;
+  padding:5px 11px;border-radius:7px;
+  border:1px solid var(--line);background:rgba(255,255,255,.02);
+  color:var(--text-dim);transition:all .13s;white-space:nowrap;
+}
+.chip:hover{color:var(--text);border-color:var(--line-strong);background:rgba(255,255,255,.06)}
+.chip[aria-pressed="true"]{
+  background:var(--brass);border-color:var(--brass);color:#241A05;font-weight:600;
+}
+.chip.tog[aria-pressed="true"]{
+  background:rgba(216,172,74,.14);border-color:var(--brass);color:var(--brass);
+}
+.chip.preset{padding:5px 12px}
+.chip.preset[aria-pressed="true"]{background:#F2F7FA;border-color:#F2F7FA;color:#0A1620}
+.deck-sep{width:1px;align-self:stretch;background:var(--line);margin:2px 0}
+.progress{height:2px;background:rgba(255,255,255,.05)}
+.progress i{display:block;height:100%;width:0;background:var(--brass);transition:width .2s linear}
+
+/* ---------- Bühne ---------- */
+.stage{padding:12px 0 4px}
+.board-frame{
+  position:relative;border:1px solid var(--line);border-radius:var(--r);
+  background:
+    radial-gradient(120% 90% at 50% -10%,rgba(58,120,150,.18),transparent 60%),
+    radial-gradient(80% 60% at 50% 110%,rgba(216,172,74,.07),transparent 70%),
+    linear-gradient(180deg,#0B1925,#081420);
+  overflow:hidden;
+}
+canvas{display:block;width:100%;height:clamp(360px,calc(100vh - 340px),700px)}
+.badge{
+  position:absolute;top:10px;left:12px;
+  font-family:"IBM Plex Mono",monospace;font-size:10.5px;letter-spacing:.14em;
+  text-transform:uppercase;color:var(--text-dim);
+  border:1px solid var(--line);border-radius:6px;padding:3px 8px;
+  background:rgba(7,16,25,.6);pointer-events:none;
+}
+.legend{
+  position:absolute;top:10px;right:12px;display:flex;gap:14px;
+  font-family:"IBM Plex Mono",monospace;font-size:10.5px;color:var(--text-dim);
+  background:rgba(7,16,25,.6);border:1px solid var(--line);border-radius:6px;
+  padding:4px 10px;pointer-events:none;
+}
+.legend b{font-weight:500;color:var(--text)}
+.swatch{display:inline-block;width:14px;height:2px;vertical-align:middle;margin-right:5px}
+
+/* ---------- Messwerte ---------- */
+.readouts{
+  display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));
+  gap:1px;background:var(--line);border:1px solid var(--line);
+  border-radius:var(--r);margin-top:10px;overflow:hidden;
+}
+.ro{background:#0A1721;padding:9px 14px 10px}
+.ro-k{
+  font-family:"IBM Plex Mono",monospace;font-size:10px;letter-spacing:.14em;
+  text-transform:uppercase;color:var(--text-dim);
+}
+.ro-v{
+  font-family:"IBM Plex Mono",monospace;font-size:22px;font-weight:500;
+  color:#F2F7FA;line-height:1.25;font-variant-numeric:tabular-nums;
+}
+.ro-s{font-family:"IBM Plex Mono",monospace;font-size:11px;color:var(--brass-dim)}
+.ro-s b{color:var(--brass);font-weight:500}
+
+/* ---------- Handbuch (heller Bereich) ---------- */
+.manual{
+  background:var(--paper);color:var(--paper-ink);
+  margin-top:34px;border-top:3px solid var(--brass);
+}
+.manual .wrap{padding-top:34px;padding-bottom:46px}
+.manual-head{
+  display:flex;align-items:baseline;gap:16px;flex-wrap:wrap;
+  border-bottom:1px solid rgba(23,34,43,.18);padding-bottom:10px;margin-bottom:26px;
+}
+.manual-head h2{
+  font-family:"Instrument Serif",Georgia,serif;font-weight:400;
+  font-size:34px;margin:0;line-height:1;
+}
+.manual-head p{margin:0;font-size:13px;color:var(--paper-dim)}
+.cards{
+  display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:0;
+  border-top:1px solid rgba(23,34,43,.16);
+}
+.card{
+  padding:20px 22px 22px;border-bottom:1px solid rgba(23,34,43,.16);
+  border-right:1px solid rgba(23,34,43,.16);
+}
+.card:nth-child(3n){border-right:none}
+.card h3{
+  font-size:16px;margin:0 0 8px;font-weight:600;letter-spacing:-.005em;
+  display:flex;align-items:baseline;gap:9px;
+}
+.card h3 span{
+  font-family:"IBM Plex Mono",monospace;font-size:11px;color:var(--brass-dim);
+  font-weight:500;
+}
+.card p{margin:0 0 10px;font-size:14px;color:#33414D}
+.card p:last-child{margin-bottom:0}
+.card strong{color:var(--paper-ink);font-weight:600}
+.try{
+  display:inline-block;margin-top:4px;font-family:"IBM Plex Mono",monospace;
+  font-size:11.5px;color:#8A6320;border:1px dashed rgba(138,99,32,.5);
+  border-radius:6px;padding:4px 9px;background:rgba(216,172,74,.12);
+}
+.formula{
+  font-family:"IBM Plex Mono",monospace;font-size:13px;
+  background:rgba(23,34,43,.05);border-left:2px solid var(--brass);
+  padding:9px 12px;margin:10px 0;overflow-x:auto;white-space:nowrap;
+}
+
+/* Pascal */
+.pascal-sec{margin-top:34px}
+.pascal-sec h3{
+  font-family:"Instrument Serif",Georgia,serif;font-weight:400;font-size:26px;
+  margin:0 0 4px;
+}
+.pascal-sec .sub{font-size:13.5px;color:var(--paper-dim);margin:0 0 16px;max-width:70ch}
+.pascal-box{
+  border:1px solid rgba(23,34,43,.18);border-radius:var(--r);
+  background:#F6F2E9;padding:16px 12px;overflow-x:auto;
+}
+.pascal-box svg{display:block;margin:0 auto;max-width:100%;height:auto}
+.pascal-foot{
+  display:flex;gap:22px;flex-wrap:wrap;margin-top:12px;
+  font-family:"IBM Plex Mono",monospace;font-size:12px;color:var(--paper-dim);
+}
+.pascal-foot b{color:var(--paper-ink);font-weight:500}
+
+footer{
+  border-top:1px solid rgba(23,34,43,.16);margin-top:32px;padding-top:14px;
+  font-size:12px;color:var(--paper-dim);display:flex;justify-content:space-between;
+  gap:16px;flex-wrap:wrap;
+}
+kbd{
+  font-family:"IBM Plex Mono",monospace;font-size:11px;
+  border:1px solid rgba(23,34,43,.3);border-bottom-width:2px;border-radius:4px;
+  padding:1px 5px;background:#fff;
+}
+
+@media (max-width:760px){
+  .deck-sep{display:none}
+  .deck-inner{gap:8px 18px}
+  canvas{height:clamp(320px,58vh,520px)}
+  .legend{display:none}
+  .card:nth-child(3n){border-right:1px solid rgba(23,34,43,.16)}
+}
+@media (prefers-reduced-motion:reduce){
+  *{transition-duration:.01ms !important}
+}
+</style>
+</head>
+<body>
+
+<div class="wrap">
+  <header class="masthead">
+    <div class="title-block">
+      <h1>Galton&#8209;Brett<em>.</em></h1>
+      <p class="tagline">Tausend Kugeln fallen durch ein Nagelbrett. Jede einzelne entscheidet sich rein zufällig — und gemeinsam bauen sie zuverlässig dieselbe Kurve.</p>
+    </div>
+    <div class="mast-actions">
+      <button class="btn" id="btnSingle">Eine Kugel</button>
+      <button class="btn" id="btnReset">Zurücksetzen</button>
+      <button class="btn btn-primary" id="btnRun">Starten</button>
+    </div>
+  </header>
+</div>
+
+<div class="deck">
+  <div class="wrap">
+    <div class="deck-inner">
+      <div class="grp">
+        <div class="grp-label">Voreinstellung</div>
+        <div class="chips" id="presets"></div>
+      </div>
+      <div class="deck-sep"></div>
+      <div id="groups" style="display:flex;gap:10px 26px;flex-wrap:wrap"></div>
+      <div class="deck-sep"></div>
+      <div class="grp">
+        <div class="grp-label">Anzeige</div>
+        <div class="chips" id="toggles"></div>
+      </div>
+    </div>
+  </div>
+  <div class="progress"><i id="prog"></i></div>
+</div>
+
+<div class="wrap">
+  <section class="stage">
+    <div class="board-frame">
+      <canvas id="cv"></canvas>
+      <div class="badge" id="badge">12 Reihen · Neigung 50 %</div>
+      <div class="legend">
+        <span><i class="swatch" style="background:#FF6B4A"></i><b>Theorie</b></span>
+        <span><i class="swatch" style="background:#DDEAF1"></i><b>Glockenkurve</b></span>
+      </div>
+    </div>
+
+    <div class="readouts">
+      <div class="ro"><div class="ro-k">Kugeln gefallen</div><div class="ro-v" id="roN">0</div><div class="ro-s" id="roNs">von 1000</div></div>
+      <div class="ro"><div class="ro-k">Mittleres Fach</div><div class="ro-v" id="roM">–</div><div class="ro-s" id="roMs">erwartet <b>6,00</b></div></div>
+      <div class="ro"><div class="ro-k">Streuung σ</div><div class="ro-v" id="roS">–</div><div class="ro-s" id="roSs">erwartet <b>1,73</b></div></div>
+      <div class="ro"><div class="ro-k">Innerhalb ±1σ</div><div class="ro-v" id="roB">–</div><div class="ro-s">Faustregel <b>68 %</b></div></div>
+      <div class="ro"><div class="ro-k">Vollstes Fach</div><div class="ro-v" id="roT">–</div><div class="ro-s" id="roTs">&nbsp;</div></div>
+      <div class="ro"><div class="ro-k">Status</div><div class="ro-v" id="roQ" style="font-size:17px;padding-top:4px">Bereit</div><div class="ro-s" id="roQs">Leertaste startet</div></div>
+    </div>
+  </section>
+</div>
+
+<section class="manual">
+  <div class="wrap">
+    <div class="manual-head">
+      <h2>Was hier passiert</h2>
+      <p>Kurzanleitung zum Mitlesen während der Simulation</p>
+    </div>
+
+    <div class="cards">
+      <article class="card">
+        <h3><span>01</span>Eine Kugel, viele Münzwürfe</h3>
+        <p>Jede Kugel trifft in jeder Reihe genau einen Nagel und fällt links oder rechts vorbei. Bei 12 Reihen sind das <strong>12 Münzwürfe hintereinander</strong>. Wo die Kugel landet, hängt nur davon ab, wie oft sie nach rechts gegangen ist.</p>
+        <p class="try"><b>Ausprobieren:</b> „Eine Kugel“ oben rechts</p>
+      </article>
+
+      <article class="card">
+        <h3><span>02</span>Warum die Mitte gewinnt</h3>
+        <p>Ganz außen zu landen gelingt nur auf <strong>einem einzigen Weg</strong> — immer links oder immer rechts. In die Mitte führen dagegen tausende Wege, weil sich links und rechts beliebig mischen dürfen. Die Kugeln sammeln sich dort, wo die meisten Wege hinführen.</p>
+      </article>
+
+      <article class="card">
+        <h3><span>03</span>Zufall im Einzelnen, Ordnung im Ganzen</h3>
+        <p>Keine Kugel weiß, wo die anderen landen. Trotzdem entsteht bei jedem Durchlauf dieselbe Form. Genau das ist die Kernaussage: <strong>Viele kleine unabhängige Zufälle ergeben zusammen ein verlässliches Muster.</strong></p>
+        <p class="try"><b>Ausprobieren:</b> Zweimal „Massentest“ laufen lassen</p>
+      </article>
+
+      <article class="card">
+        <h3><span>04</span>Mehr Reihen, glattere Kurve</h3>
+        <p>Mit 4 Reihen ist das Ergebnis grob und zackig, mit 20 Reihen wird es sichtbar glatt. Die Kurve wird außerdem breiter: Die Streuung wächst mit der <strong>Wurzel</strong> aus der Reihenzahl, nicht linear.</p>
+        <div class="formula">σ = √(n · p · (1−p))</div>
+        <p class="try"><b>Ausprobieren:</b> Reihen von 4 auf 20 stellen</p>
+      </article>
+
+      <article class="card">
+        <h3><span>05</span>Ein schiefes Brett</h3>
+        <p>Steht das Brett schief, fällt die Kugel häufiger nach rechts. Die Kurve wandert dann als Ganzes zur Seite — sie <strong>verschiebt sich, ohne ihre Form zu verlieren</strong>. Der Schwerpunkt liegt bei n · p.</p>
+        <p class="try"><b>Ausprobieren:</b> Neigung auf 70 % stellen</p>
+      </article>
+
+      <article class="card">
+        <h3><span>06</span>Die 68‑95‑99,7‑Regel</h3>
+        <p>Rund <strong>zwei Drittel</strong> aller Kugeln landen im Bereich von einer Streuung um die Mitte, etwa 95 % innerhalb von zwei und fast alle innerhalb von drei. Die Messwerte oben zeigen live, wie gut das schon passt.</p>
+        <p class="try"><b>Ausprobieren:</b> Anzeige „σ-Bereiche“ einschalten</p>
+      </article>
+
+      <article class="card">
+        <h3><span>07</span>Die Ränder sichtbar machen</h3>
+        <p>Die äußeren Fächer bekommen so wenige Kugeln ab, dass man sie neben der Mitte gar nicht sieht. Die <strong>Log-Skala</strong> staucht die großen Werte und macht die seltenen Fälle sichtbar — dieselben Daten, anderer Maßstab.</p>
+        <p class="try"><b>Ausprobieren:</b> Anzeige „Log-Skala“ bei 5000 Kugeln</p>
+      </article>
+
+      <article class="card">
+        <h3><span>08</span>Zwei Kurven zum Vergleich</h3>
+        <p>Die <strong style="color:#C4472A">orange Linie</strong> ist die exakte Vorhersage für dieses Brett — sie zählt einfach die Wege. Die <strong>helle Glockenkurve</strong> ist die glatte Näherung dazu. Ab etwa 10 Reihen liegen beide fast aufeinander.</p>
+      </article>
+
+      <article class="card">
+        <h3><span>09</span>Wo das im Alltag steckt</h3>
+        <p>Körpergrößen, Messfehler, Laborwerte, Zufallsschwankungen in Umfragen: Überall dort, wo sich viele kleine unabhängige Einflüsse addieren, kommt dieselbe Form heraus. Das Brett ist das kleinste Modell dafür.</p>
+      </article>
+    </div>
+
+    <section class="pascal-sec">
+      <h3>Das Wege-Dreieck</h3>
+      <p class="sub">Jede Zahl sagt, auf wie vielen verschiedenen Wegen eine Kugel diesen Punkt erreicht. Sie ist immer die Summe der beiden Zahlen darüber — denn von dort kommt die Kugel her. Die hervorgehobene Zeile unten gehört zu den Fächern im Brett.</p>
+      <div class="pascal-box" id="pascalBox"></div>
+      <div class="pascal-foot">
+        <span>Reihen: <b id="pfN">12</b></span>
+        <span>Wege insgesamt: <b id="pfSum">4096</b></span>
+        <span>Meiste Wege in ein Fach: <b id="pfMax">924</b></span>
+        <span>Wege ins Randfach: <b>1</b></span>
+      </div>
+    </section>
+
+    <footer>
+      <span>Tastatur: <kbd>Leertaste</kbd> starten · <kbd>R</kbd> zurücksetzen · <kbd>E</kbd> eine Kugel · Mauszeiger über ein Fach zeigt Details</span>
+      <span>Benannt nach Francis Galton, 1873 · Interaktive Simulation für Schulungen</span>
+    </footer>
+  </div>
+</section>
+
+<script>
+(function(){
+"use strict";
+
+/* ============================================================
+   Konfiguration
+   ============================================================ */
+const SPEEDS = {
+  slow  : {rps:1.7,  spawn:1.6,  label:'Zeitlupe'},
+  normal: {rps:4.5,  spawn:7,    label:'Normal'},
+  fast  : {rps:11,   spawn:40,   label:'Schnell'},
+  turbo : {rps:22,   spawn:420,  label:'Turbo'}
+};
+const MAX_FLIGHT = 520;
+
+const GROUPS = [
+  {key:'rows',  label:'Reihen', reset:true, opts:[
+    {v:4,l:'4'},{v:8,l:'8'},{v:12,l:'12'},{v:16,l:'16'},{v:20,l:'20'}]},
+  {key:'target',label:'Kugeln', opts:[
+    {v:100,l:'100'},{v:500,l:'500'},{v:1000,l:'1000'},{v:5000,l:'5000'},{v:Infinity,l:'∞'}]},
+  {key:'p',     label:'Neigung nach rechts', reset:true, opts:[
+    {v:.3,l:'30 %'},{v:.4,l:'40 %'},{v:.5,l:'50 %'},{v:.6,l:'60 %'},{v:.7,l:'70 %'}]},
+  {key:'speed', label:'Tempo', opts:[
+    {v:'slow',l:'Zeitlupe'},{v:'normal',l:'Normal'},{v:'fast',l:'Schnell'},{v:'turbo',l:'Turbo'}]}
+];
+const TOGGLES = [
+  {key:'showBinom', l:'Theoriekurve'},
+  {key:'showNormal',l:'Glockenkurve'},
+  {key:'showSigma', l:'σ-Bereiche'},
+  {key:'logScale',  l:'Log-Skala'},
+  {key:'percent',   l:'Werte in %'},
+  {key:'trails',    l:'Spuren'}
+];
+const PRESETS = [
+  {l:'Klassisch',    s:{rows:12,target:1000,p:.5,speed:'normal',showBinom:1,showNormal:0,showSigma:0,logScale:0,percent:0,trails:0}},
+  {l:'Zeitlupe',     s:{rows:8, target:100, p:.5,speed:'slow',  showBinom:1,showNormal:0,showSigma:0,logScale:0,percent:0,trails:1}},
+  {l:'Massentest',   s:{rows:16,target:5000,p:.5,speed:'turbo', showBinom:1,showNormal:1,showSigma:1,logScale:0,percent:1,trails:0}},
+  {l:'Schiefes Brett',s:{rows:12,target:1000,p:.7,speed:'fast', showBinom:1,showNormal:0,showSigma:0,logScale:0,percent:0,trails:0}},
+  {l:'Seltene Fälle',s:{rows:16,target:5000,p:.5,speed:'turbo',showBinom:1,showNormal:0,showSigma:0,logScale:1,percent:1,trails:0}}
+];
+
+/* ============================================================
+   Zustand
+   ============================================================ */
+const S = {
+  rows:12, target:1000, p:.5, speed:'normal',
+  showBinom:1, showNormal:0, showSigma:0, logScale:0, percent:0, trails:0,
+  running:false, finished:false,
+  counts:new Array(13).fill(0), dropped:0, spawned:0, sumK:0, sumK2:0,
+  balls:[], particles:[], pegGlow:[], barPulse:[],
+  maxScale:1, spawnAcc:0, hoverBin:-1, mouse:{x:-1,y:-1},
+  single:null, singlePath:[], singleTrail:[], preset:0
+};
+
+/* ============================================================
+   Mathematik
+   ============================================================ */
+let PASCAL = [], PMF = [];
+function buildMath(){
+  const n = S.rows;
+  PASCAL = [[1]];
+  for(let i=1;i<=n;i++){
+    const prev = PASCAL[i-1], row=[1];
+    for(let j=1;j<i;j++) row.push(prev[j-1]+prev[j]);
+    row.push(1); PASCAL.push(row);
+  }
+  const p=S.p, q=1-p;
+  PMF = PASCAL[n].map((c,k)=> c*Math.pow(p,k)*Math.pow(q,n-k));
+}
+const mu    = ()=> S.rows*S.p;
+const sigma = ()=> Math.sqrt(S.rows*S.p*(1-S.p));
+
+/* ============================================================
+   Canvas & Layout
+   ============================================================ */
+const cv = document.getElementById('cv');
+const ctx = cv.getContext('2d');
+let W=0,H=0,DPR=1;
+let dx=40,rowH=24,cx=0,topY=0,boardBottom=0,barsTop=0,barsBottom=0,barsH=0,pegR=3,ballR=5;
+let sprites=[], tile=null;
+
+function resize(){
+  DPR = Math.min(window.devicePixelRatio||1, 2);
+  W = cv.clientWidth; H = cv.clientHeight;
+  cv.width = Math.round(W*DPR); cv.height = Math.round(H*DPR);
+  ctx.setTransform(DPR,0,0,DPR,0,0);
+  layout();
+}
+function layout(){
+  const n=S.rows;
+  dx = Math.min((W-70)/(n+1), 54);
+  cx = W/2;
+  const boardTop = 26;
+  const boardH = Math.max(150, H*0.55);
+  rowH = boardH/(n+1);
+  topY = boardTop + rowH;
+  boardBottom = boardTop + boardH;
+  barsTop = boardBottom + 16;
+  barsBottom = H - 30;
+  barsH = Math.max(60, barsBottom-barsTop);
+  pegR = Math.max(2, Math.min(3.6, rowH*0.16, dx*0.09));
+  ballR = Math.max(2.6, Math.min(6.2, dx*0.17, rowH*0.34));
+  S.pegGlow = []; for(let r=0;r<n;r++) S.pegGlow.push(new Float32Array(r+1));
+  S.barPulse = new Float32Array(n+1);
+  makeSprites();
+}
+
+/* Murmel-Sprites (Farbe nach Abstand zur Mitte) */
+function lerpHex(a,b,t){
+  const A=[parseInt(a.slice(1,3),16),parseInt(a.slice(3,5),16),parseInt(a.slice(5,7),16)];
+  const B=[parseInt(b.slice(1,3),16),parseInt(b.slice(3,5),16),parseInt(b.slice(5,7),16)];
+  return 'rgb('+A.map((v,i)=>Math.round(v+(B[i]-v)*t)).join(',')+')';
+}
+const MA='#8FE3F0', MB='#8B7CF0';
+function marbleColor(t){ return lerpHex(MA,MB,Math.min(1,Math.max(0,t))); }
+
+function makeSprites(){
+  sprites=[];
+  const R = Math.max(3, ballR*1.0), pad = R*2.4;
+  for(let i=0;i<16;i++){
+    const t=i/15, c=marbleColor(t);
+    const s=document.createElement('canvas');
+    s.width=s.height=Math.ceil(pad*2*DPR);
+    const g=s.getContext('2d'); g.scale(DPR,DPR);
+    const cxs=pad, cys=pad;
+    g.save();
+    g.shadowColor=c; g.shadowBlur=R*2.2;
+    g.beginPath(); g.arc(cxs,cys,R,0,Math.PI*2); g.fillStyle=c; g.fill();
+    g.restore();
+    const rg=g.createRadialGradient(cxs-R*.35,cys-R*.4,R*.06,cxs,cys,R);
+    rg.addColorStop(0,'rgba(255,255,255,.95)');
+    rg.addColorStop(.35,c);
+    rg.addColorStop(1,'rgba(10,22,32,.75)');
+    g.beginPath(); g.arc(cxs,cys,R,0,Math.PI*2); g.fillStyle=rg; g.fill();
+    sprites.push({img:s, off:pad});
+  }
+  makeTile();
+}
+function makeTile(){
+  const T=18, c=document.createElement('canvas'); c.width=c.height=T;
+  const g=c.getContext('2d');
+  const m=(x,y,r)=>{
+    const rg=g.createRadialGradient(x-r*.35,y-r*.4,r*.08,x,y,r);
+    rg.addColorStop(0,'rgba(255,255,255,.5)');
+    rg.addColorStop(.5,'rgba(255,255,255,.05)');
+    rg.addColorStop(.88,'rgba(0,0,0,.10)');
+    rg.addColorStop(1,'rgba(0,0,0,.30)');
+    g.fillStyle=rg; g.beginPath(); g.arc(x,y,r,0,Math.PI*2); g.fill();
+  };
+  [[0,4.5],[9,4.5],[18,4.5]].forEach(p=>m(p[0],p[1],4.6));
+  [[4.5,13.5],[13.5,13.5]].forEach(p=>m(p[0],p[1],4.6));
+  tile = ctx.createPattern(c,'repeat');
+}
+
+/* Positionen */
+const binX = k => cx + (k - S.rows/2)*dx;
+const binXc = u => cx + (u - S.rows/2)*dx;
+const offX = s => cx + s*dx/2;
+
+/* ============================================================
+   Simulation
+   ============================================================ */
+function resetRun(){
+  S.counts = new Array(S.rows+1).fill(0);
+  S.dropped=0; S.spawned=0; S.sumK=0; S.sumK2=0;
+  S.balls=[]; S.particles=[]; S.maxScale=1; S.spawnAcc=0;
+  S.single=null; S.singlePath=[]; S.singleTrail=[];
+  S.finished=false;
+  if(S.barPulse) S.barPulse.fill(0);
+  S.pegGlow.forEach(a=>a.fill(0));
+}
+function spawnBall(hi){
+  S.balls.push({row:-1,sFrom:0,sTo:0,t:0,x:cx,y:topY-rowH,px:cx,py:topY-rowH,
+                phase:'fall',v:0,a:1,bin:0,hi:!!hi});
+  if(!hi) S.spawned++;
+}
+function dropSingle(){
+  S.running=false; syncRunBtn();
+  S.single={};
+  S.singlePath=[]; S.singleTrail=[];
+  spawnBall(true);
+}
+function register(b){
+  const k=b.bin;
+  S.counts[k]++; S.dropped++; S.sumK+=k; S.sumK2+=k*k;
+  S.barPulse[k]=1;
+  const bx=binX(k), by=barsBottom-barHeight(S.counts[k]);
+  const col=marbleColor(Math.abs(k-S.rows/2)/(S.rows/2||1));
+  for(let i=0;i<5;i++){
+    S.particles.push({x:bx+(Math.random()-.5)*dx*.5,y:by,
+      vx:(Math.random()-.5)*60, vy:-40-Math.random()*70, life:1, c:col});
+  }
+  if(S.particles.length>320) S.particles.splice(0,S.particles.length-320);
+}
+function step(dt){
+  const sp=SPEEDS[S.speed];
+
+  if(S.running && S.spawned < S.target){
+    S.spawnAcc += sp.spawn*dt;
+    while(S.spawnAcc>=1 && S.spawned<S.target && S.balls.length<MAX_FLIGHT){
+      S.spawnAcc-=1; spawnBall(false);
+    }
+    if(S.balls.length>=MAX_FLIGHT) S.spawnAcc=Math.min(S.spawnAcc,1);
+  }
+
+  const n=S.rows;
+  for(let i=S.balls.length-1;i>=0;i--){
+    const b=S.balls[i];
+    b.px=b.x; b.py=b.y;
+    if(b.phase==='fall'){
+      b.t += (b.hi?1.5:sp.rps)*dt;
+      let guard=0;
+      while(b.t>=1 && b.phase==='fall' && guard++<48){
+        b.t-=1;
+        b.row++;                       // Kugel ist an Nagelreihe b.row angekommen
+        b.sFrom = b.sTo;
+        if(b.row>=n){
+          b.bin=(b.sTo+n)/2;
+          b.phase='drop'; b.v=rowH*2.4;
+          register(b);
+          break;
+        }
+        const j=(b.sFrom+b.row)/2;
+        if(S.pegGlow[b.row]) S.pegGlow[b.row][j]=1;
+        const right = Math.random()<S.p;
+        b.sTo = b.sFrom + (right?1:-1);
+        if(b.hi) S.singlePath.push(right?1:0);
+      }
+      if(b.phase==='fall'){
+        const t=b.t, e=t*t*(3-2*t);
+        b.x = offX(b.sFrom+(b.sTo-b.sFrom)*e);
+        b.y = topY + rowH*(b.row + t*t*.85 + t*.15);
+      }
+    }
+    if(b.phase==='drop'){
+      b.v += 900*dt; b.y += b.v*dt; b.a -= dt*2.6;
+      b.x = binX(b.bin);
+      const surf = barsBottom - barHeight(S.counts[b.bin]);
+      if(b.y>=surf-ballR || b.a<=0){ S.balls.splice(i,1); continue; }
+    }
+    if(b.hi && b.phase==='fall'){
+      S.singleTrail.push(b.x,b.y);
+      if(S.singleTrail.length>1200) S.singleTrail.splice(0,2);
+    }
+  }
+
+  for(let i=S.particles.length-1;i>=0;i--){
+    const p=S.particles[i];
+    p.vy+=520*dt; p.x+=p.vx*dt; p.y+=p.vy*dt; p.life-=dt*2.2;
+    if(p.life<=0) S.particles.splice(i,1);
+  }
+
+  for(let r=0;r<S.pegGlow.length;r++){
+    const a=S.pegGlow[r];
+    for(let j=0;j<a.length;j++) if(a[j]>0) a[j]=Math.max(0,a[j]-dt*2.6);
+  }
+  for(let k=0;k<S.barPulse.length;k++) if(S.barPulse[k]>0) S.barPulse[k]=Math.max(0,S.barPulse[k]-dt*3);
+
+  // Maßstab
+  let mx=1;
+  for(let k=0;k<=n;k++) if(S.counts[k]>mx) mx=S.counts[k];
+  if(S.showBinom||S.showNormal){
+    const N=Math.max(S.dropped,1);
+    for(let k=0;k<=n;k++){ const e=N*PMF[k]; if(e>mx) mx=e; }
+  }
+  S.maxScale += (mx-S.maxScale)*Math.min(1,dt*5);
+  if(S.maxScale<1) S.maxScale=1;
+
+  if(S.running && S.dropped>=S.target && S.balls.length===0){
+    S.running=false; S.finished=true; syncRunBtn();
+  }
+}
+function barHeight(v){
+  if(v<=0) return 0;
+  return S.logScale
+    ? Math.log1p(v)/Math.log1p(Math.max(S.maxScale,1.0001))*barsH
+    : v/S.maxScale*barsH;
+}
+
+/* ============================================================
+   Zeichnen
+   ============================================================ */
+function draw(){
+  ctx.clearRect(0,0,W,H);
+  drawGrid();
+  if(S.showSigma) drawSigma();
+  drawBars();
+  if(S.showNormal) drawNormal();
+  if(S.showBinom) drawBinom();
+  if(S.percent) drawBarLabels();
+  drawAxis();
+  drawPegs();
+  drawParticles();
+  drawSingleTrail();
+  drawBalls();
+  drawTooltip();
+}
+
+function drawGrid(){
+  const n=S.rows;
+  ctx.save();
+  ctx.strokeStyle='rgba(196,224,236,.055)'; ctx.lineWidth=1;
+  for(let k=0;k<=n;k++){
+    const x=Math.round(binX(k))+.5;
+    ctx.beginPath(); ctx.moveTo(x,barsTop-6); ctx.lineTo(x,barsBottom); ctx.stroke();
+  }
+  ctx.setLineDash([2,5]);
+  for(let i=1;i<=4;i++){
+    const y=Math.round(barsBottom-barsH*i/4)+.5;
+    ctx.beginPath(); ctx.moveTo(binX(0)-dx*.6,y); ctx.lineTo(binX(n)+dx*.6,y); ctx.stroke();
+  }
+  ctx.setLineDash([]);
+  ctx.strokeStyle='rgba(196,224,236,.22)';
+  ctx.beginPath();
+  ctx.moveTo(binX(0)-dx*.7,barsBottom+.5); ctx.lineTo(binX(n)+dx*.7,barsBottom+.5); ctx.stroke();
+  ctx.restore();
+}
+
+function drawSigma(){
+  const m=mu(), sd=sigma(), n=S.rows;
+  const bands=[[3,.035],[2,.055],[1,.085]];
+  ctx.save();
+  bands.forEach(([k,a])=>{
+    const x1=Math.max(binXc(-0.5),binXc(m-k*sd)), x2=Math.min(binXc(n+0.5),binXc(m+k*sd));
+    ctx.fillStyle='rgba(216,172,74,'+a+')';
+    ctx.fillRect(x1,barsTop-6,x2-x1,barsBottom-barsTop+6);
+  });
+  ctx.setLineDash([3,4]); ctx.lineWidth=1; ctx.strokeStyle='rgba(216,172,74,.5)';
+  [-1,1,-2,2].forEach(k=>{
+    const x=Math.round(binXc(m+k*sd))+.5;
+    if(x<binXc(-0.5)||x>binXc(n+0.5)) return;
+    ctx.beginPath(); ctx.moveTo(x,barsTop-6); ctx.lineTo(x,barsBottom); ctx.stroke();
+  });
+  ctx.setLineDash([]);
+  ctx.strokeStyle='rgba(216,172,74,.85)';
+  const xm=Math.round(binXc(m))+.5;
+  ctx.beginPath(); ctx.moveTo(xm,barsTop-10); ctx.lineTo(xm,barsBottom); ctx.stroke();
+  ctx.font='500 10px "IBM Plex Mono",monospace'; ctx.fillStyle='rgba(216,172,74,.9)';
+  ctx.textAlign='center';
+  ctx.fillText('68 %', binXc(m), barsTop+2);
+  ctx.fillText('95 %', binXc(m+1.5*sd), barsTop+2);
+  ctx.restore();
+}
+
+function drawBars(){
+  const n=S.rows, bw=Math.max(4,dx*0.8);
+  for(let k=0;k<=n;k++){
+    const c=S.counts[k]; if(c<=0) continue;
+    let h=barHeight(c); if(h<1.5) h=1.5;
+    const x=binX(k)-bw/2, y=barsBottom-h;
+    const t=Math.abs(k-n/2)/(n/2||1);
+    const col=marbleColor(t);
+    const pulse=S.barPulse[k];
+
+    ctx.save();
+    const g=ctx.createLinearGradient(x,y,x+bw,y);
+    g.addColorStop(0,'rgba(0,0,0,.35)');
+    g.addColorStop(.32,col);
+    g.addColorStop(.62,col);
+    g.addColorStop(1,'rgba(0,0,0,.42)');
+    ctx.fillStyle=g;
+    roundRectPath(ctx,x,y,bw,h,Math.min(bw/2,5));
+    ctx.fill();
+
+    // Murmel-Textur, am Boden verankert
+    ctx.save();
+    ctx.clip();
+    ctx.translate(x, barsBottom);
+    ctx.globalAlpha=.75;
+    ctx.fillStyle=tile;
+    ctx.fillRect(0,-h-20,bw,h+20);
+    ctx.restore();
+
+    // Oberkante
+    ctx.globalAlpha=.9+pulse*.1;
+    ctx.fillStyle='rgba(255,255,255,'+(0.35+pulse*0.5)+')';
+    roundRectPath(ctx,x,y,bw,Math.min(2.5,h),1);
+    ctx.fill();
+    ctx.restore();
+
+    if(pulse>0){
+      ctx.save(); ctx.globalAlpha=pulse*.6;
+      ctx.strokeStyle='#fff'; ctx.lineWidth=1;
+      roundRectPath(ctx,x-.5,y-.5,bw+1,h+1,Math.min(bw/2,5)); ctx.stroke();
+      ctx.restore();
+    }
+    if(S.hoverBin===k){
+      ctx.save(); ctx.strokeStyle='rgba(255,255,255,.6)'; ctx.lineWidth=1;
+      roundRectPath(ctx,x-1.5,y-1.5,bw+3,h+3,Math.min(bw/2,6)); ctx.stroke(); ctx.restore();
+    }
+  }
+}
+function roundRectPath(c,x,y,w,h,r){
+  r=Math.min(r,w/2,Math.max(0,h/2));
+  c.beginPath();
+  c.moveTo(x+r,y); c.lineTo(x+w-r,y); c.quadraticCurveTo(x+w,y,x+w,y+r);
+  c.lineTo(x+w,y+h); c.lineTo(x,y+h); c.lineTo(x,y+r);
+  c.quadraticCurveTo(x,y,x+r,y);
+  c.closePath();
+}
+
+function drawBinom(){
+  const n=S.rows, N=Math.max(S.dropped,1);
+  ctx.save();
+  ctx.strokeStyle='#FF6B4A'; ctx.lineWidth=2; ctx.lineJoin='round';
+  ctx.shadowColor='rgba(255,107,74,.5)'; ctx.shadowBlur=8;
+  ctx.beginPath();
+  for(let k=0;k<=n;k++){
+    const y=barsBottom-barHeight(N*PMF[k]);
+    if(k===0) ctx.moveTo(binX(k),y); else ctx.lineTo(binX(k),y);
+  }
+  ctx.stroke();
+  ctx.shadowBlur=0;
+  ctx.fillStyle='#FF6B4A';
+  for(let k=0;k<=n;k++){
+    const y=barsBottom-barHeight(N*PMF[k]);
+    ctx.beginPath(); ctx.arc(binX(k),y,2.4,0,Math.PI*2); ctx.fill();
+  }
+  ctx.restore();
+}
+function drawNormal(){
+  const n=S.rows, N=Math.max(S.dropped,1), m=mu(), sd=sigma();
+  if(sd<=0) return;
+  ctx.save();
+  ctx.strokeStyle='rgba(233,244,250,.85)'; ctx.lineWidth=1.4;
+  ctx.setLineDash([6,4]);
+  ctx.beginPath();
+  const steps=220;
+  for(let i=0;i<=steps;i++){
+    const u=-0.5+(n+1)*i/steps;
+    const d=Math.exp(-((u-m)*(u-m))/(2*sd*sd))/(sd*Math.sqrt(2*Math.PI));
+    const y=barsBottom-barHeight(N*d);
+    if(i===0) ctx.moveTo(binXc(u),y); else ctx.lineTo(binXc(u),y);
+  }
+  ctx.stroke(); ctx.restore();
+}
+
+function drawBarLabels(){
+  if(dx<24) return;
+  const n=S.rows, N=Math.max(S.dropped,1);
+  ctx.save();
+  ctx.font='500 9.5px "IBM Plex Mono",monospace';
+  ctx.textAlign='center'; ctx.textBaseline='bottom';
+  for(let k=0;k<=n;k++){
+    const c=S.counts[k]; if(!c) continue;
+    const pct=c/N*100;
+    if(pct<0.05 && n>12) continue;
+    const y=barsBottom-barHeight(c)-5;
+    if(y<barsTop-4) continue;
+    ctx.fillStyle='rgba(221,234,241,.75)';
+    ctx.fillText(pct.toFixed(pct<10?1:0).replace('.',',')+'%', binX(k), y);
+  }
+  ctx.restore();
+}
+
+function drawAxis(){
+  const n=S.rows;
+  ctx.save();
+  ctx.font='500 10px "IBM Plex Mono",monospace';
+  ctx.fillStyle='rgba(143,166,180,.8)'; ctx.textAlign='center'; ctx.textBaseline='top';
+  const stepK = n<=16?1:2;
+  for(let k=0;k<=n;k+=stepK) ctx.fillText(String(k), binX(k), barsBottom+7);
+  ctx.textAlign='left';
+  ctx.fillStyle='rgba(143,166,180,.55)';
+  const top = S.percent
+    ? (S.maxScale/Math.max(S.dropped,1)*100).toFixed(1).replace('.',',')+' %'
+    : Math.round(S.maxScale)+(S.logScale?' (log)':'');
+  ctx.fillText(top, binX(0)-dx*.6, barsTop-4);
+  ctx.restore();
+}
+
+function drawPegs(){
+  const n=S.rows;
+  ctx.save();
+  for(let r=0;r<n;r++){
+    const y=topY+r*rowH;
+    for(let j=0;j<=r;j++){
+      const x=offX(2*j-r), g=S.pegGlow[r][j];
+      if(g>0){
+        ctx.globalAlpha=g*.55;
+        ctx.fillStyle='#F5D27A';
+        ctx.beginPath(); ctx.arc(x,y,pegR*3.4,0,Math.PI*2); ctx.fill();
+        ctx.globalAlpha=1;
+      }
+      ctx.fillStyle= g>0 ? '#FFE9AE' : '#B08A33';
+      ctx.beginPath(); ctx.arc(x,y,pegR,0,Math.PI*2); ctx.fill();
+      if(pegR>2.4){
+        ctx.fillStyle='rgba(255,255,255,.55)';
+        ctx.beginPath(); ctx.arc(x-pegR*.3,y-pegR*.35,pegR*.35,0,Math.PI*2); ctx.fill();
+      }
+    }
+  }
+  ctx.restore();
+}
+
+function drawBalls(){
+  const n=S.rows;
+  ctx.save();
+  if(S.trails){
+    ctx.lineCap='round';
+    for(const b of S.balls){
+      if(b.phase!=='fall') continue;
+      const t=Math.abs(b.sTo)/n;
+      ctx.strokeStyle=marbleColor(t); ctx.globalAlpha=.28; ctx.lineWidth=ballR*1.3;
+      ctx.beginPath(); ctx.moveTo(b.px,b.py); ctx.lineTo(b.x,b.y); ctx.stroke();
+    }
+    ctx.globalAlpha=1;
+  }
+  for(const b of S.balls){
+    const t=Math.min(1,Math.abs(b.phase==='drop'?(2*b.bin-n):b.sTo)/n);
+    const idx=Math.min(15,Math.round(t*15));
+    const sp=sprites[idx];
+    ctx.globalAlpha = b.phase==='drop' ? Math.max(0,b.a) : 1;
+    if(sp) ctx.drawImage(sp.img, b.x-sp.off, b.y-sp.off, sp.off*2, sp.off*2);
+    if(b.hi){
+      ctx.globalAlpha=1;
+      ctx.strokeStyle='#FFE9AE'; ctx.lineWidth=1.6;
+      ctx.beginPath(); ctx.arc(b.x,b.y,ballR*2.1,0,Math.PI*2); ctx.stroke();
+    }
+  }
+  ctx.globalAlpha=1;
+  ctx.restore();
+}
+function drawSingleTrail(){
+  if(S.singleTrail.length<4) return;
+  ctx.save();
+  ctx.strokeStyle='rgba(255,233,174,.5)'; ctx.lineWidth=1.6; ctx.lineJoin='round';
+  ctx.setLineDash([4,3]);
+  ctx.beginPath();
+  ctx.moveTo(S.singleTrail[0],S.singleTrail[1]);
+  for(let i=2;i<S.singleTrail.length;i+=2) ctx.lineTo(S.singleTrail[i],S.singleTrail[i+1]);
+  ctx.stroke(); ctx.restore();
+
+  // Wegprotokoll
+  const path=S.singlePath;
+  if(!path.length) return;
+  const boxW=Math.min(210, W-24);
+  ctx.save();
+  ctx.fillStyle='rgba(7,16,25,.82)';
+  ctx.strokeStyle='rgba(196,224,236,.22)'; ctx.lineWidth=1;
+  roundRectPath(ctx,12,H-84,boxW,72,8); ctx.fill(); ctx.stroke();
+  ctx.font='500 10px "IBM Plex Mono",monospace'; ctx.fillStyle='#8FA6B4';
+  ctx.textAlign='left'; ctx.textBaseline='top';
+  ctx.fillText('WEG DIESER KUGEL', 24, H-76);
+  const r=Math.max(2.5,Math.min(5,(boxW-30)/(S.rows*2.4)));
+  let rr=0;
+  for(let i=0;i<path.length;i++){
+    const x=24+i*(r*2.4), y=H-54;
+    ctx.fillStyle = path[i] ? '#8B7CF0' : '#8FE3F0';
+    ctx.beginPath(); ctx.arc(x,y,r,0,Math.PI*2); ctx.fill();
+    rr+=path[i];
+  }
+  ctx.fillStyle='#DDEAF1'; ctx.font='500 11px "IBM Plex Mono",monospace';
+  ctx.fillText(rr+'× rechts, '+(path.length-rr)+'× links  →  Fach '+rr, 24, H-38);
+  ctx.restore();
+}
+function drawParticles(){
+  ctx.save();
+  for(const p of S.particles){
+    ctx.globalAlpha=Math.max(0,p.life)*.75;
+    ctx.fillStyle=p.c;
+    ctx.beginPath(); ctx.arc(p.x,p.y,1.7,0,Math.PI*2); ctx.fill();
+  }
+  ctx.restore();
+}
+
+function drawTooltip(){
+  const k=S.hoverBin; if(k<0||k>S.rows) return;
+  const n=S.rows, c=S.counts[k], N=Math.max(S.dropped,1);
+  const lines=[
+    'Fach '+k+'  ·  '+k+'× rechts',
+    'Kugeln: '+c.toLocaleString('de-DE')+'  ('+(c/N*100).toFixed(2).replace('.',',')+' %)',
+    'Theorie: '+(PMF[k]*100).toFixed(2).replace('.',',')+' %',
+    'Wege: '+PASCAL[n][k].toLocaleString('de-DE')+' von '+Math.pow(2,n).toLocaleString('de-DE')
+  ];
+  ctx.save();
+  ctx.font='500 11px "IBM Plex Mono",monospace';
+  let w=0; lines.forEach(l=>w=Math.max(w,ctx.measureText(l).width));
+  w+=20; const h=lines.length*15+14;
+  let x=S.mouse.x+14, y=S.mouse.y-h-10;
+  if(x+w>W-8) x=S.mouse.x-w-14;
+  if(y<8) y=S.mouse.y+16;
+  ctx.fillStyle='rgba(7,16,25,.94)'; ctx.strokeStyle='rgba(216,172,74,.5)'; ctx.lineWidth=1;
+  roundRectPath(ctx,x,y,w,h,7); ctx.fill(); ctx.stroke();
+  ctx.textAlign='left'; ctx.textBaseline='top';
+  lines.forEach((l,i)=>{
+    ctx.fillStyle = i===0 ? '#F5D27A' : '#DDEAF1';
+    ctx.fillText(l, x+10, y+8+i*15);
+  });
+  ctx.restore();
+}
+
+/* ============================================================
+   Anzeige / Messwerte
+   ============================================================ */
+const $=id=>document.getElementById(id);
+const nf=(v,d)=>v.toLocaleString('de-DE',{minimumFractionDigits:d,maximumFractionDigits:d});
+let roAcc=0;
+function updateReadouts(){
+  const n=S.rows, N=S.dropped;
+  $('roN').textContent = N.toLocaleString('de-DE');
+  $('roNs').textContent = S.target===Infinity ? 'unbegrenzt' : 'von '+S.target.toLocaleString('de-DE');
+  const m=mu(), sd=sigma();
+  if(N>0){
+    const mean=S.sumK/N;
+    const varr=Math.max(0,S.sumK2/N-mean*mean);
+    $('roM').textContent=nf(mean,2);
+    $('roS').textContent=nf(Math.sqrt(varr),2);
+    let inb=0;
+    for(let k=0;k<=n;k++) if(Math.abs(k-m)<=sd) inb+=S.counts[k];
+    $('roB').textContent=nf(inb/N*100,1)+' %';
+    let best=0; for(let k=0;k<=n;k++) if(S.counts[k]>S.counts[best]) best=k;
+    $('roT').textContent='Nr. '+best;
+    $('roTs').textContent=S.counts[best].toLocaleString('de-DE')+' Kugeln ('+nf(S.counts[best]/N*100,1)+' %)';
+  }else{
+    $('roM').textContent='–'; $('roS').textContent='–';
+    $('roB').textContent='–'; $('roT').textContent='–'; $('roTs').innerHTML='&nbsp;';
+  }
+  $('roMs').innerHTML='erwartet <b>'+nf(m,2)+'</b>';
+  $('roSs').innerHTML='erwartet <b>'+nf(sd,2)+'</b>';
+  $('roQ').textContent = S.finished ? 'Fertig' : (S.running ? 'Läuft' : (N>0?'Pausiert':'Bereit'));
+  $('roQs').textContent = S.finished ? 'Die Kurve steht' : (S.running ? SPEEDS[S.speed].label+' · '+S.balls.length+' in der Luft' : 'Leertaste startet');
+  $('prog').style.width = S.target===Infinity ? '0%' : Math.min(100,S.dropped/S.target*100)+'%';
+  $('badge').textContent = S.rows+' Reihen · Neigung '+Math.round(S.p*100)+' %'+(S.logScale?' · Log-Skala':'');
+}
+
+/* ============================================================
+   Bedienelemente
+   ============================================================ */
+function chip(label,pressed,cls){
+  const b=document.createElement('button');
+  b.className='chip'+(cls?' '+cls:''); b.type='button';
+  b.textContent=label; b.setAttribute('aria-pressed',pressed?'true':'false');
+  return b;
+}
+function buildControls(){
+  const pc=$('presets'); pc.innerHTML='';
+  PRESETS.forEach((pr,i)=>{
+    const b=chip(pr.l,i===S.preset,'preset');
+    b.onclick=()=>{ applyPreset(i); };
+    pc.appendChild(b);
+  });
+  const gc=$('groups'); gc.innerHTML='';
+  GROUPS.forEach(g=>{
+    const wrap=document.createElement('div'); wrap.className='grp';
+    const lb=document.createElement('div'); lb.className='grp-label'; lb.textContent=g.label;
+    const cs=document.createElement('div'); cs.className='chips';
+    g.opts.forEach(o=>{
+      const b=chip(o.l, S[g.key]===o.v);
+      b.onclick=()=>{
+        S[g.key]=o.v; S.preset=-1;
+        if(g.key==='rows'){ buildMath(); layout(); resetRun(); renderPascal(); }
+        if(g.key==='p'){ buildMath(); resetRun(); }
+        if(g.key==='speed'){ S.balls.forEach(bb=>{ if(!bb.hi) bb.rps=SPEEDS[S.speed].rps; }); }
+        if(g.key==='target'){ if(S.dropped>=S.target){S.running=false;S.finished=true;} else S.finished=false; }
+        buildControls(); syncRunBtn(); updateReadouts();
+      };
+      cs.appendChild(b);
+    });
+    wrap.appendChild(lb); wrap.appendChild(cs); gc.appendChild(wrap);
+  });
+  const tc=$('toggles'); tc.innerHTML='';
+  TOGGLES.forEach(t=>{
+    const b=chip(t.l, !!S[t.key], 'tog');
+    b.onclick=()=>{ S[t.key]=S[t.key]?0:1; S.preset=-1; buildControls(); updateReadouts(); };
+    tc.appendChild(b);
+  });
+}
+function applyPreset(i){
+  Object.assign(S, PRESETS[i].s);
+  S.preset=i;
+  buildMath(); layout(); resetRun(); renderPascal(); buildControls();
+  S.running=true; S.finished=false; syncRunBtn(); updateReadouts();
+}
+function syncRunBtn(){
+  $('btnRun').textContent = S.running ? 'Pause' : (S.finished ? 'Neu starten' : 'Starten');
+}
+function toggleRun(){
+  if(S.finished){ resetRun(); }
+  S.running=!S.running;
+  if(S.running) S.finished=false;
+  syncRunBtn();
+}
+
+/* ============================================================
+   Pascalsches Dreieck
+   ============================================================ */
+function renderPascal(){
+  const n=S.rows, box=$('pascalBox');
+  const showNums = n<=12;
+  const cw = showNums?46:24, ch = showNums?26:15;
+  const w=(n+1)*cw, h=(n+1)*ch+10;
+  const maxV=PASCAL[n].reduce((a,b)=>Math.max(a,b),1);
+  let svg='<svg viewBox="0 0 '+w+' '+h+'" width="'+Math.min(w, 980)+'" role="img" aria-label="Pascalsches Dreieck mit '+(n+1)+' Zeilen">';
+  for(let i=0;i<=n;i++){
+    for(let j=0;j<=i;j++){
+      const v=PASCAL[i][j];
+      const x=w/2+(2*j-i)*cw/2, y=6+i*ch+ch/2;
+      const t=Math.min(1,v/maxV);
+      const last=(i===n);
+      const fill = last ? 'rgba(216,172,74,'+(0.22+t*0.62)+')' : 'rgba(23,34,43,'+(0.05+t*0.17)+')';
+      svg+='<rect x="'+(x-cw/2+1.5)+'" y="'+(y-ch/2+1)+'" width="'+(cw-3)+'" height="'+(ch-2)+'" rx="4" fill="'+fill+'"/>';
+      if(showNums){
+        svg+='<text x="'+x+'" y="'+(y+3.6)+'" text-anchor="middle" font-family="IBM Plex Mono,monospace" font-size="'+(v>9999?9:11)+'" fill="'+(last?'#2A1E05':'#2C3A46')+'" font-weight="'+(last?600:400)+'">'+v.toLocaleString('de-DE')+'</text>';
+      }
+    }
+  }
+  svg+='</svg>';
+  box.innerHTML=svg;
+  $('pfN').textContent=n;
+  $('pfSum').textContent=Math.pow(2,n).toLocaleString('de-DE');
+  $('pfMax').textContent=maxV.toLocaleString('de-DE');
+}
+
+/* ============================================================
+   Ereignisse
+   ============================================================ */
+$('btnRun').onclick=toggleRun;
+$('btnReset').onclick=()=>{ S.running=false; resetRun(); syncRunBtn(); updateReadouts(); };
+$('btnSingle').onclick=dropSingle;
+
+cv.addEventListener('mousemove',e=>{
+  const r=cv.getBoundingClientRect();
+  S.mouse.x=e.clientX-r.left; S.mouse.y=e.clientY-r.top;
+  const k=Math.round((S.mouse.x-cx)/dx+S.rows/2);
+  S.hoverBin = (S.mouse.y>barsTop-20 && k>=0 && k<=S.rows) ? k : -1;
+});
+cv.addEventListener('mouseleave',()=>{ S.hoverBin=-1; });
+
+window.addEventListener('keydown',e=>{
+  if(e.target.tagName==='INPUT') return;
+  if(e.code==='Space'){ e.preventDefault(); toggleRun(); }
+  else if(e.key==='r'||e.key==='R'){ S.running=false; resetRun(); syncRunBtn(); }
+  else if(e.key==='e'||e.key==='E'){ dropSingle(); }
+});
+
+let ro;
+if(window.ResizeObserver){
+  ro=new ResizeObserver(()=>{ resize(); });
+  ro.observe(cv);
+}
+window.addEventListener('resize',resize);
+
+/* ============================================================
+   Schleife
+   ============================================================ */
+let last=performance.now();
+function frame(now){
+  let dt=(now-last)/1000; last=now;
+  if(dt>0.05) dt=0.05;
+  step(dt);
+  draw();
+  roAcc+=dt;
+  if(roAcc>0.12){ roAcc=0; updateReadouts(); }
+  requestAnimationFrame(frame);
+}
+
+/* Start */
+buildMath();
+resize();
+resetRun();
+buildControls();
+renderPascal();
+updateReadouts();
+requestAnimationFrame(frame);
+
+/* Sanfter Auto-Start beim Laden */
+setTimeout(()=>{ if(!S.running && S.dropped===0){ S.running=true; syncRunBtn(); } }, 700);
+
+})();
+</script>
+</body>
+</html>

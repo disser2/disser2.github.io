@@ -1,0 +1,781 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Gradientenabstieg — Wanderung durch die Verlustlandschaft</title>
+<style>
+:root{
+  --ink:#0A0D12;
+  --panel:#111721;
+  --panel-2:#161E2A;
+  --line:#26323F;
+  --line-soft:#1C2531;
+  --paper:#ECE6DA;
+  --muted:#8A9AAC;
+  --amber:#E8A33D;
+  --amber-dim:#8a6524;
+  --cyan:#63CDE0;
+  --red:#E4695A;
+  --green:#7BC47F;
+  --violet:#A78BD0;
+  --r:6px;
+}
+*{box-sizing:border-box}
+html,body{height:100%}
+body{
+  margin:0; background:var(--ink); color:var(--paper);
+  font-family:"Inter","Segoe UI",system-ui,-apple-system,sans-serif;
+  font-size:14px; line-height:1.5;
+  display:flex; flex-direction:column; overflow:hidden;
+}
+button{font:inherit;color:inherit;background:none;border:none;cursor:pointer}
+:focus-visible{outline:2px solid var(--amber);outline-offset:2px}
+
+/* ---------- Kartografische Label-Typografie ---------- */
+.legend-label{
+  font-size:9.5px; letter-spacing:.16em; text-transform:uppercase;
+  color:var(--muted); font-weight:600; white-space:nowrap;
+}
+
+/* ---------- Kopfzeile ---------- */
+header{
+  display:flex; align-items:center; gap:18px; padding:8px 16px 8px;
+  border-bottom:1px solid var(--line-soft); background:var(--panel);
+  flex-wrap:wrap;
+}
+.brand{display:flex;align-items:baseline;gap:10px;flex-shrink:0}
+.brand h1{font-size:15px;margin:0;font-weight:650;letter-spacing:-.01em}
+.brand span{font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:var(--muted)}
+.scen{display:flex;gap:6px;flex-wrap:wrap;align-items:center}
+.scen .legend-label{margin-right:2px}
+.chip{
+  border:1px solid var(--line); border-radius:999px; padding:4px 11px;
+  font-size:12px; color:#C9D4E0; background:var(--panel-2);
+  transition:background .12s,border-color .12s,color .12s;
+}
+.chip:hover{border-color:var(--amber);color:var(--paper)}
+.chip.on{background:var(--amber);border-color:var(--amber);color:#20160a;font-weight:600}
+
+/* ---------- Steuerleiste ---------- */
+.controls{
+  display:flex; gap:14px 22px; flex-wrap:wrap; align-items:flex-start;
+  padding:10px 16px 11px; border-bottom:1px solid var(--line-soft);
+  background:linear-gradient(180deg,var(--panel-2),var(--panel));
+}
+.grp{display:flex;flex-direction:column;gap:5px}
+.seg{display:flex;border:1px solid var(--line);border-radius:var(--r);overflow:hidden}
+.seg button{
+  padding:5px 10px; font-size:12px; color:#B7C4D2; background:var(--panel);
+  border-right:1px solid var(--line-soft); white-space:nowrap; transition:.12s;
+}
+.seg button:last-child{border-right:none}
+.seg button:hover{background:#1D2734;color:#fff}
+.seg button.on{background:#28374A;color:#fff;font-weight:600;box-shadow:inset 0 -2px 0 var(--amber)}
+.seg.cool button.on{box-shadow:inset 0 -2px 0 var(--cyan)}
+.transport{display:flex;gap:6px;align-items:center}
+.tbtn{
+  border:1px solid var(--line); border-radius:var(--r); padding:5px 13px; font-size:12.5px;
+  background:var(--panel); color:#C9D4E0; display:flex; align-items:center; gap:6px;
+}
+.tbtn:hover{border-color:#3D4E62;background:#1D2734}
+.tbtn.primary{background:var(--amber);border-color:var(--amber);color:#20160a;font-weight:650;min-width:104px;justify-content:center}
+.tbtn.primary:hover{background:#f2b357}
+.toggles{display:flex;flex-direction:column;gap:3px;font-size:12px;color:#B7C4D2}
+.toggles label{display:flex;gap:6px;align-items:center;cursor:pointer;white-space:nowrap}
+input[type=checkbox]{accent-color:var(--amber);width:13px;height:13px}
+
+/* ---------- Hauptbereich ---------- */
+main{flex:1;display:grid;grid-template-columns:minmax(0,1fr) 372px;min-height:0}
+.mapzone{position:relative;min-width:0;min-height:0;border-right:1px solid var(--line-soft)}
+canvas#map{display:block;width:100%;height:100%;cursor:crosshair}
+.maplegend{
+  position:absolute;left:12px;bottom:12px;display:flex;flex-direction:column;gap:6px;
+  background:rgba(10,13,18,.72);backdrop-filter:blur(6px);
+  border:1px solid var(--line);border-radius:var(--r);padding:8px 10px;pointer-events:none;
+}
+.ramp{width:186px;height:7px;border-radius:2px}
+.rampends{display:flex;justify-content:space-between;gap:14px;font-size:9.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+.keyrow{display:flex;gap:12px;font-size:11px;color:#B7C4D2;align-items:center}
+.keyrow i{width:16px;height:0;border-top:2px solid;display:inline-block;vertical-align:middle;margin-right:5px}
+.hint{
+  position:absolute;right:12px;top:12px;font-size:11px;color:var(--muted);
+  background:rgba(10,13,18,.72);border:1px solid var(--line);border-radius:var(--r);
+  padding:5px 9px;pointer-events:none;backdrop-filter:blur(6px);
+}
+
+/* ---------- Seitenspalte ---------- */
+aside{display:flex;flex-direction:column;min-height:0;background:var(--panel)}
+.status{padding:12px 16px 13px;border-bottom:1px solid var(--line-soft);background:var(--panel-2)}
+.verdict{display:flex;gap:9px;align-items:flex-start}
+.dot{width:9px;height:9px;border-radius:50%;background:var(--muted);margin-top:6px;flex-shrink:0;box-shadow:0 0 0 4px rgba(255,255,255,.05)}
+.verdict h2{margin:0;font-size:15.5px;font-weight:650;letter-spacing:-.01em}
+#verdictText{margin:5px 0 0;font-size:12.8px;color:#B7C4D2;line-height:1.45}
+.metrics{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;margin-top:12px;background:var(--line-soft);border:1px solid var(--line-soft);border-radius:var(--r);overflow:hidden}
+.metric{background:var(--panel);padding:6px 8px}
+.metric b{display:block;font-family:ui-monospace,"SF Mono",Menlo,monospace;font-size:14px;font-weight:600;letter-spacing:-.02em}
+.metric span{font-size:9px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+.profile{padding:11px 16px 13px;border-bottom:1px solid var(--line-soft)}
+.profile .head{display:flex;justify-content:space-between;gap:12px;align-items:baseline;margin-bottom:6px}
+canvas#prof{display:block;width:100%;height:118px;border:1px solid var(--line-soft);border-radius:var(--r);background:#0D1219}
+.notes{overflow-y:auto;padding:4px 16px 22px;scrollbar-width:thin}
+details{border-bottom:1px solid var(--line-soft)}
+details summary{
+  list-style:none;cursor:pointer;padding:9px 0;font-size:13px;font-weight:600;
+  display:flex;align-items:center;gap:8px;
+}
+details summary::-webkit-details-marker{display:none}
+details summary::before{content:"▸";color:var(--amber);font-size:11px;transition:transform .15s}
+details[open] summary::before{transform:rotate(90deg)}
+details p{margin:0 0 10px;font-size:12.7px;color:#AFBCCA;line-height:1.55}
+details p:first-of-type{margin-top:-2px}
+details b{color:var(--paper);font-weight:600}
+.tip{
+  margin:10px 0 0;padding:9px 11px;border-left:2px solid var(--amber);
+  background:rgba(232,163,61,.07);font-size:12.5px;color:#D8CDBB;border-radius:0 var(--r) var(--r) 0;
+}
+.scen-note{padding:9px 16px;font-size:12.3px;color:#9FB0C0;border-bottom:1px solid var(--line-soft);background:#0E141C}
+.scen-note b{color:var(--amber);font-weight:600}
+
+@media (max-width:1080px){
+  body{overflow:auto}
+  main{grid-template-columns:1fr}
+  .mapzone{height:58vh;border-right:none;border-bottom:1px solid var(--line-soft)}
+  aside{max-height:none}
+  .notes{overflow:visible}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="brand">
+    <h1>Gradientenabstieg</h1>
+    <span>Wanderung durch die Verlustlandschaft</span>
+  </div>
+  <div class="scen">
+    <span class="legend-label">Szenarien</span>
+    <div id="scenarios" style="display:flex;gap:6px;flex-wrap:wrap"></div>
+  </div>
+</header>
+
+<div class="controls">
+  <div class="grp"><span class="legend-label">Landschaft</span><div class="seg" id="segLandscape"></div></div>
+  <div class="grp"><span class="legend-label">Lernrate · Schrittlänge</span><div class="seg" id="segLr"></div></div>
+  <div class="grp"><span class="legend-label">Momentum · Schwung</span><div class="seg" id="segMom"></div></div>
+  <div class="grp"><span class="legend-label">Rauschen · Datenhäppchen</span><div class="seg cool" id="segNoise"></div></div>
+  <div class="grp"><span class="legend-label">Startpunkt</span><div class="seg" id="segStart"></div></div>
+  <div class="grp"><span class="legend-label">Tempo</span><div class="seg" id="segSpeed"></div></div>
+  <div class="grp">
+    <span class="legend-label">Simulation</span>
+    <div class="transport">
+      <button class="tbtn primary" id="btnPlay">▶ Start</button>
+      <button class="tbtn" id="btnStep">Ein Schritt</button>
+      <button class="tbtn" id="btnReset">Zurücksetzen</button>
+    </div>
+  </div>
+  <div class="grp">
+    <span class="legend-label">Anzeige</span>
+    <div class="toggles">
+      <label><input type="checkbox" id="cbArrows" checked> Pfeile: Gefälle &amp; Schwung</label>
+      <label><input type="checkbox" id="cbGhost" checked> Vergleichsläufer anzeigen</label>
+    </div>
+  </div>
+</div>
+
+<main>
+  <div class="mapzone">
+    <canvas id="map"></canvas>
+    <div class="hint">Klicke in die Karte, um den Startpunkt zu setzen · Leertaste = Start/Pause</div>
+    <div class="maplegend">
+      <div class="rampends"><span>gut</span><span>Verlust</span><span>schlecht</span></div>
+      <div class="ramp" id="ramp"></div>
+      <div class="keyrow" id="keyrow">
+        <span><i style="border-color:var(--amber)"></i>Läufer</span>
+        <span><i style="border-color:var(--cyan);border-top-style:dashed"></i><span id="ghostLabel">Vergleich</span></span>
+        <span>◎ Ziel</span>
+      </div>
+      <div class="keyrow">
+        <span><i style="border-color:var(--red)"></i>Gefälle</span>
+        <span><i style="border-color:var(--violet)"></i>Schwung</span>
+      </div>
+    </div>
+  </div>
+
+  <aside>
+    <div class="scen-note" id="scenNote"></div>
+
+    <div class="status">
+      <div class="verdict">
+        <div class="dot" id="dot"></div>
+        <div>
+          <h2 id="verdictTitle">Bereit</h2>
+          <p id="verdictText">Wähle ein Szenario oder starte die Wanderung.</p>
+        </div>
+      </div>
+      <div class="metrics">
+        <div class="metric"><b id="mSteps">0</b><span>Schritte</span></div>
+        <div class="metric"><b id="mLoss">–</b><span>Verlust</span></div>
+        <div class="metric"><b id="mGrad">–</b><span>Gefälle</span></div>
+        <div class="metric"><b id="mDist">–</b><span>Abstand</span></div>
+      </div>
+    </div>
+
+    <div class="profile">
+      <div class="head">
+        <span class="legend-label">Höhenprofil</span>
+        <span class="legend-label" id="profScale">Verlust je Schritt</span>
+      </div>
+      <canvas id="prof"></canvas>
+    </div>
+
+    <div class="notes">
+      <details open>
+        <summary>Was zeigt diese Karte?</summary>
+        <p>Die Karte ist die <b>Verlustlandschaft</b> eines Modells. Jeder Punkt steht für eine mögliche Einstellung des Modells (hier zwei Stellschrauben, waagerecht und senkrecht). Die <b>Höhe</b> sagt, wie viele Fehler das Modell mit dieser Einstellung macht: dunkle Täler sind gut, helle Bergrücken sind schlecht.</p>
+        <p>Trainieren heißt: von einem zufälligen Startpunkt aus bergab laufen. Der Läufer schaut nur, wo es <b>unter seinen Füßen</b> am steilsten abwärts geht, und macht einen Schritt in diese Richtung. Die Gesamtkarte sieht er nie – wir sehen sie hier nur zum Zuschauen.</p>
+        <p>Die feinen Linien sind Höhenlinien wie auf einer Wanderkarte: <b>eng beieinander = steil</b>, weit auseinander = flach.</p>
+      </details>
+
+      <details>
+        <summary>Lernrate: wie weit ist ein Schritt?</summary>
+        <p>Die Lernrate legt fest, wie weit der Läufer pro Schritt rutscht. Sie ist die wichtigste Stellschraube beim Training.</p>
+        <p><b>Zu klein:</b> Der Weg stimmt, aber es dauert ewig. In der Praxis heißt das: Rechenzeit und Geld verbrannt, das Modell ist nach Tagen noch nicht fertig.</p>
+        <p><b>Zu groß:</b> Der Läufer springt über die Talsohle hinweg auf die andere Seite – und dort ist es noch steiler. Der nächste Sprung wird größer, der übernächste noch größer. Das Training <b>explodiert</b>. Probiere „Lernrate riesig“ auf der Schüssel.</p>
+        <p>Es gibt kein universell richtiges Maß: Die passende Schrittlänge hängt davon ab, wie steil die Landschaft ist. Deshalb ist sie in echten Projekten Erfahrungssache und wird ausprobiert.</p>
+      </details>
+
+      <details>
+        <summary>Momentum: der Schwung von vorhin</summary>
+        <p>Ohne Momentum vergisst der Läufer nach jedem Schritt, woher er kam. Mit Momentum behält er einen Teil seiner bisherigen Geschwindigkeit – wie eine Kugel, die rollt, statt zu tapsen.</p>
+        <p><b>Vorteil:</b> In einem engen Tal hebt sich das ständige Hin und Her gegenseitig auf, die Bewegung <b>entlang</b> des Tals summiert sich auf. Aus Zickzack wird ein zügiger Lauf. Auch über flache Stellen trägt der Schwung ihn hinweg.</p>
+        <p><b>Nachteil:</b> Am Tiefpunkt kann er nicht sofort stehenbleiben. Er schießt darüber hinaus und pendelt ein paar Mal, bevor er zur Ruhe kommt. Bei viel Schwung <b>und</b> großen Schritten wird daraus ein wildes Schaukeln.</p>
+      </details>
+
+      <details>
+        <summary>Warum die Form der Landschaft entscheidet</summary>
+        <p><b>Schüssel</b> – eine einzige Mulde, klare Sache. So sieht es leider fast nie aus.</p>
+        <p><b>Enges Tal</b> – in einer Richtung steil, in der anderen fast flach. Der Läufer prallt zwischen den Wänden hin und her und kommt nur langsam vorwärts. Der Klassiker für Momentum.</p>
+        <p><b>Zwei Mulden</b> – es gibt einen richtig guten und einen mittelguten Platz. Wer in der falschen Mulde startet, bleibt ohne Schwung für immer darin sitzen und merkt es nicht einmal.</p>
+        <p><b>Sattel</b> – ein Punkt, der in einer Richtung Tal und in der anderen Berg ist. Das Gefälle ist dort fast null, der Läufer kommt kaum voran, obwohl er nicht am Ziel ist. In hochdimensionalen Modellen ist das die häufigste Bremse.</p>
+        <p><b>Buckelpiste</b> – viele kleine Mulden. Hier hilft Rauschen mehr als Präzision.</p>
+        <p><b>Bananental</b> – ein gekrümmtes, sehr schmales Tal. Man muss der Kurve folgen; zu große Schritte fliegen sofort aus der Bahn.</p>
+      </details>
+
+      <details>
+        <summary>Rauschen: warum echtes Training zittert</summary>
+        <p>Beim echten Training rechnet man das Gefälle nicht auf allen Daten aus, sondern immer nur auf einem kleinen Häppchen (einem <b>Mini-Batch</b>). Die Richtung stimmt dann nur ungefähr – der Weg wird zittrig.</p>
+        <p>Das klingt nach einem Nachteil, ist aber oft ein Vorteil: Das Zittern kann den Läufer aus einer kleinen Mulde herausschubsen, in der er sonst hängengeblieben wäre. Probiere die Buckelpiste mit viel Rauschen.</p>
+        <p>Zu viel Rauschen bedeutet allerdings: Er findet das Tal, kommt darin aber nie zur Ruhe.</p>
+      </details>
+
+      <details>
+        <summary>Faustregeln zum Mitnehmen</summary>
+        <p>1 · Es gibt keine Zahl, die immer passt. Lernrate und Schwung werden zum Problem passend gewählt – meist durch Ausprobieren.</p>
+        <p>2 · Steigt der Verlust im Höhenprofil an, statt zu fallen, ist die Lernrate fast immer zu groß.</p>
+        <p>3 · Bleibt der Verlust auf hohem Niveau flach liegen, steckt der Läufer auf einem Plateau, an einem Sattel oder in einer Nebenmulde.</p>
+        <p>4 · Ein guter Endwert beweist nicht, dass es der bestmögliche ist – nur, dass es hier ringsum nicht besser wird.</p>
+        <p>5 · Ein anderer Startpunkt kann zu einem völlig anderen Ergebnis führen. Deshalb trainiert man wichtige Modelle mehrfach.</p>
+      </details>
+
+      <div class="tip">
+        <b>Für die Schulung:</b> Leertaste startet und pausiert, <b>R</b> setzt zurück. Ein Klick in die Karte setzt den Startpunkt – gut für die Frage „Was passiert, wenn wir woanders anfangen?“ Der gestrichelte Läufer läuft immer mit der gegenteiligen Schwung-Einstellung mit.
+      </div>
+    </div>
+  </aside>
+</main>
+
+<script>
+"use strict";
+
+/* ============================ Landschaften ============================ */
+const LANDSCAPES = [
+  {
+    id:"bowl", short:"Schüssel",
+    note:"Eine einzige runde Mulde. Der einfachste denkbare Fall – gut zum Kennenlernen der Lernrate.",
+    x0:-5,x1:5,y0:-4,y1:4, lrScale:1, noiseScale:2.5,
+    f:(x,y)=>0.5*(4*x*x+3*y*y),
+    g:(x,y)=>[4*x,3*y],
+    goals:[[0,0]], traps:[],
+    starts:[{l:"oben links",p:[-3.6,3.1]},{l:"rechts",p:[4.2,0.5]},{l:"nah dran",p:[1.0,-0.8]}]
+  },
+  {
+    id:"valley", short:"Enges Tal",
+    note:"Steil von den Seiten, fast flach in Längsrichtung. Ohne Schwung wird daraus ein zäher Zickzack.",
+    x0:-6,x1:6,y0:-2.4,y1:2.4, lrScale:1, noiseScale:3,
+    f:(x,y)=>0.5*(0.04*x*x+7.6*y*y),
+    g:(x,y)=>[0.04*x,7.6*y],
+    goals:[[0,0]], traps:[],
+    starts:[{l:"links",p:[-5.2,1.7]},{l:"rechts",p:[4.8,-1.6]},{l:"nah dran",p:[-2.0,0.9]}]
+  },
+  {
+    id:"double", short:"Zwei Mulden",
+    note:"Links liegt der wirklich gute Platz, rechts nur ein mittelguter. Ohne Schwung entscheidet allein der Startpunkt.",
+    x0:-4,x1:4,y0:-2.6,y1:2.6, lrScale:1, noiseScale:2.5,
+    f:(x,y)=>0.08*Math.pow(x,4)-0.9*x*x+0.35*x+1.2*y*y,
+    g:(x,y)=>[0.32*x*x*x-1.8*x+0.35, 2.4*y],
+    goals:[[-2.46,0]], traps:[[2.27,0]],
+    starts:[{l:"rechte Mulde",p:[3.7,1.2]},{l:"linke Mulde",p:[-3.6,-1.4]},{l:"auf dem Kamm",p:[0.2,2.2]}]
+  },
+  {
+    id:"saddle", short:"Sattel",
+    note:"In der Mitte ist es fast flach – aber es ist kein Ziel. Der Läufer trödelt lange, bis er die Abfahrt findet.",
+    x0:-4,x1:4,y0:-4,y1:4, lrScale:1, noiseScale:2,
+    f:(x,y)=>0.9*x*x-0.5*y*y+0.03*Math.pow(y,4),
+    g:(x,y)=>[1.8*x, -y+0.12*y*y*y],
+    goals:[[0,2.887],[0,-2.887]], traps:[],
+    starts:[{l:"fast im Sattel",p:[1.6,0.06]},{l:"oben links",p:[-3.2,2.6]},{l:"genau im Sattel",p:[0.9,0.0015]}]
+  },
+  {
+    id:"bumpy", short:"Buckelpiste",
+    note:"Viele kleine Mulden. Hier hilft ein bisschen Rauschen oder viel Schwung mehr als präzises Rechnen.",
+    x0:-5,x1:5,y0:-5,y1:5, lrScale:0.5, noiseScale:5,
+    f:(x,y)=>0.15*(x*x+y*y)+1.2*(2-Math.cos(3*x)-Math.cos(3*y)),
+    g:(x,y)=>[0.3*x+3.6*Math.sin(3*x), 0.3*y+3.6*Math.sin(3*y)],
+    goals:[[0,0]], traps:[],
+    starts:[{l:"oben links",p:[-4.3,3.9]},{l:"unten rechts",p:[3.7,-4.2]},{l:"nah dran",p:[1.5,1.5]}]
+  },
+  {
+    id:"banana", short:"Bananental",
+    note:"Ein gekrümmtes, sehr schmales Tal. Man muss der Kurve folgen – zu große Schritte fliegen sofort heraus.",
+    x0:-2,x1:2,y0:-1,y1:3, lrScale:0.02, noiseScale:25,
+    f:(x,y)=>Math.pow(1-x,2)+15*Math.pow(y-x*x,2),
+    g:(x,y)=>[-2*(1-x)-60*x*(y-x*x), 30*(y-x*x)],
+    goals:[[1,1]], traps:[],
+    starts:[{l:"links",p:[-1.5,1.6]},{l:"oben",p:[1.5,2.7]},{l:"im Tal",p:[-0.6,0.36]}]
+  }
+];
+
+const LR    = [{l:"winzig",v:0.0015},{l:"klein",v:0.02},{l:"mittel",v:0.08},{l:"groß",v:0.25},{l:"riesig",v:0.6}];
+const MOM   = [{l:"aus",v:0},{l:"etwas",v:0.5},{l:"viel",v:0.9},{l:"sehr viel",v:0.97}];
+const NOISE = [{l:"aus",v:0},{l:"wenig",v:0.12},{l:"viel",v:0.45}];
+const SPEED = [{l:"langsam",v:1},{l:"normal",v:3},{l:"schnell",v:10}];
+
+/* ============================ Szenarien ============================ */
+const SCENARIOS = [
+  {l:"Sanfter Abstieg", note:"Passende Schrittlänge, kein Schwung: der Läufer geht auf direktem Weg ins Tal und bleibt dort.", s:{ls:"bowl",lr:2,mom:0,noise:0,start:0}},
+  {l:"Zu kleine Schritte", note:"Die Richtung stimmt – aber er braucht rund 600 Schritte für einen Weg, der auch in einem Dutzend zu schaffen ist.", s:{ls:"bowl",lr:0,mom:0,noise:0,start:0}},
+  {l:"Über das Ziel hinaus", note:"Die Schritte sind so lang, dass er jedes Mal auf der Gegenseite landet – und dort höher als vorher. Nach 11 Schritten ist er aus der Karte. Der gestrichelte Vergleichsläufer mit Schwung bleibt zwar knapp drin, schaukelt aber genauso unbrauchbar hin und her.", s:{ls:"bowl",lr:4,mom:0,noise:0,start:2}},
+  {l:"Zickzack im Tal", note:"Quer zum Tal ist es steil, längs fast flach: Er prallt zwischen den Wänden hin und her und kriecht kaum vorwärts.", s:{ls:"valley",lr:3,mom:0,noise:0,start:0}},
+  {l:"Schwung rettet das Tal", note:"Gleiches Tal, gleiche Schrittlänge, nur mit Momentum: Das Hin und Her hebt sich auf, längs summiert es sich – rund sechsmal schneller am Ziel.", s:{ls:"valley",lr:3,mom:2,noise:0,start:0}},
+  {l:"In der falschen Mulde", note:"Er landet zufrieden in der rechten Mulde und bleibt. Von der tieferen links erfährt er nie. Der gestrichelte Vergleichsläufer hat Schwung – und schafft es hinüber.", s:{ls:"double",lr:2,mom:0,noise:0,start:0}},
+  {l:"Mit Schwung hinüber", note:"Gleicher Start, gleiche Schrittlänge – jetzt trägt ihn der Schwung über den Kamm in die wirklich tiefe Mulde.", s:{ls:"double",lr:2,mom:2,noise:0,start:0}},
+  {l:"Der Sattel bremst", note:"Fast kein Gefälle, also fast kein Fortschritt: Erst nach vielen Schritten kippt er zur Seite und findet die Abfahrt.", s:{ls:"saddle",lr:2,mom:0,noise:0,start:2}},
+  {l:"Buckelpiste mit Rauschen", note:"Ohne Rauschen bleibt er in der ersten Mulde stecken. Das Zittern der Datenhäppchen schubst ihn heraus – bis ganz nach unten.", s:{ls:"bumpy",lr:2,mom:2,noise:2,start:0}},
+  {l:"Der Kurve folgen", note:"Im Bananental zählt Vorsicht: kleine Schritte, etwas Schwung. Ohne Schwung (gestrichelt) kommt er in 3000 Schritten nicht an.", s:{ls:"banana",lr:2,mom:2,noise:0,start:0}}
+];
+
+/* ============================ Zustand ============================ */
+const S = {ls:"bowl", lr:2, mom:0, noise:0, start:0, speed:1, scen:-1,
+           arrows:true, ghost:true, running:false, custom:null};
+const MAXSTEPS = 3000;
+let run=null, ghost=null, raf=null;
+
+const L = () => LANDSCAPES.find(l=>l.id===S.ls);
+const lrVal = () => LR[S.lr].v * L().lrScale;
+
+function randn(){let u=0,v=0;while(!u)u=Math.random();while(!v)v=Math.random();
+  return Math.sqrt(-2*Math.log(u))*Math.cos(2*Math.PI*v);}
+
+function startPoint(){ return S.custom ? S.custom.slice() : L().starts[S.start].p.slice(); }
+
+function makeRunner(mom){
+  const p = startPoint();
+  return {p, v:[0,0], mom, path:[p.slice()], losses:[L().f(p[0],p[1])],
+          steps:0, dead:false, settled:0, done:false, up:0};
+}
+
+function resetRun(){
+  stop();
+  run = makeRunner(MOM[S.mom].v);
+  ghost = makeRunner(S.mom===0 ? 0.9 : 0);
+  document.getElementById("ghostLabel").textContent = S.mom===0 ? "mit Schwung" : "ohne Schwung";
+  draw(); drawProfile(); report();
+}
+
+function stepRunner(r){
+  if(r.dead || r.done) return;
+  const ls=L(), lr=lrVal(), n=NOISE[S.noise].v;
+  let [gx,gy]=ls.g(r.p[0],r.p[1]);
+  if(n>0){ gx+=randn()*n*ls.noiseScale; gy+=randn()*n*ls.noiseScale; }
+  r.v[0]=r.mom*r.v[0]-lr*gx;
+  r.v[1]=r.mom*r.v[1]-lr*gy;
+  r.p[0]+=r.v[0]; r.p[1]+=r.v[1];
+  r.steps++;
+
+  const rx=ls.x1-ls.x0, ry=ls.y1-ls.y0;
+  if(!isFinite(r.p[0])||!isFinite(r.p[1])||
+     Math.abs(r.p[0])>Math.abs(ls.x0)+3*rx||Math.abs(r.p[1])>Math.abs(ls.y0)+3*ry){
+    r.dead=true; r.done=true; return;
+  }
+  const loss=ls.f(r.p[0],r.p[1]);
+  if(loss>r.losses[r.losses.length-1]) r.up++; else r.up=0;
+  r.path.push(r.p.slice()); r.losses.push(loss);
+  if(r.path.length>MAXSTEPS+5){ r.path.shift(); r.losses.shift(); }
+
+  if(distToGoal(r.p) < 0.02*rx){ r.done=true; return; }
+  const move=Math.hypot(r.v[0],r.v[1])/rx;
+  r.settled = move<2e-5 ? r.settled+1 : 0;
+  if(r.settled>25 || r.steps>=MAXSTEPS) r.done=true;
+}
+
+/* ============================ Karte ============================ */
+const map=document.getElementById("map"), mctx=map.getContext("2d");
+const prof=document.getElementById("prof"), pctx=prof.getContext("2d");
+let VW=0,VH=0,dpr=1, view={x0:0,x1:1,y0:0,y1:1};
+const field=document.createElement("canvas"); const fctx=field.getContext("2d");
+let fmin=0,fmax=1;
+
+const STOPS=[[0,[9,16,30]],[0.12,[13,45,70]],[0.3,[16,96,101]],[0.5,[47,131,96]],
+             [0.7,[133,150,74]],[0.86,[201,166,84]],[1,[240,229,201]]];
+function ramp(t){
+  t=Math.max(0,Math.min(1,t));
+  for(let i=1;i<STOPS.length;i++){
+    if(t<=STOPS[i][0]){
+      const a=STOPS[i-1],b=STOPS[i], u=(t-a[0])/(b[0]-a[0]);
+      return [a[1][0]+(b[1][0]-a[1][0])*u, a[1][1]+(b[1][1]-a[1][1])*u, a[1][2]+(b[1][2]-a[1][2])*u];
+    }
+  }
+  return STOPS[STOPS.length-1][1];
+}
+document.getElementById("ramp").style.background =
+  "linear-gradient(90deg,"+STOPS.map(s=>`rgb(${ramp(s[0]).map(Math.round)}) ${s[0]*100}%`).join(",")+")";
+
+const tx = x => (x-view.x0)/(view.x1-view.x0)*VW;
+const ty = y => (1-(y-view.y0)/(view.y1-view.y0))*VH;
+const ix = px => view.x0+px/VW*(view.x1-view.x0);
+const iy = py => view.y0+(1-py/VH)*(view.y1-view.y0);
+
+function layout(){
+  const r=map.parentElement.getBoundingClientRect();
+  dpr=Math.min(window.devicePixelRatio||1,2);
+  VW=Math.max(50,Math.floor(r.width)); VH=Math.max(50,Math.floor(r.height));
+  map.width=VW*dpr; map.height=VH*dpr;
+  mctx.setTransform(dpr,0,0,dpr,0,0);
+
+  const ls=L(); const asp=VW/VH;
+  let x0=ls.x0,x1=ls.x1,y0=ls.y0,y1=ls.y1;
+  const w=x1-x0,h=y1-y0, cx=(x0+x1)/2, cy=(y0+y1)/2;
+  if(w/h<asp){ const nw=h*asp; x0=cx-nw/2; x1=cx+nw/2; }
+  else { const nh=w/asp; y0=cy-nh/2; y1=cy+nh/2; }
+  view={x0,x1,y0,y1};
+
+  const fw=Math.min(VW,1300), fh=Math.min(VH,900);
+  field.width=fw; field.height=fh;
+  buildField(fw,fh);
+
+  const pr=prof.getBoundingClientRect();
+  prof.width=pr.width*dpr; prof.height=pr.height*dpr;
+  pctx.setTransform(dpr,0,0,dpr,0,0);
+}
+
+function buildField(w,h){
+  const ls=L(), img=fctx.createImageData(w,h), d=img.data;
+  const vals=new Float32Array(w*h);
+  let mn=Infinity,mx=-Infinity;
+  for(let j=0;j<h;j++){
+    const y=view.y0+(1-(j+0.5)/h)*(view.y1-view.y0);
+    for(let i=0;i<w;i++){
+      const x=view.x0+(i+0.5)/w*(view.x1-view.x0);
+      let v=ls.f(x,y); if(!isFinite(v)) v=1e9;
+      vals[j*w+i]=v; if(v<mn)mn=v; if(v>mx)mx=v;
+    }
+  }
+  fmin=mn; fmax=mx;
+  const norm=v=>Math.pow((v-mn)/(mx-mn||1),0.35);
+  const BANDS=22;
+  for(let j=0;j<h;j++){
+    for(let i=0;i<w;i++){
+      const k=j*w+i, t=norm(vals[k]);
+      let c=ramp(t);
+      const b=Math.floor(t*BANDS);
+      const br=i<w-1?Math.floor(norm(vals[k+1])*BANDS):b;
+      const bd=j<h-1?Math.floor(norm(vals[k+w])*BANDS):b;
+      if(b!==br||b!==bd){ const a=0.34; c=[c[0]+(236-c[0])*a,c[1]+(230-c[1])*a,c[2]+(218-c[2])*a]; }
+      const o=k*4; d[o]=c[0]; d[o+1]=c[1]; d[o+2]=c[2]; d[o+3]=255;
+    }
+  }
+  fctx.putImageData(img,0,0);
+}
+
+function arrow(x1,y1,x2,y2,col,w){
+  const a=Math.atan2(y2-y1,x2-x1), len=Math.hypot(x2-x1,y2-y1);
+  if(len<3) return;
+  mctx.strokeStyle=col; mctx.lineWidth=w; mctx.lineCap="round";
+  mctx.beginPath(); mctx.moveTo(x1,y1); mctx.lineTo(x2,y2); mctx.stroke();
+  const hs=Math.min(9,len*0.4);
+  mctx.beginPath(); mctx.moveTo(x2,y2);
+  mctx.lineTo(x2-hs*Math.cos(a-0.42),y2-hs*Math.sin(a-0.42));
+  mctx.lineTo(x2-hs*Math.cos(a+0.42),y2-hs*Math.sin(a+0.42));
+  mctx.closePath(); mctx.fillStyle=col; mctx.fill();
+}
+
+function drawPath(r,col,dash,width){
+  if(r.path.length<2) return;
+  mctx.save(); mctx.setLineDash(dash); mctx.strokeStyle=col; mctx.lineWidth=width;
+  mctx.lineJoin="round"; mctx.beginPath();
+  const step=Math.max(1,Math.floor(r.path.length/2500));
+  mctx.moveTo(tx(r.path[0][0]),ty(r.path[0][1]));
+  for(let i=step;i<r.path.length;i+=step) mctx.lineTo(tx(r.path[i][0]),ty(r.path[i][1]));
+  const last=r.path[r.path.length-1]; mctx.lineTo(tx(last[0]),ty(last[1]));
+  mctx.stroke(); mctx.restore();
+}
+
+function draw(){
+  const ls=L();
+  mctx.clearRect(0,0,VW,VH);
+  mctx.drawImage(field,0,0,VW,VH);
+
+  // Ziele & Nebenmulden
+  ls.traps.forEach(g=>{
+    mctx.save(); mctx.setLineDash([3,3]); mctx.strokeStyle="rgba(236,230,218,.55)"; mctx.lineWidth=1.4;
+    mctx.beginPath(); mctx.arc(tx(g[0]),ty(g[1]),9,0,7); mctx.stroke();
+    mctx.setLineDash([]); mctx.fillStyle="rgba(236,230,218,.75)";
+    mctx.font="600 10px Inter, system-ui, sans-serif"; mctx.textAlign="center";
+    mctx.fillText("Nebenmulde",tx(g[0]),ty(g[1])+22); mctx.restore();
+  });
+  ls.goals.forEach(g=>{
+    const X=tx(g[0]),Y=ty(g[1]);
+    mctx.strokeStyle="#ECE6DA"; mctx.lineWidth=1.6;
+    mctx.beginPath(); mctx.arc(X,Y,11,0,7); mctx.stroke();
+    mctx.beginPath(); mctx.arc(X,Y,3.2,0,7); mctx.fillStyle="#ECE6DA"; mctx.fill();
+    mctx.beginPath(); mctx.moveTo(X-16,Y); mctx.lineTo(X-12,Y); mctx.moveTo(X+12,Y); mctx.lineTo(X+16,Y);
+    mctx.moveTo(X,Y-16); mctx.lineTo(X,Y-12); mctx.moveTo(X,Y+12); mctx.lineTo(X,Y+16); mctx.stroke();
+  });
+
+  // Start
+  const sp=startPoint();
+  mctx.save(); mctx.strokeStyle="rgba(236,230,218,.8)"; mctx.lineWidth=1.4;
+  mctx.beginPath(); mctx.moveTo(tx(sp[0])-5,ty(sp[1])-5); mctx.lineTo(tx(sp[0])+5,ty(sp[1])+5);
+  mctx.moveTo(tx(sp[0])+5,ty(sp[1])-5); mctx.lineTo(tx(sp[0])-5,ty(sp[1])+5); mctx.stroke(); mctx.restore();
+
+  if(S.ghost && ghost) drawPath(ghost,"rgba(99,205,224,.85)",[5,4],1.6);
+  if(run){
+    drawPath(run,"rgba(232,163,61,.35)",[],5);
+    drawPath(run,"#E8A33D",[],2);
+    // Wegmarken
+    const every=Math.max(1,Math.round(run.path.length/26));
+    mctx.fillStyle="rgba(255,255,255,.65)";
+    for(let i=every;i<run.path.length;i+=every){
+      mctx.beginPath(); mctx.arc(tx(run.path[i][0]),ty(run.path[i][1]),1.6,0,7); mctx.fill();
+    }
+  }
+
+  if(ghost && S.ghost && !ghost.dead){
+    const p=ghost.p, X=tx(p[0]),Y=ty(p[1]);
+    mctx.beginPath(); mctx.arc(X,Y,5,0,7); mctx.fillStyle="rgba(99,205,224,.9)"; mctx.fill();
+  }
+
+  if(run && !run.dead){
+    const p=run.p, X=tx(p[0]),Y=ty(p[1]);
+    if(S.arrows){
+      const sx=VW/(view.x1-view.x0), sy=VH/(view.y1-view.y0);
+      // Gefälle: Richtung des steilsten Abstiegs
+      const [gx,gy]=ls.g(p[0],p[1]);
+      let dx=-gx*sx, dy=gy*sy, m=Math.hypot(dx,dy);
+      if(m>1e-9){
+        const len=Math.min(80,14+9*Math.pow(m,0.42));
+        arrow(X,Y,X+dx/m*len,Y+dy/m*len,"rgba(228,105,90,.95)",2.2);
+      }
+      // Schwung: aktuelle Geschwindigkeit
+      dx=run.v[0]*sx; dy=-run.v[1]*sy; m=Math.hypot(dx,dy);
+      if(m>0.4){
+        const len=Math.min(95,Math.max(8,m*8));
+        arrow(X,Y,X+dx/m*len,Y+dy/m*len,"rgba(167,139,208,.95)",2.2);
+      }
+    }
+    mctx.beginPath(); mctx.arc(X,Y,10,0,7); mctx.fillStyle="rgba(232,163,61,.22)"; mctx.fill();
+    mctx.beginPath(); mctx.arc(X,Y,6,0,7); mctx.fillStyle="#E8A33D"; mctx.fill();
+    mctx.lineWidth=1.6; mctx.strokeStyle="#20160a"; mctx.stroke();
+  }
+  if(run && run.dead){
+    mctx.save(); mctx.font="600 13px Inter, system-ui, sans-serif"; mctx.textAlign="center";
+    mctx.fillStyle="#E4695A"; mctx.fillText("außerhalb der Karte", VW/2, 30); mctx.restore();
+  }
+}
+
+/* ============================ Höhenprofil ============================ */
+function drawProfile(){
+  const w=prof.getBoundingClientRect().width, h=prof.getBoundingClientRect().height;
+  pctx.clearRect(0,0,w,h);
+  if(!run) return;
+  const series=[]; 
+  if(S.ghost && ghost) series.push({d:ghost.losses,c:"rgba(99,205,224,.85)",dash:[4,3],w:1.4});
+  series.push({d:run.losses,c:"#E8A33D",dash:[],w:2});
+
+  const base=fmin;
+  const tr=v=>Math.log10(Math.max(v-base,1e-6)+1e-6);
+  let mn=Infinity,mx=-Infinity,n=0;
+  series.forEach(s=>{ n=Math.max(n,s.d.length);
+    s.d.forEach(v=>{ if(!isFinite(v))return; const t=tr(v); if(t<mn)mn=t; if(t>mx)mx=t; }); });
+  if(!isFinite(mn)){mn=0;mx=1;}
+  if(mx-mn<0.5){mx=mn+0.5;}
+  const pad=(mx-mn)*0.12; mn-=pad; mx+=pad;
+  const N=Math.max(n,40);
+  const X=i=>6+i/(N-1)*(w-12);
+  const Y=v=>h-8-(tr(v)-mn)/(mx-mn)*(h-18);
+
+  // Gitter
+  pctx.strokeStyle="rgba(255,255,255,.06)"; pctx.lineWidth=1;
+  for(let k=0;k<=3;k++){const y=8+k*(h-18)/3;pctx.beginPath();pctx.moveTo(6,y);pctx.lineTo(w-6,y);pctx.stroke();}
+
+  series.forEach(s=>{
+    pctx.save(); pctx.setLineDash(s.dash); pctx.strokeStyle=s.c; pctx.lineWidth=s.w;
+    pctx.beginPath();
+    const st=Math.max(1,Math.floor(s.d.length/900));
+    let started=false;
+    for(let i=0;i<s.d.length;i+=st){
+      const v=s.d[i]; if(!isFinite(v))break;
+      const x=X(i),y=Math.max(2,Math.min(h-2,Y(v)));
+      started?pctx.lineTo(x,y):(pctx.moveTo(x,y),started=true);
+    }
+    pctx.stroke(); pctx.restore();
+  });
+
+  pctx.fillStyle="rgba(138,154,172,.85)";
+  pctx.font="9px ui-monospace, Menlo, monospace";
+  pctx.fillText("hoch",8,15); pctx.fillText("tief",8,h-11);
+  pctx.textAlign="right"; pctx.fillText(N+" Schritte",w-8,h-11); pctx.textAlign="left";
+}
+
+/* ============================ Diagnose ============================ */
+function distToGoal(p){
+  const ls=L();
+  return Math.min(...ls.goals.map(g=>Math.hypot(p[0]-g[0],p[1]-g[1])));
+}
+function report(){
+  const ls=L(), r=run; if(!r) return;
+  const [gx,gy]=r.dead?[NaN,NaN]:ls.g(r.p[0],r.p[1]);
+  const gm=Math.hypot(gx,gy);
+  const d=r.dead?NaN:distToGoal(r.p);
+  const loss=r.losses[r.losses.length-1];
+  const rx=ls.x1-ls.x0;
+
+  const fmt=v=>!isFinite(v)?"–":(Math.abs(v)>=100?v.toFixed(0):Math.abs(v)>=10?v.toFixed(1):v.toFixed(2));
+  document.getElementById("mSteps").textContent=r.steps;
+  document.getElementById("mLoss").textContent=fmt(loss);
+  document.getElementById("mGrad").textContent=fmt(gm);
+  document.getElementById("mDist").textContent=fmt(d);
+
+  let title,text,col;
+  const nearGoal = d < 0.03*rx;
+  const inTrap = ls.traps.some(t=>Math.hypot(r.p[0]-t[0],r.p[1]-t[1])<0.5);
+
+  if(r.dead){
+    col="var(--red)"; title="Aus der Karte geflogen";
+    text="Die Schritte wurden immer länger, statt kürzer. Genau so sieht ein explodierendes Training aus. Verkleinere die Lernrate oder nimm Schwung heraus.";
+  } else if(r.done && nearGoal && S.noise>0){
+    col="var(--green)"; title="Trotz Zittern angekommen";
+    text=`Der Weg war holprig, das Ziel ist erreicht – nach ${r.steps} Schritten. Genau so sieht echtes Training aus: die Richtung stimmt im Mittel, jeder einzelne Schritt aber nur ungefähr.`;
+  } else if(r.done && nearGoal && r.steps>200){
+    col="var(--amber)"; title="Angekommen – aber viel zu spät";
+    text=`Der Läufer steht im tiefsten Tal, hat dafür aber ${r.steps} Schritte gebraucht. Mit besser gewählten Einstellungen geht derselbe Weg oft in einem Bruchteil davon. In echten Projekten ist das der Unterschied zwischen einer Stunde und einer Woche Rechenzeit.`;
+  } else if(r.done && nearGoal){
+    col="var(--green)"; title="Im tiefsten Tal angekommen";
+    text=`Nach ${r.steps} Schritten steht der Läufer im besten Punkt dieser Karte. Das Gefälle unter seinen Füßen ist praktisch null – es gibt keine Richtung mehr, die abwärts führt.`;
+  } else if(r.done && inTrap){
+    col="var(--amber)"; title="In der Nebenmulde gelandet";
+    text="Von hier aus geht es in jede Richtung bergauf – also bleibt er stehen. Dass links eine tiefere Mulde liegt, kann er nicht wissen. Probiere mehr Schwung oder einen anderen Startpunkt.";
+  } else if(r.done && r.steps>=MAXSTEPS){
+    col="var(--amber)"; title="Nach 3000 Schritten noch unterwegs";
+    text = gm<0.05*ls.noiseScale
+      ? "Das Gefälle ist hier fast null – ein Plateau oder ein Sattel. Der Läufer kommt kaum voran, obwohl er nicht am Ziel ist."
+      : "Die Richtung stimmt, aber die Schritte sind zu kurz für die Strecke. Größere Lernrate oder mehr Schwung.";
+  } else if(r.done){
+    col="var(--amber)"; title="Zur Ruhe gekommen – aber nicht am Ziel";
+    text="Ringsum geht es nur bergauf, also bleibt der Läufer stehen. Das ist ein lokales Minimum: gut genug für ihn, aber nicht der beste Punkt der Karte.";
+  } else if(r.up>=3){
+    col="var(--red)"; title="Es geht bergauf statt bergab";
+    text="Der Verlust steigt seit mehreren Schritten. Fast immer heißt das: die Schrittlänge passt nicht zur Steilheit – er springt über das Tal hinweg.";
+  } else if(S.running){
+    col="var(--cyan)"; title="Der Läufer ist unterwegs";
+    text=`Schritt ${r.steps}. Der rote Pfeil zeigt, wohin es gerade am steilsten bergab geht, der violette, wohin ihn sein Schwung trägt. Wo beide auseinanderlaufen, wird der Weg krumm.`;
+  } else {
+    col="var(--muted)"; title=r.steps?"Pausiert":"Bereit";
+    text=r.steps?`Angehalten bei Schritt ${r.steps}. Mit „Ein Schritt“ geht es einzeln weiter.`
+                :"Klicke in die Karte, um den Start zu setzen, und drücke Start.";
+  }
+  document.getElementById("dot").style.background=col;
+  document.getElementById("verdictTitle").textContent=title;
+  document.getElementById("verdictText").textContent=text;
+}
+
+/* ============================ Ablauf ============================ */
+function tick(){
+  if(!S.running) return;
+  const n=SPEED[S.speed].v;
+  for(let i=0;i<n;i++){ stepRunner(run); if(S.ghost) stepRunner(ghost); }
+  if(run.done && (!S.ghost || ghost.done)) stop();
+  draw(); drawProfile(); report();
+  if(S.running) raf=requestAnimationFrame(tick);
+}
+function play(){ if(run.done) resetRun();
+  S.running=true; document.getElementById("btnPlay").textContent="⏸ Pause"; raf=requestAnimationFrame(tick); }
+function stop(){ S.running=false; cancelAnimationFrame(raf);
+  document.getElementById("btnPlay").textContent="▶ Start"; }
+
+/* ============================ Bedienelemente ============================ */
+function seg(el,items,get,set){
+  el.innerHTML="";
+  items.forEach((it,i)=>{
+    const b=document.createElement("button");
+    b.textContent=it; b.className=(i===get()?"on":"");
+    b.onclick=()=>{ set(i); };
+    el.appendChild(b);
+  });
+}
+function refreshSegs(){
+  seg(document.getElementById("segLandscape"),LANDSCAPES.map(l=>l.short),()=>LANDSCAPES.findIndex(l=>l.id===S.ls),
+      i=>{S.ls=LANDSCAPES[i].id;S.start=0;S.custom=null;S.scen=-1;layout();resetRun();refreshAll();});
+  seg(document.getElementById("segLr"),LR.map(o=>o.l),()=>S.lr,i=>{S.lr=i;S.scen=-1;resetRun();refreshAll();});
+  seg(document.getElementById("segMom"),MOM.map(o=>o.l),()=>S.mom,i=>{S.mom=i;S.scen=-1;resetRun();refreshAll();});
+  seg(document.getElementById("segNoise"),NOISE.map(o=>o.l),()=>S.noise,i=>{S.noise=i;S.scen=-1;resetRun();refreshAll();});
+  seg(document.getElementById("segStart"),L().starts.map(s=>s.l).concat(["zufällig"]),
+      ()=>S.custom?-1:S.start,
+      i=>{ if(i===L().starts.length){ const ls=L();
+             S.custom=[ls.x0+Math.random()*(ls.x1-ls.x0)*0.9+0.05*(ls.x1-ls.x0),
+                       ls.y0+Math.random()*(ls.y1-ls.y0)*0.9+0.05*(ls.y1-ls.y0)];
+           } else { S.start=i; S.custom=null; }
+           S.scen=-1; resetRun(); refreshAll(); });
+  seg(document.getElementById("segSpeed"),SPEED.map(o=>o.l),()=>S.speed,i=>{S.speed=i;refreshAll();});
+}
+function refreshScen(){
+  const box=document.getElementById("scenarios"); box.innerHTML="";
+  SCENARIOS.forEach((sc,i)=>{
+    const b=document.createElement("button");
+    b.className="chip"+(i===S.scen?" on":""); b.textContent=sc.l;
+    b.onclick=()=>{ Object.assign(S,{ls:sc.s.ls,lr:sc.s.lr,mom:sc.s.mom,noise:sc.s.noise,
+                     start:sc.s.start,custom:null,scen:i});
+                    layout(); resetRun(); refreshAll(); play(); };
+    box.appendChild(b);
+  });
+  const n=document.getElementById("scenNote");
+  n.innerHTML = S.scen>=0 ? "<b>"+SCENARIOS[S.scen].l+"</b> — "+SCENARIOS[S.scen].note
+                          : "<b>"+L().short+"</b> — "+L().note;
+}
+function refreshAll(){ refreshSegs(); refreshScen(); }
+
+document.getElementById("btnPlay").onclick=()=>S.running?stop():play();
+document.getElementById("btnStep").onclick=()=>{ stop(); stepRunner(run); if(S.ghost)stepRunner(ghost);
+  draw(); drawProfile(); report(); };
+document.getElementById("btnReset").onclick=()=>{ resetRun(); };
+document.getElementById("cbArrows").onchange=e=>{S.arrows=e.target.checked;draw();};
+document.getElementById("cbGhost").onchange=e=>{S.ghost=e.target.checked;draw();drawProfile();};
+
+map.addEventListener("pointerdown",e=>{
+  const r=map.getBoundingClientRect();
+  S.custom=[ix(e.clientX-r.left), iy(e.clientY-r.top)];
+  S.scen=-1; resetRun(); refreshAll();
+});
+window.addEventListener("keydown",e=>{
+  if(e.code==="Space"&&e.target.tagName!=="INPUT"){e.preventDefault();S.running?stop():play();}
+  if(e.code==="KeyR"){resetRun();}
+});
+let rt=null;
+window.addEventListener("resize",()=>{clearTimeout(rt);rt=setTimeout(()=>{layout();draw();drawProfile();},140);});
+
+layout(); resetRun(); refreshAll();
+</script>
+</body>
+</html>

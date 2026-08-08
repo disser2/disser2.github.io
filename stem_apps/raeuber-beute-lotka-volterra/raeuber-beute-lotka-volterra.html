@@ -1,0 +1,1144 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Räuber und Beute — das Lotka-Volterra-Modell</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Newsreader:ital,opsz,wght@0,6..72,300;0,6..72,400;0,6..72,500;1,6..72,400&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --paper:#E2E7E3;
+  --paper-2:#EDF0EC;
+  --card:#F5F7F4;
+  --ink:#15211E;
+  --ink-2:#3D4C48;
+  --muted:#6E7C77;
+  --line:#C3CEC8;
+  --screen:#0C1917;
+  --screen-2:#132523;
+  --grid:#22403B;
+  --beute:#E0A32E;
+  --beute-dark:#9A6C10;
+  --raeuber:#3FA3BA;
+  --raeuber-dark:#1F6779;
+  --equi:#D9DED9;
+  --warn:#C2553F;
+  --r:4px;
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{
+  background:var(--paper);
+  color:var(--ink);
+  font-family:"Space Grotesk",-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+  font-size:15px;
+  line-height:1.45;
+  -webkit-font-smoothing:antialiased;
+}
+.wrap{max-width:1560px;margin:0 auto;padding:0 20px 64px}
+
+/* ---------- Kopf ---------- */
+header.top{
+  display:flex;align-items:baseline;gap:18px;flex-wrap:wrap;
+  padding:14px 0 10px;
+}
+.eyebrow{
+  font-family:"IBM Plex Mono",monospace;font-size:10.5px;letter-spacing:.16em;
+  text-transform:uppercase;color:var(--muted);
+}
+h1{
+  font-family:"Space Grotesk",sans-serif;
+  font-size:23px;font-weight:600;letter-spacing:-.02em;margin:0;
+}
+h1 em{font-family:"Newsreader",Georgia,serif;font-style:italic;font-weight:400;color:var(--ink-2)}
+.thesis{
+  font-family:"Newsreader",Georgia,serif;font-size:15.5px;color:var(--ink-2);
+  max-width:52ch;margin-left:auto;
+}
+
+/* ---------- Steuerleiste ---------- */
+.controlbar{
+  position:sticky;top:0;z-index:40;
+  background:var(--screen);
+  color:#E8EFEC;
+  border-radius:var(--r);
+  padding:10px 14px;
+  display:flex;align-items:center;gap:22px;flex-wrap:wrap;
+  box-shadow:0 2px 0 rgba(21,33,30,.12);
+}
+.cb-group{display:flex;align-items:center;gap:8px}
+.cb-label{
+  font-family:"IBM Plex Mono",monospace;font-size:9.5px;letter-spacing:.14em;
+  text-transform:uppercase;color:#7E948E;white-space:nowrap;
+}
+button{font-family:inherit;font-size:inherit;color:inherit;cursor:pointer}
+.btn-play{
+  background:var(--beute);border:none;color:#1A1204;
+  font-weight:600;font-size:14px;padding:8px 20px;border-radius:var(--r);
+  min-width:118px;letter-spacing:.01em;
+}
+.btn-play:hover{background:#EEB142}
+.btn-ghost{
+  background:transparent;border:1px solid #33514B;color:#D7E2DE;
+  padding:8px 14px;border-radius:var(--r);font-size:13.5px;
+}
+.btn-ghost:hover{border-color:#5C7D75;background:#16302C}
+.seg{display:flex;border:1px solid #2E4B45;border-radius:var(--r);overflow:hidden}
+.seg button{
+  background:transparent;border:none;color:#9FB3AD;
+  padding:6px 11px;font-size:12.5px;font-family:"IBM Plex Mono",monospace;
+}
+.seg button+button{border-left:1px solid #2E4B45}
+.seg button:hover{background:#16302C;color:#D7E2DE}
+.seg button[aria-pressed="true"]{background:var(--raeuber);color:#04191E;font-weight:600}
+.scen{display:flex;gap:6px;flex-wrap:wrap}
+.scen button{
+  background:#16302C;border:1px solid #2E4B45;color:#C6D5D0;
+  padding:6px 12px;border-radius:var(--r);font-size:12.5px;
+}
+.scen button:hover{border-color:#6E938B;color:#F0F5F3}
+.scen button[aria-pressed="true"]{background:#E8EFEC;color:#0C1917;border-color:#E8EFEC;font-weight:600}
+.cb-spacer{flex:1 1 auto}
+.clock{
+  font-family:"IBM Plex Mono",monospace;font-size:12.5px;color:#8FA8A2;
+  white-space:nowrap;
+}
+.clock b{color:#E8EFEC;font-weight:500}
+
+.scenario-note{
+  font-family:"Newsreader",Georgia,serif;font-size:14.5px;color:var(--ink-2);
+  padding:9px 2px 0;
+}
+.scenario-note b{font-family:"Space Grotesk",sans-serif;font-weight:600;font-size:13px;color:var(--ink)}
+
+/* ---------- Hauptraster ---------- */
+.main{
+  display:grid;grid-template-columns:312px minmax(0,1fr);
+  gap:16px;margin-top:12px;align-items:start;
+}
+.panel{
+  background:var(--card);border:1px solid var(--line);border-radius:var(--r);
+}
+.panel-head{
+  display:flex;align-items:baseline;justify-content:space-between;gap:10px;
+  padding:9px 13px;border-bottom:1px solid var(--line);
+}
+.panel-head h2{
+  margin:0;font-size:12px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;
+}
+.panel-head .hint{font-family:"Newsreader",serif;font-size:13px;color:var(--muted);font-style:italic}
+
+/* ---------- Parameter ---------- */
+.sidebar{position:sticky;top:66px}
+.pgroup{padding:11px 13px 12px;border-bottom:1px solid var(--line)}
+.pgroup:last-child{border-bottom:none}
+.prow{display:flex;align-items:baseline;gap:7px;margin-bottom:6px}
+.psym{
+  font-family:"Newsreader",Georgia,serif;font-style:italic;font-size:17px;
+  width:15px;color:var(--ink-2);flex:none;line-height:1;
+}
+.pname{font-size:13px;font-weight:500;flex:1;letter-spacing:-.005em}
+.pval{font-family:"IBM Plex Mono",monospace;font-size:12px;color:var(--muted)}
+.segline{display:grid;grid-template-columns:repeat(5,1fr);gap:3px}
+.segline.four{grid-template-columns:repeat(4,1fr)}
+.segline button{
+  background:var(--paper-2);border:1px solid var(--line);border-radius:3px;
+  padding:6px 2px;font-size:9.5px;letter-spacing:.03em;text-transform:uppercase;
+  color:var(--ink-2);line-height:1.15;white-space:nowrap;overflow:hidden;
+}
+.segline button:hover{background:#fff;border-color:var(--muted)}
+.segline button[aria-pressed="true"]{
+  background:var(--ink);border-color:var(--ink);color:#F2F5F2;font-weight:600;
+}
+.segline.beute button[aria-pressed="true"]{background:var(--beute-dark);border-color:var(--beute-dark)}
+.segline.raeuber button[aria-pressed="true"]{background:var(--raeuber-dark);border-color:var(--raeuber-dark)}
+.phelp{
+  font-family:"Newsreader",Georgia,serif;font-size:13.2px;line-height:1.4;
+  color:var(--muted);margin-top:6px;
+}
+.tag{
+  display:inline-block;font-family:"IBM Plex Mono",monospace;font-size:9px;
+  letter-spacing:.1em;text-transform:uppercase;padding:1px 5px;border-radius:2px;
+  vertical-align:middle;
+}
+.tag.b{background:rgba(224,163,46,.2);color:var(--beute-dark)}
+.tag.r{background:rgba(63,163,186,.2);color:var(--raeuber-dark)}
+.tag.n{background:rgba(110,124,119,.18);color:var(--muted)}
+.toggle-row{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-top:8px}
+.toggle-row .lbl{font-size:12.5px}
+.mini-seg{display:flex;border:1px solid var(--line);border-radius:3px;overflow:hidden;flex:none}
+.mini-seg button{background:var(--paper-2);border:none;padding:4px 10px;font-size:10.5px;color:var(--ink-2);letter-spacing:.04em}
+.mini-seg button+button{border-left:1px solid var(--line)}
+.mini-seg button[aria-pressed="true"]{background:var(--ink);color:#F2F5F2;font-weight:600}
+
+/* ---------- Bildschirme ---------- */
+.screens{display:flex;flex-direction:column;gap:16px}
+.screen{
+  background:var(--screen);border:1px solid var(--screen);border-radius:var(--r);
+  overflow:hidden;position:relative;
+}
+.screen-head{
+  display:flex;align-items:center;gap:14px;flex-wrap:wrap;
+  padding:9px 14px;border-bottom:1px solid #1E3A35;
+}
+.screen-head h2{
+  margin:0;font-size:11.5px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:#DCE6E3;
+}
+.legend{display:flex;gap:14px;align-items:center;margin-left:auto;flex-wrap:wrap}
+.lg{display:flex;align-items:center;gap:6px;font-size:12px;color:#A9BEB8}
+.swatch{width:16px;height:3px;border-radius:2px;flex:none}
+.lg b{font-family:"IBM Plex Mono",monospace;font-weight:500;font-size:12.5px;color:#EAF1EE;min-width:44px;text-align:right}
+canvas{display:block;width:100%}
+#cvTime{height:296px}
+#cvPhase{height:300px}
+#cvField{height:300px}
+.duo{display:grid;grid-template-columns:minmax(0,1.05fr) minmax(0,1fr);gap:16px}
+.viewtoggles{display:flex;gap:5px;margin-left:auto}
+.viewtoggles button{
+  background:transparent;border:1px solid #2E4B45;color:#93A9A3;
+  padding:3px 9px;border-radius:3px;font-size:10.5px;letter-spacing:.05em;
+}
+.viewtoggles button[aria-pressed="true"]{background:#25443E;color:#E4EDEA;border-color:#3E635B}
+.banner{
+  position:absolute;left:14px;right:14px;bottom:12px;
+  background:rgba(194,85,63,.94);color:#fff;padding:7px 12px;border-radius:3px;
+  font-size:12.5px;display:none;
+}
+.banner.show{display:block}
+
+/* ---------- Kennzahlen ---------- */
+.stats{
+  display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));
+  gap:1px;background:var(--line);border:1px solid var(--line);border-radius:var(--r);
+  overflow:hidden;margin-top:16px;
+}
+.stat{background:var(--card);padding:9px 13px}
+.stat .k{
+  font-family:"IBM Plex Mono",monospace;font-size:9.5px;letter-spacing:.12em;
+  text-transform:uppercase;color:var(--muted);
+}
+.stat .v{font-family:"IBM Plex Mono",monospace;font-size:19px;font-weight:500;margin-top:2px;letter-spacing:-.01em}
+.stat .v.small{font-size:14px;padding-top:4px}
+.stat .s{font-size:11.5px;color:var(--muted);margin-top:1px}
+
+/* ---------- Erklärungen ---------- */
+.explain{margin-top:34px}
+.explain h2.big{
+  font-size:13px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;
+  margin:0 0 14px;padding-bottom:8px;border-bottom:1px solid var(--line);
+}
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(268px,1fr));gap:16px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:15px 17px 17px}
+.card h3{
+  font-size:12.5px;font-weight:600;letter-spacing:.05em;margin:0 0 8px;
+}
+.card p{font-family:"Newsreader",Georgia,serif;font-size:15px;line-height:1.5;color:var(--ink-2);margin:0 0 9px}
+.card p:last-child{margin-bottom:0}
+.card ul{font-family:"Newsreader",Georgia,serif;font-size:15px;line-height:1.5;color:var(--ink-2);margin:0;padding-left:18px}
+.card li{margin-bottom:5px}
+.num{
+  font-family:"IBM Plex Mono",monospace;font-size:10px;letter-spacing:.1em;
+  color:var(--muted);display:block;margin-bottom:5px;
+}
+.eq{
+  font-family:"Newsreader",Georgia,serif;font-size:17px;font-style:italic;
+  background:var(--paper-2);border-left:2px solid var(--line);
+  padding:9px 13px;margin:10px 0;line-height:1.7;
+}
+.eq small{font-family:"Space Grotesk",sans-serif;font-style:normal;font-size:11.5px;color:var(--muted);display:block;letter-spacing:.02em}
+.task{
+  background:var(--card);border:1px solid var(--line);border-radius:var(--r);
+  padding:13px 15px;display:flex;gap:12px;align-items:flex-start;
+}
+.task .q{
+  font-family:"IBM Plex Mono",monospace;font-size:11px;color:#fff;background:var(--ink);
+  border-radius:2px;padding:2px 6px;flex:none;margin-top:2px;
+}
+.task p{margin:0;font-family:"Newsreader",Georgia,serif;font-size:15px;line-height:1.45;color:var(--ink-2)}
+.task p b{font-family:"Space Grotesk",sans-serif;font-weight:600;font-size:13.5px;color:var(--ink);display:block;margin-bottom:2px}
+.tasks{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:12px}
+footer{
+  margin-top:34px;padding-top:12px;border-top:1px solid var(--line);
+  font-family:"IBM Plex Mono",monospace;font-size:10.5px;letter-spacing:.06em;
+  color:var(--muted);text-transform:uppercase;
+}
+
+:focus-visible{outline:2px solid var(--raeuber);outline-offset:2px}
+@media (max-width:1180px){
+  .main{grid-template-columns:1fr}
+  .sidebar{position:static}
+  .duo{grid-template-columns:1fr}
+}
+@media (max-width:620px){
+  .wrap{padding:0 12px 40px}
+  .controlbar{gap:12px}
+  .thesis{margin-left:0}
+}
+@media (prefers-reduced-motion:reduce){
+  *{transition:none!important}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header class="top">
+  <div>
+    <div class="eyebrow">Simulation · Populationsdynamik</div>
+    <h1>Räuber und Beute — <em>das Lotka-Volterra-Modell</em></h1>
+  </div>
+  <p class="thesis">Zwei Arten, vier Stellschrauben, ein ewiges Auf und Ab. Verändern Sie die Regeln und beobachten Sie, was aus ihnen folgt.</p>
+</header>
+
+<!-- ══ Steuerleiste ══ -->
+<div class="controlbar">
+  <button class="btn-play" id="btnPlay">▶ Start</button>
+  <button class="btn-ghost" id="btnReset">Neu starten</button>
+
+  <div class="cb-group">
+    <span class="cb-label">Tempo</span>
+    <div class="seg" id="segSpeed"></div>
+  </div>
+
+  <div class="cb-group">
+    <span class="cb-label">Zeitfenster</span>
+    <div class="seg" id="segWindow"></div>
+  </div>
+
+  <div class="cb-group" style="flex:1 1 340px">
+    <span class="cb-label">Szenario</span>
+    <div class="scen" id="segScenario"></div>
+  </div>
+
+  <div class="clock">Zeit <b id="clockT">0</b> Jahre</div>
+</div>
+
+<p class="scenario-note" id="scenarioNote"></p>
+
+<!-- ══ Hauptraster ══ -->
+<div class="main">
+
+  <!-- Parameter -->
+  <aside class="panel sidebar">
+    <div class="panel-head">
+      <h2>Stellschrauben</h2>
+      <span class="hint">wirken sofort</span>
+    </div>
+    <div id="paramHost"></div>
+    <div class="pgroup">
+      <div class="prow"><span class="pname" style="font-weight:600">Zusätzliche Regeln</span></div>
+      <div class="toggle-row">
+        <span class="lbl">Aussterben ab &lt; 1 Tier</span>
+        <div class="mini-seg" id="segExtinct"></div>
+      </div>
+      <p class="phelp">Wenn eingeschaltet, verschwindet eine Art endgültig, sobald weniger als ein Tier übrig ist. Das Modell selbst kennt keine ganzen Tiere und lässt Bestände beliebig klein werden.</p>
+    </div>
+  </aside>
+
+  <!-- Bildschirme -->
+  <div class="screens">
+
+    <div class="screen">
+      <div class="screen-head">
+        <h2>Bestände im Zeitverlauf</h2>
+        <div class="legend">
+          <span class="lg"><span class="swatch" style="background:var(--beute)"></span>Beute <b id="lgH">–</b></span>
+          <span class="lg"><span class="swatch" style="background:var(--raeuber)"></span>Räuber <b id="lgP">–</b></span>
+        </div>
+      </div>
+      <canvas id="cvTime"></canvas>
+      <div class="banner" id="bannerTime"></div>
+    </div>
+
+    <div class="duo">
+      <div class="screen">
+        <div class="screen-head">
+          <h2>Der Kreislauf</h2>
+          <div class="viewtoggles">
+            <button id="tgFlow" aria-pressed="true">Strömung</button>
+            <button id="tgNull" aria-pressed="true">Gleichgewichtslinien</button>
+          </div>
+        </div>
+        <canvas id="cvPhase"></canvas>
+      </div>
+
+      <div class="screen">
+        <div class="screen-head">
+          <h2>Der Lebensraum</h2>
+          <span class="lg" style="margin-left:auto">jeder Punkt steht für mehrere Tiere</span>
+        </div>
+        <canvas id="cvField"></canvas>
+      </div>
+    </div>
+
+    <div class="stats">
+      <div class="stat"><div class="k">Beute jetzt</div><div class="v" id="stH" style="color:var(--beute-dark)">–</div><div class="s" id="stHTrend">–</div></div>
+      <div class="stat"><div class="k">Räuber jetzt</div><div class="v" id="stP" style="color:var(--raeuber-dark)">–</div><div class="s" id="stPTrend">–</div></div>
+      <div class="stat"><div class="k">Ruhepunkt</div><div class="v small" id="stEq">–</div><div class="s">Bestände, bei denen nichts mehr passiert</div></div>
+      <div class="stat"><div class="k">Länge eines Zyklus</div><div class="v" id="stPeriod">–</div><div class="s" id="stPeriodSub">wird gemessen …</div></div>
+      <div class="stat"><div class="k">Spanne der Beute</div><div class="v small" id="stRangeH">–</div><div class="s">tiefster bis höchster Stand</div></div>
+      <div class="stat"><div class="k">Vorsprung der Beute</div><div class="v" id="stLag">–</div><div class="s">Beutegipfel vor Räubergipfel</div></div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ══ Erklärungen ══ -->
+<section class="explain">
+  <h2 class="big">Was hier passiert</h2>
+  <div class="cards">
+
+    <div class="card">
+      <span class="num">Die Idee</span>
+      <h3>Vier Regeln, mehr nicht</h3>
+      <p>Stellen Sie sich eine Insel mit Hasen und Luchsen vor. Das Modell macht nur vier Annahmen:</p>
+      <ul>
+        <li>Hasen finden immer genug Futter und vermehren sich.</li>
+        <li>Treffen Hase und Luchs aufeinander, kann der Hase gefressen werden.</li>
+        <li>Aus gefressenen Hasen wird Luchs-Nachwuchs.</li>
+        <li>Luchse sterben, wenn sie nicht genug fressen.</li>
+      </ul>
+      <p>Aus diesen vier Sätzen entsteht ganz von allein ein Auf und Ab, das sich endlos wiederholt. Niemand hat den Rhythmus vorgegeben — er ist eine Folge der Regeln.</p>
+    </div>
+
+    <div class="card">
+      <span class="num">Der Rhythmus</span>
+      <h3>Warum es immer im Kreis geht</h3>
+      <p>Viele Hasen bedeuten volle Teller für die Luchse, also wächst der Luchsbestand. Viele Luchse bedeuten Jagddruck, also bricht der Hasenbestand ein. Wenig Hasen bedeuten Hunger, also sterben Luchse. Wenig Luchse bedeuten Ruhe, also erholen sich die Hasen — und alles beginnt von vorn.</p>
+      <p>Deshalb kommt der Gipfel der Räuber immer <em>nach</em> dem Gipfel der Beute, nie gleichzeitig. Diesen Versatz zeigt die Kennzahl „Vorsprung der Beute“.</p>
+    </div>
+
+    <div class="card">
+      <span class="num">Die zweite Ansicht</span>
+      <h3>Den Kreislauf lesen</h3>
+      <p>Im Bild „Der Kreislauf“ steht die Zeit nicht mehr auf einer Achse. Stattdessen zeigt jeder Punkt einen Zustand: waagerecht wie viele Hasen, senkrecht wie viele Luchse. Der Zustand wandert gegen den Uhrzeigersinn und schließt sich zu einer Schleife — das ist genau das Auf und Ab von oben, nur anders aufgezeichnet.</p>
+      <p>Die dünnen Pfeile zeigen, wohin sich der Zustand von jeder Stelle aus bewegen würde. Die beiden hellen Linien markieren, wo sich jeweils eine der beiden Arten gerade nicht verändert; wo sie sich kreuzen, liegt der Ruhepunkt.</p>
+    </div>
+
+    <div class="card">
+      <span class="num">Der Ruhepunkt</span>
+      <h3>Das Gleichgewicht ist heikel</h3>
+      <p>Es gibt genau eine Kombination, bei der beide Bestände konstant bleiben. Sie hängt nur von den vier Stellschrauben ab — und zwar überraschend: Wie viele Hasen im Gleichgewicht leben, bestimmen allein die Werte der <span class="tag r">Räuber</span>-Regeln. Wie viele Luchse, bestimmen allein die <span class="tag b">Beute</span>-Regeln.</p>
+      <p>Ohne Kapazitätsgrenze ist dieses Gleichgewicht nicht stabil: Ein winziger Anstoß, und das System kreist für immer weiter, statt zurückzukehren. Setzen Sie eine Kapazitätsgrenze, ändert sich das — die Schwingung wird gedämpft und läuft spiralförmig in den Ruhepunkt hinein.</p>
+    </div>
+
+    <div class="card">
+      <span class="num">Die Formeln</span>
+      <h3>Falls jemand fragt</h3>
+      <p>Dahinter stehen zwei Gleichungen, die beschreiben, wie schnell sich die Bestände ändern:</p>
+      <div class="eq">
+        Änderung Beute = α·H − β·H·P
+        <small>Zuwachs minus Verluste durch Jagd</small>
+      </div>
+      <div class="eq">
+        Änderung Räuber = δ·H·P − γ·P
+        <small>Nachwuchs aus Beute minus natürliche Sterblichkeit</small>
+      </div>
+      <p>Der Term H·P steht für Begegnungen: Je mehr von beiden da sind, desto häufiger treffen sie aufeinander. Mit Kapazitätsgrenze <em>K</em> wird der Zuwachs zu α·H·(1 − H/K) gebremst.</p>
+    </div>
+
+    <div class="card">
+      <span class="num">Die Grenzen</span>
+      <h3>Wo das Modell schummelt</h3>
+      <ul>
+        <li>Bestände dürfen beliebig klein werden — 0,001 Luchse gibt es in der Natur nicht.</li>
+        <li>Alle Tiere sind gleich: kein Alter, kein Geschlecht, keine Krankheit.</li>
+        <li>Der Lebensraum ist überall gleich; Wanderung und Verstecke fehlen.</li>
+        <li>Es reagiert alles sofort, ohne Trächtigkeit oder Wachstumszeit.</li>
+        <li>Wetter, Jahreszeiten und andere Arten kommen nicht vor.</li>
+      </ul>
+      <p>Trotzdem erklärt es ein Muster, das man in echten Daten wiederfindet — am bekanntesten in den Fellzahlen der Hudson's Bay Company für Schneeschuhhase und Kanadaluchs mit einem Rhythmus von rund zehn Jahren.</p>
+    </div>
+
+  </div>
+
+  <h2 class="big" style="margin-top:32px">Aufgaben für die Schulung</h2>
+  <div class="tasks">
+    <div class="task"><span class="q">1</span><p><b>Wer folgt wem?</b>Starten Sie das Szenario „Klassischer Kreislauf“ und halten Sie an einem Beutegipfel an. Wie lange dauert es, bis die Räuber ihren Höchststand erreichen?</p></div>
+    <div class="task"><span class="q">2</span><p><b>Das überraschende Ergebnis</b>Erhöhen Sie nur die Geburtsrate der Beute. Was passiert mit dem Ruhepunkt der Beute — und was mit dem der Räuber? Erklären Sie das Ergebnis.</p></div>
+    <div class="task"><span class="q">3</span><p><b>Schädlinge bekämpfen</b>Sie töten wahllos Tiere beider Arten, also erhöhen Sie den Jagderfolg und die Sterberate der Räuber gleichzeitig. Wovon gibt es danach im Schnitt <em>mehr</em>?</p></div>
+    <div class="task"><span class="q">4</span><p><b>Wann bricht es zusammen?</b>Schalten Sie „Aussterben ab &lt; 1 Tier“ ein und wählen Sie „Große Ausschläge“. Warum überlebt das Modell ohne diese Regel, die echte Population aber nicht?</p></div>
+    <div class="task"><span class="q">5</span><p><b>Grenzen des Lebensraums</b>Vergleichen Sie „unbegrenzt“ mit einer Kapazität von 400. Wie verändert sich die Form der Schleife im Bild „Der Kreislauf“ — und warum?</p></div>
+    <div class="task"><span class="q">6</span><p><b>Der Startpunkt zählt</b>Lassen Sie alle vier Stellschrauben unverändert und ändern Sie nur die Startbestände. Was bleibt gleich, was ändert sich?</p></div>
+  </div>
+</section>
+
+<footer>Lotka 1925 · Volterra 1926 — numerische Lösung mit Runge-Kutta 4. Ordnung, Schrittweite 0,01</footer>
+</div>
+
+<script>
+"use strict";
+
+/* ══════════════════════════════════════════════════════════
+   Parameter-Definitionen
+   ══════════════════════════════════════════════════════════ */
+const PARAMS = [
+  {key:"alpha", sym:"α", name:"Geburtsrate der Beute", kind:"beute", live:true,
+   values:[0.4,0.6,0.8,1.0,1.4], labels:["kaum","wenig","mittel","viel","sehr viel"],
+   help:"Wie schnell sich die Beute vermehrt, wenn kein Räuber da wäre."},
+  {key:"beta", sym:"β", name:"Jagderfolg", kind:"raeuber", live:true,
+   values:[0.010,0.020,0.030,0.050,0.080], labels:["kaum","wenig","mittel","viel","sehr viel"],
+   help:"Wie oft eine Begegnung zwischen Räuber und Beute tödlich endet."},
+  {key:"delta", sym:"δ", name:"Nachwuchs pro Beutetier", kind:"raeuber", live:true,
+   values:[0.005,0.010,0.020,0.030,0.040], labels:["kaum","wenig","mittel","viel","sehr viel"],
+   help:"Wie viel Räuber-Nachwuchs aus einem gefressenen Beutetier entsteht."},
+  {key:"gamma", sym:"γ", name:"Sterberate der Räuber", kind:"raeuber", live:true,
+   values:[0.2,0.4,0.6,0.8,1.2], labels:["kaum","wenig","mittel","viel","sehr viel"],
+   help:"Wie schnell Räuber sterben, wenn sie nichts zu fressen finden."},
+  {key:"K", sym:"K", name:"Kapazität des Lebensraums", kind:"beute", live:true, four:true,
+   values:[0,200,400,800], labels:["unbegrenzt","eng · 200","mittel · 400","weit · 800"],
+   help:"Obergrenze für die Beute durch Futter und Platz. Ohne Grenze schwingt das System ewig gleich stark."},
+  {key:"H0", sym:"H", name:"Startbestand Beute", kind:"beute", live:false,
+   values:[20,40,60,100,150], labels:["20","40","60","100","150"],
+   help:"Wie viele Beutetiere zu Beginn leben. Ändern startet die Simulation neu."},
+  {key:"P0", sym:"P", name:"Startbestand Räuber", kind:"raeuber", live:false,
+   values:[5,10,20,40,60], labels:["5","10","20","40","60"],
+   help:"Wie viele Räuber zu Beginn leben. Ändern startet die Simulation neu."}
+];
+
+const SCENARIOS = [
+  {name:"Klassischer Kreislauf", p:{alpha:0.8,beta:0.020,delta:0.010,gamma:0.4,K:0,H0:60,P0:20},
+   note:"Der Lehrbuchfall. Beide Bestände schwingen für immer im gleichen Takt — der Räubergipfel kommt stets nach dem Beutegipfel."},
+  {name:"Schnelle Zyklen", p:{alpha:1.4,beta:0.030,delta:0.020,gamma:1.2,K:0,H0:60,P0:20},
+   note:"Alles läuft schneller: kurze Generationen, hohe Sterblichkeit. Die Schwingung bleibt, aber ihr Takt wird deutlich kürzer."},
+  {name:"Große Ausschläge", p:{alpha:0.4,beta:0.020,delta:0.010,gamma:0.2,K:0,H0:100,P0:10},
+   note:"Der Start liegt weit vom Ruhepunkt entfernt. Die Bestände stürzen zwischendurch fast auf null — für ein Modell kein Problem, für eine echte Population schon."},
+  {name:"Räuber sterben aus", p:{alpha:0.6,beta:0.020,delta:0.005,gamma:1.2,K:200,H0:60,P0:20},
+   note:"Die Räuber brauchen viel Beute und sterben schnell. Der enge Lebensraum liefert nie genug — sie verschwinden, die Beute füllt den Raum bis zur Kapazitätsgrenze."},
+  {name:"Begrenzter Lebensraum", p:{alpha:0.8,beta:0.020,delta:0.010,gamma:0.4,K:400,H0:120,P0:10},
+   note:"Mit Kapazitätsgrenze wird die Schwingung gedämpft: Die Schleife läuft spiralförmig nach innen, bis beide Bestände zur Ruhe kommen."},
+  {name:"Perfektes Gleichgewicht", p:{alpha:0.8,beta:0.020,delta:0.010,gamma:0.4,K:0,H0:40,P0:40},
+   note:"Der Start liegt exakt auf dem Ruhepunkt. Nichts bewegt sich — bis Sie eine Stellschraube verändern."}
+];
+
+const SPEEDS = [{l:"0,5×",v:0.5},{l:"1×",v:1},{l:"2×",v:2},{l:"4×",v:4}];
+const WINDOWS = [{l:"30",v:30},{l:"60",v:60},{l:"120",v:120},{l:"alles",v:220}];
+
+/* ══════════════════════════════════════════════════════════
+   Zustand
+   ══════════════════════════════════════════════════════════ */
+const P = {alpha:0.8,beta:0.020,delta:0.010,gamma:0.4,K:0,H0:60,P0:20};
+const S = {
+  running:false, t:0, H:60, Pr:20,
+  speed:1, window:60, extinct:false,
+  showFlow:true, showNull:true,
+  hist:[], peaksH:[], peaksP:[],
+  period:null, lag:null, rangeH:null,
+  yScale:100, phaseScale:{h:120,p:80},
+  blown:false, scenario:0
+};
+const DT = 0.01;            // Integrationsschritt
+const BASE_RATE = 6;        // Zeiteinheiten pro Sekunde bei 1×
+const SAMPLE_EVERY = 5;     // Sample alle 0,05 Zeiteinheiten
+const MAX_SAMPLES = 4600;
+const BLOW_LIMIT = 1e5;
+
+/* ══════════════════════════════════════════════════════════
+   Modell
+   ══════════════════════════════════════════════════════════ */
+function deriv(H, Pr){
+  const growth = P.K > 0 ? P.alpha*H*(1 - H/P.K) : P.alpha*H;
+  return [ growth - P.beta*H*Pr, P.delta*H*Pr - P.gamma*Pr ];
+}
+function rk4(H, Pr, dt){
+  const [a1,b1] = deriv(H, Pr);
+  const [a2,b2] = deriv(H + a1*dt/2, Pr + b1*dt/2);
+  const [a3,b3] = deriv(H + a2*dt/2, Pr + b2*dt/2);
+  const [a4,b4] = deriv(H + a3*dt,   Pr + b3*dt);
+  return [ H + dt/6*(a1+2*a2+2*a3+a4), Pr + dt/6*(b1+2*b2+2*b3+b4) ];
+}
+function equilibrium(){
+  if (P.delta <= 0) return null;
+  const h = P.gamma / P.delta;
+  let p = (P.alpha / P.beta);
+  if (P.K > 0) p = (P.alpha / P.beta) * (1 - h / P.K);
+  return {h, p, viable: p > 0 && (P.K === 0 || h < P.K)};
+}
+
+/* ══════════════════════════════════════════════════════════
+   Simulationsschritt
+   ══════════════════════════════════════════════════════════ */
+let sampleCounter = 0;
+function step(n){
+  for (let i = 0; i < n; i++){
+    let [h, p] = rk4(S.H, S.Pr, DT);
+    if (h < 0) h = 0;
+    if (p < 0) p = 0;
+    if (S.extinct){
+      if (h > 0 && h < 1) h = 0;
+      if (p > 0 && p < 1) p = 0;
+    }
+    S.H = h; S.Pr = p; S.t += DT;
+    if (h > BLOW_LIMIT){ S.blown = true; S.running = false; syncPlay(); break; }
+    if (++sampleCounter >= SAMPLE_EVERY){
+      sampleCounter = 0;
+      S.hist.push({t:S.t, h:S.H, p:S.Pr});
+      if (S.hist.length > MAX_SAMPLES) S.hist.shift();
+      detectPeaks();
+    }
+  }
+}
+/* Ein Gipfel zählt nur, wenn die Kurve seit dem letzten Gipfel spürbar
+   eingebrochen ist. Sonst würden asymptotische Verläufe (z. B. Anlauf an die
+   Kapazitätsgrenze) durch Rundungsrauschen Scheinzyklen erzeugen. */
+const troughs = {h:{min:Infinity, armed:false}, p:{min:Infinity, armed:false}};
+function resetTroughs(){
+  troughs.h = {min:Infinity, armed:false};
+  troughs.p = {min:Infinity, armed:false};
+}
+function detectPeaks(){
+  const n = S.hist.length;
+  if (n < 3) return;
+  const a = S.hist[n-3], b = S.hist[n-2], c = S.hist[n-1];
+  const check = (key, store, list) => {
+    const v = b[key];
+    if (v < store.min) store.min = v;
+    if (!store.armed && store.min < Infinity && v > store.min*1.03 + 1e-6) store.armed = true;
+    if (store.armed && v > a[key] && v >= c[key] && v > 1e-3){
+      list.push(b.t);
+      if (list.length > 8) list.shift();
+      store.min = v; store.armed = false;
+    }
+  };
+  check("h", troughs.h, S.peaksH);
+  check("p", troughs.p, S.peaksP);
+  const ph = S.peaksH;
+  if (ph.length >= 2) S.period = ph[ph.length-1] - ph[ph.length-2];
+  if (ph.length >= 1 && S.peaksP.length >= 1){
+    const last = ph[ph.length-1];
+    const after = S.peaksP.filter(t => t > last);
+    if (after.length) S.lag = after[0] - last;
+  }
+  if (S.period){
+    const from = S.t - S.period;
+    let lo = Infinity, hi = -Infinity;
+    for (let i = S.hist.length-1; i >= 0; i--){
+      if (S.hist[i].t < from) break;
+      lo = Math.min(lo, S.hist[i].h); hi = Math.max(hi, S.hist[i].h);
+    }
+    if (isFinite(lo)) S.rangeH = [lo, hi];
+  }
+}
+
+function resetSim(keepScenarioNote){
+  S.t = 0; S.H = P.H0; S.Pr = P.P0;
+  S.hist = [{t:0, h:S.H, p:S.Pr}];
+  S.peaksH = []; S.peaksP = [];
+  S.period = null; S.lag = null; S.rangeH = null;
+  S.blown = false; sampleCounter = 0; resetTroughs();
+  S.yScale = Math.max(20, P.H0*1.5, P.P0*1.5);
+  const e = equilibrium();
+  S.phaseScale = {
+    h: Math.max(20, P.H0*1.4, e && e.viable ? e.h*1.8 : 60),
+    p: Math.max(20, P.P0*1.4, e && e.viable ? e.p*1.8 : 60)
+  };
+  resetField();
+  if (!keepScenarioNote) markScenarioDirty();
+  render();
+}
+
+/* ══════════════════════════════════════════════════════════
+   Oberfläche aufbauen
+   ══════════════════════════════════════════════════════════ */
+function segButtons(host, items, getActive, onPick){
+  host.innerHTML = "";
+  items.forEach((it, i) => {
+    const b = document.createElement("button");
+    b.type = "button";
+    b.textContent = it.l;
+    b.setAttribute("aria-pressed", String(getActive(i)));
+    b.addEventListener("click", () => { onPick(i); });
+    host.appendChild(b);
+  });
+}
+function refreshSeg(host, getActive){
+  [...host.children].forEach((b,i) => b.setAttribute("aria-pressed", String(getActive(i))));
+}
+
+const el = id => document.getElementById(id);
+const paramHost = el("paramHost");
+
+PARAMS.forEach(def => {
+  const g = document.createElement("div");
+  g.className = "pgroup";
+  g.innerHTML = `
+    <div class="prow">
+      <span class="psym">${def.sym}</span>
+      <span class="pname">${def.name}</span>
+      <span class="pval" data-val="${def.key}"></span>
+    </div>
+    <div class="segline ${def.four ? "four " : ""}${def.kind}" data-seg="${def.key}"></div>
+    <p class="phelp">${def.help}</p>`;
+  paramHost.appendChild(g);
+  const seg = g.querySelector("[data-seg]");
+  segButtons(seg, def.labels.map(l => ({l})),
+    i => P[def.key] === def.values[i],
+    i => {
+      P[def.key] = def.values[i];
+      if (!def.live) resetSim();
+      else { markScenarioDirty(); rescaleSoft(); }
+      syncParams(); render();
+    });
+});
+
+function fmtVal(def){
+  const v = P[def.key];
+  if (def.key === "K") return v === 0 ? "∞" : v;
+  if (def.key === "H0" || def.key === "P0") return v;
+  return v.toFixed(v < 0.1 ? 3 : 2).replace(".", ",");
+}
+function syncParams(){
+  PARAMS.forEach(def => {
+    document.querySelector(`[data-val="${def.key}"]`).textContent = fmtVal(def);
+    refreshSeg(document.querySelector(`[data-seg="${def.key}"]`), i => P[def.key] === def.values[i]);
+  });
+}
+
+segButtons(el("segSpeed"), SPEEDS, i => S.speed === SPEEDS[i].v,
+  i => { S.speed = SPEEDS[i].v; refreshSeg(el("segSpeed"), j => S.speed === SPEEDS[j].v); });
+segButtons(el("segWindow"), WINDOWS, i => S.window === WINDOWS[i].v,
+  i => { S.window = WINDOWS[i].v; refreshSeg(el("segWindow"), j => S.window === WINDOWS[j].v); render(); });
+segButtons(el("segExtinct"), [{l:"Aus"},{l:"Ein"}], i => S.extinct === (i === 1),
+  i => { S.extinct = (i === 1); refreshSeg(el("segExtinct"), j => S.extinct === (j === 1)); });
+segButtons(el("segScenario"), SCENARIOS.map(s => ({l:s.name})), i => S.scenario === i, i => applyScenario(i));
+
+function applyScenario(i){
+  S.scenario = i;
+  Object.assign(P, SCENARIOS[i].p);
+  syncParams();
+  refreshSeg(el("segScenario"), j => S.scenario === j);
+  el("scenarioNote").innerHTML = `<b>${SCENARIOS[i].name}.</b> ${SCENARIOS[i].note}`;
+  resetSim(true);
+}
+function markScenarioDirty(){
+  if (S.scenario === null) return;
+  const s = SCENARIOS[S.scenario];
+  const same = s && Object.keys(s.p).every(k => P[k] === s.p[k]);
+  if (!same){
+    S.scenario = null;
+    refreshSeg(el("segScenario"), () => false);
+    el("scenarioNote").innerHTML = `<b>Eigene Einstellung.</b> Sie haben die Stellschrauben von Hand verändert. Über die Szenarien kommen Sie jederzeit zu einem bekannten Ausgangspunkt zurück.`;
+  }
+}
+function rescaleSoft(){
+  const e = equilibrium();
+  if (e && e.viable){
+    S.phaseScale.h = Math.max(S.phaseScale.h, e.h*1.6);
+    S.phaseScale.p = Math.max(S.phaseScale.p, e.p*1.6);
+  }
+}
+
+el("btnPlay").addEventListener("click", () => {
+  if (S.blown) resetSim(true);
+  S.running = !S.running; syncPlay();
+});
+el("btnReset").addEventListener("click", () => { resetSim(true); });
+function syncPlay(){ el("btnPlay").textContent = S.running ? "❚❚ Pause" : "▶ Start"; }
+
+el("tgFlow").addEventListener("click", e => {
+  S.showFlow = !S.showFlow; e.currentTarget.setAttribute("aria-pressed", String(S.showFlow)); render();
+});
+el("tgNull").addEventListener("click", e => {
+  S.showNull = !S.showNull; e.currentTarget.setAttribute("aria-pressed", String(S.showNull)); render();
+});
+document.addEventListener("keydown", e => {
+  if (e.code === "Space" && e.target === document.body){
+    e.preventDefault(); if (S.blown) resetSim(true); S.running = !S.running; syncPlay();
+  }
+  if (e.key === "r" || e.key === "R") resetSim(true);
+});
+
+/* ══════════════════════════════════════════════════════════
+   Zeichnen
+   ══════════════════════════════════════════════════════════ */
+const C = {};
+["cvTime","cvPhase","cvField"].forEach(id => {
+  const cv = el(id);
+  C[id] = {cv, ctx: cv.getContext("2d"), w:0, h:0};
+});
+function fit(){
+  const dpr = Math.min(window.devicePixelRatio || 1, 2);
+  Object.values(C).forEach(o => {
+    const r = o.cv.getBoundingClientRect();
+    if (r.width === 0) return;
+    o.w = r.width; o.h = r.height;
+    o.cv.width = Math.round(r.width*dpr);
+    o.cv.height = Math.round(r.height*dpr);
+    o.ctx.setTransform(dpr,0,0,dpr,0,0);
+  });
+  render();
+}
+window.addEventListener("resize", fit);
+
+const COL = {
+  bg:"#0C1917", grid:"#1C3733", gridSoft:"#16302C", axis:"#3A5A54",
+  beute:"#E0A32E", raeuber:"#3FA3BA", label:"#7E948E", equi:"#C7D3CF"
+};
+const MONO = '500 11px "IBM Plex Mono", monospace';
+
+function niceTicks(max, n){
+  const raw = max / n, mag = Math.pow(10, Math.floor(Math.log10(raw)));
+  const norm = raw / mag;
+  const stepN = norm <= 1 ? 1 : norm <= 2 ? 2 : norm <= 5 ? 5 : 10;
+  const step = stepN * mag;
+  const out = [];
+  for (let v = 0; v <= max + 1e-9; v += step) out.push(v);
+  return out;
+}
+
+/* ---- Zeitverlauf ---- */
+function drawTime(){
+  const o = C.cvTime, ctx = o.ctx, w = o.w, h = o.h;
+  if (!w) return;
+  ctx.clearRect(0,0,w,h);
+  ctx.fillStyle = COL.bg; ctx.fillRect(0,0,w,h);
+  const m = {l:52, r:16, t:16, b:26};
+  const pw = w-m.l-m.r, ph = h-m.t-m.b;
+
+  const tEnd = Math.max(S.t, S.window*0.25);
+  const tStart = Math.max(0, tEnd - S.window);
+  const vis = S.hist.filter(s => s.t >= tStart - 1);
+  let ymax = 10;
+  vis.forEach(s => { ymax = Math.max(ymax, s.h, s.p); });
+  const e = equilibrium();
+  if (e && e.viable) ymax = Math.max(ymax, e.h*1.05, e.p*1.05);
+  ymax *= 1.12;
+  S.yScale += (ymax - S.yScale) * 0.14;
+  const Y = S.yScale;
+
+  const X = t => m.l + (t - tStart)/(tEnd - tStart)*pw;
+  const V = v => m.t + ph - Math.min(v, Y)/Y*ph;
+
+  // Raster
+  ctx.strokeStyle = COL.grid; ctx.lineWidth = 1;
+  ctx.fillStyle = COL.label; ctx.font = MONO; ctx.textAlign = "right"; ctx.textBaseline = "middle";
+  niceTicks(Y, 4).forEach(v => {
+    const y = Math.round(V(v)) + .5;
+    ctx.beginPath(); ctx.moveTo(m.l, y); ctx.lineTo(w-m.r, y); ctx.stroke();
+    ctx.fillText(Math.round(v), m.l-9, y);
+  });
+  ctx.textAlign = "center"; ctx.textBaseline = "top";
+  const tstep = S.window/6;
+  for (let k = Math.ceil(tStart/tstep)*tstep; k <= tEnd+1e-9; k += tstep){
+    const x = Math.round(X(k))+.5;
+    ctx.strokeStyle = COL.gridSoft;
+    ctx.beginPath(); ctx.moveTo(x, m.t); ctx.lineTo(x, m.t+ph); ctx.stroke();
+    ctx.fillText(Math.round(k), x, m.t+ph+7);
+  }
+  ctx.textAlign = "left";
+  ctx.fillStyle = "#5E7671";
+  ctx.fillText("Zeit (Jahre) →", m.l, m.t+ph+7);
+
+  // Ruhepunkt-Linien
+  if (e && e.viable){
+    ctx.setLineDash([3,4]); ctx.lineWidth = 1;
+    ctx.strokeStyle = "rgba(224,163,46,.42)";
+    ctx.beginPath(); ctx.moveTo(m.l, V(e.h)); ctx.lineTo(w-m.r, V(e.h)); ctx.stroke();
+    ctx.strokeStyle = "rgba(63,163,186,.42)";
+    ctx.beginPath(); ctx.moveTo(m.l, V(e.p)); ctx.lineTo(w-m.r, V(e.p)); ctx.stroke();
+    ctx.setLineDash([]);
+  }
+
+  // Kurven
+  ctx.save();
+  ctx.beginPath(); ctx.rect(m.l, m.t-2, pw, ph+4); ctx.clip();
+  const line = (key, color) => {
+    ctx.beginPath();
+    let started = false;
+    vis.forEach(s => {
+      const x = X(s.t), y = V(s[key]);
+      if (!started){ ctx.moveTo(x,y); started = true; } else ctx.lineTo(x,y);
+    });
+    ctx.strokeStyle = color; ctx.lineWidth = 2.1;
+    ctx.lineJoin = "round"; ctx.lineCap = "round";
+    ctx.stroke();
+    // Füllung
+    if (vis.length > 1){
+      ctx.lineTo(X(vis[vis.length-1].t), m.t+ph);
+      ctx.lineTo(X(vis[0].t), m.t+ph);
+      ctx.closePath();
+      ctx.fillStyle = color === COL.beute ? "rgba(224,163,46,.10)" : "rgba(63,163,186,.10)";
+      ctx.fill();
+    }
+  };
+  line("h", COL.beute);
+  line("p", COL.raeuber);
+  ctx.restore();
+
+  // Aktueller Punkt
+  if (vis.length){
+    const last = vis[vis.length-1];
+    [["h",COL.beute],["p",COL.raeuber]].forEach(([k,c]) => {
+      const x = X(last.t), y = V(last[k]);
+      if (last[k] <= Y*1.001){
+        ctx.beginPath(); ctx.arc(x,y,3.6,0,7); ctx.fillStyle = c; ctx.fill();
+        ctx.beginPath(); ctx.arc(x,y,7,0,7); ctx.strokeStyle = c; ctx.globalAlpha = .35; ctx.stroke(); ctx.globalAlpha = 1;
+      }
+    });
+  }
+}
+
+/* ---- Phasenraum ---- */
+function drawPhase(){
+  const o = C.cvPhase, ctx = o.ctx, w = o.w, h = o.h;
+  if (!w) return;
+  ctx.clearRect(0,0,w,h);
+  ctx.fillStyle = COL.bg; ctx.fillRect(0,0,w,h);
+  const m = {l:48, r:16, t:14, b:30};
+  const pw = w-m.l-m.r, ph = h-m.t-m.b;
+
+  let hm = 20, pm = 20;
+  S.hist.forEach(s => { hm = Math.max(hm, s.h); pm = Math.max(pm, s.p); });
+  const e = equilibrium();
+  if (e && e.viable){ hm = Math.max(hm, e.h*1.25); pm = Math.max(pm, e.p*1.25); }
+  hm *= 1.14; pm *= 1.14;
+  if (P.K > 0) hm = Math.max(hm, P.K*1.05);
+  S.phaseScale.h += (hm - S.phaseScale.h)*0.12;
+  S.phaseScale.p += (pm - S.phaseScale.p)*0.12;
+  const HM = S.phaseScale.h, PM = S.phaseScale.p;
+
+  const X = v => m.l + Math.min(v,HM)/HM*pw;
+  const Y = v => m.t + ph - Math.min(v,PM)/PM*ph;
+
+  // Raster + Achsen
+  ctx.strokeStyle = COL.gridSoft; ctx.lineWidth = 1;
+  ctx.fillStyle = COL.label; ctx.font = MONO;
+  ctx.textAlign = "right"; ctx.textBaseline = "middle";
+  niceTicks(PM, 4).forEach(v => {
+    const y = Math.round(Y(v))+.5;
+    ctx.beginPath(); ctx.moveTo(m.l,y); ctx.lineTo(w-m.r,y); ctx.stroke();
+    ctx.fillText(Math.round(v), m.l-9, y);
+  });
+  ctx.textAlign = "center"; ctx.textBaseline = "top";
+  niceTicks(HM, 4).forEach(v => {
+    const x = Math.round(X(v))+.5;
+    ctx.beginPath(); ctx.moveTo(x,m.t); ctx.lineTo(x,m.t+ph); ctx.stroke();
+    ctx.fillText(Math.round(v), x, m.t+ph+6);
+  });
+  ctx.textAlign = "left"; ctx.fillStyle = COL.beute;
+  ctx.fillText("Beute →", m.l, m.t+ph+18);
+  ctx.save(); ctx.translate(13, m.t+ph); ctx.rotate(-Math.PI/2);
+  ctx.fillStyle = COL.raeuber; ctx.textBaseline = "top";
+  ctx.fillText("Räuber →", 0, 0); ctx.restore();
+
+  // Strömungsfeld
+  if (S.showFlow){
+    const nx = 15, ny = 11;
+    ctx.lineWidth = 1;
+    for (let i = 1; i <= nx; i++){
+      for (let j = 1; j <= ny; j++){
+        const hv = HM*i/(nx+1), pv = PM*j/(ny+1);
+        const [dh, dp] = deriv(hv, pv);
+        const sx = dh/HM, sy = dp/PM;
+        const mag = Math.hypot(sx, sy);
+        if (mag < 1e-9) continue;
+        const L = 11;
+        const ux = sx/mag*L, uy = -sy/mag*L;
+        const x = X(hv), y = Y(pv);
+        const a = Math.min(.42, .1 + Math.log10(1+mag*30)*.18);
+        ctx.strokeStyle = `rgba(150,190,182,${a})`;
+        ctx.beginPath(); ctx.moveTo(x-ux/2, y-uy/2); ctx.lineTo(x+ux/2, y+uy/2); ctx.stroke();
+        // Spitze
+        const ang = Math.atan2(uy, ux);
+        ctx.beginPath();
+        ctx.moveTo(x+ux/2, y+uy/2);
+        ctx.lineTo(x+ux/2 - 3.6*Math.cos(ang-0.4), y+uy/2 - 3.6*Math.sin(ang-0.4));
+        ctx.moveTo(x+ux/2, y+uy/2);
+        ctx.lineTo(x+ux/2 - 3.6*Math.cos(ang+0.4), y+uy/2 - 3.6*Math.sin(ang+0.4));
+        ctx.stroke();
+      }
+    }
+  }
+
+  // Gleichgewichtslinien
+  if (S.showNull){
+    ctx.lineWidth = 1.4; ctx.setLineDash([5,4]);
+    // Beute ändert sich nicht:  P = α/β · (1 − H/K)
+    ctx.strokeStyle = "rgba(224,163,46,.6)";
+    ctx.beginPath();
+    if (P.K > 0){
+      ctx.moveTo(X(0), Y(P.alpha/P.beta));
+      ctx.lineTo(X(P.K), Y(0));
+    } else {
+      ctx.moveTo(X(0), Y(P.alpha/P.beta));
+      ctx.lineTo(X(HM), Y(P.alpha/P.beta));
+    }
+    ctx.stroke();
+    // Räuber ändern sich nicht: H = γ/δ
+    ctx.strokeStyle = "rgba(63,163,186,.6)";
+    ctx.beginPath();
+    ctx.moveTo(X(P.gamma/P.delta), Y(0));
+    ctx.lineTo(X(P.gamma/P.delta), Y(PM));
+    ctx.stroke();
+    ctx.setLineDash([]);
+  }
+
+  // Bahnkurve
+  ctx.save();
+  ctx.beginPath(); ctx.rect(m.l, m.t, pw, ph); ctx.clip();
+  const n = S.hist.length;
+  const start = Math.max(0, n - 3200);
+  ctx.lineWidth = 1.9; ctx.lineJoin = "round";
+  for (let i = start+1; i < n; i++){
+    const a = S.hist[i-1], b = S.hist[i];
+    const f = (i-start)/(n-start);
+    ctx.strokeStyle = `rgba(232,240,236,${0.06 + f*0.66})`;
+    ctx.beginPath(); ctx.moveTo(X(a.h), Y(a.p)); ctx.lineTo(X(b.h), Y(b.p)); ctx.stroke();
+  }
+  ctx.restore();
+
+  // Ruhepunkt
+  if (e && e.viable && e.h <= HM && e.p <= PM){
+    const x = X(e.h), y = Y(e.p);
+    ctx.strokeStyle = COL.equi; ctx.lineWidth = 1.3;
+    ctx.beginPath(); ctx.moveTo(x-6,y); ctx.lineTo(x+6,y); ctx.moveTo(x,y-6); ctx.lineTo(x,y+6); ctx.stroke();
+    ctx.beginPath(); ctx.arc(x,y,4.5,0,7); ctx.stroke();
+    ctx.fillStyle = "#96AAA4"; ctx.font = MONO; ctx.textAlign = "left"; ctx.textBaseline = "bottom";
+    ctx.fillText("Ruhepunkt", x+9, y-6);
+  }
+
+  // Aktueller Zustand
+  ctx.beginPath(); ctx.arc(X(S.H), Y(S.Pr), 5, 0, 7);
+  ctx.fillStyle = "#F3F8F6"; ctx.fill();
+  ctx.beginPath(); ctx.arc(X(S.H), Y(S.Pr), 9.5, 0, 7);
+  ctx.strokeStyle = "rgba(243,248,246,.4)"; ctx.lineWidth = 1.2; ctx.stroke();
+}
+
+/* ---- Lebensraum ---- */
+const field = {prey:[], pred:[], scale:1};
+function resetField(){ field.prey = []; field.pred = []; field.scale = 1; }
+function makeDot(){ return {x:Math.random(), y:Math.random(), vx:(Math.random()-.5)*0.004, vy:(Math.random()-.5)*0.004}; }
+function syncDots(arr, target){
+  target = Math.max(0, Math.min(260, Math.round(target)));
+  while (arr.length < target) arr.push(makeDot());
+  while (arr.length > target) arr.pop();
+  arr.forEach(d => {
+    d.x += d.vx; d.y += d.vy;
+    if (d.x < 0 || d.x > 1){ d.vx *= -1; d.x = Math.max(0, Math.min(1, d.x)); }
+    if (d.y < 0 || d.y > 1){ d.vy *= -1; d.y = Math.max(0, Math.min(1, d.y)); }
+    if (Math.random() < 0.03){ d.vx += (Math.random()-.5)*0.002; d.vy += (Math.random()-.5)*0.002; }
+  });
+}
+function drawField(){
+  const o = C.cvField, ctx = o.ctx, w = o.w, h = o.h;
+  if (!w) return;
+  const pad = 14;
+  ctx.clearRect(0,0,w,h);
+  ctx.fillStyle = COL.bg; ctx.fillRect(0,0,w,h);
+
+  const biggest = Math.max(S.H, S.Pr, 1);
+  const want = Math.max(1, biggest/170);
+  field.scale += (want - field.scale) * 0.02;
+  const sc = Math.max(field.scale, 0.2);
+
+  syncDots(field.prey, S.H/sc);
+  syncDots(field.pred, S.Pr/sc);
+
+  ctx.strokeStyle = "#16302C"; ctx.lineWidth = 1;
+  ctx.strokeRect(pad+.5, pad+.5, w-2*pad-1, h-2*pad-1);
+
+  const px = d => pad + d.x*(w-2*pad);
+  const py = d => pad + d.y*(h-2*pad);
+
+  ctx.fillStyle = COL.beute;
+  field.prey.forEach(d => { ctx.beginPath(); ctx.arc(px(d), py(d), 2.6, 0, 7); ctx.fill(); });
+
+  ctx.fillStyle = COL.raeuber;
+  field.pred.forEach(d => {
+    const x = px(d), y = py(d);
+    ctx.beginPath(); ctx.moveTo(x, y-4.4); ctx.lineTo(x+4, y+3.2); ctx.lineTo(x-4, y+3.2);
+    ctx.closePath(); ctx.fill();
+  });
+
+  ctx.font = MONO; ctx.textBaseline = "bottom"; ctx.textAlign = "left";
+  ctx.fillStyle = "#6C837D";
+  ctx.fillText(`1 Punkt ≈ ${sc < 1 ? sc.toFixed(1).replace(".",",") : Math.round(sc)} Tiere`, pad+2, h-4);
+
+  if (S.H === 0 || S.Pr === 0){
+    ctx.textAlign = "right"; ctx.fillStyle = "#C2553F";
+    ctx.fillText(S.Pr === 0 ? "Räuber ausgestorben" : "Beute ausgestorben", w-pad-2, h-4);
+  }
+}
+
+/* ══════════════════════════════════════════════════════════
+   Kennzahlen
+   ══════════════════════════════════════════════════════════ */
+const nf = (v, d=0) => v.toLocaleString("de-DE", {minimumFractionDigits:d, maximumFractionDigits:d});
+function trendWord(key){
+  const n = S.hist.length;
+  if (n < 12) return "–";
+  const a = S.hist[n-12][key], b = S.hist[n-1][key];
+  const rel = (b - a) / Math.max(a, 1);
+  if (Math.abs(rel) < 0.004) return "stabil";
+  return rel > 0 ? "▲ wächst" : "▼ schrumpft";
+}
+function updateStats(){
+  el("clockT").textContent = nf(S.t, 1);
+  el("lgH").textContent = nf(S.H, S.H < 10 ? 1 : 0);
+  el("lgP").textContent = nf(S.Pr, S.Pr < 10 ? 1 : 0);
+  el("stH").textContent = nf(S.H, S.H < 10 ? 1 : 0);
+  el("stP").textContent = nf(S.Pr, S.Pr < 10 ? 1 : 0);
+  el("stHTrend").textContent = trendWord("h");
+  el("stPTrend").textContent = trendWord("p");
+
+  const e = equilibrium();
+  if (!e) el("stEq").textContent = "–";
+  else if (!e.viable) el("stEq").innerHTML = `<span style="color:var(--warn)">nicht erreichbar</span>`;
+  else el("stEq").innerHTML =
+    `<span style="color:var(--beute-dark)">${nf(e.h,0)}</span> <span style="color:var(--muted)">/</span> <span style="color:var(--raeuber-dark)">${nf(e.p,0)}</span>`;
+
+  if (S.period){
+    el("stPeriod").textContent = nf(S.period, 1);
+    el("stPeriodSub").textContent = "Jahre von Gipfel zu Gipfel";
+  } else {
+    el("stPeriod").textContent = "–";
+    el("stPeriodSub").textContent = "wird nach zwei Gipfeln gemessen";
+  }
+  el("stRangeH").textContent = S.rangeH
+    ? `${nf(S.rangeH[0], S.rangeH[0]<10?1:0)} – ${nf(S.rangeH[1],0)}`
+    : "–";
+  el("stLag").textContent = S.lag ? nf(S.lag,1) + " J" : "–";
+
+  const b = el("bannerTime");
+  if (S.blown){
+    b.textContent = "Die Beute wächst ins Unendliche: Ohne Räuber und ohne Kapazitätsgrenze kennt das Modell keine Obergrenze. Setzen Sie eine Kapazität, um das zu verhindern.";
+    b.classList.add("show");
+  } else if (S.Pr === 0 && S.H > 0){
+    b.textContent = "Die Räuber sind ausgestorben. Die Beute wächst nun ungebremst" + (P.K > 0 ? " bis zur Kapazitätsgrenze." : " — hier hilft eine Kapazitätsgrenze.");
+    b.classList.add("show");
+  } else if (S.H === 0){
+    b.textContent = "Die Beute ist ausgestorben. Ohne Nahrung verschwinden auch die Räuber.";
+    b.classList.add("show");
+  } else b.classList.remove("show");
+}
+
+/* ══════════════════════════════════════════════════════════
+   Schleife
+   ══════════════════════════════════════════════════════════ */
+function render(){ drawTime(); drawPhase(); drawField(); updateStats(); }
+
+let lastTs = null;
+function loop(ts){
+  requestAnimationFrame(loop);
+  if (lastTs === null) lastTs = ts;
+  let dtReal = (ts - lastTs)/1000;
+  lastTs = ts;
+  if (dtReal > 0.12) dtReal = 0.12;
+  if (S.running){
+    const steps = Math.round(dtReal * BASE_RATE * S.speed / DT);
+    if (steps > 0) step(Math.min(steps, 4000));
+  }
+  render();
+}
+
+/* Start */
+applyScenario(0);
+fit();
+syncPlay();
+requestAnimationFrame(loop);
+setTimeout(() => { S.running = true; syncPlay(); }, 500);
+</script>
+</body>
+</html>

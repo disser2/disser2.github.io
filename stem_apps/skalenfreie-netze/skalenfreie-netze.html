@@ -1,0 +1,1019 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Skalenfreie Netze — wie Knotenpunkte von selbst entstehen</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@100..125,400..800&family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ground:#E7ECF1;
+  --panel:#FFFFFF;
+  --ink:#11213B;
+  --ink-soft:#3B4F6B;
+  --muted:#5C6E86;
+  --rule:#C7D2DE;
+  --rule-soft:#DEE5EC;
+  --navy:#1B3A6B;
+  --crimson:#D01C5B;
+  --steel:#8FA6C0;
+  --shadow:0 1px 0 rgba(17,33,59,.05), 0 8px 24px -12px rgba(17,33,59,.28);
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{
+  background:var(--ground);
+  color:var(--ink);
+  font-family:"IBM Plex Sans",system-ui,sans-serif;
+  font-size:15px;
+  line-height:1.55;
+  -webkit-font-smoothing:antialiased;
+}
+.wrap{max-width:1180px;margin:0 auto;padding:0 18px 72px}
+
+/* ---------- Kopf ---------- */
+header.masthead{
+  padding:14px 0 10px;
+  display:flex;align-items:baseline;gap:14px;flex-wrap:wrap;
+}
+.eyebrow{
+  font-family:"IBM Plex Mono",monospace;
+  font-size:10.5px;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--muted);
+  border:1px solid var(--rule);border-radius:2px;padding:3px 7px;
+  white-space:nowrap;
+}
+h1{
+  font-family:"Archivo",sans-serif;font-stretch:118%;
+  font-weight:700;font-size:clamp(19px,2.5vw,27px);
+  letter-spacing:-.015em;margin:0;line-height:1.1;
+}
+h1 em{font-style:normal;color:var(--crimson)}
+.dek{color:var(--muted);font-size:13.5px;margin:0;flex:1 1 260px;min-width:220px}
+
+/* ---------- Steuerleiste ---------- */
+.console{
+  position:sticky;top:0;z-index:40;
+  background:var(--panel);
+  border:1px solid var(--rule);
+  border-radius:6px;
+  box-shadow:var(--shadow);
+  overflow:hidden;
+}
+.console-row{
+  display:flex;align-items:center;gap:10px;flex-wrap:wrap;
+  padding:9px 12px;
+}
+.console-row + .console-row{border-top:1px solid var(--rule-soft)}
+
+button{font:inherit;color:inherit;cursor:pointer}
+.transport{display:flex;gap:6px}
+.tbtn{
+  background:var(--navy);color:#fff;border:1px solid var(--navy);
+  border-radius:4px;padding:7px 15px;font-weight:600;font-size:13.5px;
+  display:inline-flex;align-items:center;gap:7px;
+  transition:background .12s ease, transform .08s ease;
+}
+.tbtn:hover{background:#254c8a}
+.tbtn:active{transform:translateY(1px)}
+.tbtn.ghost{background:transparent;color:var(--navy);border-color:var(--rule)}
+.tbtn.ghost:hover{background:#EEF3F9}
+.tbtn[disabled]{opacity:.4;cursor:default;transform:none}
+.glyph{width:0;height:0;display:inline-block}
+.glyph.play{border-left:9px solid currentColor;border-top:6px solid transparent;border-bottom:6px solid transparent}
+.glyph.pause{width:9px;height:12px;border:0;border-left:3px solid currentColor;border-right:3px solid currentColor}
+
+.legend{
+  font-family:"IBM Plex Mono",monospace;font-size:9.5px;
+  letter-spacing:.14em;text-transform:uppercase;color:var(--muted);
+  margin-right:2px;white-space:nowrap;
+}
+.field{display:flex;align-items:center;gap:7px}
+.chips{display:flex;gap:0;border:1px solid var(--rule);border-radius:4px;overflow:hidden;background:#F3F6FA}
+.chip{
+  background:transparent;border:0;border-left:1px solid var(--rule);
+  padding:6px 10px;font-size:12.5px;color:var(--ink);white-space:nowrap;
+  transition:background .1s ease;
+}
+.chip:first-child{border-left:0}
+.chip:hover{background:#E4EBF3}
+.chip[aria-pressed="true"]{background:var(--navy);color:#fff;font-weight:600}
+.chip.wide{padding:6px 12px}
+
+.preset{
+  background:#fff;border:1px solid var(--rule);border-radius:20px;
+  padding:5px 13px;font-size:12.5px;color:var(--navy);white-space:nowrap;
+  transition:background .1s ease,border-color .1s ease;
+}
+.preset:hover{background:#EEF3F9;border-color:var(--navy)}
+.preset.on{background:var(--navy);color:#fff;border-color:var(--navy)}
+
+.progress{height:3px;background:var(--rule-soft)}
+.progress i{display:block;height:100%;background:var(--crimson);width:0;transition:width .12s linear}
+
+.counter{
+  margin-left:auto;font-family:"IBM Plex Mono",monospace;font-size:12px;
+  color:var(--muted);white-space:nowrap;
+}
+.counter b{color:var(--ink);font-weight:600}
+
+/* ---------- Bühne ---------- */
+.stage{display:grid;grid-template-columns:1fr 292px;gap:14px;margin-top:14px}
+.card{background:var(--panel);border:1px solid var(--rule);border-radius:6px;box-shadow:var(--shadow)}
+.card-hd{
+  display:flex;align-items:center;justify-content:space-between;gap:10px;
+  padding:8px 12px;border-bottom:1px solid var(--rule-soft);
+}
+.card-hd h2{
+  font-family:"IBM Plex Mono",monospace;font-weight:500;
+  font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:var(--muted);margin:0;
+}
+.canvas-holder{position:relative}
+#net{display:block;width:100%;height:452px;border-radius:0 0 6px 6px}
+.tip{
+  position:absolute;pointer-events:none;opacity:0;transform:translate(-50%,-118%);
+  background:var(--ink);color:#fff;border-radius:4px;padding:7px 10px;
+  font-family:"IBM Plex Mono",monospace;font-size:11px;line-height:1.5;white-space:nowrap;
+  transition:opacity .1s ease;z-index:5;
+}
+.tip b{color:#FF9CBE;font-weight:600}
+.scalekey{display:flex;align-items:center;gap:7px;font-family:"IBM Plex Mono",monospace;font-size:10px;color:var(--muted)}
+.scalekey .bar{width:76px;height:7px;border-radius:4px;
+  background:linear-gradient(90deg,#8FA6C0,#4C6EAD,#8A4E9C,#D01C5B)}
+
+/* ---------- Kennzahlen ---------- */
+.metrics{padding:4px 12px 10px}
+.metric{display:flex;align-items:baseline;justify-content:space-between;gap:8px;padding:7px 0;border-bottom:1px dotted var(--rule)}
+.metric:last-child{border-bottom:0}
+.metric .k{font-size:12.5px;color:var(--muted)}
+.metric .v{font-family:"IBM Plex Mono",monospace;font-size:17px;font-weight:600;font-variant-numeric:tabular-nums}
+.metric .v.hot{color:var(--crimson)}
+#hist{display:block;width:100%;height:158px}
+.hist-note{padding:0 12px 10px;font-size:11.5px;color:var(--muted);line-height:1.45}
+
+/* ---------- Signatur: Verbindungsbalken ---------- */
+.signature{margin-top:14px}
+.sig-body{padding:12px}
+#share{display:block;width:100%;height:58px;border-radius:3px}
+.sig-caption{
+  margin:9px 0 0;font-size:13.5px;color:var(--ink);
+}
+.sig-caption b{font-family:"IBM Plex Mono",monospace;color:var(--crimson);font-size:15px}
+.sig-sub{margin:3px 0 0;font-size:12px;color:var(--muted)}
+
+/* ---------- Tabellen / Panels ---------- */
+.duo{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:14px}
+table{width:100%;border-collapse:collapse;font-size:13px}
+th,td{text-align:right;padding:7px 12px;border-bottom:1px solid var(--rule-soft)}
+th:first-child,td:first-child{text-align:left}
+thead th{
+  font-family:"IBM Plex Mono",monospace;font-weight:500;font-size:9.5px;
+  letter-spacing:.13em;text-transform:uppercase;color:var(--muted);
+}
+tbody td{font-family:"IBM Plex Mono",monospace;font-variant-numeric:tabular-nums}
+tbody td:first-child{font-family:"IBM Plex Sans",sans-serif}
+tbody tr:last-child td{border-bottom:0}
+.empty{padding:14px 12px;font-size:12.5px;color:var(--muted)}
+
+.stress-body{padding:12px}
+.stress-btns{display:flex;gap:7px;flex-wrap:wrap;margin-bottom:12px}
+.sbtn{
+  border:1px solid var(--rule);background:#fff;border-radius:4px;
+  padding:7px 11px;font-size:12.5px;
+}
+.sbtn:hover{background:#EEF3F9}
+.sbtn.attack{border-color:var(--crimson);color:var(--crimson)}
+.sbtn.attack:hover{background:#FDEDF3}
+.gauge{margin-bottom:9px}
+.gauge-lab{display:flex;justify-content:space-between;font-size:12px;color:var(--muted);margin-bottom:4px}
+.gauge-lab b{font-family:"IBM Plex Mono",monospace;color:var(--ink);font-size:13px}
+.gauge-track{height:9px;background:var(--rule-soft);border-radius:5px;overflow:hidden}
+.gauge-fill{height:100%;border-radius:5px;transition:width .3s ease;background:var(--navy)}
+.gauge-fill.warn{background:var(--crimson)}
+.stress-note{font-size:12px;color:var(--muted);margin:0}
+
+/* ---------- Text ---------- */
+.prose{margin-top:30px}
+.prose h3{
+  font-family:"Archivo",sans-serif;font-stretch:118%;font-weight:700;
+  font-size:17px;letter-spacing:-.01em;margin:0 0 7px;
+}
+.cols{display:grid;grid-template-columns:repeat(auto-fit,minmax(268px,1fr));gap:14px}
+.note{background:var(--panel);border:1px solid var(--rule);border-radius:6px;padding:15px 16px;box-shadow:var(--shadow)}
+.note p{margin:0 0 9px;font-size:13.5px;color:var(--ink-soft,#3B4F6B)}
+.note p:last-child{margin-bottom:0}
+.note ul{margin:0;padding-left:17px;font-size:13.5px;color:#3B4F6B}
+.note li{margin-bottom:5px}
+.tag{
+  font-family:"IBM Plex Mono",monospace;font-size:9.5px;letter-spacing:.15em;
+  text-transform:uppercase;color:var(--crimson);display:block;margin-bottom:6px;
+}
+.rule-steps{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:12px;margin-top:12px}
+.step{background:var(--panel);border:1px solid var(--rule);border-radius:6px;padding:13px 14px;position:relative;box-shadow:var(--shadow)}
+.step .num{
+  font-family:"IBM Plex Mono",monospace;font-size:11px;color:#fff;
+  background:var(--navy);border-radius:3px;padding:1px 6px;display:inline-block;margin-bottom:7px;
+}
+.step h4{font-size:14px;margin:0 0 5px;font-weight:600}
+.step p{margin:0;font-size:12.5px;color:#3B4F6B}
+footer{margin-top:26px;font-size:11.5px;color:var(--muted);text-align:center}
+
+@media (max-width:900px){
+  .stage{grid-template-columns:1fr}
+  .duo{grid-template-columns:1fr}
+  #net{height:340px}
+  .counter{margin-left:0;width:100%}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+:focus-visible{outline:2px solid var(--crimson);outline-offset:2px}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header class="masthead">
+  <span class="eyebrow">Netzwerkmodell · Barabási &amp; Albert 1999</span>
+  <h1>Skalenfreie Netze: wie <em>Knotenpunkte</em> von selbst entstehen</h1>
+  <p class="dek">Jeder neue Punkt sucht sich Anschluss — und wählt lieber jemanden, der schon viele Verbindungen hat. Niemand plant die großen Drehkreuze. Sie wachsen einfach.</p>
+</header>
+
+<!-- ============ STEUERLEISTE ============ -->
+<section class="console" aria-label="Steuerung der Simulation">
+  <div class="console-row">
+    <div class="transport">
+      <button class="tbtn" id="btnPlay"><span class="glyph play" id="playGlyph"></span><span id="playLabel">Wachsen lassen</span></button>
+      <button class="tbtn ghost" id="btnReset">Von vorn</button>
+      <button class="tbtn ghost" id="btnStep">+1 Knoten</button>
+    </div>
+    <span class="legend">Voreinstellungen</span>
+    <div class="field" id="presets">
+      <button class="preset" data-preset="einstieg">Zum Einsteigen</button>
+      <button class="preset" data-preset="klassisch">Klassisch</button>
+      <button class="preset" data-preset="zufall">Gegenprobe: reiner Zufall</button>
+      <button class="preset" data-preset="gross">Großes Netz</button>
+      <button class="preset" data-preset="stern">Extremer Sternfall</button>
+    </div>
+    <span class="counter" id="counter"><b>0</b> Knoten · <b>0</b> Verbindungen</span>
+  </div>
+
+  <div class="console-row">
+    <div class="field">
+      <span class="legend">Wen wählt ein neuer Knoten?</span>
+      <div class="chips" role="group" id="grpMode">
+        <button class="chip wide" data-v="ba" aria-pressed="true">Lieber gut Vernetzte</button>
+        <button class="chip wide" data-v="mix" aria-pressed="false">Halb so, halb Zufall</button>
+        <button class="chip wide" data-v="rnd" aria-pressed="false">Rein zufällig</button>
+      </div>
+    </div>
+    <div class="field">
+      <span class="legend">Verbindungen je neuem Knoten</span>
+      <div class="chips" role="group" id="grpM">
+        <button class="chip" data-v="1" aria-pressed="false">1</button>
+        <button class="chip" data-v="2" aria-pressed="true">2</button>
+        <button class="chip" data-v="3" aria-pressed="false">3</button>
+        <button class="chip" data-v="5" aria-pressed="false">5</button>
+      </div>
+    </div>
+    <div class="field">
+      <span class="legend">Endgröße</span>
+      <div class="chips" role="group" id="grpN">
+        <button class="chip" data-v="30" aria-pressed="false">30</button>
+        <button class="chip" data-v="60" aria-pressed="false">60</button>
+        <button class="chip" data-v="120" aria-pressed="true">120</button>
+        <button class="chip" data-v="250" aria-pressed="false">250</button>
+        <button class="chip" data-v="400" aria-pressed="false">400</button>
+      </div>
+    </div>
+    <div class="field">
+      <span class="legend">Tempo</span>
+      <div class="chips" role="group" id="grpSpeed">
+        <button class="chip" data-v="2" aria-pressed="false">langsam</button>
+        <button class="chip" data-v="9" aria-pressed="true">normal</button>
+        <button class="chip" data-v="35" aria-pressed="false">schnell</button>
+        <button class="chip" data-v="9999" aria-pressed="false">sofort</button>
+      </div>
+    </div>
+    <div class="field">
+      <span class="legend">Darstellung</span>
+      <div class="chips" role="group" id="grpView">
+        <button class="chip" data-v="size" aria-pressed="true">Größe = Verbindungen</button>
+        <button class="chip" data-v="labels" aria-pressed="true">Zahlen an den Großen</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="progress"><i id="progressBar"></i></div>
+</section>
+
+<!-- ============ BÜHNE ============ -->
+<section class="stage">
+  <div class="card">
+    <div class="card-hd">
+      <h2>Das wachsende Netz</h2>
+      <div class="scalekey"><span>wenige</span><span class="bar"></span><span>viele Verbindungen</span></div>
+    </div>
+    <div class="canvas-holder">
+      <canvas id="net"></canvas>
+      <div class="tip" id="tip"></div>
+    </div>
+  </div>
+
+  <div>
+    <div class="card">
+      <div class="card-hd"><h2>Kennzahlen</h2></div>
+      <div class="metrics">
+        <div class="metric"><span class="k">Größter Knotenpunkt</span><span class="v hot" id="mMax">0</span></div>
+        <div class="metric"><span class="k">Durchschnitt je Knoten</span><span class="v" id="mAvg">0</span></div>
+        <div class="metric"><span class="k">Der Größte ist … mal so groß</span><span class="v" id="mRatio">0×</span></div>
+        <div class="metric"><span class="k">Knoten mit nur 1 Verbindung</span><span class="v" id="mLeaf">0 %</span></div>
+      </div>
+    </div>
+
+    <div class="card" style="margin-top:14px">
+      <div class="card-hd">
+        <h2>Wie viele haben wie viel?</h2>
+        <div class="chips" role="group" id="grpHist">
+          <button class="chip" data-v="lin" aria-pressed="true">normal</button>
+          <button class="chip" data-v="log" aria-pressed="false">gestaucht</button>
+        </div>
+      </div>
+      <canvas id="hist"></canvas>
+      <p class="hist-note" id="histNote"></p>
+    </div>
+  </div>
+</section>
+
+<!-- ============ SIGNATUR ============ -->
+<section class="card signature">
+  <div class="card-hd"><h2>Wem gehören die Verbindungen?</h2></div>
+  <div class="sig-body">
+    <canvas id="share"></canvas>
+    <p class="sig-caption" id="shareCap">Die stärksten 10 % der Knoten halten <b>—</b> aller Verbindungen.</p>
+    <p class="sig-sub">Jedes Segment ist ein Knoten, sortiert vom größten zum kleinsten. Wäre alles gleich verteilt, wären die Segmente gleich breit — und die stärksten 10 % hielten genau 10 %.</p>
+  </div>
+</section>
+
+<!-- ============ VERGLEICH + BELASTUNGSTEST ============ -->
+<section class="duo">
+  <div class="card">
+    <div class="card-hd"><h2>Fertige Läufe im Vergleich</h2></div>
+    <div id="cmpWrap"><p class="empty">Noch kein Lauf abgeschlossen. Lass ein Netz bis zur Endgröße wachsen — das Ergebnis wird hier abgelegt. Wechsle dann die Anbindungsregel und vergleiche.</p></div>
+  </div>
+
+  <div class="card">
+    <div class="card-hd"><h2>Belastungstest</h2></div>
+    <div class="stress-body">
+      <div class="stress-btns">
+        <button class="sbtn" id="btnRandFail">5 zufällige Knoten fallen aus</button>
+        <button class="sbtn attack" id="btnAttack">5 größte Knoten fallen aus</button>
+        <button class="sbtn" id="btnRestore">Alles zurückholen</button>
+      </div>
+      <div class="gauge">
+        <div class="gauge-lab"><span>Netz noch an einem Stück</span><b id="lccVal">100 %</b></div>
+        <div class="gauge-track"><i class="gauge-fill" id="lccFill" style="width:100%"></i></div>
+      </div>
+      <p class="stress-note" id="stressNote">Noch nichts entfernt. Probiere beides aus — der Unterschied ist der Kern der Sache.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ============ ERKLÄRUNGEN ============ -->
+<section class="prose">
+  <h3>Die Regel in drei Schritten</h3>
+  <div class="rule-steps">
+    <div class="step"><span class="num">1</span><h4>Ein neuer Punkt kommt dazu</h4><p>Das Netz wächst ständig. Neue Mitglieder, neue Webseiten, neue Flughäfen — es kommt laufend etwas hinzu.</p></div>
+    <div class="step"><span class="num">2</span><h4>Er sucht sich Anschluss</h4><p>Er knüpft eine feste Anzahl Verbindungen. Wie viele, bestimmst du oben mit „Verbindungen je neuem Knoten“.</p></div>
+    <div class="step"><span class="num">3</span><h4>Er wählt nicht blind</h4><p>Wer schon doppelt so viele Verbindungen hat, wird auch doppelt so wahrscheinlich gewählt. Mehr steckt nicht dahinter.</p></div>
+  </div>
+
+  <div class="cols" style="margin-top:22px">
+    <div class="note">
+      <span class="tag">Warum das kippt</span>
+      <p>Ein Knoten, der zufällig früh ein paar Verbindungen mehr hat, wird öfter gewählt. Dadurch hat er noch mehr Verbindungen — und wird noch öfter gewählt. Der Vorsprung verstärkt sich selbst.</p>
+      <p>Das Ergebnis ist keine gleichmäßige Landschaft, sondern eine mit wenigen Bergen und sehr viel Fläche: ein paar riesige Knotenpunkte, dahinter ein langer Schwanz aus Knoten mit ein oder zwei Verbindungen.</p>
+      <p>Stelle oben auf <em>„Rein zufällig“</em> um und lass ein gleich großes Netz wachsen. Alles andere bleibt gleich — nur die Wahl ist blind. Die Kennzahl „Der Größte ist … mal so groß“ zeigt den Unterschied am deutlichsten.</p>
+    </div>
+    <div class="note">
+      <span class="tag">Woran man so ein Netz erkennt</span>
+      <p>Schalte die Verteilung rechts auf <em>„gestaucht“</em>. Dort werden beide Achsen zusammengestaucht, damit auch die seltenen Riesen sichtbar bleiben.</p>
+      <p>Bei bevorzugter Anbindung liegen die Punkte dann ungefähr auf einer fallenden Geraden. Das ist das Erkennungszeichen: keine typische Größe, sondern alle Größenordnungen gleichzeitig. Deshalb „skalenfrei“ — es gibt keinen normalen Knoten, an dem man sich orientieren könnte.</p>
+      <p>Bei rein zufälliger Anbindung bricht die Kurve dagegen steil ab: sehr große Knoten kommen praktisch nicht vor.</p>
+    </div>
+    <div class="note">
+      <span class="tag">Robust und verletzlich zugleich</span>
+      <p>Der Belastungstest zeigt die praktische Konsequenz. Fallen zufällige Knoten aus, passiert wenig — man erwischt fast immer einen der vielen Kleinen.</p>
+      <p>Fallen dagegen gezielt die größten aus, zerfällt das Netz in Bruchstücke. Dieselbe Struktur ist also extrem widerstandsfähig gegen Pannen und extrem anfällig gegen gezielte Angriffe.</p>
+      <p>Genau daraus folgen die praktischen Rezepte: Knotenpunkte besonders absichern — und bei Ausbreitungsprozessen zuerst dort ansetzen.</p>
+    </div>
+    <div class="note">
+      <span class="tag">Wo man es antrifft</span>
+      <ul>
+        <li>Flugverbindungen: wenige Drehkreuze, sehr viele kleine Flughäfen</li>
+        <li>Verlinkungen im Web und Zitationen in der Literatur</li>
+        <li>Kontaktnetze — wenige Personen mit sehr vielen Kontakten</li>
+        <li>Stoffwechselwege und Proteinnetze in Zellen</li>
+        <li>Zulieferketten und Zahlungsnetze</li>
+      </ul>
+    </div>
+    <div class="note">
+      <span class="tag">Was das Modell nicht kann</span>
+      <p>Es ist bewusst minimal. Echte Netze haben zusätzlich Kosten und Kapazitätsgrenzen, Knoten altern und verlieren an Attraktivität, Verbindungen werden auch wieder gelöst, und Nähe oder Fachgebiet spielen eine Rolle.</p>
+      <p>Auch die Startbedingung ist hier vereinfacht: Jeder neue Knoten bringt gleich viele Verbindungen mit. In der Realität schwankt das stark.</p>
+      <p>Der Punkt des Modells ist nicht Genauigkeit, sondern Sparsamkeit: Wachstum plus bevorzugte Anbindung reichen schon, damit Knotenpunkte entstehen. Beobachtet man solche Hubs, braucht es dafür keine planende Instanz als Erklärung.</p>
+    </div>
+    <div class="note">
+      <span class="tag">Zum Ausprobieren im Kurs</span>
+      <ul>
+        <li>Stelle „Verbindungen je neuem Knoten“ von 1 auf 5. Was passiert mit den Knoten, die nur eine Verbindung haben?</li>
+        <li>Baue zweimal dasselbe Netz mit derselben Einstellung. Wird derselbe Knoten der Größte?</li>
+        <li>Lass ein Netz langsam wachsen und beobachte, wann sich entscheidet, wer groß wird.</li>
+        <li>Vergleiche „Halb so, halb Zufall“ mit den beiden Extremen. Reicht schon ein bisschen Bevorzugung?</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<footer>Modell nach Barabási &amp; Albert (1999) · Alle Zahlen entstehen live im Browser, nichts wird gespeichert · Leertaste startet und pausiert</footer>
+</div>
+
+<script>
+"use strict";
+
+/* ===================== Zustand ===================== */
+const S = {
+  mode:'ba', m:2, N:120, rate:9,
+  sizeByDeg:true, showLabels:true, histLog:false,
+  running:false, finished:false
+};
+
+let nodes=[], edges=[], targets=[], alive=[];
+let newest=-1, newestT=0;
+let statsDirty=true, stats=null;
+let removedCount=0, lccPct=100, stressKind=null;
+const lastRuns={};
+
+const netC=document.getElementById('net'), netX=netC.getContext('2d');
+const histC=document.getElementById('hist'), histX=histC.getContext('2d');
+const shareC=document.getElementById('share'), shareX=shareC.getContext('2d');
+const tip=document.getElementById('tip');
+
+const RAMP=[[143,166,192],[76,110,173],[138,78,156],[208,28,91]];
+function ramp(t){
+  t=t<0?0:t>1?1:t;
+  const s=t*(RAMP.length-1), i=Math.min(RAMP.length-2,Math.floor(s)), f=s-i;
+  const a=RAMP[i], b=RAMP[i+1];
+  return 'rgb('+Math.round(a[0]+(b[0]-a[0])*f)+','+Math.round(a[1]+(b[1]-a[1])*f)+','+Math.round(a[2]+(b[2]-a[2])*f)+')';
+}
+const fmt = n => n.toLocaleString('de-DE');
+const fmt1 = n => n.toLocaleString('de-DE',{minimumFractionDigits:1,maximumFractionDigits:1});
+
+/* ===================== Netz aufbauen ===================== */
+function reset(){
+  nodes=[]; edges=[]; targets=[]; alive=[];
+  newest=-1; removedCount=0; lccPct=100; stressKind=null;
+  S.finished=false;
+  const seed=Math.max(2,S.m+1);
+  const R=60;
+  for(let i=0;i<seed;i++){
+    const a=i/seed*Math.PI*2;
+    nodes.push({x:Math.cos(a)*R,y:Math.sin(a)*R,vx:0,vy:0,deg:0});
+    alive.push(true);
+  }
+  for(let i=0;i<seed;i++) for(let j=i+1;j<seed;j++) link(i,j);
+  statsDirty=true;
+  updateStress();
+  syncUI();
+}
+function link(a,b){
+  edges.push({a:a,b:b});
+  nodes[a].deg++; nodes[b].deg++;
+  targets.push(a,b);
+}
+function addNode(){
+  const n=nodes.length;
+  const want=Math.min(S.m,n);
+  const chosen=[];
+  const seen=new Set();
+  let guard=0;
+  while(chosen.length<want && guard<600){
+    guard++;
+    let pref;
+    if(S.mode==='ba') pref=true;
+    else if(S.mode==='rnd') pref=false;
+    else pref=Math.random()<0.5;
+    let t;
+    if(pref && targets.length) t=targets[(Math.random()*targets.length)|0];
+    else t=(Math.random()*n)|0;
+    if(seen.has(t)) continue;
+    seen.add(t); chosen.push(t);
+  }
+  const anchor=nodes[chosen[0]!==undefined?chosen[0]:0];
+  nodes.push({
+    x:anchor.x+(Math.random()-0.5)*36,
+    y:anchor.y+(Math.random()-0.5)*36,
+    vx:0,vy:0,deg:0
+  });
+  alive.push(true);
+  for(const t of chosen) link(n,t);
+  newest=n; newestT=performance.now();
+  statsDirty=true;
+}
+
+/* ===================== Physik ===================== */
+const view={s:1,cx:0,cy:0};
+function physics(){
+  const n=nodes.length;
+  const iter = n>220?1:2;
+  const REP=1500, K=0.035, REST=26, GRAV=0.010, DAMP=0.86;
+  for(let it=0;it<iter;it++){
+    for(let i=0;i<n;i++){
+      const a=nodes[i];
+      for(let j=i+1;j<n;j++){
+        const b=nodes[j];
+        let dx=a.x-b.x, dy=a.y-b.y;
+        let d2=dx*dx+dy*dy;
+        if(d2<0.01){dx=Math.random()-0.5;dy=Math.random()-0.5;d2=0.01;}
+        if(d2>90000) continue;
+        const d=Math.sqrt(d2);
+        const f=REP/d2/d;
+        a.vx+=dx*f; a.vy+=dy*f; b.vx-=dx*f; b.vy-=dy*f;
+      }
+    }
+    for(const e of edges){
+      const a=nodes[e.a], b=nodes[e.b];
+      const dx=b.x-a.x, dy=b.y-a.y;
+      const d=Math.sqrt(dx*dx+dy*dy)||0.01;
+      const f=(d-REST)*K/d;
+      a.vx+=dx*f; a.vy+=dy*f; b.vx-=dx*f; b.vy-=dy*f;
+    }
+    for(let i=0;i<n;i++){
+      const a=nodes[i];
+      a.vx-=a.x*GRAV; a.vy-=a.y*GRAV;
+      a.vx*=DAMP; a.vy*=DAMP;
+      const sp=Math.hypot(a.vx,a.vy);
+      if(sp>14){a.vx*=14/sp;a.vy*=14/sp;}
+      a.x+=a.vx; a.y+=a.vy;
+    }
+  }
+}
+
+/* ===================== Kennzahlen ===================== */
+function computeStats(){
+  const deg=new Array(nodes.length).fill(0);
+  let E=0, Nn=0;
+  for(let i=0;i<nodes.length;i++) if(alive[i]) Nn++;
+  for(const e of edges){
+    if(alive[e.a]&&alive[e.b]){ deg[e.a]++; deg[e.b]++; E++; }
+  }
+  let max=0, sum=0, leaf=0;
+  const list=[];
+  for(let i=0;i<nodes.length;i++){
+    if(!alive[i]) continue;
+    const d=deg[i]; sum+=d;
+    if(d>max) max=d;
+    if(d===1) leaf++;
+    list.push({i:i,d:d});
+  }
+  list.sort((a,b)=>b.d-a.d);
+  const top=Math.max(1,Math.round(list.length*0.1));
+  let topSum=0;
+  for(let k=0;k<top;k++) topSum+=list[k].d;
+  stats={deg:deg,N:Nn,E:E,max:max,avg:Nn?sum/Nn:0,leaf:Nn?leaf/Nn:0,
+         sorted:list,topShare:sum?topSum/sum:0,totalDeg:sum};
+  statsDirty=false;
+}
+function ensureStats(){ if(statsDirty||!stats) computeStats(); return stats; }
+
+/* ===================== Zeichnen: Netz ===================== */
+function fitCanvas(c,x){
+  const dpr=Math.min(2,window.devicePixelRatio||1);
+  const r=c.getBoundingClientRect();
+  if(c.width!==Math.round(r.width*dpr)||c.height!==Math.round(r.height*dpr)){
+    c.width=Math.round(r.width*dpr); c.height=Math.round(r.height*dpr);
+  }
+  x.setTransform(dpr,0,0,dpr,0,0);
+  return {w:r.width,h:r.height};
+}
+function updateView(w,h){
+  let minx=1e9,maxx=-1e9,miny=1e9,maxy=-1e9,any=false;
+  for(let i=0;i<nodes.length;i++){
+    if(!alive[i])continue; any=true;
+    const p=nodes[i];
+    if(p.x<minx)minx=p.x; if(p.x>maxx)maxx=p.x;
+    if(p.y<miny)miny=p.y; if(p.y>maxy)maxy=p.y;
+  }
+  if(!any){return;}
+  const pad=42;
+  const bw=Math.max(40,maxx-minx), bh=Math.max(40,maxy-miny);
+  let ts=Math.min((w-pad*2)/bw,(h-pad*2)/bh);
+  ts=Math.max(0.15,Math.min(2.6,ts));
+  const tcx=(minx+maxx)/2, tcy=(miny+maxy)/2;
+  view.s+=(ts-view.s)*0.08;
+  view.cx+=(tcx-view.cx)*0.10;
+  view.cy+=(tcy-view.cy)*0.10;
+}
+function sx(x,w){return (x-view.cx)*view.s+w/2;}
+function sy(y,h){return (y-view.cy)*view.s+h/2;}
+function radius(d,max){
+  if(!S.sizeByDeg) return 4.2;
+  return 2.6+2.9*Math.sqrt(d);
+}
+function drawNet(){
+  const {w,h}=fitCanvas(netC,netX);
+  netX.clearRect(0,0,w,h);
+  netX.fillStyle='#FBFCFE'; netX.fillRect(0,0,w,h);
+  // feines Raster
+  netX.strokeStyle='#EDF1F6'; netX.lineWidth=1;
+  for(let gx=0;gx<w;gx+=32){netX.beginPath();netX.moveTo(gx+.5,0);netX.lineTo(gx+.5,h);netX.stroke();}
+  for(let gy=0;gy<h;gy+=32){netX.beginPath();netX.moveTo(0,gy+.5);netX.lineTo(w,gy+.5);netX.stroke();}
+
+  updateView(w,h);
+  const st=ensureStats();
+  const max=Math.max(1,st.max);
+
+  // Kanten
+  netX.lineWidth=1;
+  netX.strokeStyle='rgba(90,120,160,0.24)';
+  netX.beginPath();
+  for(const e of edges){
+    if(!alive[e.a]||!alive[e.b])continue;
+    if(e.a===newest||e.b===newest)continue;
+    const A=nodes[e.a],B=nodes[e.b];
+    netX.moveTo(sx(A.x,w),sy(A.y,h));
+    netX.lineTo(sx(B.x,w),sy(B.y,h));
+  }
+  netX.stroke();
+
+  // Kanten des neuesten Knotens hervorheben
+  const age=(performance.now()-newestT)/900;
+  if(newest>=0&&alive[newest]&&age<1){
+    netX.strokeStyle='rgba(208,28,91,'+(0.85*(1-age)+0.15)+')';
+    netX.lineWidth=1.8;
+    netX.beginPath();
+    for(const e of edges){
+      if(e.a!==newest&&e.b!==newest)continue;
+      const A=nodes[e.a],B=nodes[e.b];
+      netX.moveTo(sx(A.x,w),sy(A.y,h));
+      netX.lineTo(sx(B.x,w),sy(B.y,h));
+    }
+    netX.stroke();
+  }
+
+  // Knoten
+  for(let i=0;i<nodes.length;i++){
+    if(!alive[i])continue;
+    const d=st.deg[i], p=nodes[i];
+    const X=sx(p.x,w), Y=sy(p.y,h);
+    if(X<-30||X>w+30||Y<-30||Y>h+30)continue;
+    const r=radius(d,max);
+    netX.beginPath(); netX.arc(X,Y,r,0,6.2832);
+    netX.fillStyle=ramp(Math.sqrt(d/max));
+    netX.fill();
+    netX.lineWidth=1; netX.strokeStyle='rgba(255,255,255,.85)'; netX.stroke();
+  }
+
+  // Puls am neuen Knoten
+  if(newest>=0&&alive[newest]&&age<1){
+    const p=nodes[newest];
+    netX.beginPath();
+    netX.arc(sx(p.x,w),sy(p.y,h),6+age*22,0,6.2832);
+    netX.strokeStyle='rgba(208,28,91,'+(1-age)*0.7+')';
+    netX.lineWidth=2; netX.stroke();
+  }
+
+  // Zahlen an den größten Knoten
+  if(S.showLabels&&st.sorted.length){
+    netX.font='600 11px "IBM Plex Mono", monospace';
+    netX.textAlign='center'; netX.textBaseline='middle';
+    const k=Math.min(5,st.sorted.length);
+    for(let q=0;q<k;q++){
+      const it=st.sorted[q];
+      if(it.d<3)continue;
+      const p=nodes[it.i];
+      const X=sx(p.x,w), Y=sy(p.y,h), r=radius(it.d,max);
+      const tw=netX.measureText(String(it.d)).width+8;
+      netX.fillStyle='rgba(17,33,59,.92)';
+      netX.beginPath();
+      const bx=X, by=Y-r-11;
+      netX.roundRect(bx-tw/2,by-8,tw,16,3); netX.fill();
+      netX.fillStyle='#fff';
+      netX.fillText(String(it.d),bx,by);
+    }
+  }
+}
+
+/* ===================== Zeichnen: Verteilung ===================== */
+function drawHist(){
+  const {w,h}=fitCanvas(histC,histX);
+  histX.clearRect(0,0,w,h);
+  const st=ensureStats();
+  const pad={l:30,r:10,t:10,b:20};
+  const pw=w-pad.l-pad.r, ph=h-pad.t-pad.b;
+  if(st.N<2||st.max<1)return;
+
+  const counts=new Map();
+  for(let i=0;i<nodes.length;i++){ if(!alive[i])continue;
+    const d=st.deg[i]; counts.set(d,(counts.get(d)||0)+1); }
+
+  histX.strokeStyle='#DEE5EC'; histX.lineWidth=1;
+  histX.beginPath();
+  histX.moveTo(pad.l,pad.t); histX.lineTo(pad.l,pad.t+ph); histX.lineTo(pad.l+pw,pad.t+ph);
+  histX.stroke();
+  histX.font='500 9px "IBM Plex Mono", monospace';
+  histX.fillStyle='#5C6E86';
+
+  if(!S.histLog){
+    const maxD=Math.max(1,st.max);
+    const bins=Math.min(34,maxD);
+    const bw=maxD/bins;
+    const arr=new Array(bins).fill(0);
+    counts.forEach((c,d)=>{ let b=Math.floor((d-0.0001)/bw); if(b<0)b=0; if(b>=bins)b=bins-1; arr[b]+=c; });
+    const mx=Math.max(1,...arr);
+    const cw=pw/bins;
+    for(let b=0;b<bins;b++){
+      if(!arr[b])continue;
+      const bh=arr[b]/mx*ph;
+      histX.fillStyle=ramp(Math.sqrt((b+0.5)/bins));
+      histX.fillRect(pad.l+b*cw+0.5,pad.t+ph-bh,Math.max(1.5,cw-1.5),bh);
+    }
+    histX.fillStyle='#5C6E86'; histX.textAlign='left';
+    histX.fillText('1',pad.l+1,pad.t+ph+12);
+    histX.textAlign='right';
+    histX.fillText(String(maxD),pad.l+pw,pad.t+ph+12);
+    histX.textAlign='center'; histX.save();
+    histX.translate(9,pad.t+ph/2); histX.rotate(-Math.PI/2);
+    histX.fillText('Anzahl',0,0); histX.restore();
+    histX.textAlign='left';
+    histX.fillText('Verbindungen →',pad.l+pw/2-32,pad.t+ph+12);
+  }else{
+    const pts=[];
+    counts.forEach((c,d)=>{ if(d>0) pts.push([Math.log10(d),Math.log10(c/st.N)]); });
+    if(!pts.length)return;
+    const xmax=Math.max(0.35,...pts.map(p=>p[0]));
+    const ymin=Math.min(-0.2,...pts.map(p=>p[1]));
+    const px=v=>pad.l+v/xmax*pw;
+    const py=v=>pad.t+ph-(v-ymin)/(0-ymin)*ph;
+    // Orientierungsgerade (Steigung -3, typisch für dieses Modell)
+    const x0=0, y0=Math.max(...pts.filter(p=>p[0]<0.15).map(p=>p[1]).concat([-0.3]));
+    histX.setLineDash([4,4]); histX.strokeStyle='#C7D2DE'; histX.beginPath();
+    histX.moveTo(px(x0),py(y0)); histX.lineTo(px(xmax),py(Math.max(ymin,y0-3*xmax)));
+    histX.stroke(); histX.setLineDash([]);
+    for(const p of pts){
+      histX.beginPath();
+      histX.arc(px(p[0]),py(p[1]),3,0,6.2832);
+      histX.fillStyle=ramp(Math.sqrt(p[0]/Math.max(0.001,xmax)));
+      histX.fill();
+    }
+    histX.fillStyle='#5C6E86'; histX.textAlign='left';
+    histX.fillText('wenige Verbindungen',pad.l+1,pad.t+ph+12);
+    histX.textAlign='right';
+    histX.fillText('viele →',pad.l+pw,pad.t+ph+12);
+    histX.save(); histX.translate(9,pad.t+ph/2); histX.rotate(-Math.PI/2);
+    histX.textAlign='center'; histX.fillText('selten ← häufig',0,0); histX.restore();
+  }
+}
+
+/* ===================== Zeichnen: Verbindungsbalken ===================== */
+function drawShare(){
+  const {w,h}=fitCanvas(shareC,shareX);
+  shareX.clearRect(0,0,w,h);
+  const st=ensureStats();
+  if(!st.totalDeg)return;
+  const bh=h-16;
+  let x=0;
+  for(const it of st.sorted){
+    const seg=it.d/st.totalDeg*w;
+    shareX.fillStyle=ramp(Math.sqrt(it.d/Math.max(1,st.max)));
+    shareX.fillRect(x,0,Math.max(0.6,seg-0.6),bh);
+    x+=seg;
+  }
+  // 10-%-Marke
+  const top=Math.max(1,Math.round(st.sorted.length*0.1));
+  let cut=0; for(let k=0;k<top;k++) cut+=st.sorted[k].d;
+  const cx=cut/st.totalDeg*w;
+  shareX.strokeStyle='#11213B'; shareX.lineWidth=1.5;
+  shareX.setLineDash([3,3]);
+  shareX.beginPath(); shareX.moveTo(cx,0); shareX.lineTo(cx,bh); shareX.stroke();
+  shareX.setLineDash([]);
+  shareX.fillStyle='#5C6E86';
+  shareX.font='500 9px "IBM Plex Mono", monospace';
+  shareX.textAlign='left';
+  shareX.fillText('◀ stärkste 10 % der Knoten',2,h-3);
+  shareX.textAlign='right';
+  shareX.fillText('alle übrigen 90 % ▶',w-2,h-3);
+}
+
+/* ===================== Belastungstest ===================== */
+function lcc(){
+  const seen=new Array(nodes.length).fill(false);
+  const adj=new Map();
+  for(const e of edges){
+    if(!alive[e.a]||!alive[e.b])continue;
+    if(!adj.has(e.a))adj.set(e.a,[]); if(!adj.has(e.b))adj.set(e.b,[]);
+    adj.get(e.a).push(e.b); adj.get(e.b).push(e.a);
+  }
+  let best=0, total=0;
+  for(let i=0;i<nodes.length;i++) if(alive[i]) total++;
+  for(let i=0;i<nodes.length;i++){
+    if(!alive[i]||seen[i])continue;
+    let size=0; const q=[i]; seen[i]=true;
+    while(q.length){
+      const v=q.pop(); size++;
+      const nb=adj.get(v); if(!nb)continue;
+      for(const u of nb) if(alive[u]&&!seen[u]){seen[u]=true;q.push(u);}
+    }
+    if(size>best)best=size;
+  }
+  return total?best/total*100:100;
+}
+function removeNodes(kind,k){
+  const st=ensureStats();
+  const pool=st.sorted.slice();
+  if(pool.length<=k+2)return;
+  let victims;
+  if(kind==='hub') victims=pool.slice(0,k).map(o=>o.i);
+  else{
+    victims=[];
+    const idx=pool.map(o=>o.i);
+    for(let q=0;q<k&&idx.length;q++) victims.push(idx.splice((Math.random()*idx.length)|0,1)[0]);
+  }
+  for(const v of victims) alive[v]=false;
+  removedCount+=victims.length;
+  stressKind = stressKind && stressKind!==kind ? 'mix' : kind;
+  statsDirty=true;
+  lccPct=lcc();
+  updateStress();
+}
+function updateStress(){
+  const total=nodes.length||1;
+  const share=removedCount/total*100;
+  document.getElementById('lccVal').textContent=Math.round(lccPct)+' %';
+  const fill=document.getElementById('lccFill');
+  fill.style.width=Math.max(0,Math.min(100,lccPct))+'%';
+  fill.classList.toggle('warn',lccPct<80);
+  const note=document.getElementById('stressNote');
+  if(!removedCount){
+    note.textContent='Noch nichts entfernt. Probiere beides aus — der Unterschied ist der Kern der Sache.';
+  }else{
+    const wer = stressKind==='hub' ? 'die größten Knoten' : stressKind==='rnd' ? 'zufällige Knoten' : 'gemischt ausgewählte Knoten';
+    note.textContent='Entfernt: '+fmt(removedCount)+' '+(removedCount===1?'Knoten':'Knoten')+' ('+fmt1(share)+' % des Netzes), '+wer+'. Vom Rest hängen '+Math.round(lccPct)+' % noch zusammen.';
+  }
+}
+
+/* ===================== UI ===================== */
+function syncUI(){
+  const st=ensureStats();
+  document.getElementById('counter').innerHTML='<b>'+fmt(st.N)+'</b> Knoten · <b>'+fmt(st.E)+'</b> Verbindungen';
+  document.getElementById('mMax').textContent=fmt(st.max);
+  document.getElementById('mAvg').textContent=fmt1(st.avg);
+  document.getElementById('mRatio').textContent=(st.avg?fmt1(st.max/st.avg):'0')+'×';
+  document.getElementById('mLeaf').textContent=Math.round(st.leaf*100)+' %';
+  document.getElementById('progressBar').style.width=Math.min(100,nodes.length/S.N*100)+'%';
+  document.getElementById('shareCap').innerHTML=
+    'Die stärksten 10 % der Knoten halten <b>'+Math.round(st.topShare*100)+' %</b> aller Verbindungen.';
+  document.getElementById('histNote').textContent = S.histLog
+    ? 'Beide Achsen gestaucht. Liegen die Punkte ungefähr auf einer Geraden, gibt es keine typische Knotengröße — das Kennzeichen eines skalenfreien Netzes. Die gestrichelte Linie dient nur als Vergleich.'
+    : 'Ganz links die vielen kleinen Knoten, ganz rechts die wenigen großen. Der lange flache Schwanz nach rechts ist das Entscheidende.';
+  document.getElementById('btnStep').disabled = nodes.length>=S.N;
+  const lab=document.getElementById('playLabel'), gl=document.getElementById('playGlyph');
+  if(nodes.length>=S.N){ lab.textContent='Fertig gewachsen'; gl.className='glyph play'; }
+  else { lab.textContent=S.running?'Pause':'Wachsen lassen'; gl.className='glyph '+(S.running?'pause':'play'); }
+}
+function group(id,cb,multi){
+  const el=document.getElementById(id);
+  el.addEventListener('click',ev=>{
+    const b=ev.target.closest('.chip'); if(!b)return;
+    if(multi){ b.setAttribute('aria-pressed', b.getAttribute('aria-pressed')==='true'?'false':'true'); }
+    else { el.querySelectorAll('.chip').forEach(c=>c.setAttribute('aria-pressed','false')); b.setAttribute('aria-pressed','true'); }
+    cb(b.dataset.v,b);
+  });
+}
+function setChip(id,val){
+  const el=document.getElementById(id);
+  el.querySelectorAll('.chip').forEach(c=>c.setAttribute('aria-pressed', c.dataset.v===String(val)?'true':'false'));
+}
+
+group('grpMode',v=>{S.mode=v; reset(); clearPreset();});
+group('grpM',v=>{S.m=+v; reset(); clearPreset();});
+group('grpN',v=>{S.N=+v; if(nodes.length>S.N) reset(); S.finished=false; syncUI(); clearPreset();});
+group('grpSpeed',v=>{S.rate=+v; clearPreset();});
+group('grpView',(v,b)=>{
+  const on=b.getAttribute('aria-pressed')==='true';
+  if(v==='size') S.sizeByDeg=on; else S.showLabels=on;
+},true);
+group('grpHist',v=>{S.histLog=(v==='log'); syncUI();});
+
+const PRESETS={
+  einstieg:{mode:'ba',m:1,N:30,rate:2},
+  klassisch:{mode:'ba',m:2,N:120,rate:9},
+  zufall:{mode:'rnd',m:2,N:120,rate:9},
+  gross:{mode:'ba',m:3,N:400,rate:9999},
+  stern:{mode:'ba',m:1,N:250,rate:35}
+};
+function clearPreset(){document.querySelectorAll('.preset').forEach(p=>p.classList.remove('on'));}
+document.getElementById('presets').addEventListener('click',ev=>{
+  const b=ev.target.closest('.preset'); if(!b)return;
+  const p=PRESETS[b.dataset.preset]; if(!p)return;
+  Object.assign(S,p);
+  setChip('grpMode',S.mode); setChip('grpM',S.m); setChip('grpN',S.N); setChip('grpSpeed',S.rate);
+  clearPreset(); b.classList.add('on');
+  reset();
+  S.running=true; acc=0; syncUI();
+});
+
+document.getElementById('btnPlay').onclick=()=>{
+  if(nodes.length>=S.N){ reset(); }
+  S.running=!S.running; acc=0; syncUI();
+};
+document.getElementById('btnReset').onclick=()=>{S.running=false; reset();};
+document.getElementById('btnStep').onclick=()=>{
+  if(nodes.length<S.N){ addNode(); syncUI(); }
+};
+document.getElementById('btnRandFail').onclick=()=>removeNodes('rnd',5);
+document.getElementById('btnAttack').onclick=()=>removeNodes('hub',5);
+document.getElementById('btnRestore').onclick=()=>{
+  for(let i=0;i<alive.length;i++) alive[i]=true;
+  removedCount=0; lccPct=100; stressKind=null; statsDirty=true; updateStress();
+};
+document.addEventListener('keydown',e=>{
+  if(e.code==='Space'&&!/INPUT|BUTTON/.test(document.activeElement.tagName)){
+    e.preventDefault(); document.getElementById('btnPlay').click();
+  }
+});
+
+/* Tooltip */
+netC.addEventListener('mousemove',ev=>{
+  const r=netC.getBoundingClientRect();
+  const mx=ev.clientX-r.left, my=ev.clientY-r.top;
+  const st=ensureStats();
+  let best=-1,bd=1e9;
+  for(let i=0;i<nodes.length;i++){
+    if(!alive[i])continue;
+    const X=sx(nodes[i].x,r.width), Y=sy(nodes[i].y,r.height);
+    const d=Math.hypot(X-mx,Y-my);
+    const rr=radius(st.deg[i],st.max)+7;
+    if(d<rr&&d<bd){bd=d;best=i;}
+  }
+  if(best<0){tip.style.opacity=0;return;}
+  const d=st.deg[best];
+  const chance = S.mode==='rnd' ? (1/st.N) : S.mode==='mix' ? (0.5*d/Math.max(1,st.totalDeg)+0.5/st.N) : (d/Math.max(1,st.totalDeg));
+  tip.innerHTML='Verbindungen: <b>'+d+'</b><br>Chance, als Nächstes gewählt zu werden: <b>'+fmt1(chance*100)+' %</b><br>kam als Knoten Nr. '+(best+1)+' dazu';
+  tip.style.left=sx(nodes[best].x,r.width)+'px';
+  tip.style.top=sy(nodes[best].y,r.height)+'px';
+  tip.style.opacity=1;
+});
+netC.addEventListener('mouseleave',()=>{tip.style.opacity=0;});
+
+/* Vergleichstabelle */
+function recordRun(){
+  const st=ensureStats();
+  const nameOf={ba:'Lieber gut Vernetzte',mix:'Halb so, halb Zufall',rnd:'Rein zufällig'};
+  lastRuns[S.mode]={name:nameOf[S.mode],N:st.N,m:S.m,max:st.max,avg:st.avg,top:st.topShare};
+  renderCmp();
+}
+function renderCmp(){
+  const keys=Object.keys(lastRuns);
+  const wrap=document.getElementById('cmpWrap');
+  if(!keys.length)return;
+  let html='<table><thead><tr><th>Anbindungsregel</th><th>Netz</th><th>Größter</th><th>Ø</th><th>Top 10 %</th></tr></thead><tbody>';
+  for(const k of ['ba','mix','rnd']){
+    const r=lastRuns[k]; if(!r)continue;
+    html+='<tr><td>'+r.name+'</td><td>'+fmt(r.N)+'/'+r.m+'</td><td'+(k==='ba'?' style="color:#D01C5B;font-weight:600"':'')+'>'+fmt(r.max)+'</td><td>'+fmt1(r.avg)+'</td><td>'+Math.round(r.top*100)+' %</td></tr>';
+  }
+  html+='</tbody></table><p class="empty" style="border-top:1px solid var(--rule-soft)">Spalte „Netz“: Endgröße / Verbindungen je neuem Knoten. Nur bei gleicher Netzgröße sind die Zeilen fair vergleichbar.</p>';
+  wrap.innerHTML=html;
+}
+
+/* ===================== Schleife ===================== */
+let acc=0, last=performance.now();
+function frame(now){
+  const dt=Math.min(0.1,(now-last)/1000); last=now;
+  if(S.running&&nodes.length<S.N){
+    acc+=dt*S.rate;
+    let k=0;
+    while(acc>=1&&nodes.length<S.N&&k<600){ addNode(); acc-=1; k++; }
+  }
+  if(nodes.length>=S.N&&!S.finished){
+    S.finished=true; S.running=false; recordRun();
+  }
+  physics();
+  drawNet(); drawHist(); drawShare();
+  syncUI();
+  requestAnimationFrame(frame);
+}
+
+if(!CanvasRenderingContext2D.prototype.roundRect){
+  CanvasRenderingContext2D.prototype.roundRect=function(x,y,w,h,r){
+    this.beginPath();
+    this.moveTo(x+r,y); this.arcTo(x+w,y,x+w,y+h,r); this.arcTo(x+w,y+h,x,y+h,r);
+    this.arcTo(x,y+h,x,y,r); this.arcTo(x,y,x+w,y,r); this.closePath(); return this;
+  };
+}
+
+reset();
+requestAnimationFrame(frame);
+</script>
+</body>
+</html>
