@@ -1,0 +1,1136 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Kreispackungen &amp; Codierung — interaktives Schulungsmodul</title>
+<style>
+:root{
+  --ink:#0E141B; --ink-2:#16202B; --ink-3:#1E2B38;
+  --paper:#EBEEF1; --card:#FFFFFF; --line:#D2D8DE; --line-soft:#E3E7EB;
+  --text:#161E27; --muted:#6A7684;
+  --signal:#00BFA6; --signal-deep:#0B7A6C;
+  --pulse:#F5A623; --err:#E8503A; --violet:#8B7BF0;
+  --mono: ui-monospace, "SF Mono", "JetBrains Mono", Menlo, Consolas, monospace;
+  --sans: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{
+  background:var(--paper); color:var(--text); font-family:var(--sans);
+  font-size:15px; line-height:1.55; -webkit-font-smoothing:antialiased;
+}
+h1,h2,h3{margin:0; font-weight:650; letter-spacing:-.01em}
+
+/* ---------- Masthead ---------- */
+.masthead{background:var(--ink); color:#DCE3EA; padding:14px 20px}
+.mast-inner{max-width:1180px; margin:0 auto; display:flex; align-items:center; gap:14px}
+.mark{
+  width:34px;height:34px;border-radius:50%;flex:0 0 auto;
+  border:2px solid var(--signal); position:relative;
+}
+.mark::after{content:"";position:absolute;inset:7px;border-radius:50%;background:var(--signal);opacity:.55}
+.masthead h1{font-size:17px; color:#F2F6F9; letter-spacing:.01em}
+.masthead p{margin:1px 0 0; font-size:12.5px; color:#8FA0B0}
+.mast-meta{
+  margin-left:auto; font-family:var(--mono); font-size:10.5px; letter-spacing:.14em;
+  text-transform:uppercase; color:#5E7182; border:1px solid #2A3946; padding:4px 9px; border-radius:3px;
+}
+
+/* ---------- Kommandoleiste (sticky) ---------- */
+.commandbar{
+  position:sticky; top:0; z-index:60; background:var(--card);
+  border-bottom:1px solid var(--line); box-shadow:0 1px 0 rgba(16,24,32,.04), 0 8px 18px -14px rgba(16,24,32,.35);
+}
+.cb-inner{max-width:1180px; margin:0 auto; padding:0 20px}
+.tabs{display:flex; gap:2px; border-bottom:1px solid var(--line-soft); overflow-x:auto}
+.tabs button{
+  appearance:none; background:none; border:0; border-bottom:2px solid transparent;
+  padding:11px 4px; margin-right:22px; cursor:pointer; white-space:nowrap;
+  font-family:var(--sans); font-size:14px; font-weight:560; color:var(--muted);
+}
+.tabs button .idx{font-family:var(--mono); font-size:11px; color:#A3AEBA; margin-right:7px}
+.tabs button[aria-selected="true"]{color:var(--text); border-bottom-color:var(--signal)}
+.tabs button:hover{color:var(--text)}
+
+.ctrlrow{display:none; gap:22px; padding:11px 0 12px; overflow-x:auto; align-items:flex-end}
+.ctrlrow.active{display:flex}
+.ctrl{flex:0 0 auto}
+.ctrl > label{
+  display:block; font-family:var(--mono); font-size:10px; letter-spacing:.12em;
+  text-transform:uppercase; color:var(--muted); margin-bottom:5px;
+}
+.seg{display:flex; border:1px solid var(--line); border-radius:5px; overflow:hidden; background:#F7F8FA}
+.seg button{
+  appearance:none; background:none; border:0; border-right:1px solid var(--line);
+  padding:6px 11px; font-family:var(--sans); font-size:13px; color:#48535F; cursor:pointer; white-space:nowrap;
+}
+.seg button:last-child{border-right:0}
+.seg button:hover{background:#EDF0F3}
+.seg button.on{background:var(--ink-2); color:#EAF6F4; font-weight:560}
+.seg.accent button.on{background:var(--signal-deep); color:#EFFFFC}
+.act{
+  appearance:none; border:1px solid var(--ink-2); background:var(--ink-2); color:#EAF6F4;
+  padding:7px 14px; border-radius:5px; font-family:var(--sans); font-size:13px; font-weight:560; cursor:pointer;
+}
+.act.ghost{background:#fff; color:#48535F; border-color:var(--line)}
+.act:hover{filter:brightness(1.12)}
+.ctrl-sep{width:1px; align-self:stretch; background:var(--line-soft); margin:0 2px}
+
+/* ---------- Layout ---------- */
+main{max-width:1180px; margin:0 auto; padding:20px 20px 60px}
+.panel{display:none}
+.panel.active{display:block}
+.workbench{display:grid; grid-template-columns:minmax(0,1fr) 318px; gap:20px; align-items:start}
+
+.stage{
+  background:var(--ink); border-radius:8px; padding:12px; position:relative;
+  border:1px solid #0A1017;
+}
+.stage canvas{display:block; width:100%; aspect-ratio:1/1; border-radius:4px}
+.stage-cap{
+  display:flex; justify-content:space-between; align-items:baseline; margin:9px 2px 1px;
+  font-family:var(--mono); font-size:10.5px; letter-spacing:.11em; text-transform:uppercase; color:#5E7182;
+}
+.stage-cap b{color:var(--signal); font-weight:500; letter-spacing:.06em}
+.fit{width:min(100%, 640px, calc(100vh - 258px))}
+
+/* ---------- Ablesefeld ---------- */
+.readout{background:var(--card); border:1px solid var(--line); border-radius:8px; padding:15px 16px 17px}
+.readout h3{
+  font-family:var(--mono); font-size:10px; letter-spacing:.14em; text-transform:uppercase;
+  color:var(--muted); font-weight:500; margin-bottom:11px;
+}
+.rowset{display:grid; gap:0}
+.row{display:flex; justify-content:space-between; align-items:baseline; gap:10px; padding:6px 0; border-bottom:1px dotted var(--line-soft)}
+.row:last-child{border-bottom:0}
+.row .k{font-size:13px; color:#4C5967}
+.row .v{font-family:var(--mono); font-size:14px; font-weight:600; color:var(--text); text-align:right}
+.row .v small{font-weight:400; color:var(--muted); font-size:11px}
+.v.good{color:var(--signal-deep)} .v.warn{color:#B4741A} .v.bad{color:var(--err)}
+
+.scale{margin:14px 0 4px}
+.scale-track{position:relative; height:9px; background:#EDF0F3; border-radius:2px; overflow:hidden}
+.scale-fill{position:absolute; inset:0 auto 0 0; background:var(--signal); border-radius:2px; transition:width .25s ease}
+.scale-marks{position:relative; height:24px; margin-top:3px}
+.scale-marks span{
+  position:absolute; transform:translateX(-50%); font-family:var(--mono); font-size:9.5px; color:var(--muted);
+  text-align:center; line-height:1.15; white-space:nowrap;
+}
+.scale-marks span::before{content:""; display:block; width:1px; height:5px; background:var(--line); margin:0 auto 2px}
+.hint{font-size:12.5px; color:var(--muted); margin-top:13px; padding-top:11px; border-top:1px solid var(--line-soft)}
+
+.legend{display:flex; flex-wrap:wrap; gap:9px 15px; margin-top:12px}
+.legend div{display:flex; align-items:center; gap:6px; font-size:12px; color:#4C5967}
+.dot{width:10px; height:10px; border-radius:50%; flex:0 0 auto}
+
+/* ---------- Erklärungen ---------- */
+.notes{display:grid; grid-template-columns:repeat(3,1fr); gap:16px; margin-top:20px}
+.note{background:var(--card); border:1px solid var(--line); border-radius:8px; padding:15px 17px 17px}
+.note .eyebrow{
+  font-family:var(--mono); font-size:10px; letter-spacing:.13em; text-transform:uppercase;
+  color:var(--signal-deep); margin-bottom:7px;
+}
+.note h4{margin:0 0 7px; font-size:14.5px; font-weight:650}
+.note p{margin:0 0 8px; font-size:13.5px; color:#3C4753}
+.note p:last-child{margin-bottom:0}
+.note ul{margin:6px 0 0; padding-left:17px; font-size:13.5px; color:#3C4753}
+.note li{margin-bottom:5px}
+.note.task{background:#F6FBFA; border-color:#BFE4DE}
+.note.task .eyebrow{color:#0B7A6C}
+kbd{
+  font-family:var(--mono); font-size:11.5px; background:#EDF0F3; border:1px solid var(--line);
+  border-bottom-width:2px; border-radius:3px; padding:1px 5px;
+}
+
+/* ---------- Hamming-Raster ---------- */
+.hamwrap{background:var(--ink); border:1px solid #0A1017; border-radius:8px; padding:16px}
+.hamgrid{display:grid; gap:4px; margin:0 auto}
+.cell{
+  aspect-ratio:1/1; border-radius:3px; display:flex; align-items:center; justify-content:center;
+  font-family:var(--mono); font-size:10px; color:#0E141B; cursor:default; position:relative;
+  border:1px solid transparent; transition:transform .12s ease;
+}
+.cell:hover{transform:scale(1.14); z-index:3}
+.cell.center{border-color:#fff; box-shadow:0 0 0 1px rgba(255,255,255,.55) inset}
+.cell.void{background:#1A242F; color:#4A5866}
+.cell.clash{background:repeating-linear-gradient(45deg,#E8503A,#E8503A 3px,#8E2C1E 3px,#8E2C1E 6px)}
+.cell.sent{outline:2px solid #fff; outline-offset:1px}
+.cell.recv{outline:2px solid var(--pulse); outline-offset:1px}
+.bits{display:flex; gap:3px}
+.bit{
+  width:22px; height:26px; border-radius:3px; background:#1E2B38; color:#B8C6D2;
+  font-family:var(--mono); font-size:13px; display:flex; align-items:center; justify-content:center;
+}
+.bit.flip{background:var(--pulse); color:#231703; font-weight:700}
+.bit.one{background:#26404F; color:#EAF6F4}
+.wire{display:grid; gap:8px; margin-top:2px}
+.wire-row{display:flex; align-items:center; gap:11px}
+.wire-row .lbl{
+  font-family:var(--mono); font-size:10px; letter-spacing:.1em; text-transform:uppercase;
+  color:#6A7684; width:82px; flex:0 0 auto;
+}
+.verdict{font-size:13.5px; font-weight:600; padding:8px 11px; border-radius:5px; margin-top:12px}
+.verdict.ok{background:#E7F6F3; color:#0B6C60}
+.verdict.no{background:#FDECE8; color:#B23A26}
+.verdict.amb{background:#FEF4E3; color:#8A5A0C}
+
+.chartbox{background:var(--card); border:1px solid var(--line); border-radius:8px; padding:13px 15px; margin-top:16px}
+.chartbox canvas{display:block; width:100%; height:108px}
+
+@media (max-width:940px){
+  .workbench{grid-template-columns:1fr}
+  .notes{grid-template-columns:1fr}
+  .fit{width:100%}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none !important}}
+</style>
+</head>
+<body>
+
+<header class="masthead">
+  <div class="mast-inner">
+    <div class="mark"></div>
+    <div>
+      <h1>Kreispackungen &amp; Codierung</h1>
+      <p>Warum ein guter Code aussieht wie dicht gepackte Kreise</p>
+    </div>
+    <div class="mast-meta">Schulungsmodul</div>
+  </div>
+</header>
+
+<div class="commandbar">
+  <div class="cb-inner">
+    <nav class="tabs" role="tablist">
+      <button role="tab" data-tab="packung" aria-selected="true"><span class="idx">01</span>Packen</button>
+      <button role="tab" data-tab="codierung" aria-selected="false"><span class="idx">02</span>Senden &amp; Stören</button>
+      <button role="tab" data-tab="hamming" aria-selected="false"><span class="idx">03</span>Bits statt Fläche</button>
+    </nav>
+
+    <!-- Steuerung 01 -->
+    <div class="ctrlrow active" data-ctrl="packung">
+      <div class="ctrl">
+        <label>Voreinstellung</label>
+        <div class="seg accent" data-key="p_preset">
+          <button data-val="dicht">Dichteste Packung</button>
+          <button data-val="raster">Schachbrett</button>
+          <button data-val="chaos">Zufällig gestreut</button>
+          <button data-val="gross">Wenige, große</button>
+        </div>
+      </div>
+      <div class="ctrl-sep"></div>
+      <div class="ctrl">
+        <label>Anordnung</label>
+        <div class="seg" data-key="p_mode">
+          <button data-val="quad">Quadratisch</button>
+          <button data-val="hex">Hexagonal</button>
+          <button data-val="rand">Zufällig</button>
+        </div>
+      </div>
+      <div class="ctrl">
+        <label>Kreisgröße</label>
+        <div class="seg" data-key="p_r">
+          <button data-val="xl">Groß</button>
+          <button data-val="l">Mittel</button>
+          <button data-val="m">Klein</button>
+          <button data-val="s">Sehr klein</button>
+        </div>
+      </div>
+      <div class="ctrl">
+        <label>Anzeige</label>
+        <div class="seg" data-key="p_view">
+          <button data-val="circles">Kreise</button>
+          <button data-val="gaps">Lücken</button>
+          <button data-val="voronoi">Zuständigkeit</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Steuerung 02 -->
+    <div class="ctrlrow" data-ctrl="codierung">
+      <div class="ctrl">
+        <label>Voreinstellung</label>
+        <div class="seg accent" data-key="c_preset">
+          <button data-val="ruhig">Ruhiger Kanal</button>
+          <button data-val="grenze">An der Grenze</button>
+          <button data-val="hex">Hexagonal-Vorteil</button>
+          <button data-val="chaos">Ohne Struktur</button>
+        </div>
+      </div>
+      <div class="ctrl-sep"></div>
+      <div class="ctrl">
+        <label>Anordnung</label>
+        <div class="seg" data-key="c_mode">
+          <button data-val="quad">Quadratisch</button>
+          <button data-val="hex">Hexagonal</button>
+          <button data-val="rand">Zufällig</button>
+        </div>
+      </div>
+      <div class="ctrl">
+        <label>Codewörter</label>
+        <div class="seg" data-key="c_M">
+          <button data-val="9">9</button>
+          <button data-val="16">16</button>
+          <button data-val="36">36</button>
+          <button data-val="64">64</button>
+        </div>
+      </div>
+      <div class="ctrl">
+        <label>Störung</label>
+        <div class="seg" data-key="c_noise">
+          <button data-val="low">Schwach</button>
+          <button data-val="mid">Mittel</button>
+          <button data-val="high">Stark</button>
+          <button data-val="max">Extrem</button>
+        </div>
+      </div>
+      <div class="ctrl">
+        <label>Anzeige</label>
+        <div class="seg" data-key="c_view">
+          <button data-val="circles">Kreise</button>
+          <button data-val="voronoi">Zuständigkeit</button>
+          <button data-val="both">Beides</button>
+        </div>
+      </div>
+      <div class="ctrl-sep"></div>
+      <div class="ctrl">
+        <label>Übertragung</label>
+        <div style="display:flex;gap:7px">
+          <button class="act" id="c-run">Pause</button>
+          <button class="act ghost" id="c-reset">Neu zählen</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Steuerung 03 -->
+    <div class="ctrlrow" data-ctrl="hamming">
+      <div class="ctrl">
+        <label>Voreinstellung</label>
+        <div class="seg accent" data-key="h_preset">
+          <button data-val="rep">Dreifach wiederholen</button>
+          <button data-val="perfekt">Hamming — perfekt</button>
+          <button data-val="zugross">Kugeln zu groß</button>
+          <button data-val="zufall">Zufallscode</button>
+        </div>
+      </div>
+      <div class="ctrl-sep"></div>
+      <div class="ctrl">
+        <label>Code</label>
+        <div class="seg" data-key="h_code">
+          <button data-val="none">Ohne Schutz</button>
+          <button data-val="rep3">Wiederholung 3×</button>
+          <button data-val="rep5">Wiederholung 5×</button>
+          <button data-val="ham74">Hamming (7,4)</button>
+          <button data-val="rand">Zufallscode</button>
+        </div>
+      </div>
+      <div class="ctrl">
+        <label>Kugelradius</label>
+        <div class="seg" data-key="h_t">
+          <button data-val="0">0</button>
+          <button data-val="1">1</button>
+          <button data-val="2">2</button>
+        </div>
+      </div>
+      <div class="ctrl">
+        <label>Gekippte Bits</label>
+        <div class="seg" data-key="h_flip">
+          <button data-val="0">0</button>
+          <button data-val="1">1</button>
+          <button data-val="2">2</button>
+          <button data-val="3">3</button>
+        </div>
+      </div>
+      <div class="ctrl">
+        <label>Demo</label>
+        <button class="act" id="h-send">Wort senden</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<main>
+
+<!-- ==================== 01 PACKEN ==================== -->
+<section class="panel active" data-panel="packung">
+  <div class="workbench">
+    <div>
+      <div class="stage fit">
+        <canvas id="cv-pack"></canvas>
+        <div class="stage-cap"><span>Feld 600 × 600</span><span>Anordnung: <b id="pack-mode-label">Hexagonal</b></span></div>
+      </div>
+    </div>
+    <aside class="readout">
+      <h3>Messwerte</h3>
+      <div class="rowset">
+        <div class="row"><span class="k">Kreise im Feld</span><span class="v" id="p-count">—</span></div>
+        <div class="row"><span class="k">Radius</span><span class="v" id="p-radius">—</span></div>
+        <div class="row"><span class="k">Belegte Fläche</span><span class="v good" id="p-density">—</span></div>
+        <div class="row"><span class="k">Verschenkte Fläche</span><span class="v" id="p-waste">—</span></div>
+        <div class="row"><span class="k">Berührende Nachbarn</span><span class="v" id="p-neigh">—</span></div>
+      </div>
+
+      <div class="scale">
+        <div class="scale-track"><div class="scale-fill" id="p-bar" style="width:0%"></div></div>
+        <div class="scale-marks">
+          <span style="left:54.7%">54,7 %<br>zufällig</span>
+          <span style="left:78.5%">78,5 %<br>quadr.</span>
+          <span style="left:90.7%">90,7 %<br>hexag.</span>
+        </div>
+      </div>
+
+      <div class="legend">
+        <div><span class="dot" style="background:#00BFA6"></span>Kreis (Codewort + Toleranz)</div>
+        <div><span class="dot" style="background:#F5A623"></span>ungenutzte Lücke</div>
+      </div>
+
+      <p class="hint">Die Marken zeigen, was auf unendlicher Fläche maximal erreichbar ist. Im endlichen Feld bleibt man wegen der Ränder immer etwas darunter.</p>
+    </aside>
+  </div>
+
+  <div class="notes">
+    <div class="note">
+      <div class="eyebrow">Was Sie sehen</div>
+      <h4>Wie viel Platz bleibt liegen?</h4>
+      <p>Gleich große Kreise sollen ein Feld füllen, ohne sich zu überlappen. Je nach Anordnung bleibt unterschiedlich viel Fläche ungenutzt.</p>
+      <p>Das quadratische Raster wirkt ordentlich, verschenkt aber gut ein Fünftel der Fläche. Versetzt man jede zweite Reihe, rutschen die Kreise in die Lücken der Nachbarreihe — das ist die dichteste Anordnung, die es in der Ebene gibt.</p>
+    </div>
+    <div class="note">
+      <div class="eyebrow">Der Bezug zur Codierung</div>
+      <h4>Ein Kreis ist ein Codewort mit Sicherheitsabstand</h4>
+      <p>Denken Sie sich das Feld als alle Signale, die eine Leitung übertragen kann. Ein Kreismittelpunkt ist ein Signal, das Sie tatsächlich senden — ein <em>Codewort</em>. Der Radius ist die Störung, die Sie noch verkraften wollen.</p>
+      <p>Überlappen sich zwei Kreise, kann der Empfänger im Überlappungsbereich nicht mehr entscheiden, was gemeint war. Deshalb: nicht überlappen. Und je mehr Kreise Sie unterbringen, desto mehr Information geht pro Sendung durch.</p>
+    </div>
+    <div class="note task">
+      <div class="eyebrow">Zum Ausprobieren</div>
+      <h4>Drei Minuten am Regler</h4>
+      <ul>
+        <li>Vergleichen Sie <kbd>Quadratisch</kbd> und <kbd>Hexagonal</kbd> bei gleicher Kreisgröße — wie viele Kreise kommen dazu?</li>
+        <li>Schalten Sie auf <kbd>Lücken</kbd>: Wo genau bleibt die Fläche liegen?</li>
+        <li><kbd>Zufällig</kbd> streut Kreise ohne Plan, bis nichts mehr passt. Bei rund 55 % ist Schluss — Struktur schlägt Zufall deutlich.</li>
+        <li>Machen Sie die Kreise kleiner: Die Ausnutzung steigt kaum, die Anzahl aber stark. Genau dieser Handel ist die Frage jeder Codierung.</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- ==================== 02 SENDEN & STÖREN ==================== -->
+<section class="panel" data-panel="codierung">
+  <div class="workbench">
+    <div>
+      <div class="stage fit">
+        <canvas id="cv-code"></canvas>
+        <div class="stage-cap"><span>Signalfeld — gesendet vs. empfangen</span><span>Störung: <b id="code-noise-label">Mittel</b></span></div>
+      </div>
+      <div class="chartbox">
+        <div class="stage-cap" style="color:var(--muted); margin-top:0">
+          <span>Fehlerquote im Verlauf</span><span id="c-chart-max">—</span>
+        </div>
+        <canvas id="cv-chart"></canvas>
+      </div>
+    </div>
+    <aside class="readout">
+      <h3>Kanalprotokoll</h3>
+      <div class="rowset">
+        <div class="row"><span class="k">Codewörter</span><span class="v" id="c-count">—</span></div>
+        <div class="row"><span class="k">Information pro Sendung</span><span class="v" id="c-bits">—</span></div>
+        <div class="row"><span class="k">Kleinster Abstand</span><span class="v" id="c-dmin">—</span></div>
+        <div class="row"><span class="k">Abstand ÷ Störung</span><span class="v" id="c-snr">—</span></div>
+        <div class="row"><span class="k">Sendungen</span><span class="v" id="c-sent">—</span></div>
+        <div class="row"><span class="k">Falsch verstanden</span><span class="v" id="c-errs">—</span></div>
+        <div class="row"><span class="k">Fehlerquote</span><span class="v" id="c-rate">—</span></div>
+      </div>
+      <div class="legend">
+        <div><span class="dot" style="background:#00BFA6"></span>gesendetes Codewort</div>
+        <div><span class="dot" style="background:#9FD8D0"></span>richtig verstanden</div>
+        <div><span class="dot" style="background:#E8503A"></span>falsch verstanden</div>
+      </div>
+      <p class="hint" id="c-hint">—</p>
+    </aside>
+  </div>
+
+  <div class="notes">
+    <div class="note">
+      <div class="eyebrow">Was Sie sehen</div>
+      <h4>Jede Sendung wackelt</h4>
+      <p>Der Sender wählt eines der grünen Codewörter. Auf dem Weg zum Empfänger kommt Störung dazu — das Signal landet neben dem Sollpunkt. Der Empfänger rät auf das nächstgelegene Codewort.</p>
+      <p>Die Ansicht <kbd>Zuständigkeit</kbd> zeigt, welcher Bereich zu welchem Codewort gehört. Bleibt ein gestörter Punkt im eigenen Bereich, war die Übertragung erfolgreich. Springt er über die Grenze, entsteht ein Fehler.</p>
+    </div>
+    <div class="note">
+      <div class="eyebrow">Der Bezug zur Packung</div>
+      <h4>Größerer Abstand = weniger Fehler</h4>
+      <p>Entscheidend ist allein der Abstand zwischen den beiden nächstgelegenen Codewörtern. Er bestimmt, wie viel Störung ein Signal aushält.</p>
+      <p>Beide Anordnungen bekommen hier gleich viel Fläche pro Codewort. Die hexagonale holt daraus rund 7 % mehr Abstand heraus — geschenkte Robustheit, allein durch bessere Geometrie. Zufällig gesetzte Codewörter geraten sich dagegen gegenseitig ins Gehege.</p>
+    </div>
+    <div class="note task">
+      <div class="eyebrow">Zum Ausprobieren</div>
+      <h4>Drei Minuten am Regler</h4>
+      <ul>
+        <li>Erhöhen Sie <kbd>Codewörter</kbd> bei fester Störung: mehr Information pro Sendung, aber die Fehlerquote schießt hoch.</li>
+        <li>Wechseln Sie zwischen den Voreinstellungen <kbd>An der Grenze</kbd> und <kbd>Hexagonal-Vorteil</kbd>: gleich viele Codewörter, gleiche Störung — nur andere Geometrie, und die Fehlerquote halbiert sich fast.</li>
+        <li><kbd>Zufällig</kbd> zeigt, was passiert, wenn niemand die Geometrie plant.</li>
+        <li>Merkgröße: Solange „Abstand ÷ Störung" über etwa 5 liegt, sind Fehler selten. Darunter wird es schnell dramatisch.</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- ==================== 03 BITS STATT FLÄCHE ==================== -->
+<section class="panel" data-panel="hamming">
+  <div class="workbench">
+    <div>
+      <div class="hamwrap">
+        <div class="stage-cap" style="margin-top:0"><span id="h-space-label">Alle möglichen Bitfolgen</span><span>Code: <b id="h-code-label">Hamming (7,4)</b></span></div>
+        <div class="hamgrid" id="h-grid"></div>
+        <div class="stage-cap" style="margin-bottom:0"><span>Jedes Kästchen = eine empfangbare Bitfolge</span><span id="h-cover-label">—</span></div>
+      </div>
+      <div class="chartbox">
+        <div class="stage-cap" style="color:var(--muted); margin-top:0"><span>Übertragungs-Demo</span><span id="h-demo-note">Auf „Wort senden" klicken</span></div>
+        <div class="wire" id="h-wire">
+          <div class="wire-row"><span class="lbl">gesendet</span><div class="bits" id="h-bits-sent"></div></div>
+          <div class="wire-row"><span class="lbl">empfangen</span><div class="bits" id="h-bits-recv"></div></div>
+          <div class="wire-row"><span class="lbl">decodiert</span><div class="bits" id="h-bits-dec"></div></div>
+        </div>
+        <div class="verdict" id="h-verdict" style="display:none"></div>
+      </div>
+    </div>
+    <aside class="readout">
+      <h3>Codeprofil</h3>
+      <div class="rowset">
+        <div class="row"><span class="k">Länge der Bitfolge</span><span class="v" id="h-n">—</span></div>
+        <div class="row"><span class="k">Mögliche Bitfolgen</span><span class="v" id="h-space">—</span></div>
+        <div class="row"><span class="k">Codewörter</span><span class="v" id="h-M">—</span></div>
+        <div class="row"><span class="k">Nutzbits pro Wort</span><span class="v" id="h-k">—</span></div>
+        <div class="row"><span class="k">Kugelgröße</span><span class="v" id="h-V">—</span></div>
+        <div class="row"><span class="k">Abgedeckt</span><span class="v" id="h-cov">—</span></div>
+        <div class="row"><span class="k">Überschneidungen</span><span class="v" id="h-clash">—</span></div>
+        <div class="row"><span class="k">Kleinster Abstand</span><span class="v" id="h-dmin">—</span></div>
+        <div class="row"><span class="k">Obergrenze für Codewörter</span><span class="v" id="h-bound">—</span></div>
+      </div>
+      <div class="legend">
+        <div><span class="dot" style="background:#00BFA6; box-shadow:0 0 0 1.5px #fff"></span>Codewort</div>
+        <div><span class="dot" style="background:#0B7A6C"></span>wird korrigiert</div>
+        <div><span class="dot" style="background:#1A242F"></span>nicht abgedeckt</div>
+        <div><span class="dot" style="background:#E8503A"></span>Überschneidung</div>
+      </div>
+      <p class="hint" id="h-hint">—</p>
+    </aside>
+  </div>
+
+  <div class="notes">
+    <div class="note">
+      <div class="eyebrow">Was Sie sehen</div>
+      <h4>Dieselbe Idee, nur ohne Zirkel</h4>
+      <p>Echte Daten sind Bitfolgen, keine Punkte auf einer Fläche. Der Abstand zweier Bitfolgen ist die Anzahl der Stellen, an denen sie sich unterscheiden.</p>
+      <p>Jedes Kästchen im Raster ist eine Bitfolge, die beim Empfänger ankommen könnte. Ein Codewort ist weiß umrandet; ringsherum liegt seine „Kugel" — alle Bitfolgen, die noch eindeutig zu ihm zurückgeführt werden.</p>
+    </div>
+    <div class="note">
+      <div class="eyebrow">Der Bezug zur Packung</div>
+      <h4>Kugeln packen statt Kreise packen</h4>
+      <p>Es gilt exakt dieselbe Regel: Kugeln dürfen sich nicht überschneiden, sonst wird die Korrektur mehrdeutig. Und je weniger Raum ungenutzt bleibt, desto effizienter der Code.</p>
+      <p>Hamming (7,4) ist der Sonderfall, in dem 16 Kugeln mit je 8 Bitfolgen die 128 möglichen Folgen lückenlos und überschneidungsfrei ausfüllen — eine perfekte Packung. Solche Codes sind extrem selten.</p>
+    </div>
+    <div class="note task">
+      <div class="eyebrow">Zum Ausprobieren</div>
+      <h4>Drei Minuten am Regler</h4>
+      <ul>
+        <li><kbd>Hamming (7,4)</kbd> mit Radius <kbd>1</kbd>: keine Lücke, keine Überschneidung — 100 % abgedeckt.</li>
+        <li>Stellen Sie den Radius auf <kbd>2</kbd>: Die Kugeln überschneiden sich, ein Teil der Fehler ist nicht mehr eindeutig korrigierbar.</li>
+        <li>Senden Sie Wörter mit <kbd>1</kbd> gekipptem Bit — immer korrigierbar. Mit <kbd>2</kbd> Bits geht es schief, und zwar systematisch.</li>
+        <li><kbd>Wiederholung 3×</kbd> ist ebenfalls perfekt, verschwendet aber zwei Drittel der Bandbreite. Perfekt heißt nicht automatisch gut.</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<script>
+"use strict";
+
+/* ================= Zustand ================= */
+const S = {
+  tab:"packung",
+  p_preset:"dicht", p_mode:"hex", p_r:"l", p_view:"circles",
+  c_preset:"ruhig", c_mode:"quad", c_M:"16", c_noise:"low", c_view:"both",
+  h_preset:"perfekt", h_code:"ham74", h_t:"1", h_flip:"1"
+};
+
+const PRESETS = {
+  p_preset:{
+    dicht:{p_mode:"hex", p_r:"l", p_view:"circles"},
+    raster:{p_mode:"quad", p_r:"l", p_view:"gaps"},
+    chaos:{p_mode:"rand", p_r:"m", p_view:"circles"},
+    gross:{p_mode:"hex", p_r:"xl", p_view:"voronoi"}
+  },
+  c_preset:{
+    ruhig:{c_mode:"quad", c_M:"16", c_noise:"low", c_view:"both"},
+    grenze:{c_mode:"quad", c_M:"64", c_noise:"high", c_view:"voronoi"},
+    hex:{c_mode:"hex", c_M:"64", c_noise:"high", c_view:"voronoi"},
+    chaos:{c_mode:"rand", c_M:"16", c_noise:"mid", c_view:"both"}
+  },
+  h_preset:{
+    rep:{h_code:"rep3", h_t:"1", h_flip:"1"},
+    perfekt:{h_code:"ham74", h_t:"1", h_flip:"1"},
+    zugross:{h_code:"ham74", h_t:"2", h_flip:"2"},
+    zufall:{h_code:"rand", h_t:"1", h_flip:"1"}
+  }
+};
+
+const COL = {ink:"#0E141B", signal:"#00BFA6", signalDim:"#0B7A6C", pulse:"#F5A623", err:"#E8503A", pale:"#9FD8D0"};
+const L = 600;
+
+/* ================= Helfer ================= */
+const $ = s => document.querySelector(s);
+const $$ = s => Array.from(document.querySelectorAll(s));
+const fmtPct = x => (100*x).toFixed(1).replace(".", ",") + " %";
+const fmtNum = x => x.toLocaleString("de-DE");
+
+function ctx2d(cv){
+  const rect = cv.getBoundingClientRect();
+  const dpr = window.devicePixelRatio || 1;
+  const w = Math.max(1, Math.round(rect.width)), h = Math.max(1, Math.round(rect.height));
+  cv.width = w*dpr; cv.height = h*dpr;
+  const c = cv.getContext("2d");
+  c.setTransform(dpr,0,0,dpr,0,0);
+  return {c, w, h};
+}
+function gauss(){
+  let u=0,v=0; while(u===0)u=Math.random(); while(v===0)v=Math.random();
+  return Math.sqrt(-2*Math.log(u))*Math.cos(2*Math.PI*v);
+}
+function popcount(x){ let c=0; while(x){ c+=x&1; x>>=1; } return c; }
+function binom(n,k){ if(k<0||k>n)return 0; let r=1; for(let i=1;i<=k;i++) r = r*(n-i+1)/i; return Math.round(r); }
+
+/* Zuständigkeitsbereiche (nächster Nachbar) als Rasterbild */
+function voronoiLayer(pts, res, hueBase){
+  const off = document.createElement("canvas");
+  off.width = res; off.height = res;
+  const g = off.getContext("2d");
+  const img = g.createImageData(res, res);
+  const d = img.data;
+  const cols = pts.map((p,i)=>{
+    const h = (hueBase + i*47) % 360;
+    return hsl2rgb(h/360, 0.34, 0.155 + 0.05*((i*7)%3));
+  });
+  for(let py=0; py<res; py++){
+    const wy = (py+0.5)*L/res;
+    for(let px=0; px<res; px++){
+      const wx = (px+0.5)*L/res;
+      let best=0, bd=Infinity;
+      for(let i=0;i<pts.length;i++){
+        const dx=pts[i].x-wx, dy=pts[i].y-wy, dd=dx*dx+dy*dy;
+        if(dd<bd){bd=dd;best=i;}
+      }
+      const o=(py*res+px)*4, c=cols[best];
+      d[o]=c[0]; d[o+1]=c[1]; d[o+2]=c[2]; d[o+3]=255;
+    }
+  }
+  g.putImageData(img,0,0);
+  return off;
+}
+function hsl2rgb(h,s,l){
+  const f = n => {
+    const k=(n+h*12)%12, a=s*Math.min(l,1-l);
+    return Math.round(255*(l - a*Math.max(-1, Math.min(k-3, 9-k, 1))));
+  };
+  return [f(0), f(8), f(4)];
+}
+
+/* ================= Bedienelemente ================= */
+document.addEventListener("click", e=>{
+  const b = e.target.closest(".seg button");
+  if(!b) return;
+  const key = b.parentElement.dataset.key;
+  const val = b.dataset.val;
+  S[key] = val;
+  if(PRESETS[key] && PRESETS[key][val]) Object.assign(S, PRESETS[key][val]);
+  else {
+    // manuelle Änderung: passende Voreinstellung ggf. abwählen
+    const pk = key[0] + "_preset";
+    if(S[pk] !== undefined && key !== pk){
+      const p = PRESETS[pk][S[pk]];
+      let match = p && Object.keys(p).every(k => S[k] === p[k]);
+      if(!match) S[pk] = "";
+    }
+  }
+  if((key === "h_code" || key === "h_preset") && S.h_code === "rand") hamState.key = "";
+  syncSegs();
+  render(true);
+});
+
+$$(".tabs button").forEach(b => b.addEventListener("click", ()=>{
+  S.tab = b.dataset.tab;
+  $$(".tabs button").forEach(x => x.setAttribute("aria-selected", String(x===b)));
+  $$(".panel").forEach(p => p.classList.toggle("active", p.dataset.panel===S.tab));
+  $$(".ctrlrow").forEach(r => r.classList.toggle("active", r.dataset.ctrl===S.tab));
+  render(true);
+}));
+
+function syncSegs(){
+  $$(".seg").forEach(seg=>{
+    const key = seg.dataset.key;
+    Array.from(seg.children).forEach(b => b.classList.toggle("on", S[key] === b.dataset.val));
+  });
+}
+
+/* ================= 01 PACKEN ================= */
+const R_OPT = {xl:78, l:46, m:28, s:17};
+const MODE_LABEL = {quad:"Quadratisch", hex:"Hexagonal", rand:"Zufällig"};
+let packCache = {key:"", pts:[], r:0, vor:null};
+
+function buildPacking(mode, r){
+  const pts=[];
+  if(mode==="quad"){
+    for(let y=r; y<=L-r+0.001; y+=2*r) for(let x=r; x<=L-r+0.001; x+=2*r) pts.push({x,y});
+  } else if(mode==="hex"){
+    const dy = Math.sqrt(3)*r; let row=0;
+    for(let y=r; y<=L-r+0.001; y+=dy){
+      const off = (row%2) ? r : 0;
+      for(let x=r+off; x<=L-r+0.001; x+=2*r) pts.push({x,y});
+      row++;
+    }
+  } else {
+    // zufälliges Streuen bis nichts mehr passt (Rejection-Verfahren mit Gitter-Index)
+    const cell = 2*r, nc = Math.max(1, Math.ceil(L/cell));
+    const grid = new Map();
+    const key=(i,j)=>i*4096+j;
+    const tries = 26000;
+    for(let t=0;t<tries;t++){
+      const x = r + Math.random()*(L-2*r), y = r + Math.random()*(L-2*r);
+      const gi = Math.min(nc-1, Math.floor(x/cell)), gj = Math.min(nc-1, Math.floor(y/cell));
+      let ok = true;
+      for(let i=gi-1;i<=gi+1 && ok;i++) for(let j=gj-1;j<=gj+1 && ok;j++){
+        const bucket = grid.get(key(i,j)); if(!bucket) continue;
+        for(const p of bucket){
+          const dx=p.x-x, dy=p.y-y;
+          if(dx*dx+dy*dy < 4*r*r){ ok=false; break; }
+        }
+      }
+      if(ok){
+        const p={x,y}; pts.push(p);
+        const kk=key(gi,gj);
+        if(!grid.has(kk)) grid.set(kk,[]);
+        grid.get(kk).push(p);
+      }
+    }
+  }
+  return pts;
+}
+
+function drawPacking(){
+  const cv = $("#cv-pack");
+  const {c, w} = ctx2d(cv);
+  const r = R_OPT[S.p_r];
+  const key = S.p_mode+"|"+r;
+  if(packCache.key !== key){
+    packCache = {key, pts:buildPacking(S.p_mode, r), r, vor:null};
+  }
+  const pts = packCache.pts, sc = w/L;
+
+  c.fillStyle = COL.ink; c.fillRect(0,0,w,w);
+
+  if(S.p_view === "voronoi"){
+    if(!packCache.vor) packCache.vor = voronoiLayer(pts, 200, 168);
+    c.imageSmoothingEnabled = false;
+    c.drawImage(packCache.vor, 0, 0, w, w);
+    c.imageSmoothingEnabled = true;
+  }
+  if(S.p_view === "gaps"){
+    c.fillStyle = "rgba(245,166,35,0.28)"; c.fillRect(0,0,w,w);
+  }
+
+  for(const p of pts){
+    const x=p.x*sc, y=p.y*sc, rr=r*sc;
+    c.beginPath(); c.arc(x,y,rr,0,6.2832);
+    if(S.p_view === "gaps"){ c.fillStyle = COL.ink; c.fill(); }
+    else if(S.p_view === "voronoi"){ c.fillStyle = "rgba(0,191,166,0.22)"; c.fill(); }
+    else { c.fillStyle = "rgba(0,191,166,0.30)"; c.fill(); }
+    c.lineWidth = Math.max(1, 1.3); c.strokeStyle = COL.signal; c.stroke();
+    c.beginPath(); c.arc(x,y,Math.max(1.4, rr*0.055),0,6.2832);
+    c.fillStyle = "#EAFFFB"; c.fill();
+  }
+
+  const area = pts.length*Math.PI*r*r/(L*L);
+  $("#p-count").textContent = fmtNum(pts.length);
+  $("#p-radius").innerHTML = r + " <small>Einh.</small>";
+  $("#p-density").textContent = fmtPct(area);
+  $("#p-waste").textContent = fmtPct(1-area);
+  $("#p-neigh").textContent = S.p_mode==="hex" ? "6" : (S.p_mode==="quad" ? "4" : "wechselnd");
+  $("#p-bar").style.width = Math.min(100, area*100) + "%";
+  $("#pack-mode-label").textContent = MODE_LABEL[S.p_mode];
+}
+
+/* ================= 02 SENDEN & STÖREN ================= */
+const NOISE_OPT = {low:0.11, mid:0.19, high:0.28, max:0.40};
+const NOISE_LABEL = {low:"Schwach", mid:"Mittel", high:"Stark", max:"Extrem"};
+let codeState = {key:"", pts:[], dmin:0, sigma:0, vor:null, sent:0, errs:0, trail:[], hist:[], run:true, lastMark:0};
+
+function buildConstellation(mode, M){
+  const pts=[];
+  const k = Math.round(Math.sqrt(M));
+  const sRef = L/k;
+  if(mode==="quad"){
+    for(let j=0;j<k;j++) for(let i=0;i<k;i++) pts.push({x:(i+0.5)*sRef, y:(j+0.5)*sRef});
+  } else if(mode==="hex"){
+    const A = L*L/M;                        // gleiche Fläche pro Codewort
+    const a = Math.sqrt(2*A/Math.sqrt(3));  // Gitterabstand
+    const dy = a*Math.sqrt(3)/2;
+    let row=0;
+    for(let y=dy/2; y<L; y+=dy){
+      const off = (row%2) ? a/2 : 0;
+      for(let x=a/2+off; x<L; x+=a) pts.push({x,y});
+      row++;
+    }
+  } else {
+    const minD = 0.30*sRef;
+    let guard=0;
+    while(pts.length < M && guard < 20000){
+      guard++;
+      const x = 0.06*L + Math.random()*0.88*L, y = 0.06*L + Math.random()*0.88*L;
+      let ok = true;
+      for(const p of pts){ const dx=p.x-x, dy=p.y-y; if(dx*dx+dy*dy < minD*minD){ ok=false; break; } }
+      if(ok) pts.push({x,y});
+    }
+  }
+  return pts;
+}
+function minDistance(pts){
+  let m = Infinity;
+  for(let i=0;i<pts.length;i++) for(let j=i+1;j<pts.length;j++){
+    const dx=pts[i].x-pts[j].x, dy=pts[i].y-pts[j].y, d=dx*dx+dy*dy;
+    if(d<m) m=d;
+  }
+  return Math.sqrt(m);
+}
+function ensureConstellation(){
+  const key = S.c_mode+"|"+S.c_M+"|"+S.c_noise;
+  if(codeState.key === key) return;
+  const M = +S.c_M;
+  const pts = buildConstellation(S.c_mode, M);
+  codeState = {
+    key, pts, dmin: minDistance(pts),
+    sigma: NOISE_OPT[S.c_noise]*(L/Math.sqrt(M)),
+    vor:null, sent:0, errs:0, trail:[], hist:[], run:codeState.run, lastMark:0
+  };
+}
+function resetCounts(){ codeState.sent=0; codeState.errs=0; codeState.trail=[]; codeState.hist=[]; codeState.lastMark=0; }
+
+function stepChannel(n){
+  const {pts, sigma} = codeState;
+  for(let t=0;t<n;t++){
+    const i = (Math.random()*pts.length)|0;
+    const x = pts[i].x + gauss()*sigma, y = pts[i].y + gauss()*sigma;
+    let best=0, bd=Infinity;
+    for(let j=0;j<pts.length;j++){
+      const dx=pts[j].x-x, dy=pts[j].y-y, dd=dx*dx+dy*dy;
+      if(dd<bd){bd=dd;best=j;}
+    }
+    const ok = (best===i);
+    codeState.sent++; if(!ok) codeState.errs++;
+    codeState.trail.push({x,y,ok});
+  }
+  if(codeState.trail.length > 380) codeState.trail.splice(0, codeState.trail.length-380);
+  if(codeState.sent - codeState.lastMark >= 600){
+    codeState.lastMark = codeState.sent;
+    codeState.hist.push(codeState.errs/codeState.sent);
+    if(codeState.hist.length > 170) codeState.hist.shift();
+  }
+}
+
+function drawChannel(){
+  ensureConstellation();
+  const cv = $("#cv-code");
+  const {c, w} = ctx2d(cv);
+  const sc = w/L, {pts, dmin} = codeState;
+
+  c.fillStyle = COL.ink; c.fillRect(0,0,w,w);
+
+  if(S.c_view === "voronoi" || S.c_view === "both"){
+    if(!codeState.vor) codeState.vor = voronoiLayer(pts, 240, 190);
+    c.imageSmoothingEnabled = false;
+    c.drawImage(codeState.vor, 0, 0, w, w);
+    c.imageSmoothingEnabled = true;
+  }
+  if(S.c_view === "circles" || S.c_view === "both"){
+    c.lineWidth = 1.2; c.strokeStyle = "rgba(0,191,166,0.75)";
+    for(const p of pts){
+      c.beginPath(); c.arc(p.x*sc, p.y*sc, (dmin/2)*sc, 0, 6.2832);
+      c.fillStyle = "rgba(0,191,166,0.10)"; c.fill(); c.stroke();
+    }
+  }
+  // empfangene Punkte
+  for(const t of codeState.trail){
+    c.beginPath(); c.arc(t.x*sc, t.y*sc, t.ok?1.6:2.6, 0, 6.2832);
+    c.fillStyle = t.ok ? "rgba(159,216,208,0.55)" : COL.err; c.fill();
+  }
+  // Codewörter
+  for(const p of pts){
+    c.beginPath(); c.arc(p.x*sc, p.y*sc, 3.2, 0, 6.2832);
+    c.fillStyle = COL.signal; c.fill();
+    c.lineWidth=1; c.strokeStyle="#062B27"; c.stroke();
+  }
+
+  const M = pts.length;
+  const ratio = dmin/codeState.sigma;
+  const rate = codeState.sent ? codeState.errs/codeState.sent : 0;
+  $("#c-count").textContent = M;
+  $("#c-bits").innerHTML = (Math.log2(M)).toFixed(1).replace(".",",") + " <small>Bit</small>";
+  $("#c-dmin").innerHTML = dmin.toFixed(0) + " <small>Einh.</small>";
+  const snr = $("#c-snr");
+  snr.textContent = ratio.toFixed(1).replace(".",",");
+  snr.className = "v " + (ratio>5.5 ? "good" : ratio>3.5 ? "warn" : "bad");
+  $("#c-sent").textContent = fmtNum(codeState.sent);
+  $("#c-errs").textContent = fmtNum(codeState.errs);
+  const rEl = $("#c-rate");
+  rEl.textContent = codeState.sent ? fmtPct(rate) : "—";
+  rEl.className = "v " + (rate<0.005 ? "good" : rate<0.05 ? "warn" : "bad");
+  $("#code-noise-label").textContent = NOISE_LABEL[S.c_noise];
+
+  const hints = {
+    quad:"Quadratisches Raster: einfach zu erzeugen, aber es verschenkt Abstand. Vergleichen Sie mit „Hexagonal“ bei gleicher Codewortzahl.",
+    hex:"Hexagonal: gleiche Fläche pro Codewort wie im Raster — und trotzdem rund 7 % mehr Abstand. Der Gewinn ist reine Geometrie. Am Rand gehen ein paar Codewörter verloren, das ist der Preis des endlichen Felds.",
+    rand:"Zufällig gesetzte Codewörter: Einzelne Paare liegen viel zu dicht beieinander. Diese wenigen Paare erzeugen fast alle Fehler."
+  };
+  $("#c-hint").textContent = hints[S.c_mode];
+
+  drawChart();
+}
+
+function drawChart(){
+  const cv = $("#cv-chart");
+  const {c, w, h} = ctx2d(cv);
+  c.clearRect(0,0,w,h);
+  const hist = codeState.hist;
+  const peak = Math.max(0.02, ...hist);
+  $("#c-chart-max").textContent = hist.length ? "Skala bis " + fmtPct(peak) : "sammelt Daten …";
+  // Gitter
+  c.strokeStyle = "#E3E7EB"; c.lineWidth = 1;
+  for(let i=0;i<=3;i++){
+    const y = 3 + (h-8)*i/3;
+    c.beginPath(); c.moveTo(0,y); c.lineTo(w,y); c.stroke();
+  }
+  if(hist.length < 2) return;
+  c.beginPath();
+  hist.forEach((v,i)=>{
+    const x = w*i/(hist.length-1);
+    const y = 3 + (h-8)*(1 - v/peak);
+    i ? c.lineTo(x,y) : c.moveTo(x,y);
+  });
+  c.strokeStyle = COL.signalDim; c.lineWidth = 2; c.lineJoin="round"; c.stroke();
+  c.lineTo(w, h-5); c.lineTo(0, h-5); c.closePath();
+  c.fillStyle = "rgba(11,122,108,0.10)"; c.fill();
+}
+
+$("#c-run").addEventListener("click", ()=>{
+  codeState.run = !codeState.run;
+  $("#c-run").textContent = codeState.run ? "Pause" : "Weiter";
+});
+$("#c-reset").addEventListener("click", ()=>{ resetCounts(); drawChannel(); });
+
+function loop(){
+  if(S.tab === "codierung" && codeState.run){
+    ensureConstellation();
+    stepChannel(220);
+    drawChannel();
+  }
+  requestAnimationFrame(loop);
+}
+
+/* ================= 03 BITS STATT FLÄCHE ================= */
+const CODE_LABEL = {none:"Ohne Schutz", rep3:"Wiederholung 3×", rep5:"Wiederholung 5×", ham74:"Hamming (7,4)", rand:"Zufallscode"};
+let hamState = {key:"", n:4, words:[], t:1, demo:null};
+
+function buildCode(){
+  const kind = S.h_code;
+  if(kind === "none"){ return {n:4, words:Array.from({length:16},(_,i)=>i)}; }
+  if(kind === "rep3"){ return {n:3, words:[0b000, 0b111]}; }
+  if(kind === "rep5"){ return {n:5, words:[0, 31]}; }
+  if(kind === "ham74"){
+    const words=[];
+    for(let x=0;x<128;x++){
+      let syn=0;
+      for(let i=0;i<7;i++) if(x>>i & 1) syn ^= (i+1);
+      if(syn===0) words.push(x);
+    }
+    return {n:7, words};
+  }
+  // gieriger Zufallscode mit Mindestabstand 3
+  const n=7, words=[], order=[];
+  for(let i=0;i<128;i++) order.push(i);
+  for(let i=order.length-1;i>0;i--){ const j=(Math.random()*(i+1))|0; [order[i],order[j]]=[order[j],order[i]]; }
+  for(const w of order){
+    if(words.every(c => popcount(c^w) >= 3)) words.push(w);
+  }
+  words.sort((a,b)=>a-b);
+  return {n, words};
+}
+
+function ensureCode(force){
+  const key = S.h_code + "|" + S.h_t;
+  if(!force && hamState.key === key) return;
+  const {n, words} = (hamState.key.split("|")[0] === S.h_code && !force && hamState.words.length)
+      ? {n:hamState.n, words:hamState.words} : buildCode();
+  hamState = {key, n, words, t:+S.h_t, demo:null};
+}
+
+function codeMinDistance(words){
+  if(words.length < 2) return Infinity;
+  let m = Infinity;
+  for(let i=0;i<words.length;i++) for(let j=i+1;j<words.length;j++){
+    const d = popcount(words[i]^words[j]); if(d<m) m=d;
+  }
+  return m;
+}
+
+function renderHamming(){
+  ensureCode();
+  const {n, words, t} = hamState;
+  const N = 1<<n;
+  const grid = $("#h-grid");
+  const cols = Math.min(16, N);
+  grid.style.gridTemplateColumns = `repeat(${cols}, 1fr)`;
+  grid.style.maxWidth = (cols<=8 ? 360 : 560) + "px";
+
+  // Abdeckung berechnen
+  const owner = new Array(N).fill(-1);   // -1 = frei, -2 = Überschneidung
+  const dist  = new Array(N).fill(99);
+  words.forEach((cw, idx)=>{
+    for(let w=0; w<N; w++){
+      const d = popcount(cw^w);
+      if(d<=t){
+        if(owner[w] === -1){ owner[w] = idx; dist[w] = d; }
+        else if(owner[w] !== idx) owner[w] = -2;
+      }
+    }
+  });
+  const covered = owner.filter(o => o >= 0).length;
+  const clashes = owner.filter(o => o === -2).length;
+  const V = Array.from({length:t+1}, (_,i)=>binom(n,i)).reduce((a,b)=>a+b,0);
+  const dmin = codeMinDistance(words);
+
+  grid.innerHTML = "";
+  const frag = document.createDocumentFragment();
+  for(let w=0; w<N; w++){
+    const el = document.createElement("div");
+    el.className = "cell";
+    const bits = w.toString(2).padStart(n,"0");
+    const o = owner[w];
+    if(o === -2){ el.classList.add("clash"); }
+    else if(o === -1){ el.classList.add("void"); }
+    else {
+      const hue = (o*53 + 165) % 360;
+      const light = dist[w]===0 ? 46 : 30 - dist[w]*4;
+      el.style.background = `hsl(${hue} 62% ${light}%)`;
+      if(dist[w]===0) el.classList.add("center");
+      el.style.color = dist[w]===0 ? "#08221E" : "rgba(255,255,255,.55)";
+    }
+    if(n<=5) el.textContent = bits;
+    el.title = bits + (o>=0 ? ` — Abstand ${dist[w]} zu ${words[o].toString(2).padStart(n,"0")}` : (o===-2 ? " — mehrdeutig" : " — keiner Kugel zugeordnet"));
+    el.dataset.w = w;
+    frag.appendChild(el);
+  }
+  grid.appendChild(frag);
+
+  $("#h-n").innerHTML = n + " <small>Bit</small>";
+  $("#h-space").textContent = fmtNum(N);
+  $("#h-M").textContent = words.length;
+  $("#h-k").innerHTML = Math.log2(words.length).toFixed(2).replace(".",",") + " <small>Bit</small>";
+  $("#h-V").innerHTML = V + " <small>Folgen</small>";
+  const covEl = $("#h-cov");
+  covEl.textContent = fmtPct(covered/N);
+  covEl.className = "v " + (covered===N && clashes===0 ? "good" : "warn");
+  const clEl = $("#h-clash");
+  clEl.textContent = clashes ? fmtNum(clashes) : "keine";
+  clEl.className = "v " + (clashes ? "bad" : "good");
+  $("#h-dmin").textContent = isFinite(dmin) ? dmin : "—";
+  $("#h-bound").textContent = Math.floor(N/V);
+  $("#h-code-label").textContent = CODE_LABEL[S.h_code];
+  $("#h-space-label").textContent = `${fmtNum(N)} mögliche Bitfolgen`;
+  $("#h-cover-label").textContent = `${fmtNum(covered)} von ${fmtNum(N)} abgedeckt`;
+
+  let hint;
+  if(t===0) hint = "Radius 0 bedeutet: Der Empfänger akzeptiert nur exakte Codewörter. Jeder gekippte Bit-Wert führt entweder ins Leere oder direkt auf ein falsches Codewort. Stellen Sie den Radius auf 1.";
+  else if(clashes>0) hint = "Die Kugeln überschneiden sich: In den rot gestreiften Feldern ist nicht mehr entscheidbar, welches Codewort gemeint war. Der Radius ist zu groß für diesen Code.";
+  else if(covered===N) hint = "Lückenlos und überschneidungsfrei — eine perfekte Packung. Jede empfangbare Bitfolge gehört zu genau einem Codewort.";
+  else hint = `${fmtPct(1-covered/N)} des Raums bleibt ungenutzt. Diese Bitfolgen erkennt der Empfänger als „gestört“, kann sie aber nicht sicher zurückführen.`;
+  $("#h-hint").textContent = hint;
+
+  if(hamState.demo) paintDemo();
+}
+
+function paintDemo(){
+  const {n, words} = hamState;
+  const d = hamState.demo;
+  if(!d) return;
+  const chips = (val, flips) => {
+    const s = val.toString(2).padStart(n,"0");
+    return Array.from(s).map((ch,i)=>{
+      const cls = flips && flips.includes(i) ? "bit flip" : (ch==="1" ? "bit one" : "bit");
+      return `<span class="${cls}">${ch}</span>`;
+    }).join("");
+  };
+  $("#h-bits-sent").innerHTML = chips(d.sent, []);
+  $("#h-bits-recv").innerHTML = chips(d.recv, d.flips);
+  $("#h-bits-dec").innerHTML = d.ambiguous ? `<span style="font-size:13px;color:#8A5A0C">nicht eindeutig</span>` : chips(d.dec, []);
+  const v = $("#h-verdict");
+  v.style.display = "block";
+  if(d.ambiguous){ v.className="verdict amb"; v.textContent = `Mehrere Codewörter sind gleich nah (Abstand ${d.bd}). Der Fehler wird bemerkt, aber nicht korrigiert.`; }
+  else if(d.dec === d.sent){ v.className="verdict ok"; v.textContent = `Korrigiert. ${d.flips.length} gekipptes Bit${d.flips.length===1?"":"s"} — das empfangene Wort lag noch in der richtigen Kugel.`; }
+  else { v.className="verdict no"; v.textContent = "Falsch decodiert. Das empfangene Wort ist in die Kugel eines anderen Codeworts gerutscht."; }
+  $("#h-demo-note").textContent = `Abstand zum nächsten Codewort: ${d.bd}`;
+
+  $$("#h-grid .cell").forEach(el=>{
+    const w = +el.dataset.w;
+    el.classList.toggle("sent", w === d.sent);
+    el.classList.toggle("recv", w === d.recv);
+  });
+}
+
+$("#h-send").addEventListener("click", ()=>{
+  ensureCode();
+  const {n, words} = hamState;
+  const f = Math.min(+S.h_flip, n);
+  const sent = words[(Math.random()*words.length)|0];
+  const pos = Array.from({length:n},(_,i)=>i);
+  for(let i=pos.length-1;i>0;i--){ const j=(Math.random()*(i+1))|0; [pos[i],pos[j]]=[pos[j],pos[i]]; }
+  const flips = pos.slice(0,f).sort((a,b)=>a-b);
+  let recv = sent;
+  flips.forEach(i => { recv ^= (1 << (n-1-i)); });
+  let bd = 99, dec = words[0], count = 0;
+  for(const cw of words){
+    const d = popcount(cw ^ recv);
+    if(d < bd){ bd = d; dec = cw; count = 1; }
+    else if(d === bd) count++;
+  }
+  hamState.demo = {sent, recv, dec, flips, bd, ambiguous: count > 1};
+  paintDemo();
+});
+
+/* ================= Renderer ================= */
+function render(hard){
+  if(S.tab === "packung") drawPacking();
+  if(S.tab === "codierung"){
+    const prevKey = codeState.key;
+    ensureConstellation();
+    if(prevKey !== codeState.key) resetCounts();
+    drawChannel();
+  }
+  if(S.tab === "hamming"){
+    if(hard && hamState.key.split("|")[0] !== S.h_code) ensureCode(true);
+    renderHamming();
+  }
+}
+
+let resizeTimer;
+window.addEventListener("resize", ()=>{
+  clearTimeout(resizeTimer);
+  resizeTimer = setTimeout(()=>render(false), 120);
+});
+
+syncSegs();
+render(true);
+requestAnimationFrame(loop);
+</script>
+</body>
+</html>

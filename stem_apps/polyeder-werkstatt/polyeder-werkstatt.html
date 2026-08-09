@@ -1,0 +1,1008 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Polyeder-Werkstatt — Platonische und archimedische Körper</title>
+<style>
+  :root{
+    --paper:#E7EBF1;
+    --card:#FFFFFF;
+    --ink:#0F1726;
+    --ink2:#5A6678;
+    --ink3:#8A94A4;
+    --rule:#C9D2DE;
+    --stage:#0B1220;
+    --stage2:#16223A;
+    --brass:#C08A2E;
+    --navy:#1D3A6E;
+    --c3:#E2685C; --c4:#3FA9A0; --c5:#8A72D0; --c6:#E0A93E; --c8:#4A83D8; --c10:#D46FA5;
+    --serif: Georgia, "Iowan Old Style", "Times New Roman", serif;
+    --sans: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    --mono: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0}
+  body{
+    background:var(--paper); color:var(--ink); font-family:var(--sans);
+    font-size:15px; line-height:1.55; -webkit-font-smoothing:antialiased;
+  }
+  .wrap{max-width:1400px;margin:0 auto;padding:0 18px}
+
+  /* ---------- Kopfzeile ---------- */
+  .masthead{padding:10px 0 8px;display:flex;align-items:baseline;gap:14px;flex-wrap:wrap}
+  .masthead h1{
+    font-family:var(--serif); font-weight:400; font-size:22px; margin:0;
+    letter-spacing:.01em;
+  }
+  .masthead .sub{color:var(--ink2);font-size:13px}
+  .masthead .tag{
+    font-family:var(--mono);font-size:11px;letter-spacing:.12em;text-transform:uppercase;
+    color:var(--brass); border:1px solid var(--brass); padding:1px 7px; border-radius:2px;
+  }
+
+  /* ---------- Konsole (sticky) ---------- */
+  .console{
+    position:sticky; top:0; z-index:30;
+    background:rgba(231,235,241,.94); backdrop-filter:blur(10px);
+    border-top:1px solid var(--rule); border-bottom:1px solid var(--rule);
+    box-shadow:0 6px 18px -14px rgba(15,23,38,.5);
+  }
+  .console .wrap{padding-top:8px;padding-bottom:8px}
+  .crow{display:flex;gap:16px;flex-wrap:wrap;align-items:center;padding:3px 0}
+  .crow + .crow{border-top:1px dotted var(--rule);margin-top:3px;padding-top:6px}
+  .grp{display:flex;align-items:center;gap:7px}
+  .lbl{
+    font-family:var(--mono); font-size:10px; letter-spacing:.13em; text-transform:uppercase;
+    color:var(--ink3); white-space:nowrap;
+  }
+  .seg{display:flex;background:#DCE2EA;border:1px solid var(--rule);border-radius:4px;overflow:hidden}
+  .seg button{
+    font:inherit;font-size:12.5px;padding:4px 10px;border:0;background:transparent;color:var(--ink2);
+    cursor:pointer;white-space:nowrap;border-right:1px solid var(--rule);transition:background .12s,color .12s;
+  }
+  .seg button:last-child{border-right:0}
+  .seg button:hover{background:#CFD7E2;color:var(--ink)}
+  .seg button[aria-pressed="true"]{background:var(--navy);color:#fff}
+  .seg button:focus-visible{outline:2px solid var(--brass);outline-offset:-2px}
+  .seg.small button{padding:3px 8px;font-size:12px}
+  .seg.plat button[aria-pressed="true"]{background:#233A5E}
+  .seg.arch button[aria-pressed="true"]{background:#6B4E12}
+  .chip{
+    font:inherit;font-size:12.5px;padding:4px 11px;border:1px solid var(--rule);background:var(--card);
+    color:var(--ink2);border-radius:999px;cursor:pointer;transition:.12s;
+  }
+  .chip:hover{border-color:var(--brass);color:var(--ink)}
+  .chip.hot{border-color:var(--brass);background:#FBF3E2;color:#6B4E12}
+  .hint{font-size:12px;color:var(--ink3)}
+  .switchbtn{
+    font:inherit;font-size:12.5px;padding:4px 12px;border:1px solid var(--navy);background:var(--navy);
+    color:#fff;border-radius:4px;cursor:pointer;
+  }
+  .switchbtn:hover{background:#162C55}
+
+  /* ---------- Bühne ---------- */
+  .main{display:grid;grid-template-columns:minmax(0,1fr) 330px;gap:16px;padding:16px 0 26px;align-items:start}
+  .stage{
+    position:relative;background:var(--stage);border-radius:6px;overflow:hidden;
+    box-shadow:inset 0 0 90px rgba(0,0,0,.55), 0 2px 16px -8px rgba(15,23,38,.6);
+    aspect-ratio: 4/3;
+  }
+  canvas{display:block;width:100%;height:100%;touch-action:none;cursor:grab}
+  canvas.dragging{cursor:grabbing}
+  .overlay{position:absolute;left:12px;bottom:11px;display:flex;gap:12px;flex-wrap:wrap;pointer-events:none}
+  .key{display:flex;align-items:center;gap:5px;font-size:11.5px;color:#B9C4D6;font-family:var(--mono)}
+  .key i{width:11px;height:11px;border-radius:2px;display:inline-block}
+  .stagenote{
+    position:absolute;right:12px;top:10px;font-family:var(--mono);font-size:10.5px;letter-spacing:.1em;
+    text-transform:uppercase;color:#5C6A85;pointer-events:none;text-align:right
+  }
+
+  /* ---------- Seitenpanel ---------- */
+  .panel{background:var(--card);border:1px solid var(--rule);border-radius:6px;padding:14px 15px}
+  .panel + .panel{margin-top:12px}
+  .panel h2{
+    font-family:var(--mono);font-size:10px;letter-spacing:.15em;text-transform:uppercase;color:var(--ink3);
+    margin:0 0 9px;font-weight:600;
+  }
+  .name{font-family:var(--serif);font-size:20px;line-height:1.2;margin:0 0 2px}
+  .aka{font-size:12.5px;color:var(--ink2);margin:0 0 11px}
+  .kv{display:grid;grid-template-columns:auto 1fr;gap:3px 12px;font-size:13px;margin:0}
+  .kv dt{color:var(--ink3)}
+  .kv dd{margin:0;text-align:right;font-family:var(--mono);font-size:12.5px}
+
+  /* Euler-Signatur */
+  .euler{background:var(--stage);border-radius:6px;padding:15px 14px 13px;color:#DCE4F0}
+  .euler h2{color:#6E7E9B;margin-bottom:11px}
+  .eq{font-family:var(--mono);font-size:15px;letter-spacing:.02em;color:#8E9CB5;margin-bottom:5px}
+  .eqbig{font-family:var(--mono);font-size:26px;letter-spacing:.01em;display:flex;align-items:baseline;gap:5px;flex-wrap:wrap}
+  .eqbig .op{color:#6E7E9B;font-size:20px}
+  .eqbig .v{color:#4A83D8}
+  .eqbig .e{color:#E0A93E}
+  .eqbig .f{color:#E2685C}
+  .eqbig .res{color:#fff}
+  .eqnote{font-size:12px;color:#7D8CA6;margin-top:9px;line-height:1.45}
+  .eqnote b{color:#C7D2E2;font-weight:600}
+  .split{margin-top:11px;padding-top:10px;border-top:1px solid #24314C;font-family:var(--mono);font-size:12.5px;color:#8E9CB5}
+  .split .hl{color:#E0A93E}
+
+  .axtab{width:100%;border-collapse:collapse;font-size:12.5px;margin-top:2px}
+  .axtab td{padding:2px 0;border-bottom:1px dotted var(--rule)}
+  .axtab td:last-child{text-align:right;font-family:var(--mono)}
+  .axtab tr:last-child td{border-bottom:0;font-weight:600}
+  .dot{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:6px;vertical-align:middle}
+
+  /* ---------- Lehrtexte ---------- */
+  .lessons{border-top:1px solid var(--rule);padding:24px 0 10px}
+  .lgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:16px}
+  .lesson{background:var(--card);border:1px solid var(--rule);border-radius:6px;padding:17px 18px}
+  .lesson h3{font-family:var(--serif);font-weight:400;font-size:18px;margin:0 0 4px}
+  .lesson .eyebrow{
+    font-family:var(--mono);font-size:10px;letter-spacing:.15em;text-transform:uppercase;color:var(--brass);
+    margin-bottom:7px;
+  }
+  .lesson p{margin:0 0 9px;font-size:13.5px;color:#2C384A}
+  .lesson p:last-child{margin-bottom:0}
+  .lesson ul{margin:0 0 9px;padding-left:17px;font-size:13.5px;color:#2C384A}
+  .lesson li{margin-bottom:4px}
+  .lesson .try{
+    margin-top:11px;padding-top:10px;border-top:1px dotted var(--rule);
+    font-size:13px;color:var(--navy);
+  }
+  .lesson .try b{font-family:var(--mono);font-size:10px;letter-spacing:.13em;text-transform:uppercase;color:var(--ink3);display:block;margin-bottom:3px;font-weight:600}
+  code{font-family:var(--mono);font-size:12.5px;background:#EDF1F6;padding:1px 4px;border-radius:3px}
+  footer{padding:18px 0 34px;color:var(--ink3);font-size:12px;border-top:1px solid var(--rule);margin-top:20px}
+
+  @media (max-width:1000px){
+    .main{grid-template-columns:1fr}
+    .stage{aspect-ratio:1/1}
+    .masthead .sub{display:none}
+  }
+  @media (max-width:620px){
+    .lbl{display:none}
+    .crow{gap:9px}
+    .seg button{padding:5px 9px}
+  }
+  @media (prefers-reduced-motion:reduce){ *{scroll-behavior:auto} }
+</style>
+</head>
+<body>
+
+<div class="wrap masthead">
+  <h1>Polyeder-Werkstatt</h1>
+  <span class="tag">Schulungsmodul</span>
+  <span class="sub">Platonische und archimedische Körper: Dualität, Symmetrie, Eulerscher Polyedersatz, Abwicklung</span>
+</div>
+
+<!-- ================= KONSOLE ================= -->
+<div class="console">
+ <div class="wrap">
+
+  <div class="crow">
+    <div class="grp"><span class="lbl">Platonisch</span>
+      <div class="seg plat small" id="segPlat"></div>
+    </div>
+    <div class="grp"><span class="lbl">Archimedisch</span>
+      <div class="seg arch small" id="segArch"></div>
+    </div>
+  </div>
+
+  <div class="crow">
+    <div class="grp"><span class="lbl">Ansicht</span>
+      <div class="seg" id="segMode"></div>
+    </div>
+    <div class="grp"><span class="lbl">Drehung</span>
+      <div class="seg" id="segSpin"></div>
+    </div>
+    <div class="grp" id="wrapPresets"><span class="lbl">Voreinstellung</span>
+      <span id="presets" style="display:flex;gap:6px;flex-wrap:wrap"></span>
+    </div>
+  </div>
+
+  <div class="crow" id="rowSolid">
+    <div class="grp"><span class="lbl">Darstellung</span><div class="seg small" id="segDraw"></div></div>
+    <div class="grp"><span class="lbl">Farbe</span><div class="seg small" id="segColor"></div></div>
+    <div class="grp"><span class="lbl">Drehachsen</span><div class="seg small" id="segAxes"></div></div>
+    <div class="grp"><span class="lbl">Beschriftung</span><div class="seg small" id="segLabel"></div></div>
+  </div>
+
+  <div class="crow" id="rowDual" hidden>
+    <div class="grp"><span class="lbl">Dualkörper</span><div class="seg small" id="segDualSize"></div></div>
+    <div class="grp"><span class="lbl">Kugel durch Kantenmitten</span><div class="seg small" id="segMid"></div></div>
+    <div class="grp"><span class="lbl">Zuordnung Fläche→Ecke</span><div class="seg small" id="segLink"></div></div>
+    <div class="grp"><button class="switchbtn" id="btnDualPlay">Dual einblenden ▸</button></div>
+  </div>
+
+  <div class="crow" id="rowNet" hidden>
+    <div class="grp"><span class="lbl">Faltgrad</span><div class="seg small" id="segFold"></div></div>
+    <div class="grp"><span class="lbl">Netzmuster</span><div class="seg small" id="segPattern"></div></div>
+    <div class="grp"><span class="lbl">Kanten</span><div class="seg small" id="segEdgeStyle"></div></div>
+    <div class="grp"><button class="switchbtn" id="btnFoldPlay">Abwickeln ▸</button></div>
+  </div>
+
+ </div>
+</div>
+
+<!-- ================= BÜHNE ================= -->
+<div class="wrap main">
+  <div>
+    <div class="stage">
+      <canvas id="cv"></canvas>
+      <div class="stagenote" id="stagenote">Ziehen zum Drehen · Scrollen zum Zoomen</div>
+      <div class="overlay" id="legend"></div>
+    </div>
+    <div class="hint" style="margin-top:7px">
+      Leertaste startet die Animation der aktuellen Ansicht. Doppelklick auf die Bühne setzt die Ansicht zurück.
+    </div>
+  </div>
+
+  <aside>
+    <div class="panel">
+      <h2>Steckbrief</h2>
+      <p class="name" id="pName">—</p>
+      <p class="aka" id="pAka"></p>
+      <dl class="kv">
+        <dt>Ecken</dt><dd id="pV">–</dd>
+        <dt>Kanten</dt><dd id="pE">–</dd>
+        <dt>Flächen</dt><dd id="pF">–</dd>
+        <dt>Flächenarten</dt><dd id="pTypes">–</dd>
+        <dt>An jeder Ecke</dt><dd id="pVertFig">–</dd>
+        <dt>Dualkörper</dt><dd id="pDual">–</dd>
+      </dl>
+    </div>
+
+    <div class="panel euler">
+      <h2>Eulerscher Polyedersatz</h2>
+      <div class="eq">Ecken − Kanten + Flächen = 2</div>
+      <div class="eqbig">
+        <span class="v" id="eV">0</span><span class="op">−</span>
+        <span class="e" id="eE">0</span><span class="op">+</span>
+        <span class="f" id="eF">0</span><span class="op">=</span>
+        <span class="res" id="eR">2</span>
+      </div>
+      <div class="eqnote" id="eNote"></div>
+      <div class="split" id="eSplit" hidden></div>
+    </div>
+
+    <div class="panel">
+      <h2>Symmetrie</h2>
+      <p style="margin:0 0 8px;font-size:13.5px" id="symName">—</p>
+      <table class="axtab" id="axTab"></table>
+      <p class="hint" style="margin:8px 0 0" id="symHint"></p>
+    </div>
+  </aside>
+</div>
+
+<!-- ================= LEHRTEXTE ================= -->
+<div class="wrap lessons">
+ <div class="lgrid">
+
+  <div class="lesson">
+    <div class="eyebrow">Grundlagen</div>
+    <h3>Fünf perfekte und dreizehn fast perfekte Körper</h3>
+    <p>Ein <b>platonischer Körper</b> ist aus lauter gleichen regelmäßigen Vielecken gebaut, und an jeder Ecke treffen gleich viele davon zusammen. Davon gibt es genau fünf — nicht, weil noch niemand mehr gefunden hätte, sondern weil mehr nicht möglich sind: An einer Ecke müssen mindestens drei Flächen zusammenkommen, und ihre Winkel müssen zusammen unter 360° bleiben, sonst wird die Ecke flach.</p>
+    <p>Lässt man <b>zwei oder drei verschiedene</b> regelmäßige Vielecke zu und verlangt nur noch, dass alle Ecken gleich aussehen, kommen die <b>archimedischen Körper</b> dazu. Die meisten entstehen durch „Abstumpfen“: Man sägt die Ecken eines platonischen Körpers ab. Aus dem Ikosaeder wird so der klassische Fußball.</p>
+    <div class="try"><b>Im Modell ausprobieren</b>Wechseln Sie zwischen Ikosaeder und abgestumpftem Ikosaeder. Aus jeder der 12 Ecken wird ein Fünfeck, aus jedem der 20 Dreiecke ein Sechseck.</div>
+  </div>
+
+  <div class="lesson">
+    <div class="eyebrow">Dualität</div>
+    <h3>Jede Fläche wird zu einer Ecke</h3>
+    <p>Setzt man in die Mitte jeder Fläche einen Punkt und verbindet die Punkte benachbarter Flächen, entsteht ein neuer Körper: der <b>Dualkörper</b>. Aus Flächen werden Ecken, aus Ecken werden Flächen, die Zahl der Kanten bleibt gleich.</p>
+    <ul>
+      <li>Würfel (6 Flächen, 8 Ecken) ↔ Oktaeder (8 Flächen, 6 Ecken)</li>
+      <li>Dodekaeder ↔ Ikosaeder</li>
+      <li>Tetraeder ↔ Tetraeder — es ist zu sich selbst dual</li>
+    </ul>
+    <p>In der richtigen Größe berühren beide Körper dieselbe Kugel, und zwar genau dort, wo sich ihre Kanten kreuzen — rechtwinklig. Diese Kugel geht durch alle Kantenmitten.</p>
+    <div class="try"><b>Im Modell ausprobieren</b>Ansicht „Dualität“, Dualkörper auf „passgenau“, Kugel einschalten. Beide Körper haben dieselbe Symmetrie — deshalb sind Würfel und Oktaeder symmetrisch nicht zu unterscheiden.</div>
+  </div>
+
+  <div class="lesson">
+    <div class="eyebrow">Symmetrie</div>
+    <h3>Wie oft sieht der Körper gleich aus?</h3>
+    <p>Drehen Sie einen Würfel um eine Achse durch zwei gegenüberliegende Flächenmitten um 90°: Er sieht aus wie vorher. Solche Drehungen sammelt man in der <b>Symmetriegruppe</b>. Man zählt sie einfach ab:</p>
+    <ul>
+      <li>Achsen durch <b>Flächenmitten</b>, durch <b>Ecken</b> und durch <b>Kantenmitten</b></li>
+      <li>Jede Achse erlaubt mehrere Drehungen — eine 4-zählige Achse etwa 90°, 180°, 270°</li>
+      <li>Alles zusammen plus „nicht drehen“ ergibt die Ordnung der Drehgruppe</li>
+    </ul>
+    <p>Beim Würfel sind das 24 Drehungen, beim Ikosaeder 60. Rechnet man Spiegelungen dazu, verdoppelt sich die Zahl. Nur drei verschiedene Symmetrietypen kommen überhaupt vor — Tetraeder-, Würfel- und Ikosaeder-Symmetrie. Alle 18 Körper teilen sich diese drei.</p>
+    <div class="try"><b>Im Modell ausprobieren</b>Drehachsen einschalten und die Tabelle rechts lesen. Der abgestumpfte Würfel hat genau dieselben Achsen wie der Würfel.</div>
+  </div>
+
+  <div class="lesson">
+    <div class="eyebrow">Eulerscher Polyedersatz</div>
+    <h3>Ecken − Kanten + Flächen = 2</h3>
+    <p>Ganz gleich, welchen der Körper Sie wählen: Zieht man von der Eckenzahl die Kantenzahl ab und addiert die Flächenzahl, kommt immer <b>2</b> heraus. Beim Fußball: 60 − 90 + 32 = 2.</p>
+    <p>Der Satz gilt für jeden Körper ohne Loch — auch für verbeulte, unregelmäßige. Er ist keine Formel über Längen oder Winkel, sondern über die reine Bauart. Deshalb ändert sich nichts, wenn man den Körper verzerrt. Bei einem Körper <i>mit</i> Loch, etwa einem Ring, kommt dagegen 0 heraus.</p>
+    <div class="try"><b>Im Modell ausprobieren</b>Wählen Sie nacheinander alle Körper an und beobachten Sie die drei Zahlen rechts. V und F tauschen beim Dualkörper die Plätze — die Summe bleibt 2.</div>
+  </div>
+
+  <div class="lesson">
+    <div class="eyebrow">Abwicklung</div>
+    <h3>Vom Körper zum Bastelbogen</h3>
+    <p>Schneidet man einen Körper entlang einiger Kanten auf, lässt er sich flach ausbreiten — das <b>Netz</b>. Dabei zerfallen die Kanten in zwei Sorten:</p>
+    <ul>
+      <li><b>Faltkanten</b> bleiben stehen und halten die Flächen zusammen: davon gibt es immer <code>F − 1</code></li>
+      <li><b>Schnittkanten</b> werden aufgetrennt: davon gibt es immer <code>V − 1</code></li>
+    </ul>
+    <p>Zusammen ergibt das <code>(F − 1) + (V − 1) = E</code> — also wieder genau den Eulerschen Polyedersatz, nur in Bastelbogen-Sprache. Wie das Netz aussieht, hängt davon ab, welche Kanten man aufschneidet; derselbe Körper hat viele verschiedene Netze. Der Würfel hat elf.</p>
+    <div class="try"><b>Im Modell ausprobieren</b>Ansicht „Abwicklung“, dann „Abwickeln“. Mit „Netzmuster“ wechseln Sie den Aufschnitt: gleiche Flächen, andere Form. Bei den großen Körpern können sich Teile überlappen — auch das gehört zum Thema.</div>
+  </div>
+
+  <div class="lesson">
+    <div class="eyebrow">Für die Schulung</div>
+    <h3>Vier Fragen zum Mitdenken</h3>
+    <ul>
+      <li>Warum gibt es kein platonisches Vieleck-Modell aus Sechsecken? (Tipp: drei Sechsecke an einer Ecke ergeben genau 360°.)</li>
+      <li>Kuboktaeder und Rhombenkuboktaeder haben beide Würfelsymmetrie. Woran erkennt man das an den Drehachsen?</li>
+      <li>Der Dualkörper eines archimedischen Körpers hat lauter gleiche Flächen, aber verschiedene Ecken. Warum muss das so sein?</li>
+      <li>Ein Körper hat 12 Fünfecke und 20 Sechsecke. Wie viele Kanten hat er — ohne zu zählen? (Tipp: jede Kante gehört zu zwei Flächen.)</li>
+    </ul>
+    <p class="hint" style="margin-top:10px">Die letzte Aufgabe führt direkt auf 60 − 90 + 32 = 2 zurück und eignet sich gut als Einstieg.</p>
+  </div>
+
+ </div>
+</div>
+
+<div class="wrap"><footer>
+  Alle Körper werden im Browser aus ihren Eckpunkten berechnet: konvexe Hülle, Verschmelzung koplanarer Dreiecke, Polarreziprozität für den Dualkörper, Spannbaum-Abwicklung für das Netz. Kein externer Code, keine Bilddateien.
+</footer></div>
+
+<script>
+"use strict";
+// ===================== Vektor- und Matrixhelfer =====================
+const sub=(a,b)=>[a[0]-b[0],a[1]-b[1],a[2]-b[2]];
+const add=(a,b)=>[a[0]+b[0],a[1]+b[1],a[2]+b[2]];
+const mul=(a,s)=>[a[0]*s,a[1]*s,a[2]*s];
+const dot=(a,b)=>a[0]*b[0]+a[1]*b[1]+a[2]*b[2];
+const cross=(a,b)=>[a[1]*b[2]-a[2]*b[1],a[2]*b[0]-a[0]*b[2],a[0]*b[1]-a[1]*b[0]];
+const len=a=>Math.sqrt(dot(a,a));
+const norm=a=>{const l=len(a)||1;return [a[0]/l,a[1]/l,a[2]/l];};
+const applyM=(M,v)=>[dot(M[0],v),dot(M[1],v),dot(M[2],v)];
+function matMul(A,B){const C=[[0,0,0],[0,0,0],[0,0,0]];
+  for(let i=0;i<3;i++)for(let j=0;j<3;j++)for(let k=0;k<3;k++)C[i][j]+=A[i][k]*B[k][j];return C;}
+function rotMat(axis,ang){const [x,y,z]=norm(axis),c=Math.cos(ang),s=Math.sin(ang),t=1-c;
+  return [[t*x*x+c,t*x*y-s*z,t*x*z+s*y],[t*x*y+s*z,t*y*y+c,t*y*z-s*x],[t*x*z-s*y,t*y*z+s*x,t*z*z+c]];}
+const applyT=(T,v)=>add(applyM(T.M,v),T.o);
+
+// Quaternionen
+const qMul=(a,b)=>[a[0]*b[0]-a[1]*b[1]-a[2]*b[2]-a[3]*b[3],
+                   a[0]*b[1]+a[1]*b[0]+a[2]*b[3]-a[3]*b[2],
+                   a[0]*b[2]-a[1]*b[3]+a[2]*b[0]+a[3]*b[1],
+                   a[0]*b[3]+a[1]*b[2]-a[2]*b[1]+a[3]*b[0]];
+const qNorm=q=>{const l=Math.hypot(...q)||1;return q.map(x=>x/l);};
+function qAxis(ax,ang){const a=norm(ax),s=Math.sin(ang/2);return [Math.cos(ang/2),a[0]*s,a[1]*s,a[2]*s];}
+function qMat(q){const [w,x,y,z]=q;return [
+  [1-2*(y*y+z*z),2*(x*y-w*z),2*(x*z+w*y)],
+  [2*(x*y+w*z),1-2*(x*x+z*z),2*(y*z-w*x)],
+  [2*(x*z-w*y),2*(y*z+w*x),1-2*(x*x+y*y)]];}
+function qSlerp(a,b,t){let d=a[0]*b[0]+a[1]*b[1]+a[2]*b[2]+a[3]*b[3];
+  let bb=b.slice(); if(d<0){d=-d;bb=bb.map(x=>-x);}
+  if(d>0.9995) return qNorm(a.map((x,i)=>x+(bb[i]-x)*t));
+  const th=Math.acos(d),s=Math.sin(th);
+  const k0=Math.sin((1-t)*th)/s,k1=Math.sin(t*th)/s;
+  return qNorm(a.map((x,i)=>x*k0+bb[i]*k1));}
+
+// ===================== Koordinaten =====================
+const PHI=(1+Math.sqrt(5))/2;
+function dedupe(list){const out=[];for(const p of list){if(!out.some(q=>len(sub(p,q))<1e-9))out.push(p);}return out;}
+function permsAll(v){const[a,b,c]=v;return dedupe([[a,b,c],[a,c,b],[b,a,c],[b,c,a],[c,a,b],[c,b,a]]);}
+function permsCyc(v){const[a,b,c]=v;return dedupe([[a,b,c],[b,c,a],[c,a,b]]);}
+function signAll(v){const o=[];for(const sx of[1,-1])for(const sy of[1,-1])for(const sz of[1,-1])o.push([v[0]*sx,v[1]*sy,v[2]*sz]);return dedupe(o);}
+function signEven(v){const o=[];for(const sx of[1,-1])for(const sy of[1,-1])for(const sz of[1,-1]){
+  if([sx,sy,sz].filter(s=>s<0).length%2===0)o.push([v[0]*sx,v[1]*sy,v[2]*sz]);}return dedupe(o);}
+function expand(base,mode){let o=[];for(const p of (mode==='cyc'?permsCyc(base):permsAll(base)))o=o.concat(signAll(p));return dedupe(o);}
+
+const CATALOG=[
+ {id:'tetraeder',fam:'plat',name:'Tetraeder',aka:'Vierflächner — vier gleichseitige Dreiecke',dual:'Tetraeder (selbstdual)',sym:'Tetraeder-Symmetrie (T_d)',symOrder:24,
+  pts:()=>signEven([1,1,1])},
+ {id:'wuerfel',fam:'plat',name:'Würfel',aka:'Hexaeder — sechs Quadrate',dual:'Oktaeder',sym:'Würfel-Symmetrie (O_h)',symOrder:48,
+  pts:()=>signAll([1,1,1])},
+ {id:'oktaeder',fam:'plat',name:'Oktaeder',aka:'Achtflächner — acht Dreiecke',dual:'Würfel',sym:'Würfel-Symmetrie (O_h)',symOrder:48,
+  pts:()=>expand([0,0,1],'cyc')},
+ {id:'dodekaeder',fam:'plat',name:'Dodekaeder',aka:'Zwölfflächner — zwölf Fünfecke',dual:'Ikosaeder',sym:'Ikosaeder-Symmetrie (I_h)',symOrder:120,
+  pts:()=>signAll([1,1,1]).concat(expand([0,1/PHI,PHI],'cyc'))},
+ {id:'ikosaeder',fam:'plat',name:'Ikosaeder',aka:'Zwanzigflächner — zwanzig Dreiecke',dual:'Dodekaeder',sym:'Ikosaeder-Symmetrie (I_h)',symOrder:120,
+  pts:()=>expand([0,1,PHI],'cyc')},
+
+ {id:'abgTetraeder',fam:'arch',name:'Abgestumpftes Tetraeder',aka:'Tetraeder mit abgesägten Ecken',dual:'Triakistetraeder',sym:'Tetraeder-Symmetrie (T_d)',symOrder:24,
+  pts:()=>{let o=[];for(const p of permsAll([1,1,3]))o=o.concat(signEven(p));return dedupe(o);}},
+ {id:'kuboktaeder',fam:'arch',name:'Kuboktaeder',aka:'zwischen Würfel und Oktaeder',dual:'Rhombendodekaeder',sym:'Würfel-Symmetrie (O_h)',symOrder:48,
+  pts:()=>expand([1,1,0],'all')},
+ {id:'abgWuerfel',fam:'arch',name:'Abgestumpfter Würfel',aka:'Achtecke und Dreiecke',dual:'Triakisoktaeder',sym:'Würfel-Symmetrie (O_h)',symOrder:48,
+  pts:()=>expand([Math.SQRT2-1,1,1],'all')},
+ {id:'abgOktaeder',fam:'arch',name:'Abgestumpftes Oktaeder',aka:'füllt lückenlos den Raum',dual:'Tetrakishexaeder',sym:'Würfel-Symmetrie (O_h)',symOrder:48,
+  pts:()=>expand([0,1,2],'all')},
+ {id:'rhombenkuboktaeder',fam:'arch',name:'Rhombenkuboktaeder',aka:'Quadrate und Dreiecke rundum',dual:'Deltoidalikositetraeder',sym:'Würfel-Symmetrie (O_h)',symOrder:48,
+  pts:()=>expand([1,1,1+Math.SQRT2],'all')},
+ {id:'abgKuboktaeder',fam:'arch',name:'Großes Rhombenkuboktaeder',aka:'abgestumpftes Kuboktaeder',dual:'Hexakisoktaeder',sym:'Würfel-Symmetrie (O_h)',symOrder:48,
+  pts:()=>expand([1,1+Math.SQRT2,1+2*Math.SQRT2],'all')},
+ {id:'ikosidodekaeder',fam:'arch',name:'Ikosidodekaeder',aka:'zwischen Ikosaeder und Dodekaeder',dual:'Rhombentriakontaeder',sym:'Ikosaeder-Symmetrie (I_h)',symOrder:120,
+  pts:()=>expand([0,0,2*PHI],'cyc').concat(expand([1,PHI,PHI*PHI],'cyc'))},
+ {id:'abgIkosaeder',fam:'arch',name:'Abgestumpftes Ikosaeder',aka:'der klassische Fußball',dual:'Pentakisdodekaeder',sym:'Ikosaeder-Symmetrie (I_h)',symOrder:120,
+  pts:()=>expand([0,1,3*PHI],'cyc').concat(expand([1,2+PHI,2*PHI],'cyc')).concat(expand([PHI,2,2*PHI+1],'cyc'))},
+ {id:'rhombenikosidodekaeder',fam:'arch',name:'Rhombenikosidodekaeder',aka:'Dreiecke, Quadrate und Fünfecke',dual:'Deltoidalhexakontaeder',sym:'Ikosaeder-Symmetrie (I_h)',symOrder:120,
+  pts:()=>expand([1,1,PHI**3],'cyc').concat(expand([PHI*PHI,PHI,2*PHI],'cyc')).concat(expand([2+PHI,0,PHI*PHI],'cyc'))},
+];
+const SHORT={tetraeder:'Tetraeder',wuerfel:'Würfel',oktaeder:'Oktaeder',dodekaeder:'Dodekaeder',ikosaeder:'Ikosaeder',
+ abgTetraeder:'abg. Tetraeder',kuboktaeder:'Kuboktaeder',abgWuerfel:'abg. Würfel',abgOktaeder:'abg. Oktaeder',
+ rhombenkuboktaeder:'Rhombenkubokt.',abgKuboktaeder:'gr. Rhombenkubokt.',ikosidodekaeder:'Ikosidodekaeder',
+ abgIkosaeder:'Fußball',rhombenikosidodekaeder:'Rhombenikosidodek.'};
+
+// ===================== Konvexe Hülle =====================
+function convexHull(points){
+  const n=points.length,eps=1e-7;
+  let i0=0,i1=-1,i2=-1,i3=-1;
+  for(let i=1;i<n;i++){if(len(sub(points[i],points[i0]))>eps){i1=i;break;}}
+  for(let i=1;i<n;i++){if(i!==i1&&len(cross(sub(points[i1],points[i0]),sub(points[i],points[i0])))>eps){i2=i;break;}}
+  const n0=cross(sub(points[i1],points[i0]),sub(points[i2],points[i0]));
+  for(let i=1;i<n;i++){if(i!==i1&&i!==i2&&Math.abs(dot(n0,sub(points[i],points[i0])))>eps){i3=i;break;}}
+  const mk=(a,b,c)=>{const nv=norm(cross(sub(points[b],points[a]),sub(points[c],points[a])));
+    return {v:[a,b,c],n:nv,d:dot(nv,points[a])};};
+  const ctr=mul(add(add(points[i0],points[i1]),add(points[i2],points[i3])),0.25);
+  const ori=(a,b,c)=>{let f=mk(a,b,c);if(dot(f.n,sub(ctr,points[a]))>0)f=mk(a,c,b);return f;};
+  let faces=[ori(i0,i1,i2),ori(i0,i1,i3),ori(i0,i2,i3),ori(i1,i2,i3)];
+  const used=new Set([i0,i1,i2,i3]);
+  for(let p=0;p<n;p++){
+    if(used.has(p))continue;
+    const P=points[p];
+    const visible=faces.filter(f=>dot(f.n,P)-f.d>1e-9);
+    if(!visible.length)continue;
+    const vis=new Set(visible),cnt=new Map();
+    for(const f of visible)for(let k=0;k<3;k++){
+      const a=f.v[k],b=f.v[(k+1)%3],key=a<b?a+'_'+b:b+'_'+a;
+      if(!cnt.has(key))cnt.set(key,[]);cnt.get(key).push([a,b]);
+    }
+    faces=faces.filter(f=>!vis.has(f));
+    for(const [,arr] of cnt) if(arr.length===1){const [a,b]=arr[0];faces.push(mk(a,b,p));}
+  }
+  return faces;
+}
+
+// ===================== Polyeder aus Punkten =====================
+function buildPolyhedron(raw){
+  const R=Math.max(...raw.map(len));
+  const pts=raw.map(p=>mul(p,1/R));
+  const tris=convexHull(pts);
+  const planes=[];
+  for(const t of tris){
+    let pl=planes.find(q=>dot(q.n,t.n)>1-1e-6&&Math.abs(q.d-t.d)<1e-5);
+    if(!pl){pl={n:t.n,d:t.d,tris:[]};planes.push(pl);}
+    pl.tris.push(t);
+  }
+  const rawFaces=[];
+  for(const pl of planes){
+    const cnt=new Map();
+    for(const t of pl.tris)for(let k=0;k<3;k++){
+      const a=t.v[k],b=t.v[(k+1)%3],key=a<b?a+'_'+b:b+'_'+a;
+      cnt.set(key,(cnt.get(key)||0)+1);
+    }
+    const next=new Map();
+    for(const t of pl.tris)for(let k=0;k<3;k++){
+      const a=t.v[k],b=t.v[(k+1)%3],key=a<b?a+'_'+b:b+'_'+a;
+      if(cnt.get(key)===1)next.set(a,b);
+    }
+    const start=next.keys().next().value;
+    const loop=[start];let cur=next.get(start),guard=0;
+    while(cur!==start&&guard++<4000){loop.push(cur);cur=next.get(cur);}
+    rawFaces.push({v:loop,n:pl.n,d:pl.d});
+  }
+  const usedIdx=[...new Set(rawFaces.flatMap(f=>f.v))].sort((a,b)=>a-b);
+  const remap=new Map(usedIdx.map((v,i)=>[v,i]));
+  const verts=usedIdx.map(i=>pts[i]);
+  const faces=rawFaces.map(f=>{
+    let s=[0,0,0];for(const i of f.v)s=add(s,pts[i]);
+    return {v:f.v.map(i=>remap.get(i)),n:f.n,d:f.d,c:mul(s,1/f.v.length)};
+  });
+  const eMap=new Map();
+  faces.forEach((f,fi)=>{for(let k=0;k<f.v.length;k++){
+    const a=f.v[k],b=f.v[(k+1)%f.v.length],key=a<b?a+'_'+b:b+'_'+a;
+    if(!eMap.has(key))eMap.set(key,{a:Math.min(a,b),b:Math.max(a,b),f:[]});
+    eMap.get(key).f.push(fi);}});
+  const edges=[...eMap.values()];
+  const midR=edges.reduce((s,e)=>s+len(mul(add(verts[e.a],verts[e.b]),0.5)),0)/edges.length;
+  return {verts,faces,edges,midR};
+}
+
+function dualOf(poly){
+  const rm=poly.midR;
+  const pts=poly.faces.map(f=>mul(f.n,rm*rm/f.d));
+  const R=Math.max(...pts.map(len));
+  const d=buildPolyhedron(pts);
+  d.verts=d.verts.map(p=>mul(p,R));
+  d.faces.forEach(f=>{f.c=mul(f.c,R);f.d*=R;});
+  d.edges.forEach(()=>{});
+  d.scaleR=R;
+  return d;
+}
+
+function vertexFigure(poly){
+  const vi=0,inc=[];
+  poly.faces.forEach((f,fi)=>{if(f.v.includes(vi))inc.push(fi);});
+  const shares=(f1,f2)=>poly.edges.some(e=>(e.a===vi||e.b===vi)&&e.f.includes(f1)&&e.f.includes(f2));
+  const order=[inc[0]],used=new Set([inc[0]]);
+  while(order.length<inc.length){
+    const cur=order[order.length-1];
+    const nx=inc.find(fi=>!used.has(fi)&&shares(cur,fi));
+    if(nx===undefined)break;
+    order.push(nx);used.add(nx);
+  }
+  const seq=order.map(fi=>poly.faces[fi].v.length);
+  const rots=[];
+  for(let i=0;i<seq.length;i++){
+    rots.push(seq.slice(i).concat(seq.slice(0,i)).join('.'));
+    const rev=seq.slice().reverse();
+    rots.push(rev.slice(i).concat(rev.slice(0,i)).join('.'));
+  }
+  rots.sort();
+  return rots[0];
+}
+
+function symmetryAxes(poly){
+  const cand=[];
+  const push=v=>{if(len(v)<1e-9)return;const u=norm(v);
+    if(!cand.some(c=>Math.abs(dot(c,u))>0.9999))cand.push(u);};
+  poly.verts.forEach(push);
+  poly.faces.forEach(f=>push(f.c));
+  poly.edges.forEach(e=>push(mul(add(poly.verts[e.a],poly.verts[e.b]),0.5)));
+  const V=poly.verts;
+  const maps=M=>V.every(p=>{const q=applyM(M,p);return V.some(r=>len(sub(q,r))<1e-6);});
+  const axes=[];
+  for(const a of cand){
+    let best=1;
+    for(const o of [5,4,3,2]) if(maps(rotMat(a,2*Math.PI/o))){best=o;break;}
+    if(best>1)axes.push({dir:a,order:best});
+  }
+  return axes;
+}
+
+// ===================== Abwicklung =====================
+function unfoldPlan(poly,root,dfs){
+  const F=poly.faces.length;
+  const adj=Array.from({length:F},()=>[]);
+  poly.edges.forEach((e,ei)=>{if(e.f.length===2){adj[e.f[0]].push({f:e.f[1],e:ei});adj[e.f[1]].push({f:e.f[0],e:ei});}});
+  const parent=Array(F).fill(-1),pedge=Array(F).fill(-1),order=[],seen=Array(F).fill(false);
+  const stack=[root];seen[root]=true;
+  while(stack.length){
+    const cur=dfs?stack.pop():stack.shift();
+    order.push(cur);
+    for(const {f,e} of adj[cur]) if(!seen[f]){seen[f]=true;parent[f]=cur;pedge[f]=e;stack.push(f);}
+  }
+  const foldEdges=new Set(pedge.filter(e=>e>=0));
+  const angle=Array(F).fill(0);
+  for(const f of order){
+    if(parent[f]<0)continue;
+    const e=poly.edges[pedge[f]];
+    const ax=sub(poly.verts[e.b],poly.verts[e.a]);
+    const np=poly.faces[parent[f]].n,nf=poly.faces[f].n;
+    const th=Math.acos(Math.max(-1,Math.min(1,dot(np,nf))));
+    const test=t=>len(sub(applyM(rotMat(ax,t),nf),np));
+    angle[f]=test(th)<test(-th)?th:-th;
+  }
+  return {order,parent,pedge,angle,foldEdges,root};
+}
+function unfoldTransforms(poly,plan,t){
+  const T=Array(poly.faces.length).fill(null);
+  const I={M:[[1,0,0],[0,1,0],[0,0,1]],o:[0,0,0]};
+  for(const f of plan.order){
+    if(plan.parent[f]<0){T[f]=I;continue;}
+    const e=poly.edges[plan.pedge[f]];
+    const A=poly.verts[e.a],B=poly.verts[e.b];
+    const R=rotMat(sub(B,A),plan.angle[f]*t);
+    const Tp=T[plan.parent[f]];
+    T[f]={M:matMul(Tp.M,R),o:add(Tp.o,applyM(Tp.M,sub(A,applyM(R,A))))};
+  }
+  return T;
+}
+
+// ===================== Zustand =====================
+const S={
+  solid:'wuerfel', mode:'solid', spin:'slow',
+  draw:'both', color:'sides', axes:'off', label:'off',
+  dualSize:'canon', mid:'off', link:'off',
+  fold:0, pattern:0, edgeStyle:'both',
+  playing:null, zoom:1,
+  q:qNorm([0.92,-0.28,0.24,0.06]), scale:1, scaleTarget:1
+};
+const FACECOL={3:'#E2685C',4:'#3FA9A0',5:'#8A72D0',6:'#E0A93E',8:'#4A83D8',10:'#D46FA5'};
+const FACENAME={3:'Dreiecke',4:'Quadrate',5:'Fünfecke',6:'Sechsecke',8:'Achtecke',10:'Zehnecke'};
+const AXCOL={2:'#7FA8D8',3:'#7ED9A0',4:'#F0B44A',5:'#E27FC0'};
+
+let cur=null;
+function loadSolid(id){
+  const def=CATALOG.find(c=>c.id===id);
+  const poly=buildPolyhedron(def.pts());
+  const dual=dualOf(poly);
+  const axes=symmetryAxes(poly);
+  const roots=[0,Math.floor(poly.faces.length/2)%poly.faces.length,0];
+  const plans=[unfoldPlan(poly,roots[0],false),unfoldPlan(poly,roots[1],false),unfoldPlan(poly,roots[2],true)];
+  const types={};poly.faces.forEach(f=>types[f.v.length]=(types[f.v.length]||0)+1);
+  cur={def,poly,dual,axes,plans,types,vfig:vertexFigure(poly)};
+  updatePanels();
+}
+
+// ===================== Bedienelemente =====================
+function segment(host,items,get,set){
+  host.innerHTML='';
+  items.forEach(it=>{
+    const b=document.createElement('button');
+    b.textContent=it.label; b.type='button';
+    if(it.title)b.title=it.title;
+    b.setAttribute('aria-pressed',String(get()===it.value));
+    b.onclick=()=>{set(it.value);refreshControls();};
+    host.appendChild(b);
+  });
+}
+function refreshSeg(host,items,get){
+  [...host.children].forEach((b,i)=>b.setAttribute('aria-pressed',String(get()===items[i].value)));
+}
+
+const SEGS=[];
+function mkSeg(id,items,getter,setter){
+  const host=document.getElementById(id);
+  segment(host,items,getter,setter);
+  SEGS.push({host,items,getter});
+}
+function refreshControls(){
+  SEGS.forEach(s=>refreshSeg(s.host,s.items,s.getter));
+  document.getElementById('rowSolid').hidden = S.mode!=='solid';
+  document.getElementById('rowDual').hidden  = S.mode!=='dual';
+  document.getElementById('rowNet').hidden   = S.mode!=='net';
+  document.getElementById('btnFoldPlay').textContent = (S.playing==='fold')?'Pause ‖':(S.fold>=1?'Zurückfalten ◂':'Abwickeln ▸');
+  document.getElementById('btnDualPlay').textContent = (S.playing==='dual')?'Pause ‖':'Dual einblenden ▸';
+  const note={solid:'Ziehen zum Drehen · Scrollen zum Zoomen',
+              dual:'Original + Dualkörper',
+              net:'Faltgrad '+Math.round(S.fold*100)+' %'}[S.mode];
+  document.getElementById('stagenote').textContent=note;
+  updatePanels();
+}
+
+mkSeg('segPlat',CATALOG.filter(c=>c.fam==='plat').map(c=>({label:SHORT[c.id],value:c.id})),
+  ()=>S.solid,v=>{S.solid=v;S.fold=0;S.playing=null;loadSolid(v);});
+mkSeg('segArch',CATALOG.filter(c=>c.fam==='arch').map(c=>({label:SHORT[c.id],value:c.id})),
+  ()=>S.solid,v=>{S.solid=v;S.fold=0;S.playing=null;loadSolid(v);});
+mkSeg('segMode',[{label:'Körper',value:'solid'},{label:'Dualität',value:'dual'},{label:'Abwicklung',value:'net'}],
+  ()=>S.mode,v=>{S.mode=v;S.playing=null;});
+mkSeg('segSpin',[{label:'aus',value:'off'},{label:'langsam',value:'slow'},{label:'zügig',value:'fast'}],
+  ()=>S.spin,v=>S.spin=v);
+mkSeg('segDraw',[{label:'Flächen',value:'faces'},{label:'Flächen + Kanten',value:'both'},{label:'nur Kanten',value:'wire'},{label:'durchsichtig',value:'glass'}],
+  ()=>S.draw,v=>S.draw=v);
+mkSeg('segColor',[{label:'nach Eckenzahl',value:'sides'},{label:'einfarbig',value:'plain'},{label:'nach Neigung',value:'tilt'}],
+  ()=>S.color,v=>S.color=v);
+mkSeg('segAxes',[{label:'aus',value:'off'},{label:'2-zählig',value:'2'},{label:'3-zählig',value:'3'},{label:'4/5-zählig',value:'45'},{label:'alle',value:'all'}],
+  ()=>S.axes,v=>S.axes=v);
+mkSeg('segLabel',[{label:'aus',value:'off'},{label:'Ecken',value:'v'},{label:'Flächen',value:'f'}],
+  ()=>S.label,v=>S.label=v);
+mkSeg('segDualSize',[{label:'nur Flächenmitten',value:'pts'},{label:'klein',value:'small'},{label:'passgenau',value:'canon'}],
+  ()=>S.dualSize,v=>{S.dualSize=v;S.playing=null;});
+mkSeg('segMid',[{label:'aus',value:'off'},{label:'an',value:'on'}],()=>S.mid,v=>S.mid=v);
+mkSeg('segLink',[{label:'aus',value:'off'},{label:'an',value:'on'}],()=>S.link,v=>S.link=v);
+mkSeg('segFold',[{label:'0 %',value:0},{label:'25 %',value:.25},{label:'50 %',value:.5},{label:'75 %',value:.75},{label:'100 %',value:1}],
+  ()=>S.fold,v=>{S.fold=v;S.playing=null;});
+mkSeg('segPattern',[{label:'Muster A',value:0},{label:'Muster B',value:1},{label:'Muster C',value:2}],
+  ()=>S.pattern,v=>S.pattern=v);
+mkSeg('segEdgeStyle',[{label:'Falt- und Schnittkanten',value:'both'},{label:'nur Umriss',value:'plain'}],
+  ()=>S.edgeStyle,v=>S.edgeStyle=v);
+
+// Voreinstellungen
+const PRESETS=[
+ {name:'Überblick',apply:()=>Object.assign(S,{mode:'solid',draw:'both',color:'sides',axes:'off',label:'off',spin:'slow'})},
+ {name:'Dualität zeigen',apply:()=>Object.assign(S,{mode:'dual',dualSize:'canon',mid:'on',link:'on',spin:'slow'})},
+ {name:'Netz falten',apply:()=>{Object.assign(S,{mode:'net',pattern:0,edgeStyle:'both',spin:'off',fold:0});S.playing='fold';}},
+ {name:'Symmetrieachsen',apply:()=>Object.assign(S,{mode:'solid',draw:'glass',color:'plain',axes:'all',label:'off',spin:'slow'})},
+ {name:'Zahlen zählen',apply:()=>Object.assign(S,{mode:'solid',draw:'both',color:'sides',axes:'off',label:'v',spin:'off'})},
+];
+const presetHost=document.getElementById('presets');
+PRESETS.forEach(p=>{
+  const b=document.createElement('button');
+  b.className='chip';b.type='button';b.textContent=p.name;
+  b.onclick=()=>{p.apply();refreshControls();};
+  presetHost.appendChild(b);
+});
+
+document.getElementById('btnFoldPlay').onclick=()=>{
+  if(S.playing==='fold'){S.playing=null;}
+  else{S.playing='fold';S.foldDir=(S.fold>=1)?-1:1;}
+  refreshControls();
+};
+document.getElementById('btnDualPlay').onclick=()=>{
+  if(S.playing==='dual'){S.playing=null;}
+  else{S.playing='dual';S.dualT=0;}
+  refreshControls();
+};
+window.addEventListener('keydown',e=>{
+  if(e.code==='Space'&&e.target===document.body){
+    e.preventDefault();
+    if(S.mode==='net')document.getElementById('btnFoldPlay').click();
+    else if(S.mode==='dual')document.getElementById('btnDualPlay').click();
+    else{S.spin=S.spin==='off'?'slow':'off';refreshControls();}
+  }
+});
+
+// ===================== Panels =====================
+function updatePanels(){
+  if(!cur)return;
+  const {def,poly,types,vfig,axes}=cur;
+  const V=poly.verts.length,E=poly.edges.length,F=poly.faces.length;
+  document.getElementById('pName').textContent=def.name;
+  document.getElementById('pAka').textContent=def.aka;
+  document.getElementById('pV').textContent=V;
+  document.getElementById('pE').textContent=E;
+  document.getElementById('pF').textContent=F;
+  document.getElementById('pTypes').innerHTML=Object.keys(types).sort((a,b)=>a-b)
+    .map(k=>`<span class="dot" style="background:${FACECOL[k]}"></span>${types[k]}×${k}-Eck`).join('<br>');
+  document.getElementById('pVertFig').textContent=vfig.split('.').map(n=>n+'-Eck').join(' · ');
+  document.getElementById('pDual').textContent=def.dual;
+
+  document.getElementById('eV').textContent=V;
+  document.getElementById('eE').textContent=E;
+  document.getElementById('eF').textContent=F;
+  document.getElementById('eR').textContent=V-E+F;
+  document.getElementById('eNote').innerHTML=
+    `<b>${V}</b> Ecken, <b>${E}</b> Kanten, <b>${F}</b> Flächen — die Wechselsumme ergibt immer 2, bei jedem Körper ohne Loch.`;
+  const sp=document.getElementById('eSplit');
+  if(S.mode==='net'){
+    sp.hidden=false;
+    sp.innerHTML=`Netz: <span class="hl">${F-1}</span> Faltkanten (F−1)<br>+ <span class="hl">${V-1}</span> Schnittkanten (V−1)<br>= ${E} Kanten insgesamt`;
+  } else sp.hidden=true;
+
+  document.getElementById('symName').innerHTML=
+    `<b>${def.sym}</b><br><span style="color:#5A6678">${def.symOrder} Deckabbildungen mit Spiegelungen, ${def.symOrder/2} reine Drehungen</span>`;
+  const cnt={};axes.forEach(a=>cnt[a.order]=(cnt[a.order]||0)+1);
+  let rot=1;Object.keys(cnt).forEach(o=>rot+=cnt[o]*(o-1));
+  const rows=Object.keys(cnt).sort((a,b)=>a-b).map(o=>
+    `<tr><td><span class="dot" style="background:${AXCOL[o]}"></span>${o}-zählige Achsen</td><td>${cnt[o]} → ${cnt[o]*(o-1)} Drehungen</td></tr>`).join('');
+  document.getElementById('axTab').innerHTML=rows+
+    `<tr><td>mit „nicht drehen“</td><td>${rot} Drehungen</td></tr>`;
+  document.getElementById('symHint').textContent=
+    'Eine n-zählige Achse liefert n−1 echte Drehungen. Die Summe ist die Ordnung der Drehgruppe.';
+
+  // Legende
+  const leg=document.getElementById('legend');
+  let html=Object.keys(types).sort((a,b)=>a-b)
+    .map(k=>`<span class="key"><i style="background:${FACECOL[k]}"></i>${types[k]} ${FACENAME[k]||k+'-Ecke'}</span>`).join('');
+  if(S.mode==='dual')html+=`<span class="key"><i style="background:#EBD9A8"></i>${S.dualSize==='pts'?'Mitte jeder Fläche':'Dualkörper: '+cur.def.dual}</span>`;
+  if(S.mode==='net'&&S.edgeStyle==='both')
+    html+=`<span class="key"><i style="background:#EDF2FA"></i>Faltkante</span><span class="key"><i style="background:#C08A2E"></i>Schnittkante</span>`;
+  if(S.mode==='solid'&&S.axes!=='off')
+    html+=Object.keys(cnt).sort((a,b)=>a-b).filter(o=>axFilter(+o))
+      .map(o=>`<span class="key"><i style="background:${AXCOL[o]}"></i>${o}-zählig</span>`).join('');
+  leg.innerHTML=html;
+}
+function axFilter(o){
+  if(S.axes==='off')return false;
+  if(S.axes==='all')return true;
+  if(S.axes==='45')return o>=4;
+  return String(o)===S.axes;
+}
+
+// ===================== Zeichnen =====================
+const cv=document.getElementById('cv'),ctx=cv.getContext('2d');
+let W=0,H=0,DPR=1;
+function resize(){
+  DPR=Math.min(2,window.devicePixelRatio||1);
+  const r=cv.getBoundingClientRect();
+  W=r.width;H=r.height;
+  cv.width=Math.round(W*DPR);cv.height=Math.round(H*DPR);
+  ctx.setTransform(DPR,0,0,DPR,0,0);
+}
+window.addEventListener('resize',resize);
+if(typeof ResizeObserver!=='undefined') new ResizeObserver(()=>resize()).observe(cv);
+
+// Interaktion
+let drag=null;
+cv.addEventListener('pointerdown',e=>{drag={x:e.clientX,y:e.clientY};cv.setPointerCapture(e.pointerId);cv.classList.add('dragging');});
+cv.addEventListener('pointermove',e=>{
+  if(!drag)return;
+  const dx=e.clientX-drag.x,dy=e.clientY-drag.y;drag={x:e.clientX,y:e.clientY};
+  const dq=qMul(qAxis([0,1,0],dx*0.008),qAxis([1,0,0],dy*0.008));
+  S.q=qNorm(qMul(dq,S.q));
+});
+const endDrag=()=>{drag=null;cv.classList.remove('dragging');};
+cv.addEventListener('pointerup',endDrag);cv.addEventListener('pointercancel',endDrag);
+cv.addEventListener('wheel',e=>{e.preventDefault();S.zoom=Math.max(0.45,Math.min(2.6,S.zoom*(e.deltaY>0?0.92:1.09)));},{passive:false});
+cv.addEventListener('dblclick',()=>{S.q=qNorm([0.92,-0.28,0.24,0.06]);S.zoom=1;});
+
+function shade(hex,k){
+  const r=parseInt(hex.slice(1,3),16),g=parseInt(hex.slice(3,5),16),b=parseInt(hex.slice(5,7),16);
+  const f=x=>Math.max(0,Math.min(255,Math.round(x*k)));
+  return `rgb(${f(r)},${f(g)},${f(b)})`;
+}
+const LIGHT=norm([0.35,0.55,0.76]);
+
+function buildScene(){
+  const P=cur.poly,polys=[],lines=[],dots=[],labels=[];
+  if(S.mode==='net'){
+    const plan=cur.plans[S.pattern];
+    const T=unfoldTransforms(P,plan,S.fold);
+    P.faces.forEach((f,fi)=>{
+      polys.push({p:f.v.map(i=>applyT(T[fi],P.verts[i])),sides:f.v.length,kind:'solid'});
+    });
+    P.edges.forEach((e,ei)=>{
+      const fold=plan.foldEdges.has(ei);
+      e.f.forEach(fi=>{
+        lines.push({a:applyT(T[fi],P.verts[e.a]),b:applyT(T[fi],P.verts[e.b]),
+                    kind:(S.edgeStyle==='both')?(fold?'fold':'cut'):'plain'});
+      });
+    });
+  } else {
+    P.faces.forEach((f,fi)=>{
+      polys.push({p:f.v.map(i=>P.verts[i]),sides:f.v.length,kind:'solid',n:f.n,c:f.c,idx:fi});
+    });
+    P.edges.forEach(e=>lines.push({a:P.verts[e.a],b:P.verts[e.b],kind:'plain'}));
+    if(S.mode==='dual'){
+      const D=cur.dual;
+      if(S.dualSize==='pts'){
+        P.faces.forEach(f=>dots.push({p:f.c,col:'#F2E3B6',r:3.6}));
+      } else {
+        const kk=({small:0.55,canon:1}[S.dualSize])*(S.playing==='dual'?Math.max(0.02,S.dualT):1);
+        D.faces.forEach(f=>polys.push({p:f.v.map(i=>mul(D.verts[i],kk)),sides:f.v.length,kind:'dual'}));
+        D.edges.forEach(e=>lines.push({a:mul(D.verts[e.a],kk),b:mul(D.verts[e.b],kk),kind:'dual'}));
+        D.verts.forEach(v=>dots.push({p:mul(v,kk),col:'#F2E3B6',r:3.2}));
+        if(S.link==='on')P.faces.forEach((f,i)=>{if(D.verts[i])lines.push({a:f.c,b:mul(D.verts[i],kk),kind:'link'});});
+      }
+    }
+    if(S.label==='v')P.verts.forEach((v,i)=>labels.push({p:mul(v,1.02),t:String(i+1)}));
+    if(S.label==='f')P.faces.forEach((f,i)=>labels.push({p:mul(f.c,1.06),t:String(i+1)}));
+  }
+  return {polys,lines,dots,labels};
+}
+
+function frame(){
+  if(!cur){requestAnimationFrame(frame);return;}
+  // Animation
+  if(S.playing==='fold'){
+    S.fold=Math.max(0,Math.min(1,S.fold+0.006*(S.foldDir||1)));
+    if(S.fold<=0||S.fold>=1){S.playing=null;refreshControls();}
+    document.getElementById('stagenote').textContent='Faltgrad '+Math.round(S.fold*100)+' %';
+  }
+  if(S.playing==='dual'){
+    S.dualT=Math.min(1,(S.dualT||0)+0.012);
+    if(S.dualT>=1){S.playing=null;refreshControls();}
+  }
+  if(S.spin!=='off'&&!drag){
+    const sp=S.spin==='fast'?0.010:0.0035;
+    S.q=qNorm(qMul(qAxis([0.12,1,0.05],sp),S.q));
+  }
+
+  // Blickrichtung: im Netz flach auf die Wurzelfläche schauen
+  let q=S.q;
+  if(S.mode==='net'&&S.fold>0.01){
+    const n=cur.poly.faces[cur.plans[S.pattern].root].n;
+    const ax=cross(n,[0,0,1]);
+    const ang=Math.acos(Math.max(-1,Math.min(1,n[2])));
+    const qf=len(ax)<1e-6?(n[2]>0?[1,0,0,0]:qAxis([1,0,0],Math.PI)):qAxis(ax,ang);
+    q=qSlerp(S.q,qf,Math.min(1,S.fold*1.15));
+  }
+  const R=qMat(q);
+  const sc=buildScene();
+
+  // Rotation anwenden
+  const rot=v=>applyM(R,v);
+  sc.polys.forEach(o=>o.rp=o.p.map(rot));
+  sc.lines.forEach(o=>{o.ra=rot(o.a);o.rb=rot(o.b);});
+  sc.dots.forEach(o=>o.rp=rot(o.p));
+  sc.labels.forEach(o=>o.rp=rot(o.p));
+
+  // Auto-Zoom
+  let maxr=0.7;
+  sc.polys.forEach(o=>o.rp.forEach(p=>{maxr=Math.max(maxr,Math.hypot(p[0],p[1]));}));
+  sc.dots.forEach(o=>{maxr=Math.max(maxr,Math.hypot(o.rp[0],o.rp[1]));});
+  if(S.mode==='solid'&&S.axes!=='off')maxr=Math.max(maxr,1.6);
+  if(S.mode==='dual'&&S.mid==='on')maxr=Math.max(maxr,cur.poly.midR);
+  const target=(Math.min(W,H)*0.44)/maxr;
+  S.scale+= (target-S.scale)*0.18;
+  const s=S.scale*S.zoom, cx=W/2, cy=H/2, D=6.5;
+  const proj=p=>{const k=D/(D-p[2]*1.0);return [cx+p[0]*s*k, cy-p[1]*s*k];};
+
+  // Hintergrund
+  ctx.clearRect(0,0,W,H);
+  const g=ctx.createRadialGradient(cx,cy*0.85,10,cx,cy,Math.max(W,H)*0.8);
+  g.addColorStop(0,'#16223A');g.addColorStop(1,'#0B1220');
+  ctx.fillStyle=g;ctx.fillRect(0,0,W,H);
+
+  // Mittelkugel
+  if(S.mode==='dual'&&S.mid==='on'){
+    ctx.strokeStyle='rgba(200,214,240,.30)';ctx.lineWidth=1;
+    ctx.beginPath();ctx.arc(cx,cy,cur.poly.midR*s,0,Math.PI*2);ctx.stroke();
+    ctx.strokeStyle='rgba(200,214,240,.13)';
+    ctx.beginPath();ctx.ellipse(cx,cy,cur.poly.midR*s,cur.poly.midR*s*0.34,0,0,Math.PI*2);ctx.stroke();
+  }
+
+  // Symmetrieachsen hinten
+  if(S.mode==='solid'&&S.axes!=='off'){
+    cur.axes.filter(a=>axFilter(a.order)).forEach(a=>{
+      const d=applyM(R,a.dir),L=1.55;
+      const p1=proj(mul(d,L)),p2=proj(mul(d,-L));
+      ctx.strokeStyle=AXCOL[a.order]+'88';ctx.lineWidth=1.3;
+      ctx.beginPath();ctx.moveTo(p1[0],p1[1]);ctx.lineTo(p2[0],p2[1]);ctx.stroke();
+      ctx.fillStyle=AXCOL[a.order];
+      [p1,p2].forEach(p=>{ctx.beginPath();ctx.arc(p[0],p[1],2.6,0,Math.PI*2);ctx.fill();});
+    });
+  }
+
+  // Flächen sortieren und malen
+  const drawMode = (S.mode==='solid') ? S.draw : (S.mode==='dual' ? 'glass' : 'both');
+  const glass = drawMode==='glass';
+  if(drawMode!=='wire'){
+    sc.polys.forEach(o=>{o.z=o.rp.reduce((a,p)=>a+p[2],0)/o.rp.length;});
+    sc.polys.sort((a,b)=>a.z-b.z);
+    sc.polys.forEach(o=>{
+      const n=norm(cross(sub(o.rp[1],o.rp[0]),sub(o.rp[2],o.rp[0])));
+      const front=n[2]>0;
+      if(!glass&&!front)return;
+      if(o.kind==='dual'&&S.dualSize==='pts')return;
+      const lam=Math.abs(dot(n,LIGHT));
+      let base;
+      if(o.kind==='dual')base='#E8D49A';
+      else if(S.color==='plain')base='#8FA3C4';
+      else if(S.color==='tilt'){
+        const h=Math.round(200-140*Math.abs(n[2]));base=`hsl(${h},45%,60%)`;
+      } else base=FACECOL[o.sides]||'#9AA7BC';
+      const k=0.42+0.72*lam;
+      let fill;
+      if(base.startsWith('hsl')){fill=base;}
+      else fill=shade(base,k);
+      ctx.beginPath();
+      o.rp.forEach((p,i)=>{const q2=proj(p);i?ctx.lineTo(q2[0],q2[1]):ctx.moveTo(q2[0],q2[1]);});
+      ctx.closePath();
+      ctx.globalAlpha = (o.kind==='dual')?(front?0.60:0.24) : (glass?(front?0.52:0.20):1);
+      ctx.fillStyle=fill;ctx.fill();
+      ctx.globalAlpha=1;
+    });
+  }
+
+  // Kanten
+  sc.lines.forEach(o=>{
+    const A=proj(o.ra),B=proj(o.rb);
+    const depth=(o.ra[2]+o.rb[2])/2;
+    ctx.setLineDash([]);
+    if(o.kind==='fold'){ctx.strokeStyle='rgba(237,242,250,.85)';ctx.lineWidth=1.4;}
+    else if(o.kind==='cut'){ctx.strokeStyle='rgba(224,169,62,.95)';ctx.lineWidth=1.7;ctx.setLineDash([5,3]);}
+    else if(o.kind==='dual'){ctx.strokeStyle=`rgba(242,227,182,${depth>0?.9:.35})`;ctx.lineWidth=1.3;}
+    else if(o.kind==='link'){ctx.strokeStyle='rgba(224,169,62,.45)';ctx.lineWidth=1;ctx.setLineDash([3,3]);}
+    else {
+      const a=(drawMode==='wire')?(depth>0?.9:.28):(depth>0?.75:.22);
+      ctx.strokeStyle=`rgba(226,234,246,${a})`;ctx.lineWidth=(drawMode==='wire')?1.4:1.1;
+    }
+    ctx.beginPath();ctx.moveTo(A[0],A[1]);ctx.lineTo(B[0],B[1]);ctx.stroke();
+  });
+  ctx.setLineDash([]);
+
+  // Punkte
+  sc.dots.forEach(o=>{const p=proj(o.rp);
+    ctx.fillStyle=o.rp[2]>0?o.col:'rgba(242,227,182,.4)';
+    ctx.beginPath();ctx.arc(p[0],p[1],o.r,0,Math.PI*2);ctx.fill();});
+
+  // Ecken sichtbar machen
+  if(S.mode!=='net'&&(drawMode==='wire'||S.label==='v')){
+    cur.poly.verts.forEach(v=>{const rv=rot(v),p=proj(rv);
+      ctx.fillStyle=rv[2]>0?'#DCE6F5':'rgba(220,230,245,.35)';
+      ctx.beginPath();ctx.arc(p[0],p[1],2.8,0,Math.PI*2);ctx.fill();});
+  }
+
+  // Beschriftung
+  if(sc.labels.length){
+    ctx.font='11px ui-monospace, Menlo, monospace';
+    ctx.textAlign='center';ctx.textBaseline='middle';
+    sc.labels.forEach(o=>{
+      if(o.rp[2]<0)return;
+      const p=proj(o.rp);
+      ctx.fillStyle='rgba(11,18,32,.75)';
+      ctx.beginPath();ctx.arc(p[0],p[1],8,0,Math.PI*2);ctx.fill();
+      ctx.fillStyle='#EAF0FA';ctx.fillText(o.t,p[0],p[1]+0.5);
+    });
+  }
+  requestAnimationFrame(frame);
+}
+
+// ===================== Start =====================
+loadSolid(S.solid);
+refreshControls();
+resize();
+requestAnimationFrame(frame);
+</script>
+</body>
+</html>
