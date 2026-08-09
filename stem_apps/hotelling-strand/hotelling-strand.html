@@ -1,0 +1,829 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Eis am Strand – Hotellings Gesetz interaktiv</title>
+<style>
+  :root{
+    --sea-deep:#12697d;
+    --sea:#2e9fb4;
+    --sea-foam:#bfe8ee;
+    --sand:#f3e5c3;
+    --sand-dark:#e6d3a6;
+    --ink:#37301f;
+    --ink-soft:#6b6350;
+    --paper:#fdf9ef;
+    --card:#ffffff;
+    --line:#e3d8bd;
+    --v1:#e85d75; /* Erdbeere */
+    --v2:#4ca86f; /* Pistazie */
+    --v3:#f0a534; /* Mango */
+    --v4:#7a6fd0; /* Heidelbeere */
+    --accent:#12697d;
+  }
+  *{box-sizing:border-box; margin:0; padding:0;}
+  html{scroll-behavior:smooth;}
+  body{
+    font-family: ui-rounded, "SF Pro Rounded", "Segoe UI", system-ui, -apple-system, sans-serif;
+    background: var(--paper);
+    color: var(--ink);
+    line-height:1.55;
+  }
+  button{font-family:inherit;}
+
+  /* ---------- Kontrollleiste oben ---------- */
+  .topbar{
+    position:sticky; top:0; z-index:50;
+    background:linear-gradient(180deg, #fdf9ef 82%, rgba(253,249,239,0));
+    padding:10px 16px 14px;
+    border-bottom:1px solid var(--line);
+  }
+  .topbar-inner{max-width:1060px; margin:0 auto;}
+  .titlerow{
+    display:flex; align-items:baseline; gap:14px; flex-wrap:wrap; margin-bottom:8px;
+  }
+  h1{
+    font-size:1.25rem; font-weight:800; letter-spacing:.2px;
+  }
+  h1 .cone{font-size:1.1em;}
+  .subtitle{color:var(--ink-soft); font-size:.85rem;}
+
+  .presets{display:flex; gap:8px; flex-wrap:wrap; margin-bottom:10px; align-items:center;}
+  .presets .lbl{font-size:.75rem; font-weight:700; color:var(--ink-soft); text-transform:uppercase; letter-spacing:.06em; margin-right:2px;}
+  .preset-btn{
+    border:1.5px solid var(--accent); background:#fff; color:var(--accent);
+    border-radius:999px; padding:5px 14px; font-size:.85rem; font-weight:700; cursor:pointer;
+    transition:background .15s, color .15s;
+  }
+  .preset-btn:hover{background:#e6f3f6;}
+  .preset-btn.active{background:var(--accent); color:#fff;}
+  .preset-btn:focus-visible, .seg button:focus-visible, .run-btn:focus-visible, .toggle:focus-visible{
+    outline:3px solid #f0a534; outline-offset:2px;
+  }
+
+  .paramrow{display:flex; gap:14px; flex-wrap:wrap; align-items:flex-end; margin-bottom:10px;}
+  .param{display:flex; flex-direction:column; gap:3px;}
+  .param > span{font-size:.72rem; font-weight:700; color:var(--ink-soft); text-transform:uppercase; letter-spacing:.05em;}
+  .seg{display:flex; border:1.5px solid var(--line); border-radius:10px; overflow:hidden; background:#fff;}
+  .seg button{
+    border:none; background:transparent; padding:6px 12px; font-size:.85rem; font-weight:600;
+    color:var(--ink-soft); cursor:pointer; border-right:1px solid var(--line);
+  }
+  .seg button:last-child{border-right:none;}
+  .seg button.active{background:var(--sand); color:var(--ink); font-weight:800;}
+
+  .runrow{display:flex; gap:10px; flex-wrap:wrap; align-items:center;}
+  .run-btn{
+    border:none; border-radius:10px; padding:8px 18px; font-size:.9rem; font-weight:800; cursor:pointer;
+  }
+  .run-btn.primary{background:var(--accent); color:#fff;}
+  .run-btn.primary:hover{background:#0d5566;}
+  .run-btn.ghost{background:#fff; border:1.5px solid var(--line); color:var(--ink);}
+  .run-btn.ghost:hover{background:var(--sand);}
+  .toggle{
+    display:flex; align-items:center; gap:6px; font-size:.85rem; font-weight:600; color:var(--ink-soft);
+    background:#fff; border:1.5px solid var(--line); border-radius:10px; padding:7px 12px; cursor:pointer;
+  }
+  .toggle input{accent-color:var(--accent); width:15px; height:15px; cursor:pointer;}
+  .speedwrap{display:flex; align-items:center; gap:6px; font-size:.8rem; color:var(--ink-soft); font-weight:600;}
+
+  /* ---------- Bühne ---------- */
+  main{max-width:1060px; margin:0 auto; padding:14px 16px 60px;}
+  .stage{
+    position:relative; border-radius:16px; overflow:hidden;
+    box-shadow:0 10px 30px rgba(55,48,31,.15);
+    background:var(--sand);
+  }
+  canvas#beach{display:block; width:100%; height:auto;}
+  .badge{
+    position:absolute; left:50%; transform:translateX(-50%); bottom:12px;
+    background:rgba(55,48,31,.85); color:#fff; font-size:.85rem; font-weight:700;
+    padding:6px 16px; border-radius:999px; opacity:0; transition:opacity .4s; pointer-events:none;
+  }
+  .badge.show{opacity:1;}
+  .roundinfo{
+    position:absolute; right:12px; top:10px; background:rgba(255,255,255,.85);
+    font-size:.75rem; font-weight:700; color:var(--ink-soft); padding:3px 10px; border-radius:999px;
+  }
+
+  /* ---------- Statistik ---------- */
+  .stats{
+    display:grid; grid-template-columns: 1.4fr 1fr; gap:14px; margin-top:14px;
+  }
+  @media (max-width:760px){ .stats{grid-template-columns:1fr;} }
+  .statcard{
+    background:var(--card); border:1px solid var(--line); border-radius:14px; padding:14px 16px;
+  }
+  .statcard h3{font-size:.8rem; text-transform:uppercase; letter-spacing:.06em; color:var(--ink-soft); margin-bottom:10px;}
+  .sharebar{display:flex; height:26px; border-radius:8px; overflow:hidden; border:1px solid var(--line); margin-bottom:10px;}
+  .sharebar div{transition:width .4s; min-width:0;}
+  .legend{display:flex; flex-wrap:wrap; gap:10px 18px; font-size:.85rem;}
+  .legend .item{display:flex; align-items:center; gap:6px; font-weight:600;}
+  .legend .chip{width:13px; height:13px; border-radius:50%; display:inline-block;}
+  .walkval{font-size:1.7rem; font-weight:800; line-height:1.1;}
+  .walkval small{font-size:.9rem; font-weight:600; color:var(--ink-soft);}
+  .walkcompare{font-size:.8rem; color:var(--ink-soft); margin-top:2px;}
+  canvas#spark{width:100%; height:56px; margin-top:8px;}
+
+  /* ---------- Erklärungen ---------- */
+  .explain{margin-top:34px;}
+  .explain h2{
+    font-size:1.35rem; font-weight:800; margin-bottom:14px;
+    border-bottom:3px solid var(--sea); display:inline-block; padding-bottom:2px;
+  }
+  .cards{display:grid; grid-template-columns:repeat(auto-fit, minmax(300px, 1fr)); gap:14px;}
+  .card{
+    background:var(--card); border:1px solid var(--line); border-radius:14px; padding:18px 20px;
+  }
+  .card h3{font-size:1rem; font-weight:800; margin-bottom:8px; display:flex; align-items:center; gap:8px;}
+  .card h3 .em{font-size:1.2em;}
+  .card p{font-size:.92rem; margin-bottom:8px;}
+  .card p:last-child{margin-bottom:0;}
+  .card ul{padding-left:1.15em; font-size:.92rem; display:flex; flex-direction:column; gap:6px;}
+  .card li::marker{color:var(--sea);}
+  .card .hint{
+    background:var(--sand); border-radius:8px; padding:8px 12px; font-size:.85rem; margin-top:10px;
+  }
+  .card.wide{grid-column:1/-1;}
+  mark{background:#fbe3a3; border-radius:3px; padding:0 3px;}
+
+  @media (prefers-reduced-motion: reduce){
+    .sharebar div{transition:none;}
+    .badge{transition:none;}
+  }
+</style>
+</head>
+<body>
+
+<!-- ================= KONTROLLLEISTE ================= -->
+<header class="topbar">
+  <div class="topbar-inner">
+    <div class="titlerow">
+      <h1><span class="cone">🍦</span> Eis am Strand – Hotellings Gesetz</h1>
+      <span class="subtitle">Warum stehen Konkurrenten so oft direkt nebeneinander?</span>
+    </div>
+
+    <div class="presets" id="presets">
+      <span class="lbl">Szenario:</span>
+      <button class="preset-btn active" data-preset="klassiker">Der Klassiker: 2 Verkäufer</button>
+      <button class="preset-btn" data-preset="drei">Drei Konkurrenten</button>
+      <button class="preset-btn" data-preset="buchten">Zwei Strandbuchten</button>
+      <button class="preset-btn" data-preset="schmal">Schmaler Strand (1D)</button>
+    </div>
+
+    <div class="paramrow">
+      <div class="param">
+        <span>Eisverkäufer</span>
+        <div class="seg" data-group="vendors">
+          <button data-val="2" class="active">2</button>
+          <button data-val="3">3</button>
+          <button data-val="4">4</button>
+        </div>
+      </div>
+      <div class="param">
+        <span>Badegäste</span>
+        <div class="seg" data-group="customers">
+          <button data-val="150">150</button>
+          <button data-val="300" class="active">300</button>
+          <button data-val="600">600</button>
+        </div>
+      </div>
+      <div class="param">
+        <span>Verteilung der Gäste</span>
+        <div class="seg" data-group="dist">
+          <button data-val="uniform" class="active">Gleichmäßig</button>
+          <button data-val="clusters">Zwei Gruppen</button>
+          <button data-val="water">Wassernah</button>
+        </div>
+      </div>
+      <div class="param">
+        <span>Strandform</span>
+        <div class="seg" data-group="shape">
+          <button data-val="wide" class="active">Breit</button>
+          <button data-val="narrow">Schmal</button>
+        </div>
+      </div>
+      <div class="param">
+        <span>Schrittweite</span>
+        <div class="seg" data-group="step">
+          <button data-val="8">Klein</button>
+          <button data-val="16" class="active">Mittel</button>
+          <button data-val="30">Groß</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="runrow">
+      <button class="run-btn primary" id="btnRun">▶ Start</button>
+      <button class="run-btn ghost" id="btnStep">1 Runde</button>
+      <button class="run-btn ghost" id="btnReset">↺ Neu starten</button>
+      <label class="toggle"><input type="checkbox" id="chkTrails" checked> Spuren zeigen</label>
+      <label class="toggle"><input type="checkbox" id="chkOpt"> Kundenfreundliche Positionen zeigen</label>
+      <div class="speedwrap">
+        Tempo
+        <div class="seg" data-group="speed">
+          <button data-val="700">Langsam</button>
+          <button data-val="350" class="active">Normal</button>
+          <button data-val="120">Schnell</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</header>
+
+<main>
+  <!-- ================= SIMULATION ================= -->
+  <section class="stage" aria-label="Strand-Simulation">
+    <canvas id="beach"></canvas>
+    <div class="roundinfo">Runde <span id="roundNum">0</span></div>
+    <div class="badge" id="badge">Stabile Aufstellung erreicht – aktuell lohnt sich kein Umzug mehr (▶ Start zum Weiterschauen)</div>
+  </section>
+
+  <!-- ================= LIVE-STATISTIK ================= -->
+  <section class="stats">
+    <div class="statcard">
+      <h3>Marktanteile – wer verkauft wie viel?</h3>
+      <div class="sharebar" id="sharebar"></div>
+      <div class="legend" id="legend"></div>
+    </div>
+    <div class="statcard">
+      <h3>Durchschnittlicher Laufweg der Badegäste</h3>
+      <div class="walkval"><span id="walkNow">–</span><small> Meter</small></div>
+      <div class="walkcompare">Bestmöglich wären ca. <b><span id="walkOpt">–</span> m</b> (kundenfreundliche Positionen)</div>
+      <canvas id="spark" height="56"></canvas>
+    </div>
+  </section>
+
+  <!-- ================= ERKLÄRUNGEN ================= -->
+  <section class="explain">
+    <h2>Was passiert hier eigentlich?</h2>
+    <div class="cards">
+
+      <div class="card">
+        <h3><span class="em">🏖️</span> Die Spielregeln</h3>
+        <p>Am Strand liegen Badegäste (die kleinen Punkte). Jeder Gast kauft sein Eis beim <b>nächstgelegenen</b> Verkäufer – Preis und Sorte sind überall gleich, nur der Laufweg zählt.</p>
+        <p>In jeder Runde prüft jeder Verkäufer: <i>„Bekomme ich mehr Kundschaft, wenn ich meinen Wagen ein Stück verschiebe?“</i> Wenn ja, zieht er um. Das ist alles – es gibt keine Absprachen und keinen Plan.</p>
+      </div>
+
+      <div class="card">
+        <h3><span class="em">🎯</span> Was du beobachten kannst</h3>
+        <ul>
+          <li><b>2 Verkäufer:</b> Beide wandern Schritt für Schritt aufeinander zu und landen <mark>Rücken an Rücken in der Mitte</mark> – obwohl das für niemanden geplant war.</li>
+          <li><b>3 Verkäufer:</b> Es gibt keine Ruheposition mehr. Wer in der Mitte steht, wird eingekreist und flüchtet – ein ewiges Katz-und-Maus-Spiel.</li>
+          <li><b>Zwei Strandbuchten:</b> Die Verkäufer folgen den Menschen, nicht der Geometrie: Sie drängen dorthin, wo die Gäste liegen.</li>
+          <li><b>Schmaler Strand:</b> So sah Hotellings Original von 1929 aus – eine einzige Linie. Das 2D-Bild zeigt: Das Prinzip bleibt gleich.</li>
+        </ul>
+      </div>
+
+      <div class="card">
+        <h3><span class="em">⚖️</span> Das Dilemma dahinter</h3>
+        <p>Für die <b>Badegäste</b> wäre es am besten, wenn sich die Verkäufer über den Strand verteilen – kurze Wege für alle. Schalte oben <i>„Kundenfreundliche Positionen zeigen“</i> ein, um diese Aufstellung zu sehen (gestrichelte Kreise).</p>
+        <p>Für jeden <b>einzelnen Verkäufer</b> lohnt es sich aber immer, Richtung Mitte zu rücken und dem Konkurrenten Kundschaft abzujagen. Ergebnis: Alle stehen zusammen, und die durchschnittlichen Laufwege <b>steigen</b> – das siehst du live in der Statistik.</p>
+        <p>Individuell kluges Verhalten führt hier zu einem Ergebnis, das für die Gemeinschaft schlechter ist.</p>
+      </div>
+
+      <div class="card">
+        <h3><span class="em">🌍</span> Wo das überall auftaucht</h3>
+        <ul>
+          <li><b>Tankstellen &amp; Cafés:</b> Konkurrenten eröffnen oft direkt gegenüber statt im unterversorgten Nachbarviertel.</li>
+          <li><b>Politik:</b> Zwei große Parteien rücken mit ihren Programmen zur Mitte, um die meisten Wählerinnen und Wähler zu erreichen.</li>
+          <li><b>Medien &amp; Produkte:</b> Fernsehsender zur besten Sendezeit, Smartphones, Streaming-Angebote – vieles ähnelt sich stark, weil alle um dieselbe „Mitte“ des Geschmacks kämpfen.</li>
+        </ul>
+        <p class="hint">💡 Merksatz: <b>Wettbewerb um Standorte macht Angebote ähnlicher, nicht vielfältiger.</b></p>
+      </div>
+
+      <div class="card wide">
+        <h3><span class="em">💬</span> Fragen für die Diskussion</h3>
+        <ul>
+          <li>Warum bleibt keiner der beiden Verkäufer einfach in „seiner“ Strandhälfte stehen, obwohl beide dann genauso viel verkaufen würden?</li>
+          <li>Was müsste passieren, damit sich die Verkäufer doch verteilen? (Ideen: zugewiesene Standplätze, unterschiedliche Preise oder Sorten, Gäste mit begrenzter Laufbereitschaft)</li>
+          <li>Bei drei Verkäufern kommt das System nie zur Ruhe. Fällt Ihnen ein Beispiel aus der echten Welt ein, das sich so anfühlt?</li>
+          <li>Übertragen Sie das Bild auf Ihre eigene Branche: Wo steht Ihr „Eiswagen“ – und wo liegt eine unbesetzte Strandbucht?</li>
+        </ul>
+        <p class="hint">📌 Hintergrund für Interessierte: Harold Hotelling beschrieb dieses Prinzip 1929 als <i>„principle of minimum differentiation“</i>. Die Simulation nutzt eine einfache Regel („beste Antwort“): Jeder Verkäufer testet in jeder Runde acht Richtungen und wählt die Position mit den meisten Kundinnen und Kunden.</p>
+      </div>
+
+    </div>
+  </section>
+</main>
+
+<script>
+(function(){
+  "use strict";
+
+  // ---------- Konstanten ----------
+  const SEA_H = 52;                 // Wasserband oben (px, logisch)
+  const W = 960;                    // logische Breite
+  const BEACH_METERS = 100;         // Strandbreite in Metern (für Laufweg-Anzeige)
+  const VENDOR_COLORS = ["#e85d75", "#4ca86f", "#f0a534", "#7a6fd0"];
+  const VENDOR_NAMES  = ["Erdbeere", "Pistazie", "Mango", "Heidelbeere"];
+  const MARGIN = 26;                // Abstand der Wagen zum Rand
+
+  // ---------- Zustand ----------
+  const state = {
+    vendors: 2,
+    customers: 300,
+    dist: "uniform",
+    shape: "wide",
+    step: 16,
+    speed: 350,
+    running: false,
+    trails: true,
+    showOpt: false,
+    round: 0,
+    equilibrium: false
+  };
+
+  let beachH = 380;                 // Strandhöhe (ohne Wasser), abhängig von shape
+  let guests = [];                  // {x,y,assigned}
+  let carts = [];                   // {x,y,dx,dy (Anzeige), trail:[]}
+  let optCenters = [];              // kundenfreundliche Positionen (k-means)
+  let optWalk = 0;
+  let history = [];                 // Laufweg pro Runde
+  let snaps = [];                   // Positions-Schnappschüsse zur Gleichgewichtserkennung
+  let timer = null;
+
+  // ---------- DOM ----------
+  const cv = document.getElementById("beach");
+  const ctx = cv.getContext("2d");
+  const spark = document.getElementById("spark");
+  const sctx = spark.getContext("2d");
+  const badge = document.getElementById("badge");
+  const roundNum = document.getElementById("roundNum");
+  const sharebar = document.getElementById("sharebar");
+  const legend = document.getElementById("legend");
+  const walkNow = document.getElementById("walkNow");
+  const walkOptEl = document.getElementById("walkOpt");
+  const btnRun = document.getElementById("btnRun");
+  const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+  // ---------- Hilfsfunktionen ----------
+  function rand(){ return Math.random(); }
+  function gauss(){ // Box-Muller
+    let u = 0, v = 0;
+    while(u === 0) u = Math.random();
+    while(v === 0) v = Math.random();
+    return Math.sqrt(-2*Math.log(u)) * Math.cos(2*Math.PI*v);
+  }
+  function clamp(v, lo, hi){ return Math.max(lo, Math.min(hi, v)); }
+  function d2(ax, ay, bx, by){ const dx = ax-bx, dy = ay-by; return dx*dx + dy*dy; }
+
+  // ---------- Aufbau ----------
+  function setupCanvas(){
+    beachH = (state.shape === "wide") ? 380 : 150;
+    cv.width = W;
+    cv.height = SEA_H + beachH;
+  }
+
+  function sampleGuests(){
+    guests = [];
+    const n = state.customers;
+    for(let i = 0; i < n; i++){
+      let x, y;
+      if(state.dist === "uniform"){
+        x = rand() * W;
+        y = rand() * beachH;
+      } else if(state.dist === "clusters"){
+        const left = rand() < 0.5;
+        const cx = left ? W*0.24 : W*0.76;
+        const cy = beachH * 0.5;
+        x = cx + gauss() * W * 0.075;
+        y = cy + gauss() * beachH * 0.24;
+      } else { // wassernah
+        x = rand() * W;
+        // Dichte nimmt zum Wasser (oben) hin zu
+        y = beachH * Math.pow(rand(), 1.9);
+      }
+      guests.push({ x: clamp(x, 4, W-4), y: clamp(y, 4, beachH-4), assigned: 0 });
+    }
+  }
+
+  function startPositions(){
+    carts = [];
+    const k = state.vendors;
+    // Wagen bewusst weit auseinander starten, damit die Wanderung sichtbar ist
+    const spots = {
+      2: [[0.14, 0.5], [0.86, 0.5]],
+      3: [[0.14, 0.25], [0.86, 0.25], [0.5, 0.85]],
+      4: [[0.14, 0.22], [0.86, 0.22], [0.14, 0.78], [0.86, 0.78]]
+    }[k];
+    for(let i = 0; i < k; i++){
+      const x = spots[i][0] * W;
+      const y = clamp(spots[i][1] * beachH, MARGIN, beachH - MARGIN);
+      carts.push({ x: x, y: y, dx: x, dy: y, trail: [[x, y]] });
+    }
+  }
+
+  // ---------- Zuordnung & Kennzahlen ----------
+  function nearestCart(gx, gy, positions){
+    let best = 0, bd = Infinity;
+    for(let i = 0; i < positions.length; i++){
+      const dd = d2(gx, gy, positions[i][0], positions[i][1]);
+      if(dd < bd){ bd = dd; best = i; }
+    }
+    return best;
+  }
+
+  function assignAll(){
+    const pos = carts.map(c => [c.x, c.y]);
+    const counts = new Array(carts.length).fill(0);
+    let sum = 0;
+    for(const g of guests){
+      g.assigned = nearestCart(g.x, g.y, pos);
+      counts[g.assigned]++;
+      sum += Math.sqrt(d2(g.x, g.y, pos[g.assigned][0], pos[g.assigned][1]));
+    }
+    return { counts: counts, avg: guests.length ? sum / guests.length : 0 };
+  }
+
+  function pxToMeters(px){ return px * BEACH_METERS / W; }
+
+  // ---------- Beste-Antwort-Dynamik ----------
+  function shareOf(idx, testX, testY){
+    // Wie viele Gäste hätte Wagen idx an Position (testX,testY)?
+    let count = 0;
+    for(const g of guests){
+      const dTest = d2(g.x, g.y, testX, testY);
+      let closerOther = false;
+      for(let j = 0; j < carts.length; j++){
+        if(j === idx) continue;
+        if(d2(g.x, g.y, carts[j].x, carts[j].y) < dTest){ closerOther = true; break; }
+      }
+      if(!closerOther) count++;
+    }
+    return count;
+  }
+
+  function playRound(){
+    const s = state.step;
+    const dirs = [[0,0],[1,0],[-1,0],[0,1],[0,-1],[0.707,0.707],[0.707,-0.707],[-0.707,0.707],[-0.707,-0.707]];
+    const order = carts.map((_, i) => i).sort(() => Math.random() - 0.5);
+    let anyMove = false;
+
+    for(const i of order){
+      const c = carts[i];
+      let bestX = c.x, bestY = c.y;
+      let bestCount = shareOf(i, c.x, c.y);
+      for(let d = 1; d < dirs.length; d++){
+        const nx = clamp(c.x + dirs[d][0]*s, MARGIN, W - MARGIN);
+        const ny = clamp(c.y + dirs[d][1]*s, MARGIN, beachH - MARGIN);
+        const cnt = shareOf(i, nx, ny);
+        if(cnt > bestCount){ bestCount = cnt; bestX = nx; bestY = ny; }
+      }
+      if(bestX !== c.x || bestY !== c.y){
+        c.x = bestX; c.y = bestY;
+        c.trail.push([bestX, bestY]);
+        if(c.trail.length > 400) c.trail.shift();
+        anyMove = true;
+      }
+    }
+
+    state.round++;
+    roundNum.textContent = state.round;
+
+    const res = assignAll();
+    history.push(res.avg);
+    if(history.length > 240) history.shift();
+    updateStats(res);
+
+    // Quasi-Gleichgewicht: alle Wagen bleiben über 12 Runden praktisch stehen
+    snaps.push(carts.map(c => [c.x, c.y]));
+    if(snaps.length > 12){
+      snaps.shift();
+      const old = snaps[0];
+      let maxD = 0;
+      for(let i = 0; i < carts.length; i++){
+        maxD = Math.max(maxD, Math.hypot(carts[i].x - old[i][0], carts[i].y - old[i][1]));
+      }
+      if((!anyMove || maxD < s * 1.6) && !state.equilibrium){
+        state.equilibrium = true;
+        badge.classList.add("show");
+        stopRun();
+      }
+    }
+    if(!anyMove && snaps.length <= 12 && !state.equilibrium){
+      state.equilibrium = true;
+      badge.classList.add("show");
+      stopRun();
+    }
+  }
+
+  // ---------- Kundenfreundliche Positionen (k-means) ----------
+  function computeOptimal(){
+    const k = state.vendors;
+    if(guests.length === 0){ optCenters = []; optWalk = 0; return; }
+    // Start: k zufällige Gäste
+    let centers = [];
+    const used = new Set();
+    while(centers.length < k){
+      const i = Math.floor(rand() * guests.length);
+      if(!used.has(i)){ used.add(i); centers.push([guests[i].x, guests[i].y]); }
+    }
+    for(let iter = 0; iter < 40; iter++){
+      const sums = centers.map(() => [0, 0, 0]);
+      for(const g of guests){
+        const c = nearestCart(g.x, g.y, centers);
+        sums[c][0] += g.x; sums[c][1] += g.y; sums[c][2]++;
+      }
+      let moved = false;
+      for(let i = 0; i < k; i++){
+        if(sums[i][2] === 0) continue;
+        const nx = sums[i][0] / sums[i][2], ny = sums[i][1] / sums[i][2];
+        if(Math.abs(nx - centers[i][0]) > 0.3 || Math.abs(ny - centers[i][1]) > 0.3) moved = true;
+        centers[i] = [nx, ny];
+      }
+      if(!moved) break;
+    }
+    optCenters = centers;
+    let sum = 0;
+    for(const g of guests){
+      const c = nearestCart(g.x, g.y, centers);
+      sum += Math.sqrt(d2(g.x, g.y, centers[c][0], centers[c][1]));
+    }
+    optWalk = sum / guests.length;
+    walkOptEl.textContent = pxToMeters(optWalk).toFixed(1);
+  }
+
+  // ---------- Statistik-Anzeige ----------
+  function buildLegend(){
+    sharebar.innerHTML = "";
+    legend.innerHTML = "";
+    for(let i = 0; i < state.vendors; i++){
+      const seg = document.createElement("div");
+      seg.style.background = VENDOR_COLORS[i];
+      seg.style.width = (100/state.vendors) + "%";
+      sharebar.appendChild(seg);
+      const item = document.createElement("span");
+      item.className = "item";
+      item.innerHTML = '<span class="chip" style="background:' + VENDOR_COLORS[i] + '"></span>' +
+        VENDOR_NAMES[i] + ': <b><span id="share' + i + '">–</span></b>';
+      legend.appendChild(item);
+    }
+  }
+
+  function updateStats(res){
+    const total = guests.length || 1;
+    const segs = sharebar.children;
+    for(let i = 0; i < state.vendors; i++){
+      const pct = 100 * res.counts[i] / total;
+      segs[i].style.width = pct + "%";
+      const el = document.getElementById("share" + i);
+      if(el) el.textContent = pct.toFixed(0) + " %";
+    }
+    walkNow.textContent = pxToMeters(res.avg).toFixed(1);
+    drawSpark();
+  }
+
+  function drawSpark(){
+    const w = spark.width = spark.clientWidth * 2;
+    const h = spark.height = 112;
+    sctx.clearRect(0, 0, w, h);
+    if(history.length < 2) return;
+    const maxV = Math.max(...history, optWalk) * 1.12;
+    const minV = 0;
+    const xs = i => i / (history.length - 1) * (w - 8) + 4;
+    const ys = v => h - 8 - (v - minV) / (maxV - minV) * (h - 16);
+    // Referenzlinie: kundenfreundlicher Wert
+    sctx.strokeStyle = "#4ca86f";
+    sctx.setLineDash([6, 6]);
+    sctx.lineWidth = 2;
+    sctx.beginPath();
+    sctx.moveTo(4, ys(optWalk)); sctx.lineTo(w-4, ys(optWalk));
+    sctx.stroke();
+    sctx.setLineDash([]);
+    // Verlauf
+    sctx.strokeStyle = "#12697d";
+    sctx.lineWidth = 3;
+    sctx.beginPath();
+    history.forEach((v, i) => { i === 0 ? sctx.moveTo(xs(i), ys(v)) : sctx.lineTo(xs(i), ys(v)); });
+    sctx.stroke();
+  }
+
+  // ---------- Zeichnen ----------
+  let waveT = 0;
+  function draw(){
+    // Anzeige-Positionen sanft nachziehen
+    for(const c of carts){
+      if(reduceMotion){ c.dx = c.x; c.dy = c.y; }
+      else{
+        c.dx += (c.x - c.dx) * 0.18;
+        c.dy += (c.y - c.dy) * 0.18;
+      }
+    }
+
+    const H = cv.height;
+    // Sand
+    const sg = ctx.createLinearGradient(0, SEA_H, 0, H);
+    sg.addColorStop(0, "#f6ead0");
+    sg.addColorStop(1, "#ecd9ae");
+    ctx.fillStyle = sg;
+    ctx.fillRect(0, 0, W, H);
+
+    // Marktgebiete einfärben (grobes Raster)
+    const cell = 16;
+    ctx.globalAlpha = 0.13;
+    const pos = carts.map(c => [c.dx, c.dy]);
+    for(let gx = 0; gx < W; gx += cell){
+      for(let gy = 0; gy < beachH; gy += cell){
+        const idx = nearestCart(gx + cell/2, gy + cell/2, pos);
+        ctx.fillStyle = VENDOR_COLORS[idx];
+        ctx.fillRect(gx, SEA_H + gy, cell, cell);
+      }
+    }
+    ctx.globalAlpha = 1;
+
+    // Meer mit zwei Wellenlinien
+    waveT += reduceMotion ? 0 : 0.02;
+    const wg = ctx.createLinearGradient(0, 0, 0, SEA_H);
+    wg.addColorStop(0, "#12697d");
+    wg.addColorStop(1, "#2e9fb4");
+    ctx.fillStyle = wg;
+    ctx.beginPath();
+    ctx.moveTo(0, 0);
+    ctx.lineTo(W, 0);
+    ctx.lineTo(W, SEA_H - 8);
+    for(let x = W; x >= 0; x -= 12){
+      ctx.lineTo(x, SEA_H - 8 + Math.sin(x*0.025 + waveT*2) * 4);
+    }
+    ctx.closePath();
+    ctx.fill();
+    ctx.strokeStyle = "rgba(255,255,255,.7)";
+    ctx.lineWidth = 2.5;
+    ctx.beginPath();
+    for(let x = 0; x <= W; x += 8){
+      const y = SEA_H - 8 + Math.sin(x*0.025 + waveT*2) * 4;
+      x === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
+    }
+    ctx.stroke();
+
+    // Badegäste
+    for(const g of guests){
+      ctx.fillStyle = VENDOR_COLORS[g.assigned];
+      ctx.globalAlpha = 0.75;
+      ctx.beginPath();
+      ctx.arc(g.x, SEA_H + g.y, 2.6, 0, Math.PI*2);
+      ctx.fill();
+    }
+    ctx.globalAlpha = 1;
+
+    // Spuren
+    if(state.trails){
+      for(let i = 0; i < carts.length; i++){
+        const t = carts[i].trail;
+        if(t.length < 2) continue;
+        ctx.strokeStyle = VENDOR_COLORS[i];
+        ctx.globalAlpha = 0.45;
+        ctx.lineWidth = 2;
+        ctx.setLineDash([2, 5]);
+        ctx.beginPath();
+        t.forEach((p, j) => { j === 0 ? ctx.moveTo(p[0], SEA_H + p[1]) : ctx.lineTo(p[0], SEA_H + p[1]); });
+        ctx.stroke();
+        ctx.setLineDash([]);
+        ctx.globalAlpha = 1;
+      }
+    }
+
+    // Kundenfreundliche Positionen
+    if(state.showOpt){
+      for(const c of optCenters){
+        ctx.strokeStyle = "#37301f";
+        ctx.setLineDash([5, 5]);
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        ctx.arc(c[0], SEA_H + c[1], 16, 0, Math.PI*2);
+        ctx.stroke();
+        ctx.setLineDash([]);
+        ctx.font = "13px sans-serif";
+        ctx.fillStyle = "#37301f";
+        ctx.textAlign = "center";
+        ctx.fillText("★", c[0], SEA_H + c[1] + 4.5);
+      }
+    }
+
+    // Eiswagen
+    for(let i = 0; i < carts.length; i++){
+      const c = carts[i];
+      const x = c.dx, y = SEA_H + c.dy;
+      ctx.beginPath();
+      ctx.arc(x, y, 15, 0, Math.PI*2);
+      ctx.fillStyle = "#fff";
+      ctx.fill();
+      ctx.lineWidth = 3.5;
+      ctx.strokeStyle = VENDOR_COLORS[i];
+      ctx.stroke();
+      ctx.font = "15px serif";
+      ctx.textAlign = "center";
+      ctx.fillText("🍦", x, y + 5);
+      // Namensfähnchen
+      ctx.font = "700 11px sans-serif";
+      ctx.fillStyle = VENDOR_COLORS[i];
+      ctx.fillText(VENDOR_NAMES[i], x, y - 21);
+    }
+
+    requestAnimationFrame(draw);
+  }
+
+  // ---------- Steuerung ----------
+  function stopRun(){
+    state.running = false;
+    if(timer){ clearInterval(timer); timer = null; }
+    btnRun.textContent = "▶ Start";
+  }
+  function startRun(){
+    if(state.equilibrium){
+      // Weiterschauen erlauben (z.B. bei 3 Verkäufern geht die Jagd oft weiter)
+      state.equilibrium = false;
+      badge.classList.remove("show");
+      snaps = [];
+    }
+    state.running = true;
+    btnRun.textContent = "⏸ Pause";
+    timer = setInterval(playRound, state.speed);
+  }
+
+  function resetSim(){
+    stopRun();
+    state.round = 0;
+    state.equilibrium = false;
+    badge.classList.remove("show");
+    roundNum.textContent = "0";
+    history = [];
+    snaps = [];
+    setupCanvas();
+    sampleGuests();
+    startPositions();
+    computeOptimal();
+    buildLegend();
+    updateStats(assignAll());
+  }
+
+  // Segment-Buttons
+  document.querySelectorAll(".seg").forEach(seg => {
+    seg.addEventListener("click", e => {
+      const btn = e.target.closest("button");
+      if(!btn) return;
+      seg.querySelectorAll("button").forEach(b => b.classList.remove("active"));
+      btn.classList.add("active");
+      const group = seg.dataset.group;
+      const val = btn.dataset.val;
+      clearPresetHighlight();
+      if(group === "vendors"){ state.vendors = +val; resetSim(); }
+      else if(group === "customers"){ state.customers = +val; resetSim(); }
+      else if(group === "dist"){ state.dist = val; resetSim(); }
+      else if(group === "shape"){ state.shape = val; resetSim(); }
+      else if(group === "step"){ state.step = +val; }
+      else if(group === "speed"){
+        state.speed = +val;
+        if(state.running){ clearInterval(timer); timer = setInterval(playRound, state.speed); }
+      }
+    });
+  });
+
+  // Voreinstellungen
+  const PRESETS = {
+    klassiker: { vendors: 2, customers: 300, dist: "uniform",  shape: "wide",   step: 16 },
+    drei:      { vendors: 3, customers: 300, dist: "uniform",  shape: "wide",   step: 16 },
+    buchten:   { vendors: 2, customers: 300, dist: "clusters", shape: "wide",   step: 16 },
+    schmal:    { vendors: 2, customers: 300, dist: "uniform",  shape: "narrow", step: 16 }
+  };
+
+  function clearPresetHighlight(){
+    document.querySelectorAll(".preset-btn").forEach(b => b.classList.remove("active"));
+  }
+
+  function syncSegButtons(){
+    const map = { vendors: state.vendors, customers: state.customers, dist: state.dist, shape: state.shape, step: state.step };
+    document.querySelectorAll(".seg").forEach(seg => {
+      const g = seg.dataset.group;
+      if(!(g in map)) return;
+      seg.querySelectorAll("button").forEach(b => {
+        b.classList.toggle("active", String(b.dataset.val) === String(map[g]));
+      });
+    });
+  }
+
+  document.getElementById("presets").addEventListener("click", e => {
+    const btn = e.target.closest(".preset-btn");
+    if(!btn) return;
+    clearPresetHighlight();
+    btn.classList.add("active");
+    Object.assign(state, PRESETS[btn.dataset.preset]);
+    syncSegButtons();
+    resetSim();
+  });
+
+  // Buttons & Schalter
+  btnRun.addEventListener("click", () => state.running ? stopRun() : startRun());
+  document.getElementById("btnStep").addEventListener("click", () => { stopRun(); playRound(); });
+  document.getElementById("btnReset").addEventListener("click", resetSim);
+  document.getElementById("chkTrails").addEventListener("change", e => state.trails = e.target.checked);
+  document.getElementById("chkOpt").addEventListener("change", e => state.showOpt = e.target.checked);
+
+  // ---------- Start ----------
+  resetSim();
+  requestAnimationFrame(draw);
+})();
+</script>
+</body>
+</html>

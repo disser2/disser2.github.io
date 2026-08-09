@@ -1,0 +1,1088 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>A* — Wegfindung interaktiv</title>
+<style>
+  :root{
+    --paper:#F3EFE4;
+    --paper-deep:#EAE5D4;
+    --ink:#22332C;
+    --ink-soft:#4A5A50;
+    --line:#D8D2BE;
+    --accent:#17635A;
+    --route:#D2492A;
+    --frontier:#7FBFD3;
+    --closed:#C9D6A8;
+    --current:#F2C14E;
+    --wall:#3C4A42;
+    --swamp:#B3A075;
+    --start:#1F7A4D;
+    --goal:#7A1F3D;
+    --radius:6px;
+  }
+  *{box-sizing:border-box; margin:0; padding:0;}
+  html{scroll-behavior:smooth;}
+  body{
+    font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    color:var(--ink);
+    background-color:var(--paper-deep);
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='260' height='260' viewBox='0 0 260 260'%3E%3Cg fill='none' stroke='%23DDD7C4' stroke-width='1'%3E%3Cpath d='M-20 60 C 60 20, 140 110, 280 50'/%3E%3Cpath d='M-20 120 C 70 80, 150 170, 280 110'/%3E%3Cpath d='M-20 190 C 60 150, 160 230, 280 180'/%3E%3Cpath d='M-20 250 C 80 210, 150 290, 280 240'/%3E%3C/g%3E%3C/svg%3E");
+    line-height:1.55;
+  }
+  /* ---------- Kopf ---------- */
+  header.top{
+    background:var(--ink); color:var(--paper);
+    padding:10px 18px;
+    display:flex; align-items:baseline; gap:14px; flex-wrap:wrap;
+  }
+  header.top h1{
+    font-family: Iowan Old Style, Georgia, "Times New Roman", serif;
+    font-weight:600; font-size:1.25rem; letter-spacing:.02em;
+  }
+  header.top h1 .star{color:var(--current);}
+  header.top .sub{
+    font-family: Georgia, serif; font-style:italic;
+    font-size:.85rem; color:#BFD0C6;
+  }
+  /* ---------- Kontrollleiste ---------- */
+  .controls{
+    position:sticky; top:0; z-index:50;
+    background:var(--paper);
+    border-bottom:2px solid var(--ink);
+    box-shadow:0 3px 10px rgba(34,51,44,.12);
+    padding:8px 14px 10px;
+    display:flex; flex-wrap:wrap; gap:10px 18px; align-items:flex-end;
+  }
+  .group{display:flex; flex-direction:column; gap:3px;}
+  .group > .lbl{
+    font-family: Georgia, serif; font-style:italic;
+    font-size:.7rem; color:var(--ink-soft); letter-spacing:.04em;
+  }
+  .seg{display:flex; border:1.5px solid var(--ink); border-radius:var(--radius); overflow:hidden; background:#fff;}
+  .seg button{
+    appearance:none; border:none; background:transparent; cursor:pointer;
+    font:inherit; font-size:.78rem; padding:5px 10px; color:var(--ink);
+    border-right:1px solid var(--line); white-space:nowrap;
+  }
+  .seg button:last-child{border-right:none;}
+  .seg button:hover{background:var(--paper-deep);}
+  .seg button.on{background:var(--ink); color:var(--paper);}
+  .seg button:focus-visible{outline:2px solid var(--accent); outline-offset:-2px;}
+  .actions{display:flex; gap:6px;}
+  .actions button{
+    appearance:none; cursor:pointer; font:inherit; font-size:.82rem;
+    padding:6px 13px; border-radius:var(--radius);
+    border:1.5px solid var(--ink); background:#fff; color:var(--ink);
+  }
+  .actions button:hover{background:var(--paper-deep);}
+  .actions button.primary{background:var(--accent); border-color:var(--accent); color:#fff; font-weight:600;}
+  .actions button.primary:hover{background:#124F48;}
+  .actions button:focus-visible{outline:2px solid var(--accent); outline-offset:2px;}
+  /* Szenario-Chips */
+  .chips{display:flex; flex-wrap:wrap; gap:5px;}
+  .chips button{
+    appearance:none; cursor:pointer; font:inherit; font-size:.76rem;
+    padding:4px 10px; border-radius:99px;
+    border:1.5px solid var(--ink); background:#fff; color:var(--ink);
+  }
+  .chips button:hover{background:var(--paper-deep);}
+  .chips button.on{background:var(--route); border-color:var(--route); color:#fff; font-weight:600;}
+  .chips button:focus-visible{outline:2px solid var(--accent); outline-offset:2px;}
+  /* ---------- Szenario-Text ---------- */
+  .scenario-note{
+    max-width:1200px; margin:10px auto 0; padding:0 14px;
+  }
+  .scenario-note .inner{
+    background:#FFFDF6; border:1.5px solid var(--line); border-left:5px solid var(--route);
+    border-radius:var(--radius); padding:8px 14px; font-size:.88rem;
+  }
+  .scenario-note b{font-family:Georgia, serif;}
+  /* ---------- Hauptbereich ---------- */
+  .main{
+    max-width:1200px; margin:12px auto; padding:0 14px;
+    display:grid; grid-template-columns: minmax(0,1fr) 290px; gap:14px;
+    align-items:start;
+  }
+  @media (max-width: 920px){ .main{grid-template-columns:1fr;} }
+  .mapsheet{
+    background:var(--paper); border:2px solid var(--ink); border-radius:4px;
+    box-shadow: 3px 4px 0 rgba(34,51,44,.25);
+    padding:6px;
+  }
+  .mapsheet canvas{display:block; width:100%; height:auto; cursor:crosshair;}
+  .maphint{
+    font-size:.75rem; color:var(--ink-soft); padding:6px 4px 2px;
+    font-family:Georgia, serif; font-style:italic;
+  }
+  /* Seitenleiste */
+  .side{display:flex; flex-direction:column; gap:12px;}
+  .panel{
+    background:var(--paper); border:1.5px solid var(--ink); border-radius:var(--radius);
+    padding:10px 12px;
+  }
+  .panel h3{
+    font-family:Georgia, serif; font-size:.8rem; font-style:italic; font-weight:600;
+    color:var(--ink-soft); margin-bottom:7px; letter-spacing:.04em;
+    border-bottom:1px solid var(--line); padding-bottom:4px;
+  }
+  .legend{display:grid; grid-template-columns:1fr 1fr; gap:5px 10px; font-size:.78rem;}
+  .legend .item{display:flex; align-items:center; gap:6px;}
+  .sw{width:15px; height:15px; border-radius:3px; border:1px solid rgba(34,51,44,.35); flex:none;}
+  .stats{display:grid; grid-template-columns:1fr auto; gap:4px 8px; font-size:.82rem;}
+  .stats .v{font-family: ui-monospace, "SF Mono", Consolas, monospace; font-weight:600; text-align:right;}
+  .formula{
+    font-family: ui-monospace, Consolas, monospace; font-size:1rem; text-align:center;
+    padding:6px 0 2px;
+  }
+  .formula .g{color:var(--accent); font-weight:700;}
+  .formula .h{color:#8A5A1F; font-weight:700;}
+  .formula .f{color:var(--route); font-weight:700;}
+  .formula-sub{font-size:.74rem; color:var(--ink-soft); text-align:center;}
+  .inspect{font-size:.8rem; min-height:74px;}
+  .inspect table{width:100%; border-collapse:collapse;}
+  .inspect td{padding:1px 0;}
+  .inspect td:last-child{text-align:right; font-family:ui-monospace, Consolas, monospace; font-weight:600;}
+  .status-line{
+    font-size:.8rem; padding:5px 8px; border-radius:var(--radius);
+    background:#FFFDF6; border:1px dashed var(--ink-soft);
+  }
+  /* ---------- Erklärungen ---------- */
+  .explain{
+    max-width:1200px; margin:26px auto 50px; padding:0 14px;
+  }
+  .explain h2{
+    font-family:Georgia, serif; font-size:1.35rem; margin:26px 0 12px;
+  }
+  .explain h2::before{content:"⌖ "; color:var(--route);}
+  .cards{display:grid; grid-template-columns:repeat(auto-fit,minmax(300px,1fr)); gap:12px;}
+  .card{
+    background:var(--paper); border:1.5px solid var(--ink); border-radius:var(--radius);
+    padding:14px 16px; font-size:.9rem;
+  }
+  .card h4{font-family:Georgia, serif; margin-bottom:8px; font-size:1rem;}
+  .card p{margin-bottom:8px;}
+  .card p:last-child{margin-bottom:0;}
+  .card .tag{
+    display:inline-block; font-size:.72rem; padding:1px 8px; border-radius:99px;
+    border:1px solid var(--ink-soft); color:var(--ink-soft);
+    font-family:Georgia, serif; font-style:italic; margin-bottom:8px;
+  }
+  .card ul{padding-left:18px;}
+  .card li{margin-bottom:6px;}
+  .pill{display:inline-block; padding:0 6px; border-radius:4px; font-family:ui-monospace,Consolas,monospace; font-size:.85em; border:1px solid rgba(34,51,44,.25);}
+  .pill.g{background:#DDEBE3; color:var(--accent);}
+  .pill.h{background:#F3E4C8; color:#8A5A1F;}
+  .pill.f{background:#F6D9CE; color:var(--route);}
+  .pill.open{background:var(--frontier);}
+  .pill.closed{background:var(--closed);}
+  .pill.route{background:var(--route); color:#fff;}
+  footer{
+    text-align:center; font-size:.75rem; color:var(--ink-soft);
+    padding:18px 0 26px; font-family:Georgia, serif; font-style:italic;
+  }
+  @media (prefers-reduced-motion: reduce){ html{scroll-behavior:auto;} }
+</style>
+</head>
+<body>
+
+<header class="top">
+  <h1>A<span class="star">★</span> &nbsp;Wegfindung interaktiv</h1>
+  <span class="sub">Wie ein Computer den kürzesten Weg auf einer Karte findet</span>
+</header>
+
+<!-- ======================= KONTROLLLEISTE ======================= -->
+<div class="controls" id="controls">
+
+  <div class="group" style="max-width:430px;">
+    <span class="lbl">Szenario wählen</span>
+    <div class="chips" id="chipScenario"></div>
+  </div>
+
+  <div class="group">
+    <span class="lbl">Aktionen</span>
+    <div class="actions">
+      <button class="primary" id="btnRun">▶ Suche starten</button>
+      <button id="btnStep" title="Genau einen Knoten untersuchen">Schritt</button>
+      <button id="btnReset" title="Suche zurücksetzen">↺ Zurück</button>
+    </div>
+  </div>
+
+  <div class="group">
+    <span class="lbl">Heuristik&nbsp;h — die „Luftlinien-Schätzung“</span>
+    <div class="seg" id="segHeur">
+      <button data-v="manhattan">Manhattan</button>
+      <button data-v="euklid">Euklidisch</button>
+      <button data-v="chebyshev">Chebyshev</button>
+    </div>
+  </div>
+
+  <div class="group">
+    <span class="lbl">Gewichtung der Schätzung</span>
+    <div class="seg" id="segWeight">
+      <button data-v="0" title="Schätzung aus → Dijkstra">0× (Dijkstra)</button>
+      <button data-v="1" title="Klassisches A*">1× (A*)</button>
+      <button data-v="2" title="Schätzung doppelt zählen">2×</button>
+      <button data-v="greedy" title="Nur der Schätzung folgen">Gierig</button>
+    </div>
+  </div>
+
+  <div class="group">
+    <span class="lbl">Bewegung</span>
+    <div class="seg" id="segDirs">
+      <button data-v="4">4 Richtungen</button>
+      <button data-v="8">8 (diagonal)</button>
+    </div>
+  </div>
+
+  <div class="group">
+    <span class="lbl">Tempo</span>
+    <div class="seg" id="segTempo">
+      <button data-v="langsam">Langsam</button>
+      <button data-v="mittel">Mittel</button>
+      <button data-v="schnell">Schnell</button>
+      <button data-v="sofort">Sofort</button>
+    </div>
+  </div>
+
+  <div class="group">
+    <span class="lbl">Raster</span>
+    <div class="seg" id="segRaster">
+      <button data-v="grob" title="Große Zellen — Zahlen sichtbar">Grob</button>
+      <button data-v="fein">Fein</button>
+    </div>
+  </div>
+
+  <div class="group">
+    <span class="lbl">Zeichnen auf der Karte</span>
+    <div class="seg" id="segDraw">
+      <button data-v="wand">■ Wand</button>
+      <button data-v="sumpf">≈ Sumpf</button>
+      <button data-v="frei">◻ Radierer</button>
+    </div>
+  </div>
+
+  <div class="group">
+    <span class="lbl">Zahlen in Zellen</span>
+    <div class="seg" id="segVals">
+      <button data-v="an">An</button>
+      <button data-v="aus">Aus</button>
+    </div>
+  </div>
+
+</div>
+
+<div class="scenario-note"><div class="inner" id="scenarioText"></div></div>
+
+<!-- ======================= KARTE + SEITENLEISTE ======================= -->
+<div class="main">
+  <div>
+    <div class="mapsheet">
+      <canvas id="map"></canvas>
+    </div>
+    <div class="maphint">Tipp: Ziehe die Fahnen für <b style="color:var(--start)">Start</b> und <b style="color:var(--goal)">Ziel</b> einfach mit der Maus. Mit gedrückter Maustaste zeichnest du Wände oder Sumpf.</div>
+  </div>
+
+  <div class="side">
+    <div class="status-line" id="statusLine">Bereit. Drücke „Suche starten“ oder „Schritt“.</div>
+
+    <div class="panel">
+      <h3>Die Formel dahinter</h3>
+      <div class="formula"><span class="f">f</span> = <span class="g">g</span> + w·<span class="h">h</span></div>
+      <div class="formula-sub">
+        <span class="g">g</span> = bisher gelaufener Weg &nbsp;·&nbsp;
+        <span class="h">h</span> = Schätzung bis zum Ziel<br>
+        <span class="f">f</span> = vermutete Gesamtlänge — der kleinste Wert kommt zuerst dran
+      </div>
+    </div>
+
+    <div class="panel">
+      <h3>Legende</h3>
+      <div class="legend">
+        <div class="item"><span class="sw" style="background:var(--start)"></span>Start</div>
+        <div class="item"><span class="sw" style="background:var(--goal)"></span>Ziel</div>
+        <div class="item"><span class="sw" style="background:var(--frontier)"></span>Vorgemerkt (offen)</div>
+        <div class="item"><span class="sw" style="background:var(--closed)"></span>Untersucht</div>
+        <div class="item"><span class="sw" style="background:var(--current)"></span>Gerade dran</div>
+        <div class="item"><span class="sw" style="background:var(--route)"></span>Gefundener Weg</div>
+        <div class="item"><span class="sw" style="background:var(--wall)"></span>Wand</div>
+        <div class="item"><span class="sw" style="background:var(--swamp)"></span>Sumpf (5× so teuer)</div>
+      </div>
+    </div>
+
+    <div class="panel">
+      <h3>Statistik</h3>
+      <div class="stats">
+        <span>Untersuchte Felder</span><span class="v" id="stExpanded">0</span>
+        <span>Vorgemerkte Felder</span><span class="v" id="stOpen">0</span>
+        <span>Weglänge (Schritte)</span><span class="v" id="stLen">–</span>
+        <span>Wegkosten</span><span class="v" id="stCost">–</span>
+      </div>
+    </div>
+
+    <div class="panel">
+      <h3>Zell-Inspektor <span style="font-weight:400">(Maus über die Karte)</span></h3>
+      <div class="inspect" id="inspect">Bewege die Maus über ein Feld, um seine Werte zu sehen.</div>
+    </div>
+  </div>
+</div>
+
+<!-- ======================= ERKLÄRUNGEN ======================= -->
+<div class="explain">
+
+  <h2>Was passiert hier eigentlich?</h2>
+  <div class="cards">
+    <div class="card">
+      <span class="tag">Die Idee</span>
+      <h4>Ein Navi im Kleinen</h4>
+      <p>A* („A-Stern“) ist der Algorithmus hinter fast jeder Wegfindung — vom Navigationsgerät bis zur Spielfigur, die um Hindernisse herumläuft. Er sucht den <b>kürzesten Weg</b> von Start zu Ziel, ohne die ganze Karte absuchen zu müssen.</p>
+      <p>Der Trick: A* kombiniert zwei Informationen — <span class="pill g">wie weit bin ich schon gelaufen?</span> und <span class="pill h">wie weit ist es ungefähr noch?</span> Felder, bei denen die Summe klein ist, werden zuerst untersucht.</p>
+    </div>
+    <div class="card">
+      <span class="tag">Die Farben lesen</span>
+      <h4>Was die Karte zeigt</h4>
+      <p><span class="pill open">Hellblau</span> sind Felder, die A* schon <b>entdeckt, aber noch nicht untersucht</b> hat — die Warteliste („offene Liste“).</p>
+      <p><span class="pill closed">Grün</span> sind fertig untersuchte Felder. Je weniger Grün am Ende, desto zielstrebiger war die Suche.</p>
+      <p><span class="pill route">Rot</span> ist der gefundene Weg — wie eine eingezeichnete Route auf einer Wanderkarte.</p>
+    </div>
+    <div class="card">
+      <span class="tag">Schritt für Schritt</span>
+      <h4>Der Ablauf in 4 Sätzen</h4>
+      <p>1. Nimm von der Warteliste das Feld mit dem <b>kleinsten f-Wert</b>.</p>
+      <p>2. Schau dir alle Nachbarfelder an und rechne aus, was der Weg dorthin kosten würde.</p>
+      <p>3. Ist ein Nachbar auf einem <b>besseren Weg</b> erreichbar als bisher gedacht? Dann merke dir den neuen Weg.</p>
+      <p>4. Wiederhole das, bis das Ziel an der Reihe ist. Nutze den „Schritt“-Knopf, um genau das live zu beobachten!</p>
+    </div>
+  </div>
+
+  <h2>Die Heuristik — der eingebaute Kompass</h2>
+  <div class="cards">
+    <div class="card">
+      <h4>Manhattan — der Taxifahrer</h4>
+      <p>Zählt nur waagerechte + senkrechte Schritte, als würde man durch ein Straßenraster wie in Manhattan fahren. Passt perfekt, wenn nur <b>4 Richtungen</b> erlaubt sind.</p>
+      <p style="color:var(--ink-soft); font-size:.85em;">Achtung beim Ausprobieren: Bei 8 Richtungen schätzt Manhattan manchmal <i>zu viel</i> — dann kann der gefundene Weg minimal länger als nötig sein.</p>
+    </div>
+    <div class="card">
+      <h4>Euklidisch — die Luftlinie</h4>
+      <p>Misst die direkte Entfernung mit dem Lineal, so wie ein Vogel fliegen würde. Eine vorsichtige Schätzung, die nie zu hoch liegt — der gefundene Weg ist damit garantiert der kürzeste.</p>
+    </div>
+    <div class="card">
+      <h4>Chebyshev — der Schachkönig</h4>
+      <p>Zählt, wie viele Züge ein König im Schach bräuchte — diagonal zählt genauso viel wie geradeaus. Gut geeignet, wenn <b>8 Richtungen</b> erlaubt sind.</p>
+    </div>
+    <div class="card">
+      <h4>Gewichtung: von vorsichtig bis gierig</h4>
+      <ul>
+        <li><b>0×</b>: Die Schätzung wird ignoriert — das ist der <b>Dijkstra-Algorithmus</b>. Er breitet sich wie ein Wassertropfen in alle Richtungen aus. Sicher, aber langsam.</li>
+        <li><b>1×</b>: Klassisches A* — schnell <i>und</i> garantiert kürzester Weg.</li>
+        <li><b>2×</b>: Mutiger — untersucht weniger Felder, findet aber manchmal einen leicht längeren Weg.</li>
+        <li><b>Gierig</b>: Folgt <i>nur</i> der Schätzung. Rennt direkt Richtung Ziel — und tappt in Sackgassen (siehe Szenario „Die Falle“).</li>
+      </ul>
+    </div>
+  </div>
+
+  <h2>Aufgaben für die Schulung</h2>
+  <div class="cards">
+    <div class="card">
+      <span class="tag">Experiment 1</span>
+      <h4>Dijkstra gegen A*</h4>
+      <p>Wähle das Szenario „Hindernisfeld“, lass die Suche laufen und notiere die <b>untersuchten Felder</b>. Stelle dann die Gewichtung auf <b>0× (Dijkstra)</b>. Wie verändert sich das grüne Suchgebiet? Wie die Weglänge?</p>
+    </div>
+    <div class="card">
+      <span class="tag">Experiment 2</span>
+      <h4>Die Falle zuschnappen lassen</h4>
+      <p>Öffne das Szenario „Die Falle“ (Gewichtung: Gierig) und beobachte, wie die Suche in die Tasche läuft. Stelle danach auf <b>1× (A*)</b> — wie umgeht A* das Problem?</p>
+    </div>
+    <div class="card">
+      <span class="tag">Experiment 3</span>
+      <h4>Der teure Sumpf</h4>
+      <p>Im Szenario „Sumpfland“ kostet jedes Sumpffeld 5× so viel. Findet A* die Brücke? Male den Sumpf mit dem Zeichenwerkzeug breiter — ab wann lohnt sich der Umweg nicht mehr?</p>
+    </div>
+    <div class="card">
+      <span class="tag">Experiment 4</span>
+      <h4>Zahlen lesen lernen</h4>
+      <p>Wähle Raster „Grob“, Zahlen „An“ und Tempo „Langsam“. Verfolge mit dem Zell-Inspektor, wie sich <span class="pill g">g</span>, <span class="pill h">h</span> und <span class="pill f">f</span> zusammensetzen. Warum wird immer das Feld mit dem kleinsten <span class="pill f">f</span> gewählt?</p>
+    </div>
+    <div class="card">
+      <span class="tag">Experiment 5</span>
+      <h4>Eigene Karte bauen</h4>
+      <p>Szenario „Freies Zeichnen“: Baue ein Labyrinth, das A* möglichst lange beschäftigt. Wer in der Gruppe schafft die meisten untersuchten Felder — bei erreichbarem Ziel?</p>
+    </div>
+  </div>
+
+</div>
+
+<footer>Kartenblatt № 1 · A*-Wegfindung · erstellt für Schulungszwecke</footer>
+
+<script>
+"use strict";
+/* ================================================================
+   A* Wegfindung — interaktive Schulungssimulation
+   ================================================================ */
+
+// ---------------- Zustand ----------------
+const S = {
+  raster: "grob",           // grob | fein
+  heur: "manhattan",        // manhattan | euklid | chebyshev
+  weight: "1",              // "0" | "1" | "2" | "greedy"
+  dirs: "4",                // "4" | "8"
+  tempo: "mittel",          // langsam | mittel | schnell | sofort
+  draw: "wand",             // wand | sumpf | frei
+  vals: "an",               // an | aus
+  scenario: "hindernisse",
+};
+
+const SIZES = { grob: {W:21, H:13}, fein: {W:41, H:25} };
+let W = 21, H = 13;
+let terrain = [];           // 1 = frei, 5 = sumpf, -1 = wand
+let start = {x:2, y:6}, goal = {x:18, y:6};
+
+const SQ2 = Math.SQRT2;
+const COST_SWAMP = 5;
+
+// ---------------- Zufallszahlen (mit Seed, für vergleichbare Karten) ----------------
+function mulberry32(a){
+  return function(){
+    a |= 0; a = a + 0x6D2B79F5 | 0;
+    let t = Math.imul(a ^ a >>> 15, 1 | a);
+    t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t;
+    return ((t ^ t >>> 14) >>> 0) / 4294967296;
+  };
+}
+
+// ---------------- Karten-Generatoren ----------------
+function makeEmpty(){
+  terrain = Array.from({length:H}, () => Array(W).fill(1));
+}
+function defaultFlags(){
+  start = {x:1, y:Math.floor(H/2)};
+  goal  = {x:W-2, y:Math.floor(H/2)};
+}
+function makeObstacles(seedBase){
+  for(let attempt=0; attempt<40; attempt++){
+    const rnd = mulberry32(seedBase + attempt);
+    makeEmpty();
+    for(let y=0; y<H; y++) for(let x=0; x<W; x++){
+      if(rnd() < 0.28) terrain[y][x] = -1;
+    }
+    defaultFlags();
+    terrain[start.y][start.x] = 1;
+    terrain[goal.y][goal.x] = 1;
+    if(reachable()) return;
+  }
+  makeEmpty(); defaultFlags();
+}
+function makeMaze(seedBase){
+  const rnd = mulberry32(seedBase);
+  terrain = Array.from({length:H}, () => Array(W).fill(-1));
+  const ox = 1, oy = 1;
+  const cw = Math.floor((W-1)/2), ch = Math.floor((H-1)/2);
+  const visited = Array.from({length:ch}, () => Array(cw).fill(false));
+  const stack = [[0,0]];
+  visited[0][0] = true;
+  terrain[oy][ox] = 1;
+  while(stack.length){
+    const [cx, cy] = stack[stack.length-1];
+    const nbs = [];
+    if(cx>0    && !visited[cy][cx-1]) nbs.push([cx-1, cy]);
+    if(cx<cw-1 && !visited[cy][cx+1]) nbs.push([cx+1, cy]);
+    if(cy>0    && !visited[cy-1][cx]) nbs.push([cx, cy-1]);
+    if(cy<ch-1 && !visited[cy+1][cx]) nbs.push([cx, cy+1]);
+    if(!nbs.length){ stack.pop(); continue; }
+    const [nx, ny] = nbs[Math.floor(rnd()*nbs.length)];
+    visited[ny][nx] = true;
+    terrain[oy+ny*2][ox+nx*2] = 1;
+    terrain[oy+cy+ny][ox+cx+nx] = 1; // Wand dazwischen öffnen
+    stack.push([nx, ny]);
+  }
+  // ein paar zusätzliche Durchbrüche, damit es mehrere Wege gibt
+  for(let i=0; i<Math.floor(W*H/60); i++){
+    const x = 1 + Math.floor(rnd()*(W-2));
+    const y = 1 + Math.floor(rnd()*(H-2));
+    terrain[y][x] = 1;
+  }
+  start = {x:1, y:1};
+  goal  = {x:ox + (cw-1)*2, y:oy + (ch-1)*2};
+}
+function makeSwamp(){
+  makeEmpty();
+  const cx = Math.floor(W/2);
+  const half = Math.max(2, Math.floor(W/12));
+  for(let y=0; y<H; y++)
+    for(let x=cx-half; x<=cx+half; x++)
+      if(x>=0 && x<W) terrain[y][x] = COST_SWAMP;
+  // Brücke am oberen Rand
+  const by = 1;
+  for(let x=cx-half; x<=cx+half; x++) terrain[by][x] = 1;
+  defaultFlags();
+}
+function makeTrap(){
+  makeEmpty();
+  const cx = Math.floor(W*0.62);
+  const cy = Math.floor(H/2);
+  const arm = Math.floor(Math.min(W,H)/3.2);
+  for(let y=cy-arm; y<=cy+arm; y++) if(y>=0&&y<H) terrain[y][cx] = -1;   // Rückwand
+  for(let x=cx-arm; x<=cx; x++){                                          // Arme Richtung Start
+    if(cy-arm>=0) terrain[cy-arm][x] = -1;
+    if(cy+arm<H)  terrain[cy+arm][x] = -1;
+  }
+  start = {x:1, y:cy};
+  goal  = {x:Math.min(W-2, cx+3), y:cy};
+}
+function reachable(){
+  const q = [[start.x, start.y]];
+  const seen = Array.from({length:H}, () => Array(W).fill(false));
+  seen[start.y][start.x] = true;
+  while(q.length){
+    const [x, y] = q.pop();
+    if(x===goal.x && y===goal.y) return true;
+    for(const [dx, dy] of [[1,0],[-1,0],[0,1],[0,-1]]){
+      const nx = x+dx, ny = y+dy;
+      if(nx>=0 && nx<W && ny>=0 && ny<H && !seen[ny][nx] && terrain[ny][nx] !== -1){
+        seen[ny][nx] = true; q.push([nx, ny]);
+      }
+    }
+  }
+  return false;
+}
+
+// ---------------- Szenarien ----------------
+const SCEN = {
+  hindernisse: {
+    label:"Hindernisfeld",
+    set:{heur:"manhattan", weight:"1", dirs:"4", tempo:"mittel"},
+    map:() => makeObstacles(1234),
+    text:"<b>Hindernisfeld:</b> Klassisches A* auf einer Karte mit verstreuten Felsen. Beobachte, wie sich die Suche keilförmig Richtung Ziel schiebt statt in alle Richtungen. Vergleiche danach mit Gewichtung <b>0× (Dijkstra)</b> — gleiche Karte, ganz anderes Suchgebiet."
+  },
+  dijkstra: {
+    label:"Dijkstra (ohne Kompass)",
+    set:{heur:"manhattan", weight:"0", dirs:"4", tempo:"mittel"},
+    map:() => makeObstacles(1234),
+    text:"<b>Dijkstra:</b> Die Schätzung ist ausgeschaltet (Gewicht 0×). Die Suche breitet sich wie ein Wassertropfen gleichmäßig in alle Richtungen aus — sie findet garantiert den kürzesten Weg, untersucht dafür aber sehr viele Felder. Genau dieselbe Karte wie im „Hindernisfeld“, zum direkten Vergleich."
+  },
+  falle: {
+    label:"Die Falle",
+    set:{heur:"manhattan", weight:"greedy", dirs:"4", tempo:"langsam"},
+    map:makeTrap,
+    text:"<b>Die Falle:</b> Die gierige Suche folgt nur der Luftlinien-Schätzung — und rennt direkt in die U-förmige Tasche, weil das Ziel „gleich dahinter“ liegt. Stelle danach auf <b>1× (A*)</b> und sieh, wie die Kombination aus Weg-bisher und Schätzung die Falle elegant umgeht."
+  },
+  labyrinth: {
+    label:"Labyrinth",
+    set:{heur:"manhattan", weight:"1", dirs:"4", tempo:"schnell"},
+    map:() => makeMaze(777),
+    text:"<b>Labyrinth:</b> In engen Gängen hilft auch der beste Kompass nur begrenzt — A* muss viele Sackgassen ausprobieren. Trotzdem: Sobald ein Gang grob Richtung Ziel führt, wird er bevorzugt. Tipp: Raster „Fein“ macht das Labyrinth größer."
+  },
+  sumpf: {
+    label:"Sumpfland",
+    set:{heur:"euklid", weight:"1", dirs:"8", tempo:"mittel"},
+    map:makeSwamp,
+    text:"<b>Sumpfland:</b> Der braune Sumpf ist begehbar, aber jedes Feld kostet <b>5× so viel</b>. Am oberen Rand gibt es eine Brücke. A* wägt ab: kurzer teurer Weg durch den Sumpf oder langer billiger Umweg? Male mit dem Sumpf-Werkzeug und verschiebe die Fahnen, um das Gleichgewicht zu kippen."
+  },
+  frei: {
+    label:"Freies Zeichnen",
+    set:{heur:"manhattan", weight:"1", dirs:"4", tempo:"mittel"},
+    map:() => { makeEmpty(); defaultFlags(); },
+    text:"<b>Freies Zeichnen:</b> Leere Karte — dein Spielfeld. Zeichne Wände und Sümpfe, verschiebe Start und Ziel, und teste, wie sich A* verhält. Ideal für eigene Experimente in der Schulung."
+  },
+};
+
+// ---------------- Heuristiken ----------------
+function heurVal(x, y){
+  const dx = Math.abs(x - goal.x), dy = Math.abs(y - goal.y);
+  switch(S.heur){
+    case "euklid":    return Math.hypot(dx, dy);
+    case "chebyshev": return Math.max(dx, dy);
+    default:          return dx + dy;
+  }
+}
+
+// ---------------- Prioritätswarteschlange (Min-Heap) ----------------
+function makeHeap(){
+  const a = [];  // Einträge: {i, f, g}
+  const less = (p, q) => p.f < q.f || (p.f === q.f && p.g > q.g);
+  return {
+    push(n){
+      a.push(n);
+      let i = a.length - 1;
+      while(i > 0){
+        const p = (i-1) >> 1;
+        if(less(a[i], a[p])){ [a[i], a[p]] = [a[p], a[i]]; i = p; } else break;
+      }
+    },
+    pop(){
+      const top = a[0], last = a.pop();
+      if(a.length){ a[0] = last;
+        let i = 0;
+        for(;;){
+          const l = 2*i+1, r = l+1; let m = i;
+          if(l < a.length && less(a[l], a[m])) m = l;
+          if(r < a.length && less(a[r], a[m])) m = r;
+          if(m === i) break;
+          [a[i], a[m]] = [a[m], a[i]]; i = m;
+        }
+      }
+      return top;
+    },
+    get size(){ return a.length; }
+  };
+}
+
+// ---------------- A*-Suche als Generator (1 yield = 1 untersuchter Knoten) ----------------
+let search = null;
+
+function newSearch(){
+  const N = W * H;
+  const gArr = new Float64Array(N).fill(Infinity);
+  const hArr = new Float64Array(N);
+  const state = new Uint8Array(N);        // 0 unbekannt, 1 offen, 2 untersucht
+  const prev = new Int32Array(N).fill(-1);
+  const key = (x, y) => y*W + x;
+  for(let y=0; y<H; y++) for(let x=0; x<W; x++) hArr[key(x,y)] = heurVal(x, y);
+
+  const wNum = S.weight === "greedy" ? null : Number(S.weight);
+  const fOf = (g, h) => wNum === null ? h : g + wNum*h;
+
+  const dirs4 = [[1,0],[-1,0],[0,1],[0,-1]];
+  const dirs8 = dirs4.concat([[1,1],[1,-1],[-1,1],[-1,-1]]);
+  const dirs = S.dirs === "8" ? dirs8 : dirs4;
+
+  const heap = makeHeap();
+  const sk = key(start.x, start.y);
+  gArr[sk] = 0; state[sk] = 1;
+  heap.push({i:sk, f:fOf(0, hArr[sk]), g:0});
+
+  const self = {
+    gArr, hArr, state, prev, key,
+    expanded:0, current:-1, path:null, done:false, found:false,
+    openCount: () => { let c=0; for(let i=0;i<N;i++) if(state[i]===1) c++; return c; },
+    gen: null
+  };
+
+  self.gen = (function*(){
+    const gk = key(goal.x, goal.y);
+    while(heap.size){
+      const node = heap.pop();
+      if(state[node.i] === 2) continue;            // veralteter Eintrag
+      if(node.g !== gArr[node.i]) continue;
+      state[node.i] = 2;
+      self.current = node.i;
+      self.expanded++;
+      if(node.i === gk){
+        const p = [];
+        for(let i = gk; i !== -1; i = prev[i]) p.push(i);
+        p.reverse();
+        self.path = p; self.done = true; self.found = true;
+        return;
+      }
+      const cx = node.i % W, cy = (node.i / W) | 0;
+      for(const [dx, dy] of dirs){
+        const nx = cx+dx, ny = cy+dy;
+        if(nx<0 || nx>=W || ny<0 || ny>=H) continue;
+        const t = terrain[ny][nx];
+        if(t === -1) continue;
+        if(dx !== 0 && dy !== 0){
+          // Nicht durch Ecken quetschen
+          if(terrain[cy][nx] === -1 || terrain[ny][cx] === -1) continue;
+        }
+        const stepCost = t * (dx !== 0 && dy !== 0 ? SQ2 : 1);
+        const ng = gArr[node.i] + stepCost;
+        const ni = key(nx, ny);
+        if(ng < gArr[ni] - 1e-9){
+          gArr[ni] = ng; prev[ni] = node.i;
+          if(state[ni] !== 2) state[ni] = 1;
+          else state[ni] = 1;                      // wiedereröffnen (bei w>1 möglich)
+          heap.push({i:ni, f:fOf(ng, hArr[ni]), g:ng});
+        }
+      }
+      yield;
+    }
+    self.done = true; self.found = false;
+  })();
+
+  return self;
+}
+
+// ---------------- Ablaufsteuerung ----------------
+let running = false;
+let frameNo = 0;
+
+function ensureSearch(){ if(!search) search = newSearch(); }
+
+function stepOnce(){
+  ensureSearch();
+  if(search.done) return;
+  search.gen.next();
+  updateStatus();
+}
+function runAll(){
+  ensureSearch();
+  let guard = W*H*4;
+  while(!search.done && guard-- > 0) search.gen.next();
+  running = false;
+  updateStatus();
+}
+function resetSearch(autorun){
+  search = null;
+  running = false;
+  if(autorun){ runAll(); }
+  updateStatus();
+}
+
+function tick(){
+  frameNo++;
+  if(running && search && !search.done){
+    const steps =
+      S.tempo === "langsam" ? (frameNo % 9 === 0 ? 1 : 0) :
+      S.tempo === "mittel"  ? 1 :
+      S.tempo === "schnell" ? 10 : 0;
+    if(S.tempo === "sofort"){ runAll(); }
+    else {
+      for(let i=0; i<steps && !search.done; i++) search.gen.next();
+      if(search.done){ running = false; }
+      updateStatus();
+    }
+  }
+  draw();
+  requestAnimationFrame(tick);
+}
+
+// ---------------- UI: Statistik & Status ----------------
+const $ = id => document.getElementById(id);
+
+function updateStatus(){
+  const exp = search ? search.expanded : 0;
+  $("stExpanded").textContent = exp;
+  $("stOpen").textContent = search ? search.openCount() : 0;
+  if(search && search.done && search.found){
+    const cost = search.gArr[search.key(goal.x, goal.y)];
+    $("stLen").textContent = search.path.length - 1;
+    $("stCost").textContent = cost.toFixed(2).replace(".", ",");
+  } else {
+    $("stLen").textContent = "–";
+    $("stCost").textContent = "–";
+  }
+  const line = $("statusLine");
+  if(!search) line.textContent = "Bereit. Drücke „Suche starten“ oder „Schritt“.";
+  else if(search.done && search.found) line.textContent = "✔ Weg gefunden! Rot eingezeichnet — " + exp + " Felder untersucht.";
+  else if(search.done) line.textContent = "✘ Kein Weg möglich — das Ziel ist eingemauert.";
+  else if(running) line.textContent = "Suche läuft … (" + exp + " Felder untersucht)";
+  else line.textContent = "Pausiert nach " + exp + " Feldern. „Schritt“ untersucht das nächste.";
+  $("btnRun").textContent = running ? "⏸ Pause" : (search && !search.done && search.expanded > 0 ? "▶ Weiter" : "▶ Suche starten");
+}
+
+// ---------------- Zeichnen ----------------
+const canvas = $("map");
+const ctx = canvas.getContext("2d");
+const M = { left:24, top:24, right:10, bottom:10 };   // Kartenrand
+let cell = 30, dpr = 1;
+
+function layout(){
+  const cssW = Math.min(880, canvas.parentElement.clientWidth - 12);
+  cell = Math.floor((cssW - M.left - M.right) / W);
+  const w = M.left + M.right + cell*W;
+  const h = M.top + M.bottom + cell*H;
+  dpr = window.devicePixelRatio || 1;
+  canvas.width = w * dpr; canvas.height = h * dpr;
+  canvas.style.width = w + "px"; canvas.style.height = h + "px";
+}
+
+const css = name => getComputedStyle(document.documentElement).getPropertyValue(name).trim();
+
+function draw(){
+  const C = {
+    paper: css("--paper"), ink: css("--ink"), line: css("--line"),
+    open: css("--frontier"), closed: css("--closed"), cur: css("--current"),
+    route: css("--route"), wall: css("--wall"), swamp: css("--swamp"),
+    start: css("--start"), goal: css("--goal"), soft: css("--ink-soft"),
+  };
+  ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  const w = M.left + M.right + cell*W, h = M.top + M.bottom + cell*H;
+  ctx.fillStyle = "#FBF8EF";
+  ctx.fillRect(0, 0, w, h);
+
+  const px = x => M.left + x*cell, py = y => M.top + y*cell;
+
+  // Zellen
+  for(let y=0; y<H; y++) for(let x=0; x<W; x++){
+    const t = terrain[y][x];
+    let fill = C.paper;
+    if(t === COST_SWAMP) fill = C.swamp;
+    if(t === -1) fill = C.wall;
+    if(t !== -1 && search){
+      const i = search.key(x, y);
+      if(search.state[i] === 1) fill = C.open;
+      else if(search.state[i] === 2) fill = C.closed;
+      if(t === COST_SWAMP && search.state[i] !== 0){
+        // Sumpf bleibt erkennbar: Mischton
+        fill = search.state[i] === 1 ? "#93B3A0" : "#B7BF8E";
+      }
+      if(!search.done && i === search.current) fill = C.cur;
+    }
+    ctx.fillStyle = fill;
+    ctx.fillRect(px(x), py(y), cell, cell);
+    if(t === COST_SWAMP){
+      ctx.fillStyle = "rgba(60,74,66,.35)";
+      const s = cell/5;
+      ctx.fillRect(px(x)+s, py(y)+2*s, s*1.2, 1.5);
+      ctx.fillRect(px(x)+2.6*s, py(y)+3.3*s, s*1.2, 1.5);
+    }
+  }
+
+  // Gitterlinien
+  ctx.strokeStyle = C.line; ctx.lineWidth = 1;
+  ctx.beginPath();
+  for(let x=0; x<=W; x++){ ctx.moveTo(px(x)+.5, py(0)); ctx.lineTo(px(x)+.5, py(H)); }
+  for(let y=0; y<=H; y++){ ctx.moveTo(px(0), py(y)+.5); ctx.lineTo(px(W), py(y)+.5); }
+  ctx.stroke();
+
+  // Zahlen in Zellen (nur grobes Raster)
+  if(S.vals === "an" && cell >= 34 && search){
+    ctx.textAlign = "center";
+    for(let y=0; y<H; y++) for(let x=0; x<W; x++){
+      const i = search.key(x, y);
+      if(search.state[i] === 0) continue;
+      const g = search.gArr[i], hv = search.hArr[i];
+      const wNum = S.weight === "greedy" ? null : Number(S.weight);
+      const f = wNum === null ? hv : g + wNum*hv;
+      ctx.fillStyle = "rgba(34,51,44,.85)";
+      ctx.font = "600 " + Math.floor(cell*0.30) + "px ui-monospace, Consolas, monospace";
+      ctx.fillText(fmt(f), px(x)+cell/2, py(y)+cell*0.62);
+      ctx.font = Math.floor(cell*0.20) + "px ui-monospace, Consolas, monospace";
+      ctx.fillStyle = "rgba(23,99,90,.9)";
+      ctx.textAlign = "left";
+      ctx.fillText(fmt(g), px(x)+2, py(y)+cell*0.24);
+      ctx.fillStyle = "rgba(138,90,31,.9)";
+      ctx.textAlign = "right";
+      ctx.fillText(fmt(hv), px(x)+cell-2, py(y)+cell*0.24);
+      ctx.textAlign = "center";
+    }
+  }
+
+  // Weg (rote Kartenroute mit weißer Strichlinie)
+  if(search && search.path){
+    ctx.lineJoin = "round"; ctx.lineCap = "round";
+    ctx.beginPath();
+    search.path.forEach((i, k) => {
+      const x = px(i % W) + cell/2, y = py((i / W) | 0) + cell/2;
+      k === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
+    });
+    ctx.strokeStyle = C.route; ctx.lineWidth = Math.max(4, cell*0.28);
+    ctx.stroke();
+    ctx.strokeStyle = "rgba(255,255,255,.85)";
+    ctx.lineWidth = Math.max(1.4, cell*0.07);
+    ctx.setLineDash([cell*0.4, cell*0.35]);
+    ctx.stroke();
+    ctx.setLineDash([]);
+  }
+
+  // Start- und Ziel-Fahnen
+  drawFlag(px(start.x), py(start.y), C.start, "S");
+  drawFlag(px(goal.x), py(goal.y), C.goal, "Z");
+
+  // Randkoordinaten
+  ctx.fillStyle = C.soft;
+  ctx.font = "italic " + Math.max(9, Math.floor(cell*0.32)) + "px Georgia, serif";
+  ctx.textAlign = "center";
+  const stepN = W > 30 ? 5 : 2;
+  for(let x=0; x<W; x+=stepN) ctx.fillText(String(x), px(x)+cell/2, M.top-7);
+  ctx.textAlign = "right";
+  for(let y=0; y<H; y+=stepN) ctx.fillText(String(y), M.left-5, py(y)+cell*0.65);
+
+  // Kompassrose oben rechts
+  drawCompass(w - 30, 15, C.ink);
+
+  function drawFlag(x, y, color, letter){
+    const cx = x + cell/2, cy = y + cell/2;
+    ctx.fillStyle = color;
+    ctx.beginPath();
+    ctx.arc(cx, cy, cell*0.34, 0, Math.PI*2);
+    ctx.fill();
+    ctx.strokeStyle = "#fff"; ctx.lineWidth = 2;
+    ctx.stroke();
+    ctx.fillStyle = "#fff";
+    ctx.font = "700 " + Math.floor(cell*0.4) + "px system-ui, sans-serif";
+    ctx.textAlign = "center";
+    ctx.fillText(letter, cx, cy + cell*0.14);
+  }
+  function drawCompass(cx, cy, ink){
+    ctx.save();
+    ctx.translate(cx, cy);
+    ctx.strokeStyle = ink; ctx.fillStyle = ink; ctx.lineWidth = 1;
+    ctx.beginPath(); ctx.arc(0, 0, 9, 0, Math.PI*2); ctx.stroke();
+    ctx.beginPath();
+    ctx.moveTo(0, -9); ctx.lineTo(2.6, 2); ctx.lineTo(0, 0.5); ctx.lineTo(-2.6, 2); ctx.closePath();
+    ctx.fill();
+    ctx.font = "italic 8px Georgia, serif"; ctx.textAlign = "center";
+    ctx.fillText("N", 0, -12);
+    ctx.restore();
+  }
+}
+function fmt(v){
+  if(!isFinite(v)) return "∞";
+  return Math.abs(v - Math.round(v)) < 1e-6 ? String(Math.round(v)) : v.toFixed(1);
+}
+
+// ---------------- Mausinteraktion ----------------
+let mouseDown = false, dragging = null; // dragging: "start" | "goal" | null
+
+function cellAt(ev){
+  const r = canvas.getBoundingClientRect();
+  const x = Math.floor((ev.clientX - r.left - M.left) / cell);
+  const y = Math.floor((ev.clientY - r.top - M.top) / cell);
+  if(x < 0 || x >= W || y < 0 || y >= H) return null;
+  return {x, y};
+}
+function paint(c){
+  if(!c) return;
+  if((c.x === start.x && c.y === start.y) || (c.x === goal.x && c.y === goal.y)) return;
+  const val = S.draw === "wand" ? -1 : S.draw === "sumpf" ? COST_SWAMP : 1;
+  if(terrain[c.y][c.x] !== val){
+    terrain[c.y][c.x] = val;
+    afterMapEdit();
+  }
+}
+function afterMapEdit(){
+  const wasDone = search && search.done;
+  resetSearch(wasDone);   // fertige Suche direkt neu rechnen → Live-Vergleich
+}
+canvas.addEventListener("pointerdown", ev => {
+  ev.preventDefault();
+  canvas.setPointerCapture(ev.pointerId);
+  const c = cellAt(ev);
+  if(!c) return;
+  mouseDown = true;
+  if(c.x === start.x && c.y === start.y) dragging = "start";
+  else if(c.x === goal.x && c.y === goal.y) dragging = "goal";
+  else { dragging = null; paint(c); }
+});
+canvas.addEventListener("pointermove", ev => {
+  const c = cellAt(ev);
+  updateInspect(c);
+  if(!mouseDown || !c) return;
+  if(dragging){
+    if(terrain[c.y][c.x] === -1) return;
+    if(dragging === "start" && !(c.x === goal.x && c.y === goal.y)){
+      if(c.x !== start.x || c.y !== start.y){ start = {x:c.x, y:c.y}; afterMapEdit(); }
+    }
+    if(dragging === "goal" && !(c.x === start.x && c.y === start.y)){
+      if(c.x !== goal.x || c.y !== goal.y){ goal = {x:c.x, y:c.y}; afterMapEdit(); }
+    }
+  } else paint(c);
+});
+window.addEventListener("pointerup", () => { mouseDown = false; dragging = null; });
+canvas.addEventListener("pointerleave", () => updateInspect(null));
+
+function updateInspect(c){
+  const el = $("inspect");
+  if(!c){ el.textContent = "Bewege die Maus über ein Feld, um seine Werte zu sehen."; return; }
+  const t = terrain[c.y][c.x];
+  const tName = t === -1 ? "Wand" : t === COST_SWAMP ? "Sumpf (Kosten 5)" : "frei (Kosten 1)";
+  let rows = "<table><tr><td>Feld</td><td>(" + c.x + ", " + c.y + ")</td></tr>" +
+             "<tr><td>Gelände</td><td>" + tName + "</td></tr>";
+  if(search && t !== -1){
+    const i = search.key(c.x, c.y);
+    const st = search.state[i];
+    const stName = st === 0 ? "unentdeckt" : st === 1 ? "vorgemerkt" : "untersucht";
+    rows += "<tr><td>Status</td><td>" + stName + "</td></tr>";
+    if(st !== 0){
+      const g = search.gArr[i], hv = search.hArr[i];
+      const wNum = S.weight === "greedy" ? null : Number(S.weight);
+      const f = wNum === null ? hv : g + wNum*hv;
+      rows += "<tr><td>g (Weg bisher)</td><td>" + fmt(g) + "</td></tr>" +
+              "<tr><td>h (Schätzung)</td><td>" + fmt(hv) + "</td></tr>" +
+              "<tr><td>f (Summe)</td><td><b>" + fmt(f) + "</b></td></tr>";
+    }
+  }
+  el.innerHTML = rows + "</table>";
+}
+
+// ---------------- Segmentierte Buttons & Chips ----------------
+function wireSeg(id, keyName, onChange){
+  const seg = $(id);
+  seg.querySelectorAll("button").forEach(b => {
+    b.addEventListener("click", () => {
+      S[keyName] = b.dataset.v;
+      seg.querySelectorAll("button").forEach(x => x.classList.toggle("on", x === b));
+      if(onChange) onChange();
+    });
+  });
+}
+function syncSeg(id, val){
+  $(id).querySelectorAll("button").forEach(b => b.classList.toggle("on", b.dataset.v === val));
+}
+
+function paramChanged(){
+  const wasDone = search && search.done;
+  resetSearch(wasDone);
+}
+
+wireSeg("segHeur",  "heur",  paramChanged);
+wireSeg("segWeight","weight",paramChanged);
+wireSeg("segDirs",  "dirs",  paramChanged);
+wireSeg("segTempo", "tempo", () => {});
+wireSeg("segDraw",  "draw",  () => {});
+wireSeg("segVals",  "vals",  () => {});
+wireSeg("segRaster","raster", () => {
+  applySize();
+  SCEN[S.scenario].map();
+  layout();
+  resetSearch(false);
+});
+
+function applySize(){ W = SIZES[S.raster].W; H = SIZES[S.raster].H; }
+
+// Szenario-Chips
+const chipWrap = $("chipScenario");
+Object.entries(SCEN).forEach(([id, sc]) => {
+  const b = document.createElement("button");
+  b.textContent = sc.label;
+  b.dataset.v = id;
+  b.addEventListener("click", () => loadScenario(id, true));
+  chipWrap.appendChild(b);
+});
+function loadScenario(id, autorun){
+  S.scenario = id;
+  const sc = SCEN[id];
+  Object.assign(S, sc.set);
+  syncSeg("segHeur", S.heur); syncSeg("segWeight", S.weight);
+  syncSeg("segDirs", S.dirs); syncSeg("segTempo", S.tempo);
+  chipWrap.querySelectorAll("button").forEach(b => b.classList.toggle("on", b.dataset.v === id));
+  $("scenarioText").innerHTML = sc.text;
+  applySize();
+  sc.map();
+  layout();
+  resetSearch(false);
+  if(autorun){ running = true; ensureSearch(); updateStatus(); }
+}
+
+// ---------------- Aktionen ----------------
+$("btnRun").addEventListener("click", () => {
+  if(search && search.done){ resetSearch(false); }
+  running = !running;
+  if(running) ensureSearch();
+  updateStatus();
+});
+$("btnStep").addEventListener("click", () => { running = false; stepOnce(); });
+$("btnReset").addEventListener("click", () => resetSearch(false));
+
+window.addEventListener("resize", layout);
+window.addEventListener("keydown", ev => {
+  if(ev.target.tagName === "BUTTON") return;
+  if(ev.code === "Space"){ ev.preventDefault(); $("btnRun").click(); }
+  if(ev.key === "s" || ev.key === "S"){ $("btnStep").click(); }
+  if(ev.key === "r" || ev.key === "R"){ $("btnReset").click(); }
+});
+
+// ---------------- Start ----------------
+syncSeg("segTempo", S.tempo);
+syncSeg("segDraw", S.draw);
+syncSeg("segVals", S.vals);
+syncSeg("segRaster", S.raster);
+loadScenario("hindernisse", false);
+updateStatus();
+requestAnimationFrame(tick);
+</script>
+</body>
+</html>
