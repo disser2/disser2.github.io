@@ -1,0 +1,803 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>PageRank – interaktive Simulation</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=Instrument+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ground:#F1F0F7;
+  --paper:#FFFFFF;
+  --ink:#191627;
+  --ink2:#5D5878;
+  --ink3:#8B87A3;
+  --line:#DEDBEB;
+  --link:#4C3BE0;
+  --mass:#F0A32C;
+  --mass-deep:#B9720A;
+  --mass-soft:#FDEBCB;
+  --jump:#12A08B;
+  --alert:#D63F6B;
+  --r:14px;
+  --fd:"Bricolage Grotesque","Instrument Sans",system-ui,sans-serif;
+  --fb:"Instrument Sans",system-ui,-apple-system,sans-serif;
+  --fm:"IBM Plex Mono",ui-monospace,monospace;
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{
+  background:var(--ground);
+  color:var(--ink);
+  font-family:var(--fb);
+  font-size:15px;
+  line-height:1.45;
+  -webkit-font-smoothing:antialiased;
+}
+.wrap{max-width:1280px;margin:0 auto;padding:0 20px 56px}
+
+/* ---------- Masthead ---------- */
+.masthead{display:flex;align-items:baseline;gap:18px;flex-wrap:wrap;padding:16px 0 12px}
+.masthead h1{
+  font-family:var(--fd);font-weight:800;font-size:clamp(22px,3.4vw,34px);
+  letter-spacing:-.03em;margin:0;line-height:1;
+}
+.masthead h1 em{font-style:normal;color:var(--mass-deep)}
+.tagline{color:var(--ink2);font-size:14px;margin:0}
+.eyebrow{
+  font-family:var(--fm);font-size:10.5px;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--ink3);
+}
+
+/* ---------- Sticky Steuerleiste ---------- */
+.controls{
+  position:sticky;top:0;z-index:40;
+  background:rgba(255,255,255,.88);
+  backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);
+  border:1px solid var(--line);
+  border-radius:var(--r);
+  box-shadow:0 6px 24px -14px rgba(25,22,39,.4);
+  padding:10px 12px;
+  display:flex;flex-direction:column;gap:8px;
+}
+.crow{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.cgroup{display:flex;flex-direction:column;gap:3px;min-width:0}
+.cgroup>span.lbl{
+  font-family:var(--fm);font-size:9.5px;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--ink3);padding-left:2px;white-space:nowrap;
+}
+.seg{display:flex;background:var(--ground);border:1px solid var(--line);border-radius:9px;padding:2px;gap:2px;flex-wrap:wrap}
+.seg button{
+  font-family:var(--fb);font-size:12.5px;font-weight:500;color:var(--ink2);
+  background:transparent;border:0;border-radius:7px;padding:5px 9px;cursor:pointer;
+  white-space:nowrap;transition:background .15s,color .15s;
+}
+.seg button:hover{color:var(--ink);background:rgba(76,59,224,.07)}
+.seg button[aria-pressed="true"]{background:var(--ink);color:#fff}
+.seg button:focus-visible{outline:2px solid var(--link);outline-offset:1px}
+.spacer{flex:1 1 auto;min-width:8px}
+.actions{display:flex;gap:6px;align-items:center}
+.btn{
+  font-family:var(--fb);font-size:13px;font-weight:600;
+  border:1px solid var(--line);background:var(--paper);color:var(--ink);
+  border-radius:9px;padding:8px 13px;cursor:pointer;display:inline-flex;align-items:center;gap:6px;
+  transition:transform .1s,box-shadow .15s,background .15s;
+}
+.btn:hover{box-shadow:0 3px 10px -6px rgba(25,22,39,.5)}
+.btn:active{transform:translateY(1px)}
+.btn:focus-visible{outline:2px solid var(--link);outline-offset:1px}
+.btn.primary{background:var(--ink);color:#fff;border-color:var(--ink);min-width:112px;justify-content:center}
+.btn.primary.on{background:var(--mass-deep);border-color:var(--mass-deep)}
+.btn .k{font-family:var(--fm);font-size:10px;opacity:.55}
+
+/* ---------- Bühne ---------- */
+.stage{display:grid;grid-template-columns:1fr 350px;gap:14px;margin-top:14px;align-items:start}
+.panel{background:var(--paper);border:1px solid var(--line);border-radius:var(--r);overflow:hidden}
+.panel-head{
+  display:flex;align-items:center;justify-content:space-between;gap:10px;
+  padding:9px 14px;border-bottom:1px solid var(--line);
+}
+.panel-head h2{font-family:var(--fm);font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink3);margin:0;font-weight:500}
+
+/* Graph */
+#graph{display:block;width:100%;height:auto;max-height:56vh;touch-action:none}
+.hint{
+  display:flex;gap:10px;align-items:flex-start;
+  padding:9px 14px;border-top:1px solid var(--line);background:#FBFAFE;
+  font-size:13px;color:var(--ink2);
+}
+.hint b{color:var(--ink);font-weight:600}
+.legend{display:flex;gap:14px;flex-wrap:wrap;font-size:11.5px;color:var(--ink2);align-items:center}
+.legend i{width:9px;height:9px;border-radius:50%;display:inline-block;margin-right:5px;vertical-align:-1px}
+
+/* SVG-Klassen */
+.edge{fill:none;stroke:#C9C4E8;stroke-width:1.6}
+.edge.hot{stroke:var(--link);stroke-width:2.4}
+.edge.dim{stroke:#E4E1F2}
+.particle{fill:var(--mass)}
+.node-well{fill:#F4F2FA;stroke:#CFCADF;stroke-width:1.5}
+.node-fill{fill:var(--mass)}
+.node-ring{fill:none;stroke:var(--ink);stroke-width:1.6;opacity:.85}
+.node-ring.dangling{stroke:var(--alert);stroke-dasharray:3 3}
+.node-ring.sel{stroke:var(--link);stroke-width:3.2}
+.node-label{font-family:var(--fm);font-weight:600;text-anchor:middle;fill:var(--ink);pointer-events:none}
+.node-val{font-family:var(--fm);font-size:10px;text-anchor:middle;fill:var(--ink2);pointer-events:none}
+.node-g{cursor:pointer}
+.node-g:focus-visible .node-ring{stroke:var(--link);stroke-width:3.2}
+.walker{fill:var(--jump);stroke:#fff;stroke-width:2}
+.jumpring{fill:none;stroke:var(--jump);stroke-width:2;opacity:0}
+
+/* Auswertung */
+.metrics{display:grid;grid-template-columns:1fr 1fr 1fr;border-bottom:1px solid var(--line)}
+.metric{padding:9px 12px;border-right:1px solid var(--line)}
+.metric:last-child{border-right:0}
+.metric .k{font-family:var(--fm);font-size:9.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--ink3);display:block}
+.metric .v{font-family:var(--fm);font-size:17px;font-weight:600;letter-spacing:-.02em}
+.metric .v.ok{color:var(--jump)}
+.bars{padding:10px 12px 12px;display:flex;flex-direction:column;gap:6px}
+.bar-row{display:grid;grid-template-columns:44px 1fr 46px;align-items:center;gap:8px;cursor:pointer}
+.bar-row .tag{
+  font-family:var(--fm);font-size:11px;font-weight:600;text-align:right;color:var(--ink2);
+  overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
+}
+.bar-row.sel .tag{color:var(--link)}
+.track{position:relative;height:16px;background:var(--ground);border-radius:5px;overflow:hidden}
+.fill{position:absolute;inset:0 auto 0 0;background:linear-gradient(90deg,var(--mass) 0%,#F7BE5E 100%);border-radius:5px;width:0}
+.target{position:absolute;top:-2px;bottom:-2px;width:2px;background:var(--ink);opacity:.55}
+.bar-row .num{font-family:var(--fm);font-size:11.5px;text-align:right;color:var(--ink)}
+.subnote{padding:0 12px 10px;font-size:11.5px;color:var(--ink3);display:flex;gap:12px;align-items:center}
+.subnote .mk{display:inline-block;width:2px;height:11px;background:var(--ink);opacity:.55;vertical-align:-1px;margin-right:5px}
+
+/* Detail */
+.detail{border-top:1px solid var(--line);padding:11px 12px 13px}
+.detail h3{font-family:var(--fd);font-size:15px;margin:0 0 8px;letter-spacing:-.01em}
+.detail .empty{font-size:12.5px;color:var(--ink3);margin:0}
+.contrib{display:flex;flex-direction:column;gap:5px;margin:0;padding:0;list-style:none}
+.contrib li{display:grid;grid-template-columns:1fr 1fr 44px;gap:8px;align-items:center;font-size:12px}
+.contrib .src{color:var(--ink2);font-family:var(--fm);font-size:11px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.contrib .ct{height:9px;background:var(--ground);border-radius:3px;position:relative;overflow:hidden}
+.contrib .cf{position:absolute;inset:0 auto 0 0;background:var(--mass);border-radius:3px}
+.contrib .cf.base{background:var(--jump)}
+.contrib .cf.dang{background:#9C96C4}
+.contrib .cv{font-family:var(--fm);font-size:11px;text-align:right}
+
+/* Formelband */
+.formula{
+  margin-top:14px;background:var(--paper);border:1px solid var(--line);border-radius:var(--r);
+  padding:14px 16px;display:flex;gap:12px;align-items:center;flex-wrap:wrap;
+}
+.formula .fx{font-family:var(--fm);font-size:14px;display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.chip{padding:3px 8px;border-radius:7px;font-weight:600;white-space:nowrap}
+.chip.base{background:#DCF3EF;color:#0A6E5E}
+.chip.damp{background:var(--mass-soft);color:var(--mass-deep)}
+.chip.sum{background:#E7E3FD;color:#3B2CC4}
+.formula .fl{font-size:12.5px;color:var(--ink2);max-width:40ch}
+
+/* Karten */
+.cards{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:14px}
+.card{background:var(--paper);border:1px solid var(--line);border-radius:var(--r);padding:14px 16px}
+.card .n{font-family:var(--fm);font-size:10px;letter-spacing:.14em;color:var(--ink3);text-transform:uppercase}
+.card h3{font-family:var(--fd);font-weight:600;font-size:17px;letter-spacing:-.02em;margin:4px 0 6px}
+.card p{margin:0;font-size:13.5px;color:var(--ink2)}
+.card p b{color:var(--ink);font-weight:600}
+
+footer{margin-top:22px;font-size:12px;color:var(--ink3);text-align:center}
+
+@media (max-width:980px){
+  .stage{grid-template-columns:1fr}
+  .cards{grid-template-columns:1fr}
+  #graph{max-height:none}
+}
+@media (max-width:640px){
+  .wrap{padding:0 12px 40px}
+  .crow{flex-wrap:wrap}
+  .seg button{padding:5px 8px;font-size:12px}
+}
+@media (prefers-reduced-motion:reduce){
+  *{transition-duration:.01ms !important;animation-duration:.01ms !important}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header class="masthead">
+    <div>
+      <div class="eyebrow">Schulung · Wie Suchmaschinen Wichtigkeit messen</div>
+      <h1>Page<em>Rank</em></h1>
+    </div>
+    <p class="tagline">Rang ist Masse, die durch Links fließt. Starte die Simulation und schau zu.</p>
+  </header>
+
+  <!-- ============ Steuerleiste ============ -->
+  <div class="controls" role="group" aria-label="Steuerung der Simulation">
+    <div class="crow">
+      <div class="cgroup">
+        <span class="lbl">Netzwerk</span>
+        <div class="seg" id="seg-preset"></div>
+      </div>
+      <div class="cgroup">
+        <span class="lbl">Link-Treue&nbsp;d</span>
+        <div class="seg" id="seg-damp"></div>
+      </div>
+      <div class="cgroup">
+        <span class="lbl">Modus</span>
+        <div class="seg" id="seg-mode"></div>
+      </div>
+      <div class="spacer"></div>
+      <div class="actions">
+        <button class="btn" id="btn-reset" title="Zurück zum Start">↺ Zurücksetzen</button>
+        <button class="btn" id="btn-step">Ein Schritt <span class="k">→</span></button>
+        <button class="btn primary" id="btn-play">Starten <span class="k">Leer</span></button>
+      </div>
+    </div>
+    <div class="crow">
+      <div class="cgroup">
+        <span class="lbl">Startverteilung</span>
+        <div class="seg" id="seg-start"></div>
+      </div>
+      <div class="cgroup">
+        <span class="lbl">Tempo</span>
+        <div class="seg" id="seg-speed"></div>
+      </div>
+      <div class="cgroup">
+        <span class="lbl">Links ändern</span>
+        <div class="seg" id="seg-edit"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ Bühne ============ -->
+  <div class="stage">
+
+    <section class="panel">
+      <div class="panel-head">
+        <h2>Netzwerk</h2>
+        <div class="legend">
+          <span><i style="background:#F0A32C"></i>Rang-Masse</span>
+          <span><i style="background:#4C3BE0"></i>Link</span>
+          <span><i style="background:#12A08B"></i>Zufallssprung</span>
+          <span><i style="background:#D63F6B"></i>Sackgasse</span>
+        </div>
+      </div>
+      <svg id="graph" viewBox="0 0 600 440" role="img" aria-label="Netzwerk aus Seiten und Links"></svg>
+      <div class="hint"><b id="hint-title">Tipp</b><span id="hint-text"></span></div>
+    </section>
+
+    <aside class="panel">
+      <div class="panel-head"><h2>Rangverteilung</h2><span class="eyebrow" id="status-badge">bereit</span></div>
+      <div class="metrics">
+        <div class="metric"><span class="k">Runde</span><span class="v" id="m-iter">0</span></div>
+        <div class="metric"><span class="k">Änderung</span><span class="v" id="m-delta">–</span></div>
+        <div class="metric"><span class="k">Spitze</span><span class="v" id="m-top">–</span></div>
+      </div>
+      <div class="bars" id="bars"></div>
+      <div class="subnote"><span><span class="mk"></span>Endwert nach vollständiger Rechnung</span></div>
+      <div class="detail" id="detail">
+        <p class="empty">Klick auf eine Seite im Netzwerk – dann siehst du hier, woher ihr Rang kommt.</p>
+      </div>
+    </aside>
+
+  </div>
+
+  <!-- ============ Formel ============ -->
+  <div class="formula">
+    <div class="fx">
+      <span>Rang einer Seite&nbsp;=</span>
+      <span class="chip base" id="fx-base">0,15 / Anzahl Seiten</span>
+      <span>+</span>
+      <span class="chip damp" id="fx-damp">0,85</span>
+      <span>×</span>
+      <span class="chip sum">Summe der Ränge aller verlinkenden Seiten, geteilt durch deren Link-Anzahl</span>
+    </div>
+    <p class="fl">Der linke Teil ist der Zufallssprung: jede Seite bekommt etwas geschenkt. Der rechte Teil ist das Erbe aus den Links.</p>
+  </div>
+
+  <!-- ============ Erklärkarten ============ -->
+  <div class="cards">
+    <div class="card">
+      <div class="n">Grundidee</div>
+      <h3>Ein Link ist eine Stimme</h3>
+      <p>Wer viele Links bekommt, wird wichtig. Aber Stimmen von <b>wichtigen</b> Seiten zählen mehr – und wer viel verlinkt, verteilt seine Stimme auf viele.</p>
+    </div>
+    <div class="card">
+      <div class="n">Der Regler d</div>
+      <h3>Zufalls-Surfer</h3>
+      <p>Mit Wahrscheinlichkeit <b>d</b> klickt ein gedachter Surfer auf einen Link, sonst springt er auf eine beliebige Seite. Kleines d = Ränge werden gleichmäßiger.</p>
+    </div>
+    <div class="card">
+      <div class="n">Grenzfälle</div>
+      <h3>Sackgassen &amp; Farmen</h3>
+      <p>Seiten ohne ausgehende Links würden Masse verschlucken, Link-Farmen sie horten. Probier die Netzwerke <b>Sackgasse</b> und <b>Link-Farm</b> mit verschiedenen d.</p>
+    </div>
+  </div>
+
+  <footer>Interaktive Simulation für Schulungszwecke · Werte in Prozent der Gesamtmasse</footer>
+</div>
+
+<script>
+(function(){
+"use strict";
+
+/* ================= Netzwerke ================= */
+const PRESETS = {
+  mini:{
+    label:"Mini-Web",
+    hint:"Sieben Seiten, wie im echten Netz verlinkt. Beobachte, wie E nach oben wandert.",
+    nodes:[["A",120,92],["B",300,64],["C",470,104],["D",96,262],["E",290,214],["F",478,268],["G",286,374]],
+    edges:[["A","B"],["A","E"],["B","C"],["B","E"],["C","F"],["C","E"],["D","A"],["D","E"],["E","B"],["E","F"],["F","G"],["G","E"],["G","D"]]
+  },
+  stern:{
+    label:"Stern",
+    hint:"Alle verlinken auf M. M sammelt fast die gesamte Masse – der klassische Hub.",
+    nodes:[["M",300,220],["A",300,66],["B",464,140],["C",470,312],["D",300,388],["E",138,312],["F",132,140]],
+    edges:[["A","M"],["B","M"],["C","M"],["D","M"],["E","M"],["F","M"],["M","A"],["M","D"]]
+  },
+  kreis:{
+    label:"Kreis",
+    hint:"Jede Seite gibt so viel ab, wie sie bekommt. Ergebnis: alle exakt gleich wichtig.",
+    nodes:[["A",300,72],["B",430,148],["C",430,296],["D",300,372],["E",170,296],["F",170,148]],
+    edges:[["A","B"],["B","C"],["C","D"],["D","E"],["E","F"],["F","A"]]
+  },
+  cluster:{
+    label:"Zwei Gruppen",
+    hint:"Nur ein Link führt nach rechts – aber er reicht, damit die rechte Gruppe die Masse abzieht.",
+    nodes:[["A",118,118],["B",84,272],["C",216,214],["E",390,118],["F",524,182],["G",432,306]],
+    edges:[["A","B"],["B","A"],["A","C"],["C","A"],["B","C"],["C","B"],["E","F"],["F","E"],["E","G"],["G","E"],["F","G"],["G","F"],["C","E"]]
+  },
+  sackgasse:{
+    label:"Sackgasse",
+    hint:"D hat keine ausgehenden Links (rot gestrichelt). Ohne Zufallssprung würde dort alles versickern.",
+    nodes:[["A",110,110],["B",286,80],["C",464,124],["D",300,246],["E",120,336],["F",470,330]],
+    edges:[["A","B"],["A","E"],["B","C"],["B","D"],["C","D"],["C","F"],["E","D"],["F","D"]]
+  },
+  farm:{
+    label:"Link-Farm",
+    hint:"Vier Fake-Seiten pushen „Ziel“. Senke d auf 0,50 und sieh zu, wie der Trick zusammenbricht.",
+    nodes:[["Hub",112,118],["Blog",92,300],["Shop",228,206],["Ziel",400,214],["F1",544,108],["F2",576,248],["F3",500,362],["F4",374,352]],
+    edges:[["Hub","Blog"],["Hub","Shop"],["Blog","Shop"],["Shop","Hub"],["Shop","Ziel"],
+           ["F1","Ziel"],["F2","Ziel"],["F3","Ziel"],["F4","Ziel"],
+           ["Ziel","F1"],["Ziel","F2"],["Ziel","F3"],["Ziel","F4"]]
+  }
+};
+
+const DAMPS  = [["0,50",0.50],["0,70",0.70],["0,85",0.85],["1,00",1.00]];
+const STARTS = [["Gleich","uniform"],["Alles auf 1","first"],["Zufällig","random"]];
+const MODES  = [["Rechnung","calc"],["Surfer","surf"]];
+const SPEEDS = [["Langsam",1400],["Normal",700],["Schnell",260]];
+const EDITS  = [["Aus",false],["An",true]];
+
+/* ================= Zustand ================= */
+const S = {
+  preset:"mini", d:0.85, start:"uniform", mode:"calc", speed:700, edit:false,
+  nodes:[], edges:[], out:[], inn:[],
+  rank:[], shown:[], target:[], iter:0, delta:null,
+  playing:false, lastTick:0, sel:-1, pending:-1,
+  tally:[], walker:0, walkerFrom:0, walkerT:1, walkerJump:false, steps:0,
+  drag:null
+};
+const svg = document.getElementById("graph");
+const NS = "http://www.w3.org/2000/svg";
+const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+/* ================= Hilfsfunktionen ================= */
+function el(tag,attrs){const e=document.createElementNS(NS,tag);for(const k in attrs)e.setAttribute(k,attrs[k]);return e;}
+function pct(v){return (v*100).toLocaleString("de-DE",{minimumFractionDigits:1,maximumFractionDigits:1})+" %";}
+function pct2(v){return (v*100).toLocaleString("de-DE",{minimumFractionDigits:2,maximumFractionDigits:2})+" %";}
+
+function segment(host,items,current,onPick){
+  host.innerHTML="";
+  items.forEach(function(it){
+    const b=document.createElement("button");
+    b.type="button"; b.textContent=it[0];
+    b.setAttribute("aria-pressed", it[1]===current ? "true":"false");
+    b.addEventListener("click",function(){onPick(it[1]);});
+    host.appendChild(b);
+  });
+}
+function setPressed(host,items,current){
+  Array.prototype.forEach.call(host.children,function(b,i){
+    b.setAttribute("aria-pressed", items[i][1]===current ? "true":"false");
+  });
+}
+
+/* ================= Graph aufbauen ================= */
+function loadPreset(key){
+  const p=PRESETS[key];
+  S.nodes=p.nodes.map(function(n,i){return {id:i,label:n[0],x:n[1],y:n[2]};});
+  S.edges=p.edges.map(function(e){
+    return [p.nodes.findIndex(function(n){return n[0]===e[0];}), p.nodes.findIndex(function(n){return n[0]===e[1];})];
+  });
+  S.sel=-1; S.pending=-1;
+  rebuildAdj(); resetRanks(); buildSVG();
+  document.getElementById("hint-text").textContent = p.hint;
+}
+function rebuildAdj(){
+  const N=S.nodes.length;
+  S.out=Array.from({length:N},function(){return [];});
+  S.inn=Array.from({length:N},function(){return [];});
+  S.edges.forEach(function(e){ S.out[e[0]].push(e[1]); S.inn[e[1]].push(e[0]); });
+}
+function resetRanks(){
+  const N=S.nodes.length;
+  if(S.start==="uniform") S.rank=Array(N).fill(1/N);
+  else if(S.start==="first"){ S.rank=Array(N).fill(0); S.rank[0]=1; }
+  else { S.rank=Array.from({length:N},function(){return Math.random()+0.05;}); const s=S.rank.reduce(function(a,b){return a+b;},0); S.rank=S.rank.map(function(v){return v/s;}); }
+  S.shown=S.rank.slice(); S.target=S.rank.slice();
+  S.iter=0; S.delta=null;
+  S.tally=Array(N).fill(0); S.steps=0;
+  S.walker=Math.floor(Math.random()*N); S.walkerFrom=S.walker; S.walkerT=1; S.walkerJump=false;
+  computeReference();
+}
+
+/* ================= PageRank ================= */
+function powerStep(r){
+  const N=S.nodes.length, d=S.d;
+  let dangling=0;
+  for(let i=0;i<N;i++) if(S.out[i].length===0) dangling+=r[i];
+  const base=(1-d)/N + d*dangling/N;
+  const next=Array(N).fill(base);
+  for(let i=0;i<N;i++){
+    const k=S.out[i].length;
+    if(k===0) continue;
+    const share=d*r[i]/k;
+    for(let j=0;j<k;j++) next[S.out[i][j]]+=share;
+  }
+  return next;
+}
+let REF=[];
+function computeReference(){
+  let r=Array(S.nodes.length).fill(1/S.nodes.length);
+  for(let i=0;i<200;i++) r=powerStep(r);
+  REF=r;
+}
+
+/* ================= SVG rendern ================= */
+let gEdges,gParts,gNodes,gWalker,nodeEls=[],edgeEls=[],partEls=[];
+function buildSVG(){
+  svg.innerHTML="";
+  gEdges=el("g",{}); gParts=el("g",{}); gNodes=el("g",{}); gWalker=el("g",{});
+  svg.appendChild(gEdges); svg.appendChild(gParts); svg.appendChild(gNodes); svg.appendChild(gWalker);
+
+  const defs=el("defs",{});
+  ["#C9C4E8","#4C3BE0"].forEach(function(c,i){
+    const m=el("marker",{id:"arw"+i,viewBox:"0 0 10 10",refX:"9",refY:"5",markerWidth:"5.5",markerHeight:"5.5",orient:"auto-start-reverse"});
+    m.appendChild(el("path",{d:"M 0 1 L 10 5 L 0 9 z",fill:c}));
+    defs.appendChild(m);
+  });
+  svg.appendChild(defs);
+
+  edgeEls=S.edges.map(function(){ const p=el("path",{class:"edge","marker-end":"url(#arw0)"}); gEdges.appendChild(p); return p; });
+  partEls=S.edges.map(function(){ const c=el("circle",{class:"particle",r:"3",opacity:"0"}); gParts.appendChild(c); return c; });
+
+  nodeEls=S.nodes.map(function(n,i){
+    const g=el("g",{class:"node-g",tabindex:"0",role:"button"});
+    const cid="clip"+i;
+    const cp=el("clipPath",{id:cid}); const cc=el("circle",{cx:n.x,cy:n.y,r:26}); cp.appendChild(cc); defs.appendChild(cp);
+    const well=el("circle",{class:"node-well",cx:n.x,cy:n.y,r:26});
+    const fill=el("rect",{class:"node-fill",x:n.x-26,y:n.y,width:52,height:0,"clip-path":"url(#"+cid+")"});
+    const ring=el("circle",{class:"node-ring",cx:n.x,cy:n.y,r:26});
+    const jr=el("circle",{class:"jumpring",cx:n.x,cy:n.y,r:26});
+    const lab=el("text",{class:"node-label",x:n.x,y:n.y+4,"font-size":n.label.length>2?11:14});
+    lab.textContent=n.label;
+    const val=el("text",{class:"node-val",x:n.x,y:n.y+42});
+    g.appendChild(well); g.appendChild(fill); g.appendChild(ring); g.appendChild(jr); g.appendChild(lab); g.appendChild(val);
+    gNodes.appendChild(g);
+    g.addEventListener("pointerdown",function(ev){onNodeDown(i,ev);});
+    g.addEventListener("keydown",function(ev){ if(ev.key==="Enter"||ev.key===" "){ev.preventDefault();pickNode(i);} });
+    return {g:g,well:well,fill:fill,ring:ring,jr:jr,lab:lab,val:val,clip:cc};
+  });
+
+  const w=el("circle",{class:"walker",r:"8",opacity:"0"}); gWalker.appendChild(w);
+  gWalker.walker=w;
+  draw();
+}
+
+function radiusOf(i){
+  const mx=Math.max.apply(null,S.shown);
+  const rel=mx>0?S.shown[i]/mx:0;
+  return 19+13*Math.sqrt(rel);
+}
+function edgePath(a,b,r1,r2){
+  const A=S.nodes[a],B=S.nodes[b];
+  const dx=B.x-A.x, dy=B.y-A.y, len=Math.hypot(dx,dy)||1;
+  const nx=-dy/len, ny=dx/len;
+  const mx=(A.x+B.x)/2+nx*len*0.15, my=(A.y+B.y)/2+ny*len*0.15;
+  let d1x=mx-A.x,d1y=my-A.y; const l1=Math.hypot(d1x,d1y)||1;
+  let d2x=B.x-mx,d2y=B.y-my; const l2=Math.hypot(d2x,d2y)||1;
+  const sx=A.x+d1x/l1*r1, sy=A.y+d1y/l1*r1;
+  const ex=B.x-d2x/l2*(r2+7), ey=B.y-d2y/l2*(r2+7);
+  return "M "+sx+" "+sy+" Q "+mx+" "+my+" "+ex+" "+ey;
+}
+
+function draw(){
+  const N=S.nodes.length;
+  const vals = S.mode==="surf" ? tallyShare() : S.shown;
+  const mx=Math.max.apply(null,vals)||1;
+  const radii=S.nodes.map(function(_,i){ return 19+13*Math.sqrt(Math.max(0,vals[i]/mx)); });
+
+  S.edges.forEach(function(e,k){
+    const p=edgeEls[k];
+    p.setAttribute("d", edgePath(e[0],e[1],radii[e[0]],radii[e[1]]));
+    const hot = S.sel>=0 && (e[0]===S.sel||e[1]===S.sel);
+    const dim = S.sel>=0 && !hot;
+    p.setAttribute("class","edge"+(hot?" hot":"")+(dim?" dim":""));
+    p.setAttribute("marker-end", hot?"url(#arw1)":"url(#arw0)");
+  });
+
+  S.nodes.forEach(function(n,i){
+    const E=nodeEls[i], r=radii[i], lvl=Math.max(0,Math.min(1,vals[i]/mx));
+    E.well.setAttribute("r",r); E.ring.setAttribute("r",r); E.jr.setAttribute("r",r+6);
+    E.clip.setAttribute("r",r);
+    const h=2*r*lvl;
+    E.fill.setAttribute("x",n.x-r); E.fill.setAttribute("width",2*r);
+    E.fill.setAttribute("y",n.y+r-h); E.fill.setAttribute("height",h);
+    E.well.setAttribute("cx",n.x); E.well.setAttribute("cy",n.y);
+    E.ring.setAttribute("cx",n.x); E.ring.setAttribute("cy",n.y);
+    E.jr.setAttribute("cx",n.x); E.jr.setAttribute("cy",n.y);
+    E.clip.setAttribute("cx",n.x); E.clip.setAttribute("cy",n.y);
+    E.lab.setAttribute("x",n.x); E.lab.setAttribute("y",n.y+4);
+    E.val.setAttribute("x",n.x); E.val.setAttribute("y",n.y+r+15);
+    E.val.textContent=pct(vals[i]);
+    let cls="node-ring";
+    if(S.out[i].length===0) cls+=" dangling";
+    if(S.sel===i||S.pending===i) cls+=" sel";
+    E.ring.setAttribute("class",cls);
+  });
+}
+
+/* ================= Partikel-Fluss ================= */
+function animate(ts){
+  // Interpolation der Werte
+  let moving=false;
+  for(let i=0;i<S.shown.length;i++){
+    const diff=S.target[i]-S.shown[i];
+    if(Math.abs(diff)>1e-6){ S.shown[i]+=diff*(reduce?1:0.18); moving=true; }
+    else S.shown[i]=S.target[i];
+  }
+
+  // Auto-Schritt
+  if(S.playing){
+    const iv = S.mode==="surf" ? Math.max(120,S.speed*0.5) : S.speed;
+    if(ts-S.lastTick>iv){ S.lastTick=ts; S.mode==="surf" ? surfStep() : calcStep(); }
+  }
+
+  // Partikel
+  if(!reduce && S.mode==="calc"){
+    const mx=Math.max.apply(null,S.shown)||1;
+    S.edges.forEach(function(e,k){
+      const c=partEls[k], p=edgeEls[k];
+      const contrib=S.shown[e[0]]/(S.out[e[0]].length||1);
+      const op=Math.min(1,contrib/(mx*0.55));
+      if(op<0.05||S.sel>=0&&e[0]!==S.sel&&e[1]!==S.sel){ c.setAttribute("opacity", op<0.05?0:op*0.15); }
+      else c.setAttribute("opacity",op);
+      const L=p.getTotalLength();
+      const t=((ts/1400)+k*0.37)%1;
+      const pt=p.getPointAtLength(t*L);
+      c.setAttribute("cx",pt.x); c.setAttribute("cy",pt.y);
+      c.setAttribute("r", 2+2.6*Math.min(1,contrib/(mx*0.6)));
+    });
+  } else {
+    partEls.forEach(function(c){c.setAttribute("opacity",0);});
+  }
+
+  // Surfer
+  const w=gWalker.walker;
+  if(S.mode==="surf"){
+    w.setAttribute("opacity",1);
+    const A=S.nodes[S.walkerFrom], B=S.nodes[S.walker];
+    const t=Math.min(1,S.walkerT);
+    const ease=t<0.5?2*t*t:1-Math.pow(-2*t+2,2)/2;
+    const x=A.x+(B.x-A.x)*ease, y=A.y+(B.y-A.y)*ease;
+    const lift=S.walkerJump?-30*Math.sin(Math.PI*ease):0;
+    w.setAttribute("cx",x); w.setAttribute("cy",y+lift);
+    w.setAttribute("fill", S.walkerJump?"#12A08B":"#4C3BE0");
+    if(S.walkerT<1) S.walkerT+=0.09;
+  } else w.setAttribute("opacity",0);
+
+  if(moving||true) draw();
+  requestAnimationFrame(animate);
+}
+
+/* ================= Schritte ================= */
+function calcStep(){
+  const next=powerStep(S.rank);
+  let dl=0; for(let i=0;i<next.length;i++) dl+=Math.abs(next[i]-S.rank[i]);
+  S.rank=next; S.target=next.slice(); S.delta=dl; S.iter++;
+  if(dl<0.00005 && S.playing){ S.playing=false; syncPlay(); }
+  updateReadout();
+}
+function surfStep(){
+  const N=S.nodes.length;
+  S.walkerFrom=S.walker;
+  const outs=S.out[S.walker];
+  if(Math.random()>S.d || outs.length===0){
+    S.walker=Math.floor(Math.random()*N); S.walkerJump=true;
+  } else {
+    S.walker=outs[Math.floor(Math.random()*outs.length)]; S.walkerJump=false;
+  }
+  S.walkerT=0; S.tally[S.walker]++; S.steps++;
+  if(S.walkerJump){
+    const jr=nodeEls[S.walker].jr;
+    jr.setAttribute("opacity","0.9");
+    setTimeout(function(){jr.setAttribute("opacity","0");},260);
+  }
+  updateReadout();
+}
+function tallyShare(){
+  if(S.steps===0) return Array(S.nodes.length).fill(1/S.nodes.length);
+  return S.tally.map(function(v){return v/S.steps;});
+}
+
+/* ================= Auswertung rechts ================= */
+function buildBars(){
+  const host=document.getElementById("bars");
+  host.innerHTML="";
+  S.nodes.forEach(function(n,i){
+    const row=document.createElement("div"); row.className="bar-row"; row.dataset.i=i;
+    row.innerHTML='<span class="tag">'+n.label+'</span>'+
+      '<span class="track"><span class="fill"></span><span class="target"></span></span>'+
+      '<span class="num">–</span>';
+    row.addEventListener("click",function(){pickNode(i);});
+    host.appendChild(row);
+  });
+}
+function updateReadout(){
+  const vals = S.mode==="surf" ? tallyShare() : S.rank;
+  const mx=Math.max.apply(null,vals)||1;
+  const host=document.getElementById("bars");
+  Array.prototype.forEach.call(host.children,function(row,i){
+    row.querySelector(".fill").style.width=(100*vals[i]/mx)+"%";
+    row.querySelector(".target").style.left=(100*REF[i]/mx)+"%";
+    row.querySelector(".num").textContent=pct(vals[i]);
+    row.classList.toggle("sel",S.sel===i);
+  });
+  const order=vals.map(function(v,i){return [v,i];}).sort(function(a,b){return b[0]-a[0];});
+  document.getElementById("m-top").textContent=S.nodes[order[0][1]].label;
+  if(S.mode==="surf"){
+    document.getElementById("m-iter").textContent=S.steps.toLocaleString("de-DE");
+    let err=0; for(let i=0;i<vals.length;i++) err+=Math.abs(vals[i]-REF[i]);
+    document.getElementById("m-delta").textContent=S.steps?pct(err/2):"–";
+    document.querySelector('.metrics .metric:nth-child(1) .k').textContent="Klicks";
+    document.querySelector('.metrics .metric:nth-child(2) .k').textContent="Abweichung";
+    document.getElementById("status-badge").textContent = S.playing?"surft":"pausiert";
+  } else {
+    document.getElementById("m-iter").textContent=S.iter;
+    document.getElementById("m-delta").textContent = S.delta===null?"–":pct2(S.delta/2);
+    document.querySelector('.metrics .metric:nth-child(1) .k').textContent="Runde";
+    document.querySelector('.metrics .metric:nth-child(2) .k').textContent="Änderung";
+    const stable = S.delta!==null && S.delta<0.00005;
+    document.getElementById("m-delta").classList.toggle("ok",stable);
+    document.getElementById("status-badge").textContent = stable?"stabil":(S.playing?"rechnet":"bereit");
+  }
+  updateDetail();
+}
+
+function updateDetail(){
+  const box=document.getElementById("detail");
+  if(S.sel<0){ box.innerHTML='<p class="empty">Klick auf eine Seite im Netzwerk – dann siehst du hier, woher ihr Rang kommt.</p>'; return; }
+  const i=S.sel, N=S.nodes.length, d=S.d;
+  let dangling=0; for(let k=0;k<N;k++) if(S.out[k].length===0) dangling+=S.rank[k];
+  const parts=[];
+  parts.push({label:"Zufallssprung",v:(1-d)/N,cls:"base"});
+  if(dangling>0.0001) parts.push({label:"aus Sackgassen",v:d*dangling/N,cls:"dang"});
+  S.inn[i].forEach(function(src){
+    parts.push({label:S.nodes[src].label+" ÷ "+S.out[src].length+" Links",v:d*S.rank[src]/S.out[src].length,cls:""});
+  });
+  const total=parts.reduce(function(a,b){return a+b.v;},0);
+  const mx=Math.max.apply(null,parts.map(function(p){return p.v;}))||1;
+  let html='<h3>So entsteht der Rang von '+S.nodes[i].label+'</h3><ul class="contrib">';
+  parts.forEach(function(p){
+    html+='<li><span class="src">'+p.label+'</span><span class="ct"><span class="cf '+p.cls+'" style="width:'+(100*p.v/mx)+'%"></span></span><span class="cv">'+pct(p.v)+'</span></li>';
+  });
+  html+='</ul><p class="empty" style="margin-top:8px">Summe: '+pct(total)+
+        (S.out[i].length===0?' · Diese Seite hat <b>keine</b> ausgehenden Links.':' · gibt weiter an '+S.out[i].length+' Seite(n)')+'</p>';
+  box.innerHTML=html;
+}
+
+/* ================= Interaktion Knoten ================= */
+function pickNode(i){
+  if(S.edit){
+    if(S.pending<0){ S.pending=i; }
+    else if(S.pending===i){ S.pending=-1; }
+    else {
+      const a=S.pending,b=i;
+      const k=S.edges.findIndex(function(e){return e[0]===a&&e[1]===b;});
+      if(k>=0) S.edges.splice(k,1); else S.edges.push([a,b]);
+      S.pending=-1; rebuildAdj(); computeReference(); buildSVG(); updateReadout();
+      return;
+    }
+    draw(); return;
+  }
+  S.sel = (S.sel===i)?-1:i;
+  updateReadout(); draw();
+}
+function onNodeDown(i,ev){
+  if(S.edit){ ev.preventDefault(); pickNode(i); return; }
+  const pt=svgPoint(ev);
+  S.drag={i:i,dx:S.nodes[i].x-pt.x,dy:S.nodes[i].y-pt.y,moved:false};
+  svg.setPointerCapture(ev.pointerId);
+}
+function svgPoint(ev){
+  const r=svg.getBoundingClientRect();
+  return {x:(ev.clientX-r.left)/r.width*600, y:(ev.clientY-r.top)/r.height*440};
+}
+svg.addEventListener("pointermove",function(ev){
+  if(!S.drag) return;
+  const pt=svgPoint(ev);
+  S.nodes[S.drag.i].x=Math.max(35,Math.min(565,pt.x+S.drag.dx));
+  S.nodes[S.drag.i].y=Math.max(35,Math.min(405,pt.y+S.drag.dy));
+  S.drag.moved=true; draw();
+});
+svg.addEventListener("pointerup",function(ev){
+  if(S.drag&&!S.drag.moved) pickNode(S.drag.i);
+  S.drag=null;
+});
+
+/* ================= Steuerung ================= */
+function syncPlay(){
+  const b=document.getElementById("btn-play");
+  b.classList.toggle("on",S.playing);
+  b.innerHTML = (S.playing?"Pause":"Starten")+' <span class="k">Leer</span>';
+}
+function updateFormula(){
+  const N=S.nodes.length;
+  document.getElementById("fx-base").textContent=(1-S.d).toLocaleString("de-DE",{minimumFractionDigits:2})+" / "+N+" Seiten";
+  document.getElementById("fx-damp").textContent=S.d.toLocaleString("de-DE",{minimumFractionDigits:2});
+}
+
+segment(document.getElementById("seg-preset"),
+  Object.keys(PRESETS).map(function(k){return [PRESETS[k].label,k];}), S.preset,
+  function(v){ S.preset=v; S.playing=false; syncPlay(); loadPreset(v); buildBars(); updateFormula(); updateReadout();
+    setPressed(document.getElementById("seg-preset"),Object.keys(PRESETS).map(function(k){return [PRESETS[k].label,k];}),v); });
+
+segment(document.getElementById("seg-damp"),DAMPS,S.d,function(v){
+  S.d=v; computeReference(); updateFormula(); updateReadout(); setPressed(document.getElementById("seg-damp"),DAMPS,v); });
+
+segment(document.getElementById("seg-mode"),MODES,S.mode,function(v){
+  S.mode=v; S.playing=false; syncPlay(); resetRanks(); updateReadout(); setPressed(document.getElementById("seg-mode"),MODES,v);
+  document.getElementById("hint-text").textContent = v==="surf"
+    ? "Der Surfer klickt sich zufällig durchs Netz. Wie oft er wo landet, ergibt genau den PageRank."
+    : PRESETS[S.preset].hint;
+  document.getElementById("hint-title").textContent = v==="surf" ? "Surfer" : "Tipp";
+});
+
+segment(document.getElementById("seg-start"),STARTS,S.start,function(v){
+  S.start=v; resetRanks(); updateReadout(); setPressed(document.getElementById("seg-start"),STARTS,v); });
+
+segment(document.getElementById("seg-speed"),SPEEDS,S.speed,function(v){
+  S.speed=v; setPressed(document.getElementById("seg-speed"),SPEEDS,v); });
+
+segment(document.getElementById("seg-edit"),EDITS,S.edit,function(v){
+  S.edit=v; S.pending=-1; S.sel=-1; draw(); updateReadout(); setPressed(document.getElementById("seg-edit"),EDITS,v);
+  document.getElementById("hint-title").textContent = v?"Bearbeiten":"Tipp";
+  document.getElementById("hint-text").textContent = v
+    ? "Klick zwei Seiten nacheinander an: der Link dazwischen wird gesetzt oder entfernt."
+    : PRESETS[S.preset].hint;
+});
+
+document.getElementById("btn-step").addEventListener("click",function(){
+  S.playing=false; syncPlay(); S.mode==="surf"?surfStep():calcStep(); });
+document.getElementById("btn-play").addEventListener("click",function(){
+  S.playing=!S.playing; S.lastTick=0; syncPlay(); updateReadout(); });
+document.getElementById("btn-reset").addEventListener("click",function(){
+  S.playing=false; syncPlay(); resetRanks(); updateReadout(); });
+
+document.addEventListener("keydown",function(ev){
+  if(ev.target.tagName==="BUTTON"&&ev.key===" ") return;
+  if(ev.key===" "){ ev.preventDefault(); document.getElementById("btn-play").click(); }
+  if(ev.key==="ArrowRight"){ ev.preventDefault(); document.getElementById("btn-step").click(); }
+});
+
+/* ================= Start ================= */
+loadPreset(S.preset);
+buildBars();
+updateFormula();
+updateReadout();
+requestAnimationFrame(animate);
+})();
+</script>
+</body>
+</html>

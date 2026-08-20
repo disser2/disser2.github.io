@@ -1,0 +1,728 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Kernel-Dichteschätzung – interaktive Simulation</title>
+<style>
+:root{
+  --ink:#131A24;
+  --ink-soft:#4A5866;
+  --ink-faint:#8593A0;
+  --paper:#E7ECEF;
+  --card:#FFFFFF;
+  --line:#D2DAE0;
+  --kde:#B5185C;
+  --kde-soft:rgba(181,24,92,.10);
+  --bump:#3F7FA6;
+  --bump-soft:rgba(63,127,166,.13);
+  --true:#0E7C6B;
+  --hist:#C3CDD4;
+  --shadow:0 1px 0 rgba(19,26,36,.05), 0 8px 24px -18px rgba(19,26,36,.5);
+  --display:"Iowan Old Style","Palatino Linotype",Palatino,"Book Antiqua",Georgia,serif;
+  --body:system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",sans-serif;
+  --mono:ui-monospace,"SF Mono",Menlo,Consolas,"Liberation Mono",monospace;
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{
+  background:var(--paper);
+  color:var(--ink);
+  font-family:var(--body);
+  font-size:15px;
+  line-height:1.5;
+  -webkit-font-smoothing:antialiased;
+}
+.hdr{
+  position:sticky; top:0; z-index:30;
+  background:rgba(231,236,239,.94);
+  backdrop-filter:blur(8px);
+  border-bottom:1px solid var(--line);
+}
+.brand{
+  display:flex; align-items:baseline; gap:12px; flex-wrap:wrap;
+  max-width:1180px; margin:0 auto; padding:8px 20px 6px;
+}
+.brand h1{
+  font-family:var(--display);
+  font-size:20px; font-weight:600; letter-spacing:.01em; margin:0;
+}
+.brand p{margin:0; font-size:12.5px; color:var(--ink-soft)}
+.controls{
+  max-width:1180px; margin:0 auto; padding:2px 20px 10px;
+  display:flex; flex-wrap:wrap; gap:10px 18px; align-items:flex-start;
+}
+.grp{display:flex; flex-direction:column; gap:4px}
+.grp>span{
+  font-family:var(--mono); font-size:9.5px; letter-spacing:.12em;
+  text-transform:uppercase; color:var(--ink-faint);
+}
+.seg{display:flex; background:var(--card); border:1px solid var(--line); border-radius:7px; overflow:hidden}
+.seg button{
+  font:inherit; font-size:12.5px; line-height:1;
+  padding:7px 10px; border:0; background:transparent; color:var(--ink-soft);
+  cursor:pointer; white-space:nowrap; border-right:1px solid var(--line);
+}
+.seg button:last-child{border-right:0}
+.seg button:hover{background:#F1F5F7; color:var(--ink)}
+.seg button[aria-pressed="true"]{background:var(--kde); color:#fff}
+.seg button:focus-visible{outline:2px solid var(--ink); outline-offset:-2px; z-index:1}
+.seg.toggles button[aria-pressed="true"]{background:var(--ink); color:#fff}
+.act button{
+  font:inherit; font-size:12.5px; line-height:1; padding:8px 12px;
+  background:var(--card); border:1px solid var(--line); border-radius:7px;
+  color:var(--ink); cursor:pointer;
+}
+.act{display:flex; gap:7px}
+.act button:hover{background:#F1F5F7}
+.act button:focus-visible{outline:2px solid var(--ink); outline-offset:1px}
+
+main{max-width:1180px; margin:0 auto; padding:14px 20px 56px}
+.card{
+  background:var(--card); border:1px solid var(--line); border-radius:12px;
+  box-shadow:var(--shadow); padding:12px 14px; margin-bottom:14px;
+}
+.plotwrap{position:relative}
+canvas{display:block; width:100%; touch-action:none}
+#plot{height:390px; cursor:crosshair}
+#hcurve{height:132px}
+.tip{
+  position:absolute; pointer-events:none; opacity:0; transition:opacity .12s;
+  background:var(--ink); color:#fff; font-family:var(--mono); font-size:11px;
+  padding:5px 8px; border-radius:6px; transform:translate(-50%,-130%); white-space:nowrap;
+}
+.legend{
+  display:flex; flex-wrap:wrap; gap:6px 16px; align-items:center;
+  font-size:12px; color:var(--ink-soft); margin-top:8px; padding-top:8px; border-top:1px solid var(--line);
+}
+.legend i{display:inline-block; width:16px; height:0; border-top-width:3px; border-top-style:solid; margin-right:6px; vertical-align:middle}
+.hint{margin-left:auto; font-size:11.5px; color:var(--ink-faint)}
+
+.readout{display:flex; flex-wrap:wrap; gap:10px; margin-bottom:14px}
+.stat{
+  flex:1 1 130px; background:var(--card); border:1px solid var(--line); border-radius:10px;
+  padding:9px 12px; box-shadow:var(--shadow);
+}
+.stat b{display:block; font-family:var(--mono); font-size:19px; font-weight:600; letter-spacing:-.01em}
+.stat span{font-family:var(--mono); font-size:9.5px; letter-spacing:.11em; text-transform:uppercase; color:var(--ink-faint)}
+.stat.k b{color:var(--kde)}
+
+.note{
+  display:flex; gap:11px; align-items:flex-start;
+  background:var(--card); border:1px solid var(--line); border-left:4px solid var(--kde);
+  border-radius:10px; padding:11px 14px; margin-bottom:14px; box-shadow:var(--shadow);
+}
+.note .badge{
+  font-family:var(--mono); font-size:9.5px; letter-spacing:.11em; text-transform:uppercase;
+  color:var(--kde); padding-top:3px; white-space:nowrap;
+}
+.note p{margin:0; font-size:14px}
+
+h2{
+  font-family:var(--display); font-size:16px; font-weight:600; margin:0 0 4px;
+}
+.sub{font-size:12.5px; color:var(--ink-soft); margin:0 0 10px}
+
+.steps{display:grid; grid-template-columns:repeat(3,1fr); gap:12px; margin-bottom:14px}
+.step{
+  background:var(--card); border:1px solid var(--line); border-radius:12px;
+  padding:12px 14px; box-shadow:var(--shadow);
+}
+.step em{
+  font-family:var(--mono); font-style:normal; font-size:11px; color:var(--kde);
+  display:block; margin-bottom:3px;
+}
+.step h3{font-family:var(--display); font-size:15px; margin:0 0 4px; font-weight:600}
+.step p{margin:0; font-size:13.5px; color:var(--ink-soft)}
+
+.tasks{display:grid; grid-template-columns:repeat(2,1fr); gap:12px}
+.task{
+  background:var(--card); border:1px solid var(--line); border-radius:12px;
+  padding:12px 14px; box-shadow:var(--shadow);
+}
+.task h3{font-family:var(--display); font-size:14.5px; margin:0 0 5px; font-weight:600}
+.task p{margin:0 0 8px; font-size:13.5px; color:var(--ink-soft)}
+.task button{
+  font:inherit; font-size:11.5px; background:transparent; border:1px solid var(--line);
+  border-radius:20px; padding:4px 11px; cursor:pointer; color:var(--ink-soft);
+}
+.task button:hover{border-color:var(--kde); color:var(--kde)}
+.task details{margin-top:8px; font-size:13px; color:var(--ink-soft)}
+.task summary{cursor:pointer; font-size:12px; color:var(--ink-faint)}
+footer{max-width:1180px; margin:0 auto; padding:0 20px 40px; font-size:12px; color:var(--ink-faint)}
+
+@media (max-width:900px){
+  .steps,.tasks{grid-template-columns:1fr}
+  #plot{height:320px}
+  .brand h1{font-size:17px}
+  .brand p{display:none}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+
+<div class="hdr">
+  <div class="brand">
+    <h1>Kernel-Dichteschätzung</h1>
+    <p>Aus einzelnen Messpunkten eine glatte Verteilung schätzen – und sehen, was die Glättung kostet.</p>
+  </div>
+  <div class="controls" id="controls">
+    <div class="grp"><span>Datensatz</span><div class="seg" id="segData"></div></div>
+    <div class="grp"><span>Punkte</span><div class="seg" id="segN"></div></div>
+    <div class="grp"><span>Kernform</span><div class="seg" id="segK"></div></div>
+    <div class="grp"><span>Bandbreite h</span><div class="seg" id="segH"></div></div>
+    <div class="grp"><span>Anzeigen</span><div class="seg toggles" id="segT"></div></div>
+    <div class="grp"><span>Aktion</span>
+      <div class="act">
+        <button id="btnResample">Neue Stichprobe</button>
+        <button id="btnPlay">Aufbau zeigen</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<main>
+  <div class="card">
+    <div class="plotwrap">
+      <canvas id="plot" aria-label="Diagramm: geschätzte Dichte, wahre Verteilung und einzelne Kerne"></canvas>
+      <div class="tip" id="tip"></div>
+    </div>
+    <div class="legend" id="legend">
+      <span><i style="border-color:var(--kde)"></i>Schätzung</span>
+      <span><i style="border-color:var(--true); border-top-style:dashed"></i>Wahre Verteilung</span>
+      <span><i style="border-color:var(--bump)"></i>Einzelne Kerne</span>
+      <span><i style="border-color:var(--hist)"></i>Histogramm</span>
+      <span class="hint">Ins Diagramm klicken fügt einen Punkt hinzu · Maus bewegen zeigt Werte</span>
+    </div>
+  </div>
+
+  <div class="readout">
+    <div class="stat k"><span>Bandbreite h</span><b id="stH">–</b></div>
+    <div class="stat"><span>Punkte n</span><b id="stN">–</b></div>
+    <div class="stat"><span>Faustregel h</span><b id="stS">–</b></div>
+    <div class="stat"><span>Abweichung</span><b id="stE">–</b></div>
+  </div>
+
+  <div class="note"><span class="badge">Beobachtung</span><p id="insight">–</p></div>
+
+  <div class="card">
+    <h2>Wie gut passt welche Bandbreite?</h2>
+    <p class="sub">Gesamtabweichung zwischen Schätzung und wahrer Verteilung, für jede mögliche Bandbreite. Das Tal in der Mitte ist der beste Kompromiss.</p>
+    <canvas id="hcurve" aria-label="Diagramm: Fehler der Schätzung in Abhängigkeit von der Bandbreite"></canvas>
+  </div>
+
+  <div class="steps">
+    <div class="step"><em>Schritt 1</em><h3>Ein Hügel pro Punkt</h3><p>Über jede Messung wird ein kleiner, gleich geformter Hügel gelegt – der Kern. Er sagt: Hier war etwas, und in der Nähe vermutlich auch.</p></div>
+    <div class="step"><em>Schritt 2</em><h3>Alles aufaddieren</h3><p>Die Hügel werden übereinandergelegt und summiert. Wo viele Punkte dicht beieinander liegen, türmt sich die Kurve auf.</p></div>
+    <div class="step"><em>Schritt 3</em><h3>Breite festlegen</h3><p>Die Bandbreite h bestimmt, wie breit jeder Hügel ist. Sie entscheidet fast alles – deutlich mehr als die Form des Kerns.</p></div>
+  </div>
+
+  <h2 style="margin:18px 0 4px">Zum Ausprobieren</h2>
+  <p class="sub">Vier kurze Aufgaben. Der Knopf stellt jeweils die passende Ausgangslage ein.</p>
+  <div class="tasks">
+    <div class="task">
+      <h3>Zu fein oder zu grob?</h3>
+      <p>Wechsle bei zwei Gipfeln die Bandbreite von sehr klein bis sehr groß. Ab wann verschwindet das Tal zwischen den Gipfeln?</p>
+      <button data-preset="bandbreite">Einstellen</button>
+      <details><summary>Auflösung</summary>Bei sehr kleinem h zeigt jede einzelne Messung einen eigenen Zacken – das ist Zufallsrauschen. Bei sehr großem h verschmelzen beide Gipfel zu einem einzigen Hügel: eine echte Eigenschaft der Daten geht verloren.</details>
+    </div>
+    <div class="task">
+      <h3>Spielt die Kernform eine Rolle?</h3>
+      <p>Halte die Bandbreite fest und wechsle nur die Kernform. Vergleiche das mit dem Effekt einer einzigen Stufe bei der Bandbreite.</p>
+      <button data-preset="kern">Einstellen</button>
+      <details><summary>Auflösung</summary>Kaum. Die Kurve wird mit dem Rechteck-Kern eckig und mit Gauß glatt, aber die Grundform bleibt. Die Bandbreite verändert das Ergebnis um ein Vielfaches stärker.</details>
+    </div>
+    <div class="task">
+      <h3>Wenig Daten, viel Zufall</h3>
+      <p>Nimm nur 10 Punkte und drücke mehrmals „Neue Stichprobe“. Wie stabil ist die Schätzung? Danach dasselbe mit 500 Punkten.</p>
+      <button data-preset="klein">Einstellen</button>
+      <details><summary>Auflösung</summary>Bei 10 Punkten springt die Kurve bei jeder Stichprobe deutlich. Mit 500 Punkten bleibt sie fast unverändert – die Schätzung wird zuverlässig, und die passende Bandbreite wird automatisch kleiner.</details>
+    </div>
+    <div class="task">
+      <h3>Wenn Kanten weich werden</h3>
+      <p>Bei einer Gleichverteilung hat die wahre Dichte scharfe Ränder. Beobachte, was die Schätzung an diesen Rändern macht.</p>
+      <button data-preset="rand">Einstellen</button>
+      <details><summary>Auflösung</summary>Die Schätzung schmiert über die Kante hinaus und gibt Bereichen Wahrscheinlichkeit, in denen gar nichts liegen kann. Dieser Randeffekt ist eine bekannte Schwäche – man begegnet ihm etwa mit Randkorrekturen oder einer Transformation der Daten.</details>
+    </div>
+  </div>
+</main>
+
+<footer>Alle Kurven werden live im Browser berechnet. Die wahre Verteilung ist bekannt, weil die Daten hier aus ihr gezogen werden – bei echten Daten kennt man sie nicht.</footer>
+
+<script>
+"use strict";
+
+/* ---------- Zufall ---------- */
+let seed = 20260816;
+function rng(){ seed |= 0; seed = seed + 0x6D2B79F5 | 0;
+  let t = Math.imul(seed ^ seed >>> 15, 1 | seed);
+  t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t;
+  return ((t ^ t >>> 14) >>> 0) / 4294967296; }
+function gauss(){ let u = 0, v = 0;
+  while(u === 0) u = rng();
+  while(v === 0) v = rng();
+  return Math.sqrt(-2*Math.log(u))*Math.cos(2*Math.PI*v); }
+
+/* ---------- Datensätze ---------- */
+const NPDF = (x,m,s)=> Math.exp(-0.5*((x-m)/s)**2)/(s*Math.sqrt(2*Math.PI));
+const DATASETS = {
+  bimodal:{ label:"Zwei Gipfel", domain:[-4.6,4.6],
+    comps:[{w:.5,m:-1.5,s:.55},{w:.5,m:1.6,s:.65}] },
+  normal:{ label:"Glocke", domain:[-4.2,4.2], comps:[{w:1,m:0,s:1}] },
+  drei:{ label:"Drei Gipfel", domain:[-4.4,5.0],
+    comps:[{w:.40,m:-2.0,s:.40},{w:.35,m:0.4,s:.50},{w:.25,m:2.6,s:.35}] },
+  schief:{ label:"Schief", domain:[-0.6,7.2], type:"lognorm", mu:0.35, sg:0.55 },
+  uniform:{ label:"Gleichverteilung", domain:[-3.6,3.6], type:"uniform", a:-2, b:2 },
+  outlier:{ label:"Ausreißer", domain:[-3.6,6.6],
+    comps:[{w:.92,m:0,s:.7},{w:.08,m:4.4,s:.45}] }
+};
+function truePdf(d,x){
+  if(d.type === "uniform") return (x >= d.a && x <= d.b) ? 1/(d.b-d.a) : 0;
+  if(d.type === "lognorm") return x <= 0 ? 0
+    : Math.exp(-((Math.log(x)-d.mu)**2)/(2*d.sg*d.sg))/(x*d.sg*Math.sqrt(2*Math.PI));
+  let s = 0; for(const c of d.comps) s += c.w*NPDF(x,c.m,c.s); return s;
+}
+function sample(d,n){
+  const out = [];
+  for(let i = 0; i < n; i++){
+    if(d.type === "uniform"){ out.push(d.a + (d.b-d.a)*rng()); }
+    else if(d.type === "lognorm"){ out.push(Math.exp(d.mu + d.sg*gauss())); }
+    else { let u = rng(), acc = 0, c = d.comps[0];
+      for(const k of d.comps){ acc += k.w; if(u <= acc){ c = k; break; } }
+      out.push(c.m + c.s*gauss()); }
+  }
+  return out.sort((a,b)=>a-b);
+}
+
+/* ---------- Kerne ---------- */
+const KERNELS = {
+  gauss:{ label:"Gauß", fn:u=>Math.exp(-0.5*u*u)/Math.sqrt(2*Math.PI), r:4 },
+  epan:{ label:"Epanechnikov", fn:u=>Math.abs(u)<1 ? 0.75*(1-u*u) : 0, r:1 },
+  tri:{ label:"Dreieck", fn:u=>Math.abs(u)<1 ? 1-Math.abs(u) : 0, r:1 },
+  cos:{ label:"Cosinus", fn:u=>Math.abs(u)<1 ? Math.PI/4*Math.cos(Math.PI*u/2) : 0, r:1 },
+  rect:{ label:"Rechteck", fn:u=>Math.abs(u)<1 ? 0.5 : 0, r:1 }
+};
+
+/* ---------- Zustand ---------- */
+const state = {
+  data:"bimodal", n:100, kernel:"gauss", hMode:1,
+  show:{ bumps:true, truth:true, hist:false, rug:true },
+  pts:[], extra:[], reveal:1, hOpt:null, curve:null, ver:0
+};
+const H_MODES = [
+  { key:0.25, label:"sehr klein" },
+  { key:0.5,  label:"klein" },
+  { key:1,    label:"Faustregel" },
+  { key:2,    label:"groß" },
+  { key:4,    label:"sehr groß" },
+  { key:"opt",label:"beste" }
+];
+
+/* ---------- Steuerelemente ---------- */
+function seg(el, items, get, set){
+  el.innerHTML = "";
+  items.forEach(it=>{
+    const b = document.createElement("button");
+    b.textContent = it.label;
+    b.setAttribute("aria-pressed", String(get() === it.key));
+    b.onclick = ()=>{ set(it.key); syncAll(); };
+    el.appendChild(b);
+  });
+}
+function syncSeg(el, items, get){
+  [...el.children].forEach((b,i)=> b.setAttribute("aria-pressed", String(get() === items[i].key)));
+}
+const dataItems = Object.keys(DATASETS).map(k=>({key:k,label:DATASETS[k].label}));
+const nItems = [10,30,100,500].map(v=>({key:v,label:String(v)}));
+const kItems = Object.keys(KERNELS).map(k=>({key:k,label:KERNELS[k].label}));
+const tItems = [
+  {key:"bumps",label:"Einzelne Kerne"},{key:"truth",label:"Wahre Verteilung"},
+  {key:"hist",label:"Histogramm"},{key:"rug",label:"Datenpunkte"}
+];
+const $ = id=>document.getElementById(id);
+
+seg($("segData"), dataItems, ()=>state.data, v=>{ state.data = v; state.extra = []; draw_(); });
+seg($("segN"), nItems, ()=>state.n, v=>{ state.n = v; state.extra = []; draw_(); });
+seg($("segK"), kItems, ()=>state.kernel, v=>{ state.kernel = v; recomputeCurve(); });
+seg($("segH"), H_MODES, ()=>state.hMode, v=>{ state.hMode = v; });
+$("segT").innerHTML = "";
+tItems.forEach(it=>{
+  const b = document.createElement("button");
+  b.textContent = it.label;
+  b.setAttribute("aria-pressed", String(state.show[it.key]));
+  b.onclick = ()=>{ state.show[it.key] = !state.show[it.key]; syncAll(); };
+  $("segT").appendChild(b);
+});
+function draw_(){ state.ver++; state.pts = sample(DATASETS[state.data], state.n); recomputeCurve(); }
+function syncAll(){
+  syncSeg($("segData"), dataItems, ()=>state.data);
+  syncSeg($("segN"), nItems, ()=>state.n);
+  syncSeg($("segK"), kItems, ()=>state.kernel);
+  syncSeg($("segH"), H_MODES, ()=>state.hMode);
+  [...$("segT").children].forEach((b,i)=> b.setAttribute("aria-pressed", String(state.show[tItems[i].key])));
+  render();
+}
+$("btnResample").onclick = ()=>{ seed = (Math.random()*1e9)|0; state.extra = []; draw_(); syncAll(); };
+$("btnPlay").onclick = play;
+
+const PRESETS = {
+  bandbreite:{ data:"bimodal", n:100, kernel:"gauss", hMode:0.25 },
+  kern:{ data:"drei", n:60, kernel:"rect", hMode:1, show:{bumps:true,truth:true,hist:false,rug:true} },
+  klein:{ data:"bimodal", n:10, kernel:"gauss", hMode:1 },
+  rand:{ data:"uniform", n:100, kernel:"gauss", hMode:1, show:{bumps:false,truth:true,hist:false,rug:true} }
+};
+document.querySelectorAll("[data-preset]").forEach(b=>{
+  b.onclick = ()=>{
+    const p = PRESETS[b.dataset.preset];
+    Object.assign(state, { data:p.data, n:p.n, kernel:p.kernel, hMode:p.hMode, extra:[] });
+    if(p.show) state.show = Object.assign({}, p.show);
+    draw_(); syncAll();
+    document.querySelector("main").scrollIntoView({behavior:"smooth", block:"start"});
+  };
+});
+
+/* ---------- Statistik ---------- */
+function allPts(){ return state.extra.length ? state.pts.concat(state.extra).sort((a,b)=>a-b) : state.pts; }
+function quantile(sorted,p){
+  const i = (sorted.length-1)*p, lo = Math.floor(i), hi = Math.ceil(i);
+  return sorted[lo] + (sorted[hi]-sorted[lo])*(i-lo);
+}
+function silverman(x){
+  const n = x.length;
+  if(n < 2) return 0.5;
+  const m = x.reduce((a,b)=>a+b,0)/n;
+  const sd = Math.sqrt(x.reduce((a,b)=>a+(b-m)**2,0)/(n-1)) || 0.5;
+  const iqr = quantile(x,0.75) - quantile(x,0.25);
+  const sig = iqr > 0 ? Math.min(sd, iqr/1.349) : sd;
+  return Math.max(0.9*sig*Math.pow(n,-0.2), 1e-3);
+}
+function kdeAt(x, pts, h, K, upto){
+  const m = upto === undefined ? pts.length : upto;
+  if(m === 0) return 0;
+  let s = 0;
+  for(let i = 0; i < m; i++) s += K.fn((x-pts[i])/h);
+  return s/(m*h);
+}
+function currentH(){
+  const hs = silverman(allPts());
+  if(state.hMode === "opt") return state.hOpt || hs;
+  return hs*state.hMode;
+}
+/* Abweichungskurve: integrierter quadratischer Fehler über h */
+function recomputeCurve(){
+  const pts = allPts(), d = DATASETS[state.data], K = KERNELS[state.kernel];
+  const [x0,x1] = d.domain, M = 160, dx = (x1-x0)/(M-1);
+  const tp = new Float64Array(M);
+  for(let j = 0; j < M; j++) tp[j] = truePdf(d, x0+j*dx);
+  const hs = silverman(pts), P = 34, out = [];
+  let best = null;
+  for(let p = 0; p < P; p++){
+    const h = hs*Math.exp(Math.log(0.12) + (Math.log(6)-Math.log(0.12))*p/(P-1));
+    let ise = 0;
+    for(let j = 0; j < M; j++){
+      const e = kdeAt(x0+j*dx, pts, h, K) - tp[j];
+      ise += e*e*dx;
+    }
+    out.push({h, ise});
+    if(!best || ise < best.ise) best = {h, ise};
+  }
+  state.curve = out;
+  state.hOpt = best.h;
+  render();
+}
+
+/* ---------- Zeichnen ---------- */
+const plot = $("plot"), pctx = plot.getContext("2d");
+const hcv = $("hcurve"), hctx = hcv.getContext("2d");
+const tip = $("tip");
+let hoverX = null;
+let cache = null;
+
+function fit(cv, ctx){
+  const r = cv.getBoundingClientRect(), dpr = window.devicePixelRatio || 1;
+  cv.width = Math.round(r.width*dpr); cv.height = Math.round(r.height*dpr);
+  ctx.setTransform(dpr,0,0,dpr,0,0);
+  return {w:r.width, h:r.height};
+}
+function css(v){ return getComputedStyle(document.documentElement).getPropertyValue(v).trim(); }
+function fmt(v,k){ return v.toFixed(k === undefined ? 2 : k).replace(".", ","); }
+
+function render(){
+  drawPlot();
+  drawHCurve();
+  updateText();
+}
+
+function drawPlot(){
+  const {w,h:H} = fit(plot, pctx);
+  const d = DATASETS[state.data], K = KERNELS[state.kernel];
+  const pts = allPts(), n = pts.length, hb = currentH();
+  const L = 46, R = 14, T = 16, B = 40;
+  const [x0,x1] = d.domain;
+  const px = x => L + (x-x0)/(x1-x0)*(w-L-R);
+  const M = Math.min(700, Math.max(240, Math.round(w)));
+  const dx = (x1-x0)/(M-1);
+  const upto = Math.max(1, Math.round(n*state.reveal));
+
+  /* Kurven berechnen (mit Cache, damit Hovern flüssig bleibt) */
+  const sig = [state.ver, state.data, n, state.kernel, hb, state.reveal, M].join("|");
+  if(!cache || cache.sig !== sig){
+    const kdeFull = new Float64Array(M), kdePart = new Float64Array(M), tp = new Float64Array(M);
+    for(let j = 0; j < M; j++){
+      const x = x0+j*dx;
+      kdeFull[j] = kdeAt(x, pts, hb, K);
+      kdePart[j] = state.reveal < 1 ? kdeAt(x, pts, hb, K, upto)*upto/n : kdeFull[j];
+      tp[j] = truePdf(d, x);
+    }
+    cache = { sig, kdeFull, kdePart, tp };
+  }
+  const kdeFull = cache.kdeFull, kdePart = cache.kdePart, tp = cache.tp;
+  /* Histogramm */
+  let bins = null, binW = 0;
+  if(state.show.hist){
+    const nb = Math.max(6, Math.min(40, Math.ceil(Math.sqrt(n))+2));
+    binW = (x1-x0)/nb; bins = new Array(nb).fill(0);
+    for(const p of pts){ const b = Math.floor((p-x0)/binW); if(b >= 0 && b < nb) bins[b]++; }
+    bins = bins.map(c=>c/(n*binW));
+  }
+  let ymax = 0;
+  for(let j = 0; j < M; j++){ ymax = Math.max(ymax, kdeFull[j], state.show.truth ? tp[j] : 0); }
+  if(bins) ymax = Math.max(ymax, ...bins);
+  ymax = Math.max(ymax*1.18, 0.05);
+  const py = y => H-B - y/ymax*(H-B-T);
+
+  pctx.clearRect(0,0,w,H);
+  /* Gitter + Achsen */
+  pctx.strokeStyle = "#EDF1F4"; pctx.lineWidth = 1;
+  pctx.fillStyle = css("--ink-faint"); pctx.font = "11px " + css("--mono");
+  const yStep = niceStep(ymax);
+  pctx.textAlign = "right"; pctx.textBaseline = "middle";
+  for(let v = 0; v <= ymax; v += yStep){
+    const y = py(v);
+    pctx.beginPath(); pctx.moveTo(L,y); pctx.lineTo(w-R,y); pctx.stroke();
+    pctx.fillText(fmt(v,2), L-8, y);
+  }
+  pctx.textAlign = "center"; pctx.textBaseline = "top";
+  const xStep = niceStep((x1-x0)/6);
+  for(let v = Math.ceil(x0/xStep)*xStep; v <= x1; v += xStep){
+    pctx.fillText(fmt(v,1), px(v), H-B+16);
+  }
+  pctx.strokeStyle = css("--line");
+  pctx.beginPath(); pctx.moveTo(L,T); pctx.lineTo(L,H-B); pctx.lineTo(w-R,H-B); pctx.stroke();
+  pctx.save(); pctx.translate(13, (T+H-B)/2); pctx.rotate(-Math.PI/2);
+  pctx.textAlign = "center"; pctx.textBaseline = "middle";
+  pctx.font = "10px " + css("--mono"); pctx.fillText("DICHTE", 0, 0); pctx.restore();
+
+  /* Nur innerhalb der Plotfläche zeichnen */
+  pctx.save();
+  pctx.beginPath(); pctx.rect(L, 0, w-L-R, H-B+1); pctx.clip();
+
+  /* Histogramm */
+  if(bins){
+    pctx.fillStyle = css("--hist");
+    bins.forEach((v,i)=>{
+      if(v <= 0) return;
+      const a = px(x0+i*binW), b = px(x0+(i+1)*binW);
+      pctx.fillRect(a, py(v), Math.max(1,b-a-1), py(0)-py(v));
+    });
+  }
+
+  /* Einzelne Kerne */
+  if(state.show.bumps && n > 0){
+    const cap = 90, stepI = Math.max(1, Math.ceil(upto/cap));
+    pctx.lineWidth = 1;
+    for(let i = 0; i < upto; i += stepI){
+      const c = pts[i], span = K.r*hb;
+      pctx.beginPath();
+      let started = false;
+      for(let s = 0; s <= 44; s++){
+        const x = c - span + (2*span)*s/44;
+        const y = K.fn((x-c)/hb)/(n*hb);
+        const X = px(x), Y = py(y);
+        if(!started){ pctx.moveTo(X, py(0)); pctx.lineTo(X,Y); started = true; }
+        else pctx.lineTo(X,Y);
+      }
+      pctx.lineTo(px(c+span), py(0));
+      pctx.closePath();
+      pctx.fillStyle = css("--bump-soft"); pctx.fill();
+      pctx.strokeStyle = "rgba(63,127,166,.45)"; pctx.stroke();
+    }
+  }
+
+  /* Wahre Verteilung */
+  if(state.show.truth){
+    pctx.save(); pctx.setLineDash([6,4]);
+    pctx.strokeStyle = css("--true"); pctx.lineWidth = 2;
+    pctx.beginPath();
+    for(let j = 0; j < M; j++){ const X = px(x0+j*dx), Y = py(tp[j]); j ? pctx.lineTo(X,Y) : pctx.moveTo(X,Y); }
+    pctx.stroke(); pctx.restore();
+  }
+
+  /* Schätzung */
+  pctx.beginPath();
+  for(let j = 0; j < M; j++){ const X = px(x0+j*dx), Y = py(kdePart[j]); j ? pctx.lineTo(X,Y) : pctx.moveTo(X,Y); }
+  pctx.lineTo(px(x1), py(0)); pctx.lineTo(px(x0), py(0)); pctx.closePath();
+  pctx.fillStyle = css("--kde-soft"); pctx.fill();
+  pctx.beginPath();
+  for(let j = 0; j < M; j++){ const X = px(x0+j*dx), Y = py(kdePart[j]); j ? pctx.lineTo(X,Y) : pctx.moveTo(X,Y); }
+  pctx.strokeStyle = css("--kde"); pctx.lineWidth = 2.6;
+  pctx.lineJoin = "round"; pctx.stroke();
+
+  /* Datenpunkte */
+  if(state.show.rug){
+    pctx.strokeStyle = "rgba(19,26,36,.55)"; pctx.lineWidth = 1;
+    for(let i = 0; i < upto; i++){
+      const X = px(pts[i]);
+      pctx.beginPath(); pctx.moveTo(X, H-B); pctx.lineTo(X, H-B-9); pctx.stroke();
+    }
+  }
+
+  pctx.restore();
+
+  /* Hover */
+  if(hoverX !== null && hoverX >= x0 && hoverX <= x1){
+    const y = kdeAt(hoverX, pts, hb, K);
+    pctx.save(); pctx.setLineDash([3,3]);
+    pctx.strokeStyle = "rgba(19,26,36,.35)";
+    pctx.beginPath(); pctx.moveTo(px(hoverX), T); pctx.lineTo(px(hoverX), H-B); pctx.stroke();
+    pctx.restore();
+    pctx.fillStyle = css("--kde");
+    pctx.beginPath(); pctx.arc(px(hoverX), py(y), 4, 0, 2*Math.PI); pctx.fill();
+    tip.style.opacity = 1;
+    tip.style.left = px(hoverX) + "px";
+    tip.style.top = py(y) + "px";
+    tip.textContent = "x " + fmt(hoverX,2) + "   Dichte " + fmt(y,3);
+  } else tip.style.opacity = 0;
+}
+
+function niceStep(range){
+  const raw = range/4, mag = Math.pow(10, Math.floor(Math.log10(raw))), r = raw/mag;
+  return (r >= 5 ? 5 : r >= 2 ? 2 : 1)*mag;
+}
+
+function drawHCurve(){
+  const {w,h:H} = fit(hcv, hctx);
+  if(!state.curve) return;
+  const c = state.curve, L = 46, R = 14, T = 12, B = 26;
+  const hmin = c[0].h, hmax = c[c.length-1].h;
+  const emax = Math.max(...c.map(p=>p.ise))*1.05, emin = 0;
+  const px = h => L + (Math.log(h)-Math.log(hmin))/(Math.log(hmax)-Math.log(hmin))*(w-L-R);
+  const py = e => H-B - (e-emin)/(emax-emin)*(H-B-T);
+
+  hctx.clearRect(0,0,w,H);
+  hctx.strokeStyle = css("--line"); hctx.lineWidth = 1;
+  hctx.beginPath(); hctx.moveTo(L,T); hctx.lineTo(L,H-B); hctx.lineTo(w-R,H-B); hctx.stroke();
+  hctx.fillStyle = css("--ink-faint"); hctx.font = "10px " + css("--mono");
+  hctx.textAlign = "right"; hctx.textBaseline = "middle";
+  hctx.fillText("groß", L-8, T+6); hctx.fillText("klein", L-8, H-B-6);
+  hctx.textAlign = "center"; hctx.textBaseline = "top";
+  if(w > 520){
+    hctx.fillText("schmalere Bandbreite  ←", L+78, H-B+8);
+    hctx.fillText("→  breitere Bandbreite", w-R-78, H-B+8);
+  } else {
+    hctx.fillText("Bandbreite", (L+w-R)/2, H-B+8);
+  }
+  hctx.save(); hctx.translate(13,(T+H-B)/2); hctx.rotate(-Math.PI/2);
+  hctx.textAlign = "center"; hctx.textBaseline = "middle";
+  hctx.fillText("FEHLER", 0, 0); hctx.restore();
+
+  hctx.beginPath();
+  c.forEach((p,i)=>{ const X = px(p.h), Y = py(p.ise); i ? hctx.lineTo(X,Y) : hctx.moveTo(X,Y); });
+  hctx.strokeStyle = css("--ink-soft"); hctx.lineWidth = 2; hctx.stroke();
+
+  const mark = (h,color,label,dash)=>{
+    if(h < hmin || h > hmax) return;
+    hctx.save();
+    if(dash) hctx.setLineDash(dash);
+    hctx.strokeStyle = color; hctx.lineWidth = 1.6;
+    hctx.beginPath(); hctx.moveTo(px(h),T); hctx.lineTo(px(h),H-B); hctx.stroke();
+    hctx.restore();
+    hctx.fillStyle = color; hctx.font = "10px " + css("--mono");
+    hctx.textAlign = "center"; hctx.textBaseline = "top";
+    hctx.fillText(label, Math.min(w-R-24, Math.max(L+24, px(h))), T);
+  };
+  mark(state.hOpt, css("--true"), "beste", [4,3]);
+  mark(currentH(), css("--kde"), "jetzt");
+}
+
+/* ---------- Text ---------- */
+function updateText(){
+  const pts = allPts(), n = pts.length;
+  const hb = currentH(), hs = silverman(pts), d = DATASETS[state.data];
+  $("stH").textContent = fmt(hb,2);
+  $("stN").textContent = String(n);
+  $("stS").textContent = fmt(hs,2);
+
+  const [x0,x1] = d.domain, M = 200, dx = (x1-x0)/(M-1);
+  let ise = 0;
+  for(let j = 0; j < M; j++){
+    const x = x0+j*dx, e = kdeAt(x, pts, hb, KERNELS[state.kernel]) - truePdf(d,x);
+    ise += e*e*dx;
+  }
+  $("stE").textContent = fmt(ise,3);
+
+  const ratio = hb/hs;
+  let t;
+  if(state.hMode === "opt")
+    t = "Das ist die Bandbreite mit dem kleinsten Fehler. Sie lässt sich nur berechnen, weil hier die wahre Verteilung bekannt ist – bei echten Daten schätzt man sie, etwa per Kreuzvalidierung.";
+  else if(ratio <= 0.3)
+    t = "Die Hügel sind sehr schmal: Die Kurve folgt fast jedem einzelnen Punkt. Die vielen Zacken sind Zufall der Stichprobe, keine echte Struktur.";
+  else if(ratio <= 0.6)
+    t = "Etwas zu schmal: Feine Details werden sichtbar, aber die Kurve bleibt unruhig und zeigt Gipfel, die bei einer neuen Stichprobe woanders liegen.";
+  else if(ratio <= 1.2)
+    t = "Die Faustregel liefert meist einen guten Kompromiss zwischen glatt und detailliert – sie ist aber auf glockenförmige Daten zugeschnitten.";
+  else if(ratio <= 2.5)
+    t = "Deutlich zu breit: Die Kurve ist schön glatt, aber Gipfel werden flacher und rücken zusammen. Struktur geht verloren.";
+  else
+    t = "Viel zu breit: Übrig bleibt ein einziger breiter Hügel. Egal wie die Daten wirklich verteilt sind – man sieht es nicht mehr.";
+
+  if(n <= 12) t += " Mit so wenigen Punkten schwankt die Schätzung stark: Drücke mehrfach „Neue Stichprobe“.";
+  else if(state.data === "uniform") t += " Achte auf die Ränder: Die Schätzung schmiert über die Kanten der wahren Verteilung hinaus.";
+  else if(state.data === "outlier") t += " Der einzelne Ausreißer rechts erzeugt einen eigenen kleinen Hügel – bei fester Bandbreite lässt sich das nicht vermeiden.";
+  else if(state.kernel === "rect") t += " Der Rechteck-Kern macht die Kurve treppenförmig, obwohl die wahre Verteilung glatt ist.";
+  $("insight").textContent = t;
+}
+
+/* ---------- Interaktion ---------- */
+plot.addEventListener("pointermove", e=>{
+  const r = plot.getBoundingClientRect(), d = DATASETS[state.data];
+  const L = 46, R = 14, [x0,x1] = d.domain;
+  const rel = (e.clientX-r.left-L)/(r.width-L-R);
+  hoverX = (rel >= 0 && rel <= 1) ? x0 + rel*(x1-x0) : null;
+  drawPlot();
+});
+plot.addEventListener("pointerleave", ()=>{ hoverX = null; drawPlot(); });
+plot.addEventListener("click", e=>{
+  const r = plot.getBoundingClientRect(), d = DATASETS[state.data];
+  const L = 46, R = 14, [x0,x1] = d.domain;
+  const rel = (e.clientX-r.left-L)/(r.width-L-R);
+  if(rel < 0 || rel > 1) return;
+  state.extra.push(x0 + rel*(x1-x0));
+  state.ver++;
+  recomputeCurve();
+});
+
+let anim = null;
+function play(){
+  if(anim) cancelAnimationFrame(anim);
+  if(window.matchMedia("(prefers-reduced-motion: reduce)").matches){ state.reveal = 1; render(); return; }
+  const t0 = performance.now(), dur = 1700;
+  state.reveal = 0;
+  const step = t=>{
+    const p = Math.min(1, (t-t0)/dur);
+    state.reveal = p < 1 ? Math.max(0.01, p*p) : 1;
+    drawPlot();
+    if(p < 1) anim = requestAnimationFrame(step); else { anim = null; render(); }
+  };
+  anim = requestAnimationFrame(step);
+}
+
+let rt = null;
+window.addEventListener("resize", ()=>{ clearTimeout(rt); rt = setTimeout(render, 120); });
+
+draw_();
+syncAll();
+</script>
+</body>
+</html>
