@@ -1,602 +1,1067 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="utf-8">
-    <title>Dario Antweiler</title>
-    <link href="css/bootstrap.css" rel="stylesheet">
-    <link href="css/bootstrap-theme.css" rel="stylesheet">
-    <link href="css/icon-style.css" rel="stylesheet">
-    <link href="css/custom.css" rel="stylesheet">
-  </head>
-  <body>
-  	<div class="container-fluid" id="main-container">
-	<div class="row-fluid">
-		<div class="span12">
-			<div class="page-header">
-				<h1>
-					Dario Antweiler
-				</h1>
-				<h4>
-					Research Scientist
-				</h4>
-			</div>
-			
-			<div class="navbar">
-				<div class="navbar-inner">
-					<div class="container-fluid" background-color: #eedea8;>
-						<div class="nav-collapse collapse navbar-responsive-collapse">
-							<ul class="nav">
-								<li>
-									<a href="#projects">Projects</a>
-								</li>
-								<li>
-									<a href="#publications">Publications</a>
-								</li>
-								<li>
-									<a href="#whitepaper">Whitepaper</a>
-								</li>		
-								<li>
-									<a href="#talks">Talks</a>
-								</li>	
-						</div>
-						
-					</div>
-				</div>
-				
-			</div>
-	  		
-			<div class="row-fluid">
-				<div class="span3">
-					<!-- <img style="width:160px;" src="img/photo.jpg" /> -->
-					<img style="width:450px;" src="img/antweiler_web.jpg" /><br />
-					Foto: Anke Liepertz-Peter / Fraunhofer IAIS
-					<!-- height:200px -->
-				</div>
-				<div class="span7">
-					<dl class="dl-horizontal">
-						I'm a Senior Data Scientist and Team Lead at Fraunhofer IAIS research institute in Sankt Augustin, Germany with 7+ years of experience. As head of the Healthcare Analytics team, I focus on research and industry projects within the areas of Artificial Intelligence in Hospitals and Pharmacology. My main scientific area of interest includes Visual Analytics and Network Science with a university background in mathematics and computer science.<br>
-						<br>
-						Always looking for promising research & project collaborations! Just contact me, see above.<br>
-						Fraunhofer IAIS Research Institute, Sankt Augustin, Germany
-						<br>
-						
-						<a href = "https://scholar.google.de/citations?hl=de&user=hSH1gfwAAAAJ">Google Scholar</a>, <a href = "https://www.researchgate.net/profile/Dario-Antweiler">Reseach Gate</a>, <a href = "https://orcid.org/0000-0002-2238-9753">ORCID</a>, <a target = "_blank" href = "https://de.linkedin.com/in/dario-antweiler">LinkedIn</a><br>
-						<br>
-						Mail: <em>dario.antweiler [at] gmail [dot] com</em><br>
-						
-					</dl>
-				</div>
-			</div><hr />
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Dario Antweiler — Healthcare Data Science, Fraunhofer IAIS</title>
+<meta name="description" content="Dario Antweiler leads the Healthcare Data Science team at Fraunhofer IAIS. Research and industry projects on AI in hospitals, clinical NLP and large language models in clinical practice.">
+<meta name="author" content="Dario Antweiler">
+<link rel="canonical" href="https://www.dario-antweiler.de/">
 
-			<!--
-			<h2><a name="projects"></a>
-				Projects
-			</h2>
+<meta property="og:type" content="profile">
+<meta property="og:title" content="Dario Antweiler — Healthcare Data Science, Fraunhofer IAIS">
+<meta property="og:description" content="AI in hospitals, clinical NLP and large language models in clinical practice.">
+<meta property="og:image" content="https://www.dario-antweiler.de/img/og-image.jpg">
+<meta property="og:url" content="https://www.dario-antweiler.de/">
+<meta name="twitter:card" content="summary_large_image">
 
-			<div class="project">
-				<h3>PARIS (2020)</h3>
-				<p><strong>Topic:</strong> Patient Recruitment Information System</p>
-				<p><strong>Goal:</strong> The goal of the project PARIS is to develop an AI-based decision support system for the execution of clinical studies, especially the recruiting process of participants of the study of immune diseases. About 50% of the studies fail because of difficulties in the recruitment of patients4. In this project, a database is developed which include important patient information in structured form.</p>
-			</div>
-			
-			<div class="project">
-				<h3>MED2ICIN (2018 - 2022)</h3>
-				<p><strong>Topic:</strong> Digitales Patientenmodell als Grundlage für personalisierte und kostenoptimierte Medizin</p>
-				<p><strong>Goal:</strong> The aim is to create a holistic digital patient model by bundling all available health-related information of an individual. Data previously available in different systems at different times and in different places are to be combined into a digital image. In this way, enormous potential for improvement for more effective prevention, diagnostics, therapy and care as well as a more intelligent use of health care expenditures can be achieved.</p>
-			</div>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='%23002D4B'/%3E%3Ctext x='16' y='23' font-family='Helvetica,Arial' font-size='19' font-weight='600' fill='%23fff' text-anchor='middle'%3EDA%3C/text%3E%3C/svg%3E">
 
-			<div class="project">
-				<h3>AKKURAT</h3>
-				<p><strong>Topic:</strong> xxx</p>
-				<p><strong>Goal:</strong> In this project, methods of machine learning and data sciences are used in close cooperation with medical expertise to reduce the workload: unstructured data packages are structured using machine learning methods such as text mining, findings are recognized and linked after digitization, an indication-specific algorithm is developed that evaluates the characterization of disease phenotypes from different sources of findings (text, laboratory and imaging). A demonstrator of the algorithm will be developed using historical data packages. It will then be validated and adapted in Germany with the help of a prospective clinical study at three locations.</p>
-			</div>
+<style>
+:root{
+  --paper:#f7f8fa;
+  --card:#ffffff;
+  --ink:#10222e;
+  --ink-2:#465a68;
+  --ink-3:#7a8b97;
+  --rule:#d8e0e7;
+  --rule-soft:#e8edf2;
+  --tint:#e7eff6;
+  --deep:#002d4b;
+  --blue:#00589f;
+  --blue-mid:#0083cc;
+  --heading:#002d4b;
+  --sans:"Frutiger LT Std","Frutiger","Univers","Helvetica Neue",Helvetica,Arial,sans-serif;
+  --mono:"IBM Plex Mono",ui-monospace,SFMono-Regular,Menlo,Consolas,"Liberation Mono",monospace;
+  --measure:64rem;
+}
 
-			<div class="project">
-				<h3>SmartHospital.NRW (2021 - 2026)</h3>
-				<p><strong>Topic:</strong> xxx</p>
-				<p><strong>Goal:</strong> This project aims to develop a process modell for German hospitals to become "Smart Hospitals". Together with partners from science, clinics and healthcare companies, we engineer multiple use cases for Artificial Intelligence (AI) in hospitals, including Natural Language Processing (NLP) for medical reports, speech recognition for patients and doctors as well as sensor data analysis.</p>
-			</div>
+/* ---------- language switching (pure CSS, driven by <html lang>) ---------- */
+html[lang="en"] [data-lang="de"],
+html[lang="de"] [data-lang="en"]{display:none !important;}
 
-			<div class="project">
-				<h3>LOTTE (2020)</h3>
-				<p><strong>Topic:</strong> xxx</p>
-				<p><strong>Goal:</strong> How can AI help in the hospital domain? In this research project, funded by the German Ministery of Health (Bundesgesundheitsministerium, BMG), we identified potential AI use cases in the emergency care setting together with partner from law and healthcare economics.</p>
-			</div>
+*,*::before,*::after{box-sizing:border-box;}
+html{-webkit-text-size-adjust:100%;scroll-behavior:smooth;}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto;}
+  *{animation-duration:.01ms !important;transition-duration:.01ms !important;}}
 
-			<div class="project">
-				<h3>CorASiV (2020)</h3>
-				<p><strong>Topic:</strong> Support for health authorities in the corona response through analysis, simulation and visualization</p>
-				<p><strong>Goal:</strong> Within this project we collaborate with Germany's largest public health office to analyze COVID-19 infection data in the city if Cologne. Central research targets are the spatio-temporal distribution of infections through contact networks.</p>
-			</div>
+body{
+  margin:0;
+  background:var(--paper);
+  color:var(--ink);
+  font-family:var(--sans);
+  font-size:16.5px;
+  line-height:1.62;
+  -webkit-font-smoothing:antialiased;
+}
 
-			-->
-			
-			<h2><a name="publications"></a>
-				Publications
-			</h2>
-			<p>
-			<a href="docs/combined.bib">combined bibtex</a>
-				<ul>
-					<li><p><div align="left">[2025] Sabine Kugler, <b>Dario Antweiler</b>, Benny Stein.<br>
-                        		<b>From Jargon to Clarity: LLM-based Generation of Accessible Medical Discharge Summaries</b><br> 
-					<em>Information Processing and Management</em>, submitted<br>
-				        </div>
-				    </p></li>
+a{color:var(--blue);text-decoration:none;border-bottom:1px solid rgba(0,88,159,.28);}
+a:hover{color:var(--deep);border-bottom-color:var(--deep);}
+a:focus-visible,button:focus-visible{outline:2px solid var(--blue-mid);outline-offset:3px;}
 
-					
-					<li><p><div align="left">[2025] <b>Dario Antweiler</b>, Stefan Rüping, Stefan Wrobel.<br>
-					<b>Einsatz von Foundation-Modellen entlang der Patientenreise</b><br> <em>Mario A. Pfannstiel: Künstliche Intelligenz im Einsatz für die erfolgreiche Patientenreise: Innovation, Integration, Stärkung. Springer</em>. <a href="https://doi.org/10.1007/978-3-658-48573-3_40">978-3-658-48573-3</a><br>
-					<!-- <p id="rcorners_NLP">NLP</p> -->
-					</div>
-					</p></li>
-					
-					<li><p><div align="left">[2025] Katharina Beckh, Felix Studeny, Sujan Sai Gannamaneni, <b>Dario Antweiler</b>, Stefan Rueping.<br>
-                        		<b>The anatomy of evidence: An investigation into explainable ICD coding</b><br> 
-					<em>ACL 2025 Findings</em>, <a href="https://doi.org/10.48550/arXiv.2507.01802">10.48550/arXiv.2507.01802</a><br>
-				        </div>
-				    </p></li>
-					
-					<li><p><div align="left">[2025] <b>Dario Antweiler</b>, Georg Fuchs.<br>
-                        		<b>Trust at Every Step: Embedding Trust Quality Gates into the Visual Data Exploration Loop for Machine Learning-based Clinical Decision Support Systems</b><br> 
-					<em>Computer & Graphics (Elsevier)</em>, <a href="https://doi.org/10.1016/j.cag.2025.104212">10.1016/j.cag.2025.104212</a><br>
-				        </div>
-				    	</p></li>
-					
-					<li><p><div align="left">[2025] Kamyar Arzideh, Henning Schäfer, Héctor Allende-Cid, Giulia Baldini, Thomas Hilser, Ahmad Idrissi-Yaghir, Katharina Laue, Nilesh Chakraborty, Niclas Doll, <b>Dario Antweiler</b>, Katrin Klug, Niklas Beck, Sven Giesselbach, Christoph M. Friedrich, Felix Nensa, Martin Schuler and René Hosch.<br>
-                        		<b>From BERT to Generative AI - Comparing Encoder-only vs. Large Language Models in a Cohort of Lung Cancer Patients for Named Entity Recognition in Unstructured Medical Reports</b><br> <em>Computers in Biology and Medicine</em>. <a href="https://doi.org/10.1016/j.compbiomed.2025.110665">10.1016/j.compbiomed.2025.110665</a>a<br>
-				    </div>
-				    </p></li>
-					
-					<li><p><div align="left">[2025] <b>Dario Antweiler</b>, Jan Pablo Burgard, Marc Harmening, Nicole Marheineke, Andre Schmeißer, Raimund Wegener and Pascal Welke.<br>
-                        		<b>A Regression-based Predictive Model Hierarchy for Nonwoven Tensile Strength Inference</b><br> <em>Informed Machine Learning. Cognitive Technologies. Springer</em>. <a href="https://link.springer.com/book/9783031830969">978-3-031-83097-6</a><br>
-				    </div>
-				    </p></li>
+.wrap{max-width:var(--measure);margin:0 auto;padding:0 1.5rem;}
 
+.skip{position:absolute;left:-9999px;}
+.skip:focus{left:1rem;top:1rem;position:fixed;z-index:99;background:var(--deep);
+  color:#fff;padding:.6rem 1rem;border:0;}
 
-					<!--
-					<li><p><div align="left">[2024] Hammam Abdelwahab, Claudio Martens, Niklas Beck, Dennis Wegener, <b>Dario Antweiler</b>.<br>
-					<b>Towards Automatic Drift Detection for Clinical Natural Language Processing</b><br> <em>Experimental Biology and Medicine</em>. submitted<br>
-					</div>
-					</p></li>
-					-->
+/* ---------- masthead ---------- */
+.masthead{background:var(--deep);color:#fff;padding:3.2rem 0 2.4rem;}
+.masthead a{color:#bcdcf2;border-bottom-color:rgba(188,220,242,.35);}
+.masthead a:hover{color:#fff;border-bottom-color:#fff;}
+.masthead h1{
+  font-size:clamp(2.1rem,6vw,3.5rem);
+  font-weight:400;letter-spacing:-.022em;line-height:1.04;margin:0;
+}
+.role{
+  font-family:var(--mono);font-size:.74rem;letter-spacing:.16em;text-transform:uppercase;
+  color:#7fb8dd;margin:.85rem 0 0;
+}
+.affil{color:#c5d7e3;margin:.35rem 0 0;font-size:1rem;}
 
-					<li><p><div align="left">[2024] Sabine Kugler, <b>Dario Antweiler</b>, Benny Stein.<br>
-					<b>From Rehab to Recap: Generating Discharge Reports for Rehabilitation Clinics with LLMs</b>
-					<br><em>LLMs4MI 2024 (at FLLM 2024)</em>. <a href="https://doi.org/10.1109/FLLM63129.2024.10852496">10.1109/FLLM63129.2024.10852496</a><br>
-					</div>
-					</p></li>
-				
-					<li><p><div align="left">[2024] Katrin Klug, Katharina Beckh, <b>Dario Antweiler</b>, Nilesh Chakraborty, Giulia Baldini, Katharina Laue, René Hosch, Felix Nensa, Martin Schuler and Sven Giesselbach.<br>
-                        		<b>Clinical Natural Language Processing in the Hospital Domain: Survey on Approaches along the Patient Journey</b><br> <em>BMC Medical Informatics and Decision Making</em>. <a href="https://doi.org/10.1186/s12911-024-02641-w" target="_blank">10.1186/s12911-024-02641-w</a><br>
-				        </div>
-				    	</p></li>
+.langbar{display:flex;gap:.4rem;justify-content:flex-end;margin-bottom:1.6rem;}
+.langbtn{
+  font-family:var(--mono);font-size:.7rem;letter-spacing:.12em;
+  background:transparent;color:#8fc2e2;border:1px solid rgba(143,194,226,.4);
+  padding:.3rem .6rem;cursor:pointer;transition:all .15s;
+}
+.langbtn:hover{color:#fff;border-color:#fff;}
+.langbtn[aria-pressed="true"]{background:#fff;color:var(--deep);border-color:#fff;}
 
-					<li><p><div align="left">[2024] Hernan Inojosa, Isabel Voigt, Judith Wenk, Dyke Ferber, Isabella Wiest, <b>Dario Antweiler</b>, Eva Weicken, Stephen Gilbert, Jakob Nikolas Kather, Katja Akgün, Tjalf Ziemssen<br>
-					<b>Integrating Large Language Models in Care, Research, and Education in Multiple Sclerosis Management</b>
-					<br><em>Multiple Sclerosis Journal</em>. <a href="https://doi.org/10.1177/13524585241277376" target="_blank">10.1177/13524585241277376</a><br>
-					</div>
-					</p></li>
+/* ---------- nav ---------- */
+.nav{
+  position:sticky;top:0;z-index:20;background:rgba(247,248,250,.96);
+  backdrop-filter:saturate(150%) blur(6px);
+  border-bottom:1px solid var(--rule);
+}
+.nav ul{
+  display:flex;gap:0;margin:0;padding:0;list-style:none;
+  overflow-x:auto;scrollbar-width:none;
+}
+.nav ul::-webkit-scrollbar{display:none;}
+.nav a{
+  display:block;white-space:nowrap;border:0;
+  font-family:var(--mono);font-size:.72rem;letter-spacing:.1em;text-transform:uppercase;
+  color:var(--ink-2);padding:.95rem .85rem;border-bottom:2px solid transparent;
+}
+.nav a:hover{color:var(--deep);background:var(--tint);border-bottom-color:var(--blue-mid);}
+.nav li:first-child a{padding-left:0;}
 
-					<li><p><div align="left">[2024] <b>Dario Antweiler</b>, Georg Fuchs.<br>
-					<b>Extending the Visual Data Exploration Loop towards Trustworthy Machine Learning in the Healthcare Domain</b>
-					<br><em>EuroVA 2024 (at EuroVIS 2024)</em>. <a href="https://doi.org/10.2312/eurova.20241107" target="_blank">10.2312/eurova.20241107</a><br>
-					</div>
-					</p></li>
+/* ---------- sections ---------- */
+main{padding-bottom:4rem;}
+section{padding-top:3.4rem;scroll-margin-top:4.2rem;}
+h2{
+  font-size:1.02rem;font-weight:600;letter-spacing:.13em;text-transform:uppercase;
+  color:var(--heading);margin:0 0 1.4rem;padding-bottom:.6rem;
+  border-bottom:2px solid var(--heading);
+}
+h2 .count{
+  font-family:var(--mono);font-size:.72rem;color:var(--ink-3);
+  letter-spacing:.06em;font-weight:400;margin-left:.5rem;text-transform:none;white-space:nowrap;
+}
 
-					<li><p><div align="left">[2024] Assaf Landschaft, <b>Dario Antweiler</b>, Héctor Allende-Cid, Sabine Kugler, Sina Mackay, Stefan Rüping, Stefan Wrobel.<br>
-					<b>Implementation and evaluation of an additional GPT-4-based reviewer in PRISMA-based medical systematic literature reviews</b>
-					<br><em>International Journal of Medical Informatics</em>. <a href="https://doi.org/10.1016/j.ijmedinf.2024.105531" target="_blank">10.1016/j.ijmedinf.2024.105531</a><br>
-					</div>
-					</p></li>
+/* top-level collapsible sections (publications onward) */
+details.section-toggle{border-top:0;}
+details.section-toggle > summary{
+  cursor:pointer;list-style:none;
+  display:flex;align-items:baseline;flex-wrap:wrap;gap:.15rem .55rem;
+  font-family:var(--sans);
+  font-size:1.02rem;font-weight:600;letter-spacing:.13em;text-transform:uppercase;
+  color:var(--heading);margin:0 0 1.4rem;padding-bottom:.6rem;
+  border-bottom:2px solid var(--heading);
+}
+details.section-toggle > summary::-webkit-details-marker{display:none;}
+details.section-toggle > summary::before{
+  content:"+";font-family:var(--mono);font-weight:400;font-size:.9rem;
+  color:var(--blue);flex:0 0 auto;letter-spacing:0;
+}
+details.section-toggle[open] > summary::before{content:"–";}
+details.section-toggle > summary:hover{opacity:.72;}
+details.section-toggle > summary .count{margin-left:0;}
 
-					<li><p><div align="left">[2023] <b>Dario Antweiler</b>, Florian Gallusser, Georg Fuchs.<br>
-                        		<b>Multi-Task Transformer Visualization to build Trust for Clinical Outcome Prediction</b><br> <em>VIS 2023: 14th workshop on Visual Analytics in Healthcare (VAHC)</em>.<a href="https://doi.org/10.1109/VAHC60858.2023.00010" target="_blank">10.1109/VAHC60858.2023.00010</a><br>
-				        </div><a href="https://doi.org/10.1109/VAHC60858.2023.00010" target="_blank">pdf</a>
-				    	</p></li>
-				
-					<li><p><div align="left">[2023] <b>Dario Antweiler</b>, Daniela Albiez, Dominik Bures, Bernadette Hosters, Florian Jovy-Klein, Kilian Nickel, Thomas Reibel, Johanna Schramm, Jil Sander, David Antons, Anke Diehl.<br>
-                        		<b>Aufgabenprofile und Qualifizierungsbedarfe für das Krankenhauspersonal im Hinblick auf den Einsatz von KI-basierten Anwendungen</b><br> <em>Bundesgesundheitsblatt 2023</em>. <a href="https://doi.org/10.1007/s00103-023-03817-x">10.1007/s00103-023-03817-x</a><br>
-				        </div>
-				    	</p></li>
-					
-					<li><p><div align="left">[2022] <b>Dario Antweiler</b>, Georg Fuchs.<br>
-                        		<b>Visualizing Rule-based Classifiers for Clinical Risk Prognosis</b><br> <em>IEEE VIS 2022</em>. <a href="https://doi.org/10.1109/VIS54862.2022.00020">10.1109/VIS54862.2022.00020</a><br>
-				        </div><a href="https://doi.org/10.1109/VIS54862.2022.00020" target="_blank">pdf</a> | <a href="docs/2023_ClinicalRisk.bib">bibtex</a>
-				    	</p></li>
-					
-					<li><p><div align="left">[2022] <b>Dario Antweiler</b>, Marc Harmening, Nicole Marheineke, Andre Schmeißer, Raimund Wegener, Pascal Welke.<br>
-                        		<b>Machine Learning Framework to predict Nonwoven Material Properties from Fiber Graph Representations</b><br> <em>Software Impacts (Elsevier)</em>, 2022. <a href="https://doi.org/10.1016/j.simpa.2022.100423" target="_blank">10.1016/j.simpa.2022.100423</a><br>
-				        </div><a href="https://www.sciencedirect.com/science/article/pii/S2665963822001075" target="_blank">pdf</a> | <a href="docs/2022_SoftImpact.bib">bibtex</a> | <a href="https://github.com/pwelke/random-nonwoven-fibers" target="_blank">github</a> | <a href="https://codeocean.com/capsule/7514050/tree/v1" target="_blank">code</a>
-				    	</p></li>
+.section-controls{
+  display:flex;gap:.6rem;justify-content:flex-end;margin:-0.4rem 0 1.6rem;
+}
+.section-controls button{
+  font-family:var(--mono);font-size:.68rem;letter-spacing:.08em;text-transform:uppercase;
+  background:var(--card);color:var(--ink-2);border:1px solid var(--rule);
+  padding:.35rem .7rem;cursor:pointer;
+}
+.section-controls button:hover{border-color:var(--blue);color:var(--deep);}
 
-					<li><p><div align="left">[2022] <b>Dario Antweiler</b>, David Sessler, Maxim Rossknecht, Benjamin Abb, Sebastian Ginzel, Jörn Kohlhammer.<br>
-                        		<b>Uncovering Chains of Infections through Spatio-Temporal and Visual Analysis of COVID-19 Contact Traces</b><br> <em>Computer & Graphics (Elsevier)</em>, 2022. <a href="https://doi.org/10.1016/j.cag.2022.05.013" target="_blank">10.1016/j.cag.2022.05.013</a><br>
-				        </div><a href="https://authors.elsevier.com/sd/article/S0097-8493(22)00085-1" target="_blank">pdf</a> | <a href="docs/2022_CAG.bib">bibtex</a>
-				    	</p></li>
+/* ---------- intro ---------- */
+.intro{display:grid;grid-template-columns:240px 1fr;gap:2.4rem;padding-top:2.8rem;}
+.portrait img{width:100%;height:auto;display:block;filter:saturate(.92);}
+.credit{font-family:var(--mono);font-size:.66rem;color:var(--ink-3);margin-top:.5rem;line-height:1.5;}
+.bio p{margin:0 0 1rem;max-width:46em;}
+.idlinks{
+  display:flex;flex-wrap:wrap;gap:.4rem .5rem;margin:1.3rem 0 1rem;padding:0;list-style:none;
+}
+.idlinks a{
+  font-family:var(--mono);font-size:.72rem;letter-spacing:.05em;
+  border:1px solid var(--rule);background:var(--card);color:var(--ink-2);
+  padding:.3rem .6rem;
+}
+.idlinks a:hover{border-color:var(--blue);color:var(--deep);background:var(--tint);}
+.mailrow{font-family:var(--mono);font-size:.84rem;color:var(--ink-2);}
 
-					<li><p><div align="left">[2022] <b>Dario Antweiler</b>, Marc Harmening, Nicole Marheineke, Andre Schmeißer, Raimund Wegener, Pascal Welke.<br>
-                        		<b>Graph-Based Tensile Strength Approximation of Random Nonwoven Materials by Interpretable Regression</b><br> <em>Machine Learning with Applications (Elsevier)</em>, 2022. <a href="https://doi.org/10.1016/j.mlwa.2022.100288" target="_blank">10.1016/j.mlwa.2022.100288</a><br>
-				          </div><a href="https://doi.org/10.1016/j.mlwa.2022.100288" target="_blank"> pdf </a> | <a href="docs/2022_FZML.bib" target="_blank">bibtex</a>
-				    	</p></li>
+/* ---------- year rail (signature) ---------- */
+.yg{display:grid;grid-template-columns:5.5rem 1fr;gap:0 1.6rem;}
+.yg + .yg{border-top:1px solid var(--rule-soft);}
+.yg .y{
+  font-family:var(--mono);font-size:1.35rem;color:var(--ink-3);
+  padding-top:1.15rem;position:sticky;top:3.6rem;align-self:start;
+  letter-spacing:-.02em;
+}
+.yg ol{list-style:none;margin:0;padding:0;}
+.yg ol > li{padding:1.1rem 0;}
+.yg ol > li + li{border-top:1px solid var(--rule-soft);}
 
-				    	<li><p><div align="left">[2021] <b>Dario Antweiler</b>, David Sessler, Sebastian Ginzel, Jörn Kohlhammer.<br>
-                        		<b>Towards the Detection and Visual Analysis of COVID-19 Infection Clusters</b><br> <em>EuroVA 2021 (at EuroVIS 2021)</em>, <a href="https://doi.org/10.2312/eurova.20211097" target="_blank">10.2312/eurova.20211097</a><br>
-				        </div><a href="https://diglib.eg.org/bitstream/handle/10.2312/eurova20211097/043-047.pdf?sequence=1&isAllowed=y" target="_blank"> pdf </a> | <a href="docs/2021_eurova.bib" target="_blank"> bibtex </a>
-				    	</p></li>
-					
-				    	<li><p><div align="left">[2021] Stefanie Hänold, Nelli Schlee, <b>Dario Antweiler</b>, Katharina Beckh.<br>
-                        		<b>Die Nachvollziehbarkeit von KI-Anwendungen in der Medizin - Eine Betrachtung aus juristischer Perspektive mit Beispielszenarien</b><br> <em>Medizinrecht 2021 (Springer)</em>, MedR 39, 516–523 (2021),  <a href="https://doi.org/10.1007/s00350-021-5901-3">10.1007/s00350-021-5901-3</a><br>
-				        </div><a href="https://rdcu.be/cIV3k" target="_blank">pdf</a> | <a href="docs/2021_Antweiler_medr.bib" target="_blank"> bibtex </a>
-				    	</p></li>
-				</ul>							
-			</p>
-			
-			<h2><a name="publications"></a>
-				Abstracts
-			</h2>
-			<p>
-				<ul>			
-					<li><p><div align="left">[2024] Michaela Koehm, Lukas Zerweck, Tim A. Bergmann, Hannah Kratz, <b>Dario Antweiler</b>, Sabine Kugler, Styliani Tsiami, Maria Polyzou, Xenofon Baraliakos, Sarah Ohrndorf, Anne Barton, Laura Coates, Oliver FitzGerald, Frank Behrens.<br>
-					<b>A machine learning algorithm based on automatically extracted image features and tabular demographic data on morning stiffness can distinguish psoriatic arthritis patients from controls in clinical routine care</b><br> <em>EULAR 2024</em> <a href="https://doi.org/10.1136/annrheumdis-2024-eular.5205">10.1136/annrheumdis-2024-eular.5205</a>.
-					</div>
-					</p></li>
+.t{font-weight:600;color:var(--ink);display:block;line-height:1.4;}
+.au{color:var(--ink-2);font-size:.94rem;display:block;margin-bottom:.15rem;}
+.au b{color:var(--ink);font-weight:600;}
+.venue{color:var(--ink-2);font-size:.94rem;font-style:italic;}
+.meta{
+  font-family:var(--mono);font-size:.73rem;color:var(--ink-3);
+  margin-top:.45rem;display:flex;flex-wrap:wrap;gap:.25rem .55rem;align-items:center;
+}
+.meta a{color:var(--blue);border-bottom:0;}
+.meta a:hover{border-bottom:1px solid var(--blue);}
+.meta .sep{color:var(--rule);}
+.tag{
+  font-family:var(--mono);font-size:.63rem;letter-spacing:.09em;text-transform:uppercase;
+  background:var(--tint);color:var(--blue);padding:.14rem .42rem;border:0;
+}
+.status{
+  font-family:var(--mono);font-size:.63rem;letter-spacing:.09em;text-transform:uppercase;
+  background:#fdf1dc;color:#8a5b10;padding:.14rem .42rem;
+}
 
-					<li><p><div align="left">[2023] Michaela Köhm, Annika Pick, Hannah Kratz, Lukas Zerweck, Sabine Kugler, Sina Mackay, <b>Dario Antweiler</b>, Stefan Rüping, Frank Behrens.<br>
-					<b>Specific AI-Generated Pattern of Tender Joints and Tenderness at Enthesial Sites are Predictive for Objective Detection of Musculoskeletal Inflammation in Psoriasis Patients</b><br> <em>Rheumatic Diseases 2023</em>. <a href="http://dx.doi.org/10.1136/annrheumdis-2023-eular.4791">10.1136/annrheumdis-2023-eular.4791</a><br>
-					</div>
-					</p></li>
-					
-					<li><p><div align="left">[2020] <b>Dario Antweiler</b>, Pascal Welke<br>
-					<b>Temporal Graph Analysis for Outbreak Pattern Detection in COVID-19 Contact Tracing Networks</b><br> <em>Machine Learning in Public Health Workshop, NeurIPS 2020.</em> <a href="https://doi.org/10.24406/publica-fhg-411408">10.24406/publica-fhg-411408</a><br>
-					</div>
-					</p></li>
-				
-				</ul>							
-			</p>
+/* ---------- projects ---------- */
+.projects{display:grid;grid-template-columns:repeat(auto-fill,minmax(19rem,1fr));gap:1px;
+  background:var(--rule-soft);border:1px solid var(--rule-soft);}
+.proj{background:var(--card);padding:1.3rem 1.4rem;}
+.proj h3{margin:0;font-size:1.02rem;font-weight:600;letter-spacing:-.01em;}
+.proj .pmeta{font-family:var(--mono);font-size:.68rem;letter-spacing:.09em;
+  text-transform:uppercase;color:var(--ink-3);margin:.3rem 0 .7rem;}
+.proj p{margin:0;font-size:.93rem;color:var(--ink-2);}
+.proj.todo{border-left:3px solid #d9a441;background:#fffdf7;}
+.proj.todo p{color:#8a5b10;}
 
-			<h2><a name="whitepaper"></a>
-				Whitepaper
-			</h2>
-			<p>
-			<ul>
+/* ---------- tools ---------- */
+.tools{display:grid;grid-template-columns:repeat(auto-fill,minmax(17rem,1fr));gap:1rem;}
+.tool{background:var(--card);border:1px solid var(--rule);padding:1.1rem 1.2rem;}
+.tool a{border:0;font-weight:600;}
+.tool p{margin:.35rem 0 0;font-size:.9rem;color:var(--ink-2);}
 
-				<li><p><div align="left">[2026] <b>Dario Antweiler</b>, Stefan König, Fred Andree, Stefan Rüping<br>
-                        	<b>KI in der Krankenhausplanung – Von Anfang an mitdenken: Voraussetzungen für den KI- Einsatz frühzeitig in die Krankenhausplanung integrieren</b> <br>
-				<a href="https://www.iais.fraunhofer.de/de/publikationen/studien/2026/download-whitepaper_ki_in_der_krankenhausplanung.html">Link</a>
-				</div></p></li>
-				
-				<li><p><div align="left">[2026] <b>Dario Antweiler</b>, Daniel Hülden, Sabine Kugler, André Poncelet<br>
-                        	<b>Künstliche Intelligenz im Krankenhaus: Strategien und Voraussetzungen für eine erfolgreiche Implementierung</b> <br>
-				<a href="https://doi.org/10.24406/publica-8211">10.24406/publica-8211</a>
-				</div></p></li>
-				
-				<li><p><div align="left">[2025] Sina Mackay, Julia Ebert, Alexander Schellinger, <b>Dario Antweiler</b>, Stefan Rüping<br>
-                        	<b>Healthcare Agents im Einsatz: Die nächste Generation der medizinischen KI-Assistenz</b> <br>
-				<a href="https://doi.org/10.24406/publica-4450">10.24406/publica-4450</a>
-				</div></p></li>
-				
-				<li><p><div align="left">[2024] Daniel Lückerath, Daniela Albiez, Thomas Reibel, Florian Jovy-Klein, Jil Sander, Dominik Bures, <b>Dario Antweiler</b>, Anke Diehl, Susan Stead, David Antons, Torsten-Oliver Salge, Christine Malich<br>
-                        	<b>Die Roadmap zum Smart Hospital: Ein Vorgehensmodell zur digitalen Transformation von Krankenhäusern</b> <br>
-				<a href="https://doi.org/10.24406/publica-3977">10.24406/publica-3977</a>
-				</div></p></li>
-				
-				<li><p><div align="left">[2024] Sina Mackay, <b>Dario Antweiler</b>, Stefan Rüping <br>
-                        	<b>Künstliche Intelligenz für klinische Studien</b> <br>
-				<a href="https://doi.org/10.24406/h-478035">10.24406/h-478035</a>
-				</div></p></li>
-				
-				<li><p><div align="left">[2024] Mareen Meyer, Sven Giesselbach, <b>Dario Antweiler</b>, Jérôme Defosse, Sandra Hensen, Henri Iser, Torsten Oliver Salge, Susan Stead, Thorsten Tjardes, Nina Waloßek <br>
-                        	<b>Künstliche Intelligenz im Schockraum: Wie Agenten und Foundation-Modelle bei der Versorgung Schwerverletzter helfen</b> <br>
-				<a href="https://doi.org/10.24406/publica-2847">10.24406/publica-2847</a>
-				</div></p></li>
-				
-				<li><p><div align="left">[2023] <b>Dario Antweiler</b>, Katharina Beckh, Nilesh Chakraborty, Sven Giesselbach, Katrin Klug, Stefan Rüping.<br>
-                        	<b>Von der automatisierten Befundanalyse bis zum Arztbriefgenerator: Künstliche Intelligenz für dokumentenbasierte Prozesse im Krankenhaus</b> <br>
-				<a href="https://doi.org/10.24406/publica-1278">10.24406/publica-1278</a>
-				</div></p></li>
-			
-				<li><p><div align="left">[2022] Kilian Nickel, Katharina Milde, Dustin Kremer, Christine Malich, <b>Dario Antweiler</b>, Thomas Reibel, Florian Jovy-Klein, Jil Sander, Dominik Bures, Anke Diehl.<br>
-                        	<b>Bereit für das Smart Hospital?</b> <br>
-				<a href="https://doi.org/10.24406/publica-553">10.24406/publica-553</a>
-				</div></p></li>
+/* ---------- plain lists ---------- */
+.plain{list-style:none;margin:0;padding:0;}
+.plain > li{padding:.65rem 0;border-top:1px solid var(--rule-soft);}
+.plain > li:first-child{border-top:0;}
+.cols{columns:2;column-gap:2.5rem;}
+.cols > li{break-inside:avoid;}
 
-				<li><p><div align="left">[2020] <b>Dario Antweiler</b>, Katharina Beckh, Jil Sander, Stefan Rüping.<br>
-                        	<b>Künstliche Intelligenz im Krankenhaus: Potenziale und Herausforderungen - Eine Fallstudie im Bereich der Notfallversorgung</b> <br>
-				<a href="https://doi.org/10.24406/publica-fhg-300605">10.24406/publica-fhg-300605</a>
-				</div></p></li>
-		    </ul>	
-			
-			<h2><a name="thesis"></a>
-				Supervision & Mentoring
-			</h2>
-			<p>
-			<ul>
+/* ---------- collapsible ---------- */
+details{border-top:1px solid var(--rule-soft);}
+summary{
+  cursor:pointer;font-family:var(--mono);font-size:.74rem;letter-spacing:.1em;
+  text-transform:uppercase;color:var(--blue);padding:.9rem 0;list-style:none;
+}
+summary::-webkit-details-marker{display:none;}
+summary::before{content:"+ ";}
+details[open] summary::before{content:"– ";}
 
-				<li><p>
-					[2025] <b>Hashtag Gesundheit Mentoringprogramm</b>.</em> (https://www.hashtag-gesundheit.de/mentoring)
-		        	</p></li>
-				
-				<li><p>
-					[2024 - 2025] <b>DiMento-Mentoringprogramm</b>.</em> (Universität Duisburg-Essen, https://www.uni-due.de/abz/career/dimento.shtml)
-		        	</p></li>
-				
-				<li><p>
-					[2024] <b>Kunal Runwal</b>: <em>Harnessing Large Language Models for Clinical Entity Extraction and Medical Coding in German Clinical Text.</em> (Master thesis, Hochschule Bonn-Rhein-Sieg)
-		        	</p></li>
+/* ---------- footer ---------- */
+footer{border-top:1px solid var(--rule);padding:1.8rem 0 3rem;
+  font-family:var(--mono);font-size:.72rem;color:var(--ink-3);}
+footer p{margin:.2rem 0;}
 
-				<li><p>
-					[2024] <b>Clara Schlagowski</b>: <em>Genderbezogene Unterschiede in der Nutzung von KI im Krankenhaus.</em> (University of Cologne)
-		        	</p></li>
-				
-				<li><p>
-					[2024] <b>Kunal Runwal</b>: <em>Leveraging BERT Models for Adverse Event Detection in Clinical Text.</em> (University project, Hochschule Bonn-Rhein-Sieg)
-		        	</p></li>
-				
-				<li><p>
-					[2023] <b>Florian Gallusser</b>: <em>Pre-Training of Transformers for Clinical Outcome Prediction on German Medical Claims Data.</em> (Master thesis, University of Bonn)
-		        	</p></li> 
-		    </ul>
-			
-			<h2><a name="scientific_talks"></a>
-				Scientific Talks
-			</h2>
-			<p>
-			
-			<ul>
-				<li><p><div align="left"><b> Multi-Task Transformer Visualization to build Trust for Clinical Outcome Prediction</b><br>		
-					</b><em> VIS 2023: 14th workshop on Visual Analytics in Healthcare (VAHC) (Oct 22, 2023)</em><br>
-		        </p></li> 
-		    </ul>
-			
-			<ul>
-				<li><p><div align="left"><b>Towards the Detection and Visual Analysis of COVID-19 Infection Clusters</b><br>		
-					</b><em>EuroVis Workshop on Visual Analytics (EuroVA) (Jun 14, 2021)</em><br>  
-					| <a href="https://www.youtube.com/watch?v=olYavQxcs3k" target="_blank">Video</a> |
-		        </p></li> 
-		    </ul>
-			
-			<ul>
-				<li><p><div align="left"><b>Temporal Graph Analysis for Outbreak Pattern Detection in Covid-19 Contact Tracing Networks</b><br>		
-					</b><em>NeurIPS 2020, MLPH: Machine Learning in Public Health (Dez 6, 2020)</em><br>  
-					| <a href="https://slideslive.com/38938442/temporal-graph-analysis-for-outbreak-pattern-detection-in-covid19-contact-tracing-networks" target="_blank">Video</a> |
-		        </p></li> 
-		    </ul>		
-			</p>			
-			<h2><a name="awards"></a>
-				Awards
-			</h2>
-			<p>
-			<ul>
-			<li><p><div align="left"><b>2024: Honorable Mention Paper Award</b><br>		
-					<b>Dario Antweiler</b>, Georg Fuchs.<br>
-					 Extending the Visual Data Exploration Loop towards Trustworthy Machine Learning in the Healthcare Domain <br> <em>EuroVA 2024 (at EuroVIS 2024)</em>.
-		        </p></li>
-				
-				<li><p><div align="left"><b>2023: Best Paper Award - Impact on Society</b><br>		
-					<b>Dario Antweiler</b>, David Sessler, Maxim Rossknecht, Benjamin Abb, Sebastian Ginzel, Jörn Kohlhammer.<br>
-					Uncovering Chains of Infections through Spatio-Temporal and Visual Analysis of COVID-19 Contact Traces<br> <em>Computer Graphics Night 2023</em>.
-		        </p></li> 
-			
-				<li><p><div align="left"><b>2021: Honorable Mention Paper Award</b><br>		
-					<b>Dario Antweiler</b>, David Sessler, Sebastian Ginzel, Jörn Kohlhammer.<br>
-					Towards the Detection and Visual Analysis of COVID-19 Infection Clusters<br> <em>EuroVA 2021 (at EuroVIS 2021)</em>.
-		        </p></li> 
+/* ---------- responsive ---------- */
+@media (max-width:760px){
+  .intro{grid-template-columns:1fr;gap:1.5rem;}
+  .portrait{max-width:15rem;}
+  .yg{grid-template-columns:1fr;gap:0;}
+  .yg .y{position:static;padding:1.4rem 0 .2rem;font-size:1.05rem;}
+  .yg ol > li:first-child{border-top:1px solid var(--rule-soft);}
+  .cols{columns:1;}
+  .masthead{padding:2.2rem 0 1.8rem;}
+}
 
-		    </ul>
+/* ---------- dark ---------- */
+@media (prefers-color-scheme:dark){
+  :root{
+    --paper:#0e1a22;--card:#14232d;--ink:#e6edf2;--ink-2:#a7bac7;--ink-3:#71889a;
+    --rule:#253946;--rule-soft:#1d2f3a;--tint:#183040;--deep:#001b2e;
+    --blue:#6fb8e4;--blue-mid:#8ecbf0;
+    --heading:#8ecbf0;
+  }
+  .masthead{background:#001b2e;}
+  .nav{background:rgba(14,26,34,.96);}
+  .proj.todo{background:#241f12;border-left-color:#a5761f;}
+  .proj.todo p{color:#d9b877;}
+  .status{background:#3a2c10;color:#e0bd72;}
+  .portrait img{filter:saturate(.85) brightness(.92);}
+}
 
-			<h2><a name="awards"></a>
-				Memberships & Scholarships
-			</h2>
-			<p>
-			<ul>
-				<li><p><div align="left">Eurographics Association<br>
-				<li><p><div align="left">Stiftung der deutschen Wirtschaft (sdw)<br>
-		        </p></li> 
-		    </ul>
-			
-			<h2><a name="reviewing"></a>
-				Reviewing
-			</h2>
-			<p>
-			<ul>
-				<li><p><div align="left">EuroVis 2025<br></li>
-				<li><p><div align="left">VIS 2023<br></li>
-				<li><p><div align="left">SIGKDD 2022<br></li> 
-				<li><p><div align="left">ECML PKDD 2020<br></li> 
-				<li><p><div align="left">ECML PKDD 2019<br></li> 
-		    </ul>
+/* ---------- print ---------- */
+@media print{
+  .nav,.langbar,.skip,.portrait,.section-controls{display:none;}
+  body{background:#fff;font-size:10pt;}
+  .masthead{background:#fff;color:#000;padding:0 0 1rem;}
+  .masthead h1{font-size:20pt;} .role,.affil{color:#333;}
+  .intro{grid-template-columns:1fr;}
+  section{page-break-inside:auto;padding-top:1.2rem;}
+  .yg ol > li{page-break-inside:avoid;}
+  a{color:#000;border:0;}
+  .meta a::after{content:" (" attr(href) ")";font-size:7pt;color:#555;}
+  /* Collapsed sections must still print in full, otherwise the CV comes out empty. */
+  details > summary{list-style:none;}
+  details.section-toggle > summary{color:#000;border-bottom-color:#000;}
+  details.section-toggle > summary::before,
+  details > summary::before{content:"" !important;}
+  details:not([open]) > *:not(summary){display:revert !important;}
+}
+</style>
+</head>
+<body>
+<a class="skip" href="#main"><span data-lang="en">Skip to content</span><span data-lang="de">Zum Inhalt springen</span></a>
 
-			<h2><a name="talks"></a>
-				Talks
-			</h2>
-			<p>
-
-			<ul>
-			<li><p><div align="left"><b>Next Level Gesundheitsdaten: Markt- und Versorgungsforschung mit KI weiterdenken</b><br>		
-					</b><em>Pharma Insights 2026, InsightHealth (April 15, 2026)</em><br>  
-		        </p></li> 
-		    </ul>
-				
-			<ul>
-			<li><p><div align="left"><b>Confidential Computing KI in Deutschland (Podiumsdiskussion)</b><br>		
-					</b><em>HIT - Der Hausärztliche Praxis & IT Kongress</a> (March 13, 2026)</em><br>  
-		        </p></li> 
-		    </ul>
-				
-			<ul>
-			<li><p><div align="left"><b>Zukunftschancen: KI in der Medizin</b><br>		
-					</b><em>Alexianer-Krankenhaus, Köln</a> (January 21, 2026)</em><br>  
-		        </p></li> 
-		    </ul>
-
-			<ul>
-			<li><p><div align="left"><b>Künstliche Intelligenz in der Rehaklinik: Best Practices für den erfolgreichen Einsatz</b><br>		
-					</b><em>VKD Reha Netzwerktreffen, Kassel</a> (September 17, 2025)</em><br>  
-		        </p></li> 
-		    </ul>
-				
-			<ul>
-			<li><p><div align="left"><b>Smart Hospital – Das Krankenhaus von morgen</b><br>		
-					</b><em>Fraunhofer CIMD 4D Workshop - Digitale Innovationen im Gesundheitswesen</a> (May 21, 2025)</em><br>  
-		        </p></li> 
-		    	</ul>	
-
-			<ul>
-			<li><p><div align="left"><b>KI in der Pharmaindustrie: Einblicke in die Zukunft datenbasierter Entscheidungen</b><br>		
-					</b><em>Pharma Insights 2025, InsightHealth (May 7, 2025)</em><br>  
-		        </p></li> 
-		    	</ul>	
-
-			<ul>
-			<li><p><div align="left"><b>Effiziente Dokumentation durch KI – automatische Arztbriefgenerierung im Praxiseinsatz</b><br>		
-					</b><em>DMEA 2025</a> (April 10, 2025)</em><br>  
-		        </p></li> 
-		    	</ul>	
-
-			<ul>
-			<li><p><div align="left"><b>KI für verständliche Arztbriefe: Wie Künstliche Intelligenz die Patientenkommunikation revolutioniert</b><br>		
-					</b><em>DMEA 2025</a> (April 9, 2025)</em><br>  
-		        </p></li> 
-		    	</ul>	
-			
-			<ul>
-			<li><p><div align="left"><b>Zukunftschancen: KI in der Medizin</b><br>		
-					</b><em>Schlaglicht Psychiatrie 2025</a> (January 25, 2025)</em><br>  
-		        </p></li> 
-		    	</ul>	
-				
-			<ul>
-			<li><p><div align="left"><b>SmartHospital.NRW – Anwendungsbeispiele für Foundation-Modelle im Smart Hospital</b><br>		
-					</b><em>Landesgemeinschaftsstand NRW @ MEDICA 2024</a> (November 13, 2024)</em><br>  
-		        </p></li> 
-		    	</ul>	
-				
-			<ul>
-			<li><p><div align="left"><b>KI-Anwendungen in Healthcare, Medizin und Life Sciences</b><br>		
-					</b><em><a href="https://www.biocologne.de/news/save-the-date-kunstliche-intelligenz-in-medizin-und-life-sciences">KI in Medizin und Life Sciences @ BioCologne</a> (September 19, 2024)</em><br>  
-		        </p></li> 
-		    	</ul>	
-
-			<ul>
-			<li><p><div align="left"><b>Generative KI im Gesundheitswesen: Potentiale und Herausforderungen</b><br>		
-					</b><em><a href="https://www.ki.nrw/netzwerk-event-ki-im-gesundheitswesen/">Wirtschaftsförderung Düsseldorf: Künstliche Intelligenz im Gesundheitswesen</a> (September 16, 2024)</em><br>  
-		        </p></li> 
-		    	</ul>	
-		
-			<ul>
-			<li><p><div align="left"><b>Künstliche Intelligenz im Gesundheitswesen - Potentiale & Herausforderungen</b><br>		
-					</b><em>AI Village Health AI Community - Kick Off (June 13, 2024)</em><br>  
-		        </p></li> 
-		    	</ul>	
-
-			<ul>
-			<li><p><div align="left"><b>KI in der klinischen Forschung</b><br>		
-					</b><em>BVMA Symposium (Bundesverband Medizinischer Auftragsinstitute BVMA e. V.) (May 29, 2024)</em><br>  
-		        </p></li> 
-		    	</ul>	
-			
-			<ul>
-			<li><p><div align="left"><b>Foundation Modelle in der translationalen Medizin</b><br>		
-					</b><em><a href="https://www.medizin.nrw/veranstaltungen/spotlight-translation-von-der-forschung-in-die-klinik-modelle-und-moglichkeiten/">Spotlight: Translation von der Forschung in die Klinik – Modelle & Möglichkeiten, Cluster Medizin.NRW</a> (April 16, 2024)</em><br>  
-		        </p></li> 
-		    	</ul>	
-				
-			<ul>
-			<li><p><div align="left"><b>KI im Gesundheitswesen: Use Cases und Umsetzung</b><br>		
-					</b><em><a href="https://www.kvberlin.de/fuer-praxen/aktuelles/-seminare/detailanischt/praxisdigital-240320">KI in der Therapie und Versorgung, KV Berlin</a> (March 20, 2024)</em><br>  
-		        </p></li> 
-		    	</ul>	
-				
-			<ul>
-			<li><p><div align="left"><b>Foundation models for patient recruitment in clinical trials</b><br>		
-					</b><em><a href="https://www.cimd.fraunhofer.de/de/veranstaltungen/tag-der-immunforschung-2024.html">CIMD 5. Tag der Immunforschung</a> (March 12, 2024)</em><br>  
-		        </p></li> 
-		    	</ul>
-
-			<ul>
-				<li><p><div align="left"><b>KI im Krankenhaus – Lösungen, Seifenblasen und Konzepte</b><br>		
-					</b><em>Webinar with Digitales Gesundheitswesen (December 6, 2023)</em><br>  
-		        </p></li> 
-		    </ul>
-				
-			<ul>
-				<li><p><div align="left"><b>SmartHospital.NRW – KI-Qualifizierungsbedarfe für Beschäftigte im Krankenhaus</b><br>		
-					</b><em>MEDICA 2023 (November 14, 2023)</em><br>  
-		        </p></li> 
-		    </ul>
-			
-			<ul>
-				<li><p><div align="left"><b>Informed Machine Learning in Medicine</b><br>		
-					</b><em><a href="https://www.cimd.fraunhofer.de/de/veranstaltungen/SummerSchool2023.html">Fraunhofer CIMD Summer School 2023</a> (September 12, 2023)</em><br>  
-		        </p></li> 
-		    </ul>
-			
-			<ul>
-				<li><p><div align="left"><b>Foundation Models for the Smart Hospital of the Future</b><br>		
-					</b><em><a href="https://www.scai.fraunhofer.de/en/events/industry-symposium-ai-life-sciences.html">Industry Symposium on “AI in the Life Sciences”</a> (June 27, 2023)</em><br>  
-		        </p></li> 
-		    </ul>
-			
-			<ul>
-				<li><p><div align="left"><b>Möglichkeiten und Grenzen von KI in der Psychiatrie</b><br>		
-					</b><em><a href="https://med.bfd-konvent.de/">MED-KONVENT – forum bfd digital</a> (May 24, 2023)</em><br>  
-		        </p></li> 
-		    </ul>
-			
-			<ul>
-				<li><p><div align="left"><b>Künstliche Intelligenz in der Medizin</b><br>		
-					</b><em>DGU Arbeitskreis TraumaRegister (May 5, 2023)</em><br>  
-		        </p></li> 
-		    </ul>
-			
-			<ul>
-				<li><p><div align="left"><b>Möglichkeiten und Grenzen von KI in der Psychiatrie</b><br>		
-					</b><em>DRG-Forum (Mar 23, 2023)</em><br>  
-		        </p></li> 
-		    </ul>
-			
-			<ul>
-				<li><p><div align="left"><b>Artificial Intelligence in Smart Hospitals: How AI can help with Automation and Decision Support</b><br>		
-					</b><em>MEDICA (Nov 17, 2021)</em><br>  
-		        </p></li> 
-		    </ul>
-			
-			</p>
-			
-			<!--
-			<h2><a name="blog"></a>
-				Blog Posts
-			</h2>
-			
-			<p>
-				<ul>
-					<li><p><div align="left"><b><a href="https://machinelearning-blog.de/author/d-antweiler/">ML2R-Blog</a></b><br></div>
-				    </p></li>
-				</ul>
-			
-
-			</p>
-			-->
-
-		</div>
-	</div>
-</div>
-<div id="floor">
-      <tr>
-	<div align="center">
-      Last Modified: <script type="text/javascript">document.write(document.lastModified);</script> 
-        </div>
-      </tr>
-      <tr>
-	<div align="center">
-      &copy 2025, Dario Antweiler
-	</div>
-      </tr>
+<header class="masthead">
+  <div class="wrap">
+    <div class="langbar">
+      <button class="langbtn" type="button" data-setlang="en" aria-pressed="true">EN</button>
+      <button class="langbtn" type="button" data-setlang="de" aria-pressed="false">DE</button>
     </div>
-</div
-    <!-- Placed at the end of the document so the pages load faster -->
-    <script src="js/jquery-1.7.2.min.js"></script>
-    <script src="js/bootstrap.js"></script>
-   
-  </body>
+    <h1>Dario Antweiler</h1>
+    <p class="role">
+      <span data-lang="en">Team Lead Healthcare Data Science</span>
+      <span data-lang="de">Teamleiter Healthcare Data Science</span>
+    </p>
+    <p class="affil">Fraunhofer IAIS &middot; Sankt Augustin, Germany</p>
+  </div>
+</header>
+
+<nav class="nav" aria-label="Sections">
+  <div class="wrap">
+    <ul>
+      <!-- <li><a href="#projects"><span data-lang="en">Projects</span><span data-lang="de">Projekte</span></a></li> -->
+      <li><a href="#publications"><span data-lang="en">Publications</span><span data-lang="de">Publikationen</span></a></li>
+      <li><a href="#whitepaper">Whitepaper</a></li>
+      <li><a href="#talks"><span data-lang="en">Talks</span><span data-lang="de">Vorträge</span></a></li>
+      <!-- <li><a href="#tools"><span data-lang="en">Tools</span><span data-lang="de">Tools</span></a></li> -->
+      <li><a href="#supervision"><span data-lang="en">Supervision</span><span data-lang="de">Betreuung</span></a></li>
+      <li><a href="#awards"><span data-lang="en">Awards</span><span data-lang="de">Auszeichnungen</span></a></li>
+      <li><a href="#service"><span data-lang="en">Service</span><span data-lang="de">Engagement</span></a></li>
+    </ul>
+  </div>
+</nav>
+
+<main id="main">
+<div class="wrap">
+
+  <div class="intro">
+    <div class="portrait">
+      <img src="img/antweiler_web.jpg"
+           alt="Portrait of Dario Antweiler" loading="eager">
+      <p class="credit">Foto: Anke Liepertz-Peter / Fraunhofer IAIS</p>
+    </div>
+    <div class="bio">
+      <div data-lang="en">
+        <p>I lead the Healthcare Data Science team at Fraunhofer IAIS in Sankt Augustin, Germany,
+        where I have been working since 2018. With my team I run research and industry projects on
+        artificial intelligence for hospitals, clinical research and the pharmaceutical sector —
+        with a focus on clinical natural language processing, generative AI and the deployment of
+        large language models in regulated clinical environments.</p>
+        <p>My scientific interests are Visual Analytics and Network Science, with a university
+        background in mathematics and computer science.</p>
+        <p>Always looking for promising research and project collaborations. Feel free to get in touch.</p>
+      </div>
+      <div data-lang="de">
+        <p>Ich leite das Team Healthcare Data Science am Fraunhofer IAIS in Sankt Augustin und
+        arbeite dort seit 2018. Mit meinem Team bearbeite ich Forschungs- und Industrieprojekte zu
+        Künstlicher Intelligenz für Krankenhäuser, klinische Forschung und die Pharmabranche —
+        mit Schwerpunkt auf klinischem Natural Language Processing, generativer KI und dem Einsatz
+        großer Sprachmodelle in regulierten klinischen Umgebungen.</p>
+        <p>Meine wissenschaftlichen Interessen liegen in Visual Analytics und Network Science,
+        mein Studienhintergrund ist Mathematik und Informatik.</p>
+        <p>Ich freue mich immer über Forschungs- und Projektkooperationen. Sprechen Sie mich gerne an.</p>
+      </div>
+      <ul class="idlinks">
+        <li><a href="https://scholar.google.de/citations?hl=de&amp;user=hSH1gfwAAAAJ" rel="me">Google Scholar</a></li>
+        <li><a href="https://orcid.org/0000-0002-2238-9753" rel="me">ORCID 0000-0002-2238-9753</a></li>
+        <li><a href="https://www.researchgate.net/profile/Dario-Antweiler" rel="me">ResearchGate</a></li>
+        <li><a href="https://de.linkedin.com/in/dario-antweiler" rel="me">LinkedIn</a></li>
+        <li><a href="docs/combined.bib">BibTeX (all)</a></li>
+      </ul>
+      <p class="mailrow">dario.antweiler [at] gmail [dot] com</p>
+    </div>
+  </div>
+
+  <!-- Section disabled. To reactivate: change "template" to "section" in the two tags below. -->
+  <template id="projects-disabled">
+  <section id="projects">
+    <h2><span data-lang="en">Projects</span><span data-lang="de">Projekte</span></h2>
+    <div class="projects">
+
+      <article class="proj todo">
+        <h3>HIPPOCRATES</h3>
+        <p class="pmeta">TODO &middot; <span data-lang="en">running</span><span data-lang="de">laufend</span></p>
+        <p data-lang="en">TODO — add short project description, funding body and runtime.</p>
+        <p data-lang="de">TODO — kurze Projektbeschreibung, Förderträger und Laufzeit ergänzen.</p>
+      </article>
+
+      <article class="proj todo">
+        <h3>EdgeAgents</h3>
+        <p class="pmeta">TODO &middot; <span data-lang="en">running</span><span data-lang="de">laufend</span></p>
+        <p data-lang="en">TODO — add short project description, funding body and runtime.</p>
+        <p data-lang="de">TODO — kurze Projektbeschreibung, Förderträger und Laufzeit ergänzen.</p>
+      </article>
+
+      <article class="proj">
+        <h3>SmartHospital.NRW</h3>
+        <p class="pmeta">2021 &ndash; 2026</p>
+        <p data-lang="en">A process model for German hospitals on the way to becoming smart hospitals.
+        Together with partners from research, clinics and industry we engineer AI use cases including
+        NLP for medical reports, speech recognition for patients and clinicians, and sensor data analysis.</p>
+        <p data-lang="de">Ein Vorgehensmodell für deutsche Krankenhäuser auf dem Weg zum Smart Hospital.
+        Gemeinsam mit Partnern aus Wissenschaft, Kliniken und Industrie entwickeln wir KI-Anwendungsfälle,
+        darunter NLP für medizinische Befunde, Spracherkennung für Patient:innen und Behandelnde sowie
+        Sensordatenanalyse.</p>
+      </article>
+
+      <article class="proj">
+        <h3>AKKURAT</h3>
+        <p class="pmeta"><span data-lang="en">Phenotyping from unstructured findings</span><span data-lang="de">Phänotypisierung aus unstrukturierten Befunden</span></p>
+        <p data-lang="en">Machine learning and text mining structure unstructured document packages so that
+        findings can be recognised and linked. An indication-specific algorithm characterises disease
+        phenotypes across text, laboratory and imaging sources; the demonstrator is validated in a
+        prospective clinical study at three sites.</p>
+        <p data-lang="de">Maschinelles Lernen und Text Mining strukturieren unstrukturierte Dokumentenpakete,
+        sodass Befunde erkannt und verknüpft werden können. Ein indikationsspezifischer Algorithmus
+        charakterisiert Krankheitsphänotypen über Text-, Labor- und Bildquellen hinweg; der Demonstrator
+        wird in einer prospektiven klinischen Studie an drei Standorten validiert.</p>
+      </article>
+
+      <article class="proj">
+        <h3>MED²ICIN</h3>
+        <p class="pmeta">2018 &ndash; 2022</p>
+        <p data-lang="en">A digital patient model as the basis for personalised and cost-optimised medicine.
+        Health-related information that was previously scattered across systems, times and places is
+        bundled into one digital representation — with the goal of more effective prevention, diagnostics,
+        therapy and care.</p>
+        <p data-lang="de">Ein digitales Patientenmodell als Grundlage für personalisierte und
+        kostenoptimierte Medizin. Gesundheitsbezogene Informationen, die bislang über Systeme, Zeitpunkte
+        und Orte verstreut waren, werden zu einem digitalen Abbild gebündelt — mit dem Ziel wirksamerer
+        Prävention, Diagnostik, Therapie und Versorgung.</p>
+      </article>
+
+      <article class="proj">
+        <h3>PARIS</h3>
+        <p class="pmeta">2020 &middot; Patient Recruitment Information System</p>
+        <p data-lang="en">An AI-based decision support system for running clinical studies, in particular
+        the recruitment of participants for immune disease trials. Roughly half of all studies fail
+        because of recruitment difficulties; the project builds a database holding the relevant patient
+        information in structured form.</p>
+        <p data-lang="de">Ein KI-basiertes Entscheidungsunterstützungssystem für die Durchführung
+        klinischer Studien, insbesondere für die Rekrutierung von Teilnehmenden bei Immunerkrankungen.
+        Rund die Hälfte aller Studien scheitert an Rekrutierungsproblemen; im Projekt entsteht eine
+        Datenbank, die die relevanten Patienteninformationen strukturiert vorhält.</p>
+      </article>
+
+      <article class="proj">
+        <h3>LOTTE</h3>
+        <p class="pmeta">2020 &middot; <span data-lang="en">funded by the German Federal Ministry of Health</span><span data-lang="de">gefördert vom Bundesgesundheitsministerium</span></p>
+        <p data-lang="en">Where can AI help in the hospital? Together with partners from law and health
+        economics we identified potential AI use cases in the emergency care setting.</p>
+        <p data-lang="de">Wo kann KI im Krankenhaus helfen? Gemeinsam mit Partnern aus Recht und
+        Gesundheitsökonomie haben wir potenzielle KI-Anwendungsfälle in der Notfallversorgung identifiziert.</p>
+      </article>
+
+      <article class="proj">
+        <h3>CorASiV</h3>
+        <p class="pmeta">2020</p>
+        <p data-lang="en">In cooperation with Germany's largest public health office we analysed COVID-19
+        infection data for the city of Cologne. The central research question was the spatio-temporal
+        distribution of infections along contact networks.</p>
+        <p data-lang="de">In Zusammenarbeit mit Deutschlands größtem Gesundheitsamt haben wir
+        COVID-19-Infektionsdaten für die Stadt Köln analysiert. Zentrale Forschungsfrage war die
+        räumlich-zeitliche Verteilung von Infektionen entlang von Kontaktnetzwerken.</p>
+      </article>
+
+    </div>
+  </section>
+  </template>
+  <div class="section-controls">
+    <button type="button" data-toggle-all="open">
+      <span data-lang="en">Expand all</span><span data-lang="de">Alle aufklappen</span>
+    </button>
+    <button type="button" data-toggle-all="close">
+      <span data-lang="en">Collapse all</span><span data-lang="de">Alle einklappen</span>
+    </button>
+  </div>
+
+  <section id="publications">
+    <details class="section-toggle">
+      <summary><span data-lang="en">Peer-reviewed publications</span><span data-lang="de">Begutachtete Publikationen</span><span class="count">n = 19</span></summary>
+
+    <div class="yg">
+      <div class="y">2025</div>
+      <ol>
+        <li>
+          <span class="au">Sabine Kugler, <b>Dario Antweiler</b>, Benny Stein</span>
+          <span class="t">From Jargon to Clarity: LLM-based Generation of Accessible Medical Discharge Summaries</span>
+          <span class="venue">Information Processing and Management</span>
+          <div class="meta"><span class="status" data-lang="en">submitted</span><span class="status" data-lang="de">eingereicht</span><span class="tag">NLP</span></div>
+        </li>
+        <li>
+          <span class="au">Katharina Beckh, Felix Studeny, Sujan Sai Gannamaneni, <b>Dario Antweiler</b>, Stefan Rüping</span>
+          <span class="t">The Anatomy of Evidence: An Investigation into Explainable ICD Coding</span>
+          <span class="venue">Findings of ACL 2025</span>
+          <div class="meta"><a href="https://doi.org/10.48550/arXiv.2507.01802">10.48550/arXiv.2507.01802</a><span class="tag">NLP</span><span class="tag">XAI</span></div>
+        </li>
+        <li>
+          <span class="au"><b>Dario Antweiler</b>, Georg Fuchs</span>
+          <span class="t">Trust at Every Step: Embedding Trust Quality Gates into the Visual Data Exploration Loop for Machine Learning-based Clinical Decision Support Systems</span>
+          <span class="venue">Computers &amp; Graphics (Elsevier)</span>
+          <div class="meta"><a href="https://doi.org/10.1016/j.cag.2025.104212">10.1016/j.cag.2025.104212</a><span class="tag">Visual Analytics</span></div>
+        </li>
+        <li>
+          <span class="au">Kamyar Arzideh, Henning Schäfer, Héctor Allende-Cid, Giulia Baldini, Thomas Hilser, Ahmad Idrissi-Yaghir, Katharina Laue, Nilesh Chakraborty, Niclas Doll, <b>Dario Antweiler</b>, Katrin Klug, Niklas Beck, Sven Giesselbach, Christoph M. Friedrich, Felix Nensa, Martin Schuler, René Hosch</span>
+          <span class="t">From BERT to Generative AI — Comparing Encoder-only vs. Large Language Models in a Cohort of Lung Cancer Patients for Named Entity Recognition in Unstructured Medical Reports</span>
+          <span class="venue">Computers in Biology and Medicine</span>
+          <div class="meta"><a href="https://doi.org/10.1016/j.compbiomed.2025.110665">10.1016/j.compbiomed.2025.110665</a><span class="tag">NLP</span><span class="tag">LLM</span></div>
+        </li>
+        <li>
+          <span class="au"><b>Dario Antweiler</b>, Stefan Rüping, Stefan Wrobel</span>
+          <span class="t">Einsatz von Foundation-Modellen entlang der Patientenreise</span>
+          <span class="venue">In: Mario A. Pfannstiel (Hrsg.), Künstliche Intelligenz im Einsatz für die erfolgreiche Patientenreise. Springer</span>
+          <div class="meta"><a href="https://doi.org/10.1007/978-3-658-48573-3_40">10.1007/978-3-658-48573-3_40</a><span class="tag">LLM</span></div>
+        </li>
+        <li>
+          <span class="au"><b>Dario Antweiler</b>, Jan Pablo Burgard, Marc Harmening, Nicole Marheineke, Andre Schmeißer, Raimund Wegener, Pascal Welke</span>
+          <span class="t">A Regression-based Predictive Model Hierarchy for Nonwoven Tensile Strength Inference</span>
+          <span class="venue">In: Informed Machine Learning. Cognitive Technologies. Springer</span>
+          <div class="meta"><a href="https://link.springer.com/book/9783031830969">ISBN 978-3-031-83097-6</a><span class="tag">Informed ML</span></div>
+        </li>
+      </ol>
+    </div>
+
+    <div class="yg">
+      <div class="y">2024</div>
+      <ol>
+        <li>
+          <span class="au">Katrin Klug, Katharina Beckh, <b>Dario Antweiler</b>, Nilesh Chakraborty, Giulia Baldini, Katharina Laue, René Hosch, Felix Nensa, Martin Schuler, Sven Giesselbach</span>
+          <span class="t">Clinical Natural Language Processing in the Hospital Domain: Survey on Approaches along the Patient Journey</span>
+          <span class="venue">BMC Medical Informatics and Decision Making</span>
+          <div class="meta"><a href="https://doi.org/10.1186/s12911-024-02641-w">10.1186/s12911-024-02641-w</a><span class="tag">NLP</span><span class="tag">Survey</span></div>
+        </li>
+        <li>
+          <span class="au">Hernan Inojosa, Isabel Voigt, Judith Wenk, Dyke Ferber, Isabella Wiest, <b>Dario Antweiler</b>, Eva Weicken, Stephen Gilbert, Jakob Nikolas Kather, Katja Akgün, Tjalf Ziemssen</span>
+          <span class="t">Integrating Large Language Models in Care, Research, and Education in Multiple Sclerosis Management</span>
+          <span class="venue">Multiple Sclerosis Journal</span>
+          <div class="meta"><a href="https://doi.org/10.1177/13524585241277376">10.1177/13524585241277376</a><span class="tag">LLM</span></div>
+        </li>
+        <li>
+          <span class="au">Assaf Landschaft, <b>Dario Antweiler</b>, Héctor Allende-Cid, Sabine Kugler, Sina Mackay, Stefan Rüping, Stefan Wrobel</span>
+          <span class="t">Implementation and Evaluation of an Additional GPT-4-based Reviewer in PRISMA-based Medical Systematic Literature Reviews</span>
+          <span class="venue">International Journal of Medical Informatics</span>
+          <div class="meta"><a href="https://doi.org/10.1016/j.ijmedinf.2024.105531">10.1016/j.ijmedinf.2024.105531</a><span class="tag">LLM</span></div>
+        </li>
+        <li>
+          <span class="au"><b>Dario Antweiler</b>, Georg Fuchs</span>
+          <span class="t">Extending the Visual Data Exploration Loop towards Trustworthy Machine Learning in the Healthcare Domain</span>
+          <span class="venue">EuroVA 2024 (at EuroVIS 2024)</span>
+          <div class="meta"><a href="https://doi.org/10.2312/eurova.20241107">10.2312/eurova.20241107</a><span class="tag">Visual Analytics</span><span class="tag" data-lang="en">Honorable Mention</span><span class="tag" data-lang="de">Honorable Mention</span></div>
+        </li>
+        <li>
+          <span class="au">Sabine Kugler, <b>Dario Antweiler</b>, Benny Stein</span>
+          <span class="t">From Rehab to Recap: Generating Discharge Reports for Rehabilitation Clinics with LLMs</span>
+          <span class="venue">LLMs4MI 2024 (at FLLM 2024)</span>
+          <div class="meta"><a href="https://doi.org/10.1109/FLLM63129.2024.10852496">10.1109/FLLM63129.2024.10852496</a><span class="tag">LLM</span></div>
+        </li>
+      </ol>
+    </div>
+
+    <div class="yg">
+      <div class="y">2023</div>
+      <ol>
+        <li>
+          <span class="au"><b>Dario Antweiler</b>, Florian Gallusser, Georg Fuchs</span>
+          <span class="t">Multi-Task Transformer Visualization to build Trust for Clinical Outcome Prediction</span>
+          <span class="venue">VIS 2023: 14th Workshop on Visual Analytics in Healthcare (VAHC)</span>
+          <div class="meta"><a href="https://doi.org/10.1109/VAHC60858.2023.00010">10.1109/VAHC60858.2023.00010</a><span class="sep">|</span><a href="https://doi.org/10.1109/VAHC60858.2023.00010">PDF</a><span class="tag">Visual Analytics</span></div>
+        </li>
+        <li>
+          <span class="au"><b>Dario Antweiler</b>, Daniela Albiez, Dominik Bures, Bernadette Hosters, Florian Jovy-Klein, Kilian Nickel, Thomas Reibel, Johanna Schramm, Jil Sander, David Antons, Anke Diehl</span>
+          <span class="t">Aufgabenprofile und Qualifizierungsbedarfe für das Krankenhauspersonal im Hinblick auf den Einsatz von KI-basierten Anwendungen</span>
+          <span class="venue">Bundesgesundheitsblatt</span>
+          <div class="meta"><a href="https://doi.org/10.1007/s00103-023-03817-x">10.1007/s00103-023-03817-x</a><span class="tag">Smart Hospital</span></div>
+        </li>
+      </ol>
+    </div>
+
+    <div class="yg">
+      <div class="y">2022</div>
+      <ol>
+        <li>
+          <span class="au"><b>Dario Antweiler</b>, Georg Fuchs</span>
+          <span class="t">Visualizing Rule-based Classifiers for Clinical Risk Prognosis</span>
+          <span class="venue">IEEE VIS 2022</span>
+          <div class="meta"><a href="https://doi.org/10.1109/VIS54862.2022.00020">10.1109/VIS54862.2022.00020</a><span class="sep">|</span><a href="https://doi.org/10.1109/VIS54862.2022.00020">PDF</a><span class="sep">|</span><a href="docs/2023_ClinicalRisk.bib">BibTeX</a><span class="tag">Visual Analytics</span></div>
+        </li>
+        <li>
+          <span class="au"><b>Dario Antweiler</b>, David Sessler, Maxim Rossknecht, Benjamin Abb, Sebastian Ginzel, Jörn Kohlhammer</span>
+          <span class="t">Uncovering Chains of Infections through Spatio-Temporal and Visual Analysis of COVID-19 Contact Traces</span>
+          <span class="venue">Computers &amp; Graphics (Elsevier)</span>
+          <div class="meta"><a href="https://doi.org/10.1016/j.cag.2022.05.013">10.1016/j.cag.2022.05.013</a><span class="sep">|</span><a href="docs/2022_CAG.bib">BibTeX</a><span class="tag">Network Science</span></div>
+        </li>
+        <li>
+          <span class="au"><b>Dario Antweiler</b>, Marc Harmening, Nicole Marheineke, Andre Schmeißer, Raimund Wegener, Pascal Welke</span>
+          <span class="t">Machine Learning Framework to predict Nonwoven Material Properties from Fiber Graph Representations</span>
+          <span class="venue">Software Impacts (Elsevier)</span>
+          <div class="meta"><a href="https://doi.org/10.1016/j.simpa.2022.100423">10.1016/j.simpa.2022.100423</a><span class="sep">|</span><a href="docs/2022_SoftImpact.bib">BibTeX</a><span class="sep">|</span><a href="https://github.com/pwelke/random-nonwoven-fibers">GitHub</a><span class="sep">|</span><a href="https://codeocean.com/capsule/7514050/tree/v1">Code</a><span class="tag">Informed ML</span></div>
+        </li>
+        <li>
+          <span class="au"><b>Dario Antweiler</b>, Marc Harmening, Nicole Marheineke, Andre Schmeißer, Raimund Wegener, Pascal Welke</span>
+          <span class="t">Graph-Based Tensile Strength Approximation of Random Nonwoven Materials by Interpretable Regression</span>
+          <span class="venue">Machine Learning with Applications (Elsevier)</span>
+          <div class="meta"><a href="https://doi.org/10.1016/j.mlwa.2022.100288">10.1016/j.mlwa.2022.100288</a><span class="sep">|</span><a href="docs/2022_FZML.bib">BibTeX</a><span class="tag">Informed ML</span></div>
+        </li>
+      </ol>
+    </div>
+
+    <div class="yg">
+      <div class="y">2021</div>
+      <ol>
+        <li>
+          <span class="au"><b>Dario Antweiler</b>, David Sessler, Sebastian Ginzel, Jörn Kohlhammer</span>
+          <span class="t">Towards the Detection and Visual Analysis of COVID-19 Infection Clusters</span>
+          <span class="venue">EuroVA 2021 (at EuroVIS 2021)</span>
+          <div class="meta"><a href="https://doi.org/10.2312/eurova.20211097">10.2312/eurova.20211097</a><span class="sep">|</span><a href="https://diglib.eg.org/bitstream/handle/10.2312/eurova20211097/043-047.pdf?sequence=1&amp;isAllowed=y">PDF</a><span class="sep">|</span><a href="docs/2021_eurova.bib">BibTeX</a><span class="tag">Network Science</span></div>
+        </li>
+        <li>
+          <span class="au">Stefanie Hänold, Nelli Schlee, <b>Dario Antweiler</b>, Katharina Beckh</span>
+          <span class="t">Die Nachvollziehbarkeit von KI-Anwendungen in der Medizin — Eine Betrachtung aus juristischer Perspektive mit Beispielszenarien</span>
+          <span class="venue">Medizinrecht 39, 516–523 (Springer)</span>
+          <div class="meta"><a href="https://doi.org/10.1007/s00350-021-5901-3">10.1007/s00350-021-5901-3</a><span class="sep">|</span><a href="https://rdcu.be/cIV3k">PDF</a><span class="sep">|</span><a href="docs/2021_Antweiler_medr.bib">BibTeX</a><span class="tag">XAI</span></div>
+        </li>
+      </ol>
+    </div>
+  
+  </details>
+</section>
+
+  <section id="abstracts">
+    <details class="section-toggle">
+      <summary>Abstracts</summary>
+    <div class="yg">
+      <div class="y">2024</div>
+      <ol>
+        <li>
+          <span class="au">Michaela Köhm, Lukas Zerweck, Tim A. Bergmann, Hannah Kratz, <b>Dario Antweiler</b>, Sabine Kugler, Styliani Tsiami, Maria Polyzou, Xenofon Baraliakos, Sarah Ohrndorf, Anne Barton, Laura Coates, Oliver FitzGerald, Frank Behrens</span>
+          <span class="t">A machine learning algorithm based on automatically extracted image features and tabular demographic data on morning stiffness can distinguish psoriatic arthritis patients from controls in clinical routine care</span>
+          <span class="venue">EULAR 2024</span>
+          <div class="meta"><a href="https://doi.org/10.1136/annrheumdis-2024-eular.5205">10.1136/annrheumdis-2024-eular.5205</a></div>
+        </li>
+      </ol>
+    </div>
+    <div class="yg">
+      <div class="y">2023</div>
+      <ol>
+        <li>
+          <span class="au">Michaela Köhm, Annika Pick, Hannah Kratz, Lukas Zerweck, Sabine Kugler, Sina Mackay, <b>Dario Antweiler</b>, Stefan Rüping, Frank Behrens</span>
+          <span class="t">Specific AI-Generated Pattern of Tender Joints and Tenderness at Enthesial Sites are Predictive for Objective Detection of Musculoskeletal Inflammation in Psoriasis Patients</span>
+          <span class="venue">Annals of the Rheumatic Diseases</span>
+          <div class="meta"><a href="https://doi.org/10.1136/annrheumdis-2023-eular.4791">10.1136/annrheumdis-2023-eular.4791</a></div>
+        </li>
+      </ol>
+    </div>
+    <div class="yg">
+      <div class="y">2020</div>
+      <ol>
+        <li>
+          <span class="au"><b>Dario Antweiler</b>, Pascal Welke</span>
+          <span class="t">Temporal Graph Analysis for Outbreak Pattern Detection in COVID-19 Contact Tracing Networks</span>
+          <span class="venue">Machine Learning in Public Health Workshop, NeurIPS 2020</span>
+          <div class="meta"><a href="https://doi.org/10.24406/publica-fhg-411408">10.24406/publica-fhg-411408</a></div>
+        </li>
+      </ol>
+    </div>
+  
+  </details>
+</section>
+  <section id="whitepaper">
+    <details class="section-toggle">
+      <summary>Whitepaper &amp; <span data-lang="en">Studies</span><span data-lang="de">Studien</span></summary>
+
+    <div class="yg">
+      <div class="y">2026</div>
+      <ol>
+        <li>
+          <span class="au"><b>Dario Antweiler</b>, Stefan König, Fred Andree, Stefan Rüping</span>
+          <span class="t">KI in der Krankenhausplanung — Von Anfang an mitdenken: Voraussetzungen für den KI-Einsatz frühzeitig in die Krankenhausplanung integrieren</span>
+          <div class="meta"><a href="https://www.iais.fraunhofer.de/de/publikationen/studien/2026/download-whitepaper_ki_in_der_krankenhausplanung.html">Fraunhofer IAIS</a></div>
+        </li>
+        <li>
+          <span class="au"><b>Dario Antweiler</b>, Daniel Hülden, Sabine Kugler, André Poncelet</span>
+          <span class="t">Künstliche Intelligenz im Krankenhaus: Strategien und Voraussetzungen für eine erfolgreiche Implementierung</span>
+          <div class="meta"><a href="https://doi.org/10.24406/publica-8211">10.24406/publica-8211</a></div>
+        </li>
+      </ol>
+    </div>
+
+    <div class="yg">
+      <div class="y">2025</div>
+      <ol>
+        <li>
+          <span class="au">Sina Mackay, Julia Ebert, Alexander Schellinger, <b>Dario Antweiler</b>, Stefan Rüping</span>
+          <span class="t">Healthcare Agents im Einsatz: Die nächste Generation der medizinischen KI-Assistenz</span>
+          <div class="meta"><a href="https://doi.org/10.24406/publica-4450">10.24406/publica-4450</a></div>
+        </li>
+      </ol>
+    </div>
+
+    <div class="yg">
+      <div class="y">2024</div>
+      <ol>
+        <li>
+          <span class="au">Daniel Lückerath, Daniela Albiez, Thomas Reibel, Florian Jovy-Klein, Jil Sander, Dominik Bures, <b>Dario Antweiler</b>, Anke Diehl, Susan Stead, David Antons, Torsten-Oliver Salge, Christine Malich</span>
+          <span class="t">Die Roadmap zum Smart Hospital: Ein Vorgehensmodell zur digitalen Transformation von Krankenhäusern</span>
+          <div class="meta"><a href="https://doi.org/10.24406/publica-3977">10.24406/publica-3977</a></div>
+        </li>
+        <li>
+          <span class="au">Sina Mackay, <b>Dario Antweiler</b>, Stefan Rüping</span>
+          <span class="t">Künstliche Intelligenz für klinische Studien</span>
+          <div class="meta"><a href="https://doi.org/10.24406/h-478035">10.24406/h-478035</a></div>
+        </li>
+        <li>
+          <span class="au">Mareen Meyer, Sven Giesselbach, <b>Dario Antweiler</b>, Jérôme Defosse, Sandra Hensen, Henri Iser, Torsten-Oliver Salge, Susan Stead, Thorsten Tjardes, Nina Waloßek</span>
+          <span class="t">Künstliche Intelligenz im Schockraum: Wie Agenten und Foundation-Modelle bei der Versorgung Schwerverletzter helfen</span>
+          <div class="meta"><a href="https://doi.org/10.24406/publica-2847">10.24406/publica-2847</a></div>
+        </li>
+      </ol>
+    </div>
+
+    <div class="yg">
+      <div class="y">2023</div>
+      <ol>
+        <li>
+          <span class="au"><b>Dario Antweiler</b>, Katharina Beckh, Nilesh Chakraborty, Sven Giesselbach, Katrin Klug, Stefan Rüping</span>
+          <span class="t">Von der automatisierten Befundanalyse bis zum Arztbriefgenerator: Künstliche Intelligenz für dokumentenbasierte Prozesse im Krankenhaus</span>
+          <div class="meta"><a href="https://doi.org/10.24406/publica-1278">10.24406/publica-1278</a></div>
+        </li>
+      </ol>
+    </div>
+
+    <div class="yg">
+      <div class="y">2022</div>
+      <ol>
+        <li>
+          <span class="au">Kilian Nickel, Katharina Milde, Dustin Kremer, Christine Malich, <b>Dario Antweiler</b>, Thomas Reibel, Florian Jovy-Klein, Jil Sander, Dominik Bures, Anke Diehl</span>
+          <span class="t">Bereit für das Smart Hospital?</span>
+          <div class="meta"><a href="https://doi.org/10.24406/publica-553">10.24406/publica-553</a></div>
+        </li>
+      </ol>
+    </div>
+
+    <div class="yg">
+      <div class="y">2020</div>
+      <ol>
+        <li>
+          <span class="au"><b>Dario Antweiler</b>, Katharina Beckh, Jil Sander, Stefan Rüping</span>
+          <span class="t">Künstliche Intelligenz im Krankenhaus: Potenziale und Herausforderungen — Eine Fallstudie im Bereich der Notfallversorgung</span>
+          <div class="meta"><a href="https://doi.org/10.24406/publica-fhg-300605">10.24406/publica-fhg-300605</a></div>
+        </li>
+      </ol>
+    </div>
+  
+  </details>
+</section>
+
+  <!-- Section disabled. To reactivate: change "template" to "section" in the two tags below. -->
+  <template id="tools-disabled">
+  <section id="tools">
+    <details class="section-toggle">
+      <summary><span data-lang="en">Tools &amp; simulations</span><span data-lang="de">Tools &amp; Simulationen</span></summary>
+    <p data-lang="en" style="margin-top:-.6rem;color:var(--ink-2);max-width:46em;">Browser-based, self-contained applications I build to explain concepts and to support project work. No installation, no data leaves the browser.</p>
+    <p data-lang="de" style="margin-top:-.6rem;color:var(--ink-2);max-width:46em;">Browserbasierte, eigenständige Anwendungen, die ich baue, um Konzepte zu erklären und Projektarbeit zu unterstützen. Keine Installation, keine Daten verlassen den Browser.</p>
+    <div class="tools" style="margin-top:1.2rem;">
+      <div class="tool">
+        <a href="simulationen.html"><span data-lang="en">Interactive simulations</span><span data-lang="de">Interaktive Simulationen</span></a>
+        <p data-lang="en">A growing catalogue of physics, mathematics and complex-systems simulations — flow fields, cellular automata, Turing patterns, graph layouts and more.</p>
+        <p data-lang="de">Ein wachsender Katalog an Simulationen aus Physik, Mathematik und komplexen Systemen — Flow Fields, zelluläre Automaten, Turing-Muster, Graph-Layouts und mehr.</p>
+      </div>
+      <div class="tool">
+        <a href="#" data-todo><span data-lang="en">TODO — second tool</span><span data-lang="de">TODO — zweites Tool</span></a>
+        <p data-lang="en">TODO — replace href and description, or delete this card.</p>
+        <p data-lang="de">TODO — href und Beschreibung ersetzen oder Karte löschen.</p>
+      </div>
+    </div>
+  
+  </details>
+</section>
+  </template>
+
+  <section id="supervision">
+    <details class="section-toggle">
+      <summary><span data-lang="en">Supervision &amp; mentoring</span><span data-lang="de">Betreuung &amp; Mentoring</span></summary>
+    <ul class="plain">
+      <li><span class="meta" style="margin:0 .6rem 0 0;display:inline-flex;">2025</span>
+        <b>Hashtag Gesundheit Mentoringprogramm</b> &mdash; <a href="https://www.hashtag-gesundheit.de/mentoring">hashtag-gesundheit.de</a></li>
+      <li><span class="meta" style="margin:0 .6rem 0 0;display:inline-flex;">2024&ndash;2025</span>
+        <b>DiMento-Mentoringprogramm</b>, Universität Duisburg-Essen &mdash; <a href="https://www.uni-due.de/abz/career/dimento.shtml">uni-due.de</a></li>
+      <li><span class="meta" style="margin:0 .6rem 0 0;display:inline-flex;">2024</span>
+        <b>Kunal Runwal</b>: <em>Harnessing Large Language Models for Clinical Entity Extraction and Medical Coding in German Clinical Text</em>
+        <span data-lang="en">(Master's thesis, Hochschule Bonn-Rhein-Sieg)</span><span data-lang="de">(Masterarbeit, Hochschule Bonn-Rhein-Sieg)</span></li>
+      <li><span class="meta" style="margin:0 .6rem 0 0;display:inline-flex;">2024</span>
+        <b>Clara Schlagowski</b>: <em>Genderbezogene Unterschiede in der Nutzung von KI im Krankenhaus</em>
+        <span data-lang="en">(University of Cologne)</span><span data-lang="de">(Universität zu Köln)</span></li>
+      <li><span class="meta" style="margin:0 .6rem 0 0;display:inline-flex;">2024</span>
+        <b>Kunal Runwal</b>: <em>Leveraging BERT Models for Adverse Event Detection in Clinical Text</em>
+        <span data-lang="en">(University project, Hochschule Bonn-Rhein-Sieg)</span><span data-lang="de">(Projektarbeit, Hochschule Bonn-Rhein-Sieg)</span></li>
+      <li><span class="meta" style="margin:0 .6rem 0 0;display:inline-flex;">2023</span>
+        <b>Florian Gallusser</b>: <em>Pre-Training of Transformers for Clinical Outcome Prediction on German Medical Claims Data</em>
+        <span data-lang="en">(Master's thesis, University of Bonn)</span><span data-lang="de">(Masterarbeit, Universität Bonn)</span></li>
+    </ul>
+  
+  </details>
+</section>
+
+  <section id="awards">
+    <details class="section-toggle">
+      <summary><span data-lang="en">Awards</span><span data-lang="de">Auszeichnungen</span></summary>
+    <ul class="plain">
+      <li><span class="meta" style="margin:0 .6rem 0 0;display:inline-flex;">2024</span>
+        <b>Honorable Mention Paper Award</b>, EuroVA 2024 (at EuroVIS 2024)<br>
+        <span class="venue">Extending the Visual Data Exploration Loop towards Trustworthy Machine Learning in the Healthcare Domain</span></li>
+      <li><span class="meta" style="margin:0 .6rem 0 0;display:inline-flex;">2023</span>
+        <b>Best Paper Award — Impact on Society</b>, Computer Graphics Night 2023<br>
+        <span class="venue">Uncovering Chains of Infections through Spatio-Temporal and Visual Analysis of COVID-19 Contact Traces</span></li>
+      <li><span class="meta" style="margin:0 .6rem 0 0;display:inline-flex;">2021</span>
+        <b>Honorable Mention Paper Award</b>, EuroVA 2021 (at EuroVIS 2021)<br>
+        <span class="venue">Towards the Detection and Visual Analysis of COVID-19 Infection Clusters</span></li>
+    </ul>
+  
+  </details>
+</section>
+  <section id="talks">
+    <details class="section-toggle">
+      <summary><span data-lang="en">Invited talks &amp; panels</span><span data-lang="de">Eingeladene Vorträge &amp; Panels</span></summary>
+
+    <div class="yg">
+      <div class="y">2026</div>
+      <ol>
+        <li><span class="t">Next Level Gesundheitsdaten: Markt- und Versorgungsforschung mit KI weiterdenken</span>
+          <span class="venue">Pharma Insights 2026, InsightHealth</span>
+          <div class="meta">2026-04-15</div></li>
+        <li><span class="t">Confidential Computing &amp; KI in Deutschland <span data-lang="en">(panel discussion)</span><span data-lang="de">(Podiumsdiskussion)</span></span>
+          <span class="venue">HIT — Der Hausärztliche Praxis &amp; IT Kongress</span>
+          <div class="meta">2026-03-13</div></li>
+        <li><span class="t">Zukunftschancen: KI in der Medizin</span>
+          <span class="venue">Alexianer-Krankenhaus, Köln</span>
+          <div class="meta">2026-01-21</div></li>
+      </ol>
+    </div>
+
+    <div class="yg">
+      <div class="y">2025</div>
+      <ol>
+        <li><span class="t">Künstliche Intelligenz in der Rehaklinik: Best Practices für den erfolgreichen Einsatz</span>
+          <span class="venue">VKD Reha Netzwerktreffen, Kassel</span>
+          <div class="meta">2025-09-17</div></li>
+        <li><span class="t">Smart Hospital — Das Krankenhaus von morgen</span>
+          <span class="venue">Fraunhofer CIMD 4D Workshop — Digitale Innovationen im Gesundheitswesen</span>
+          <div class="meta">2025-05-21</div></li>
+        <li><span class="t">KI in der Pharmaindustrie: Einblicke in die Zukunft datenbasierter Entscheidungen</span>
+          <span class="venue">Pharma Insights 2025, InsightHealth</span>
+          <div class="meta">2025-05-07</div></li>
+        <li><span class="t">Effiziente Dokumentation durch KI — automatische Arztbriefgenerierung im Praxiseinsatz</span>
+          <span class="venue">DMEA 2025</span>
+          <div class="meta">2025-04-10</div></li>
+        <li><span class="t">KI für verständliche Arztbriefe: Wie Künstliche Intelligenz die Patientenkommunikation verändert</span>
+          <span class="venue">DMEA 2025</span>
+          <div class="meta">2025-04-09</div></li>
+        <li><span class="t">Zukunftschancen: KI in der Medizin</span>
+          <span class="venue">Schlaglicht Psychiatrie 2025</span>
+          <div class="meta">2025-01-25</div></li>
+      </ol>
+    </div>
+
+    <div class="yg">
+      <div class="y">2024</div>
+      <ol>
+        <li><span class="t">SmartHospital.NRW — Anwendungsbeispiele für Foundation-Modelle im Smart Hospital</span>
+          <span class="venue">Landesgemeinschaftsstand NRW @ MEDICA 2024</span>
+          <div class="meta">2024-11-13</div></li>
+        <li><span class="t">KI-Anwendungen in Healthcare, Medizin und Life Sciences</span>
+          <span class="venue"><a href="https://www.biocologne.de/news/save-the-date-kunstliche-intelligenz-in-medizin-und-life-sciences">KI in Medizin und Life Sciences @ BioCologne</a></span>
+          <div class="meta">2024-09-19</div></li>
+        <li><span class="t">Generative KI im Gesundheitswesen: Potentiale und Herausforderungen</span>
+          <span class="venue"><a href="https://www.ki.nrw/netzwerk-event-ki-im-gesundheitswesen/">Wirtschaftsförderung Düsseldorf: Künstliche Intelligenz im Gesundheitswesen</a></span>
+          <div class="meta">2024-09-16</div></li>
+        <li><span class="t">Künstliche Intelligenz im Gesundheitswesen — Potentiale &amp; Herausforderungen</span>
+          <span class="venue">AI Village Health AI Community — Kick-off</span>
+          <div class="meta">2024-06-13</div></li>
+        <li><span class="t">KI in der klinischen Forschung</span>
+          <span class="venue">BVMA Symposium, Bundesverband Medizinischer Auftragsinstitute e.&nbsp;V.</span>
+          <div class="meta">2024-05-29</div></li>
+        <li><span class="t">Foundation-Modelle in der translationalen Medizin</span>
+          <span class="venue"><a href="https://www.medizin.nrw/veranstaltungen/spotlight-translation-von-der-forschung-in-die-klinik-modelle-und-moglichkeiten/">Spotlight: Translation von der Forschung in die Klinik, Cluster Medizin.NRW</a></span>
+          <div class="meta">2024-04-16</div></li>
+        <li><span class="t">KI im Gesundheitswesen: Use Cases und Umsetzung</span>
+          <span class="venue"><a href="https://www.kvberlin.de/fuer-praxen/aktuelles/-seminare/detailanischt/praxisdigital-240320">KI in der Therapie und Versorgung, KV Berlin</a></span>
+          <div class="meta">2024-03-20</div></li>
+        <li><span class="t">Foundation models for patient recruitment in clinical trials</span>
+          <span class="venue"><a href="https://www.cimd.fraunhofer.de/de/veranstaltungen/tag-der-immunforschung-2024.html">CIMD 5. Tag der Immunforschung</a></span>
+          <div class="meta">2024-03-12</div></li>
+      </ol>
+    </div>
+
+    <details>
+      <summary><span data-lang="en">Earlier talks (2021&ndash;2023)</span><span data-lang="de">Frühere Vorträge (2021&ndash;2023)</span></summary>
+      <div class="yg">
+        <div class="y">2023</div>
+        <ol>
+          <li><span class="t">KI im Krankenhaus — Lösungen, Seifenblasen und Konzepte</span>
+            <span class="venue">Webinar, Digitales Gesundheitswesen</span>
+            <div class="meta">2023-12-06</div></li>
+          <li><span class="t">SmartHospital.NRW — KI-Qualifizierungsbedarfe für Beschäftigte im Krankenhaus</span>
+            <span class="venue">MEDICA 2023</span>
+            <div class="meta">2023-11-14</div></li>
+          <li><span class="t">Informed Machine Learning in Medicine</span>
+            <span class="venue"><a href="https://www.cimd.fraunhofer.de/de/veranstaltungen/SummerSchool2023.html">Fraunhofer CIMD Summer School 2023</a></span>
+            <div class="meta">2023-09-12</div></li>
+          <li><span class="t">Foundation Models for the Smart Hospital of the Future</span>
+            <span class="venue"><a href="https://www.scai.fraunhofer.de/en/events/industry-symposium-ai-life-sciences.html">Industry Symposium on “AI in the Life Sciences”</a></span>
+            <div class="meta">2023-06-27</div></li>
+          <li><span class="t">Möglichkeiten und Grenzen von KI in der Psychiatrie</span>
+            <span class="venue"><a href="https://med.bfd-konvent.de/">MED-KONVENT — forum bfd digital</a></span>
+            <div class="meta">2023-05-24</div></li>
+          <li><span class="t">Künstliche Intelligenz in der Medizin</span>
+            <span class="venue">DGU Arbeitskreis TraumaRegister</span>
+            <div class="meta">2023-05-05</div></li>
+          <li><span class="t">Möglichkeiten und Grenzen von KI in der Psychiatrie</span>
+            <span class="venue">DRG-Forum</span>
+            <div class="meta">2023-03-23</div></li>
+        </ol>
+      </div>
+      <div class="yg">
+        <div class="y">2021</div>
+        <ol>
+          <li><span class="t">Artificial Intelligence in Smart Hospitals: How AI can help with Automation and Decision Support</span>
+            <span class="venue">MEDICA 2021</span>
+            <div class="meta">2021-11-17</div></li>
+        </ol>
+      </div>
+    </details>
+  
+  </details>
+</section>
+
+  <section id="scientific-talks">
+    <details class="section-toggle">
+      <summary><span data-lang="en">Conference talks</span><span data-lang="de">Wissenschaftliche Vorträge</span></summary>
+    <div class="yg">
+      <div class="y">2023</div>
+      <ol>
+        <li><span class="t">Multi-Task Transformer Visualization to build Trust for Clinical Outcome Prediction</span>
+          <span class="venue">VIS 2023: 14th Workshop on Visual Analytics in Healthcare (VAHC)</span>
+          <div class="meta">2023-10-22</div></li>
+      </ol>
+    </div>
+    <div class="yg">
+      <div class="y">2021</div>
+      <ol>
+        <li><span class="t">Towards the Detection and Visual Analysis of COVID-19 Infection Clusters</span>
+          <span class="venue">EuroVis Workshop on Visual Analytics (EuroVA)</span>
+          <div class="meta">2021-06-14<span class="sep">|</span><a href="https://www.youtube.com/watch?v=olYavQxcs3k">Video</a></div></li>
+      </ol>
+    </div>
+    <div class="yg">
+      <div class="y">2020</div>
+      <ol>
+        <li><span class="t">Temporal Graph Analysis for Outbreak Pattern Detection in COVID-19 Contact Tracing Networks</span>
+          <span class="venue">NeurIPS 2020, Machine Learning in Public Health (MLPH)</span>
+          <div class="meta">2020-12-06<span class="sep">|</span><a href="https://slideslive.com/38938442/temporal-graph-analysis-for-outbreak-pattern-detection-in-covid19-contact-tracing-networks">Video</a></div></li>
+      </ol>
+    </div>
+  
+  </details>
+</section>
+
+  <section id="service">
+    <details class="section-toggle">
+      <summary><span data-lang="en">Reviewing, memberships &amp; scholarships</span><span data-lang="de">Reviewing, Mitgliedschaften &amp; Stipendien</span></summary>
+    <ul class="plain cols">
+      <li><span class="meta" style="margin:0 .6rem 0 0;display:inline-flex;">Review</span>EuroVis 2025</li>
+      <li><span class="meta" style="margin:0 .6rem 0 0;display:inline-flex;">Review</span>IEEE VIS 2023</li>
+      <li><span class="meta" style="margin:0 .6rem 0 0;display:inline-flex;">Review</span>ACM SIGKDD 2022</li>
+      <li><span class="meta" style="margin:0 .6rem 0 0;display:inline-flex;">Review</span>ECML PKDD 2020</li>
+      <li><span class="meta" style="margin:0 .6rem 0 0;display:inline-flex;">Review</span>ECML PKDD 2019</li>
+      <li><span class="meta" style="margin:0 .6rem 0 0;display:inline-flex;">Member</span>Eurographics Association</li>
+      <li><span class="meta" style="margin:0 .6rem 0 0;display:inline-flex;">Fellow</span>Stiftung der deutschen Wirtschaft (sdw)</li>
+    </ul>
+  
+  </details>
+</section>
+
+</div>
+</main>
+
+<footer>
+  <div class="wrap">
+    <p>&copy; 2026 Dario Antweiler</p>
+    <p data-lang="en">Last updated: <time datetime="2026-08-19">19 August 2026</time></p>
+    <p data-lang="de">Zuletzt aktualisiert: <time datetime="2026-08-19">19. August 2026</time></p>
+  </div>
+</footer>
+
+<script type="application/ld+json">
+{
+  "@context":"https://schema.org",
+  "@type":"Person",
+  "name":"Dario Antweiler",
+  "givenName":"Dario",
+  "familyName":"Antweiler",
+  "jobTitle":"Team Lead Healthcare Data Science",
+  "worksFor":{"@type":"Organization","name":"Fraunhofer Institute for Intelligent Analysis and Information Systems IAIS","url":"https://www.iais.fraunhofer.de/"},
+  "url":"https://www.dario-antweiler.de/",
+  "identifier":"https://orcid.org/0000-0002-2238-9753",
+  "knowsAbout":["Clinical Natural Language Processing","Artificial Intelligence in Healthcare","Visual Analytics","Network Science","Large Language Models"],
+  "address":{"@type":"PostalAddress","addressLocality":"Sankt Augustin","addressCountry":"DE"},
+  "sameAs":[
+    "https://orcid.org/0000-0002-2238-9753",
+    "https://scholar.google.de/citations?user=hSH1gfwAAAAJ",
+    "https://www.researchgate.net/profile/Dario-Antweiler",
+    "https://de.linkedin.com/in/dario-antweiler"
+  ]
+}
+</script>
+
+<script>
+(function(){
+  var root = document.documentElement;
+  var buttons = document.querySelectorAll('[data-setlang]');
+
+  function apply(lang){
+    root.setAttribute('lang', lang);
+    buttons.forEach(function(b){
+      b.setAttribute('aria-pressed', String(b.dataset.setlang === lang));
+    });
+    try { localStorage.setItem('lang', lang); } catch(e){}
+  }
+
+  // Priority: ?lang= in URL, then stored choice, then browser language.
+  var initial = null;
+  var q = new URLSearchParams(location.search).get('lang');
+  if (q === 'de' || q === 'en') { initial = q; }
+  if (!initial) { try { initial = localStorage.getItem('lang'); } catch(e){} }
+  if (initial !== 'de' && initial !== 'en') {
+    initial = (navigator.language || 'en').toLowerCase().indexOf('de') === 0 ? 'de' : 'en';
+  }
+  apply(initial);
+
+  buttons.forEach(function(b){
+    b.addEventListener('click', function(){ apply(b.dataset.setlang); });
+  });
+})();
+
+(function(){
+  // Expand-all / collapse-all controls (top-level sections only).
+  var toggles = document.querySelectorAll('details.section-toggle');
+  document.querySelectorAll('[data-toggle-all]').forEach(function(btn){
+    btn.addEventListener('click', function(){
+      var open = btn.dataset.toggleAll === 'open';
+      toggles.forEach(function(d){ d.open = open; });
+    });
+  });
+
+  // Clicking a nav link to a section opens that section's toggle first,
+  // so the anchor jump doesn't land on collapsed, empty-looking content.
+  document.querySelectorAll('.nav a[href^="#"]').forEach(function(link){
+    link.addEventListener('click', function(){
+      var id = link.getAttribute('href').slice(1);
+      var target = document.getElementById(id);
+      if (!target) return;
+      var d = target.querySelector(':scope > details.section-toggle');
+      if (d) d.open = true;
+    });
+  });
+
+  // Printing: expand everything, then restore the previous state.
+  var printState = null;
+  window.addEventListener('beforeprint', function(){
+    var all = document.querySelectorAll('details');
+    printState = [];
+    all.forEach(function(d){ printState.push([d, d.open]); d.open = true; });
+  });
+  window.addEventListener('afterprint', function(){
+    if (!printState) return;
+    printState.forEach(function(pair){ pair[0].open = pair[1]; });
+    printState = null;
+  });
+})();
+</script>
+
+</body>
 </html>

@@ -1,0 +1,1225 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Schwarmsimulation — Drei Regeln, ein Schwarm</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,600;12..96,800&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --sep:#FFB03A;
+  --ali:#2ED9C3;
+  --coh:#9B6BFF;
+  --jaeger:#FF4D6D;
+
+  --papier:#EDEFF3;
+  --karte:#FFFFFF;
+  --linie:#D5DAE3;
+  --tinte:#131A26;
+  --tinte-2:#5A6577;
+  --himmel:#101A2E;
+
+  --r:14px;
+  --display:"Bricolage Grotesque","Trebuchet MS",system-ui,sans-serif;
+  --body:"Inter",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --mono:"JetBrains Mono",ui-monospace,"SFMono-Regular",Consolas,monospace;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  margin:0;
+  background:var(--papier);
+  color:var(--tinte);
+  font-family:var(--body);
+  font-size:15px;
+  line-height:1.55;
+  -webkit-font-smoothing:antialiased;
+}
+.wrap{max-width:1180px;margin:0 auto;padding:0 20px 80px}
+
+/* ---------- Kopf ---------- */
+header{padding:44px 0 22px}
+.eyebrow{
+  font-family:var(--mono);
+  font-size:11.5px;
+  letter-spacing:.16em;
+  text-transform:uppercase;
+  color:var(--tinte-2);
+  display:flex;align-items:center;gap:10px;
+}
+.eyebrow::after{content:"";height:1px;flex:1;background:var(--linie)}
+h1{
+  font-family:var(--display);
+  font-weight:800;
+  font-size:clamp(2.1rem,5.4vw,3.6rem);
+  line-height:1.02;
+  letter-spacing:-.035em;
+  margin:16px 0 0;
+  max-width:16ch;
+}
+h1 em{font-style:normal;color:var(--tinte-2)}
+.lead{
+  margin:14px 0 0;
+  max-width:58ch;
+  font-size:16.5px;
+  color:#2C3547;
+}
+
+/* ---------- Bühne ---------- */
+.buehne{
+  position:relative;
+  margin-top:26px;
+  border-radius:var(--r);
+  overflow:hidden;
+  background:var(--himmel);
+  box-shadow:0 18px 40px -24px rgba(16,26,46,.75);
+}
+#himmel{display:block;width:100%;height:min(62vh,560px);touch-action:none}
+.buehne:fullscreen{border-radius:0;box-shadow:none;width:100vw;height:100vh}
+.buehne:fullscreen #himmel{height:100vh}
+.buehne:-webkit-full-screen{border-radius:0;box-shadow:none;width:100vw;height:100vh}
+.buehne:-webkit-full-screen #himmel{height:100vh}
+.hud{
+  position:absolute;top:12px;left:12px;
+  display:flex;flex-wrap:wrap;gap:8px;
+  pointer-events:none;
+}
+.pille{
+  background:rgba(9,15,28,.62);
+  backdrop-filter:blur(6px);
+  border:1px solid rgba(255,255,255,.13);
+  border-radius:999px;
+  padding:6px 12px;
+  color:#DCE4F1;
+  font-family:var(--mono);
+  font-size:11.5px;
+  letter-spacing:.02em;
+  display:flex;align-items:center;gap:8px;
+}
+.pille b{color:#fff;font-weight:600}
+.balken{width:56px;height:5px;border-radius:3px;background:rgba(255,255,255,.18);overflow:hidden}
+.balken i{display:block;height:100%;width:0%;background:var(--ali);transition:width .25s linear}
+.werkzeuge{
+  position:absolute;right:12px;bottom:12px;
+  display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end;
+}
+.knopf{
+  font-family:var(--body);font-size:13px;font-weight:500;
+  color:#E7ECF6;background:rgba(9,15,28,.62);
+  border:1px solid rgba(255,255,255,.16);
+  backdrop-filter:blur(6px);
+  border-radius:999px;padding:8px 15px;cursor:pointer;
+  transition:background .15s,border-color .15s;
+}
+.knopf:hover{background:rgba(30,42,68,.85)}
+.knopf[aria-pressed="true"]{background:#E7ECF6;color:#101A2E;border-color:#E7ECF6}
+.mausleiste{
+  position:absolute;left:12px;bottom:12px;
+  display:flex;gap:6px;align-items:center;
+  background:rgba(9,15,28,.62);
+  border:1px solid rgba(255,255,255,.13);
+  backdrop-filter:blur(6px);
+  border-radius:999px;padding:5px 6px 5px 13px;
+}
+.mausleiste span{font-family:var(--mono);font-size:11px;color:#9FADC4;letter-spacing:.08em;text-transform:uppercase;margin-right:4px}
+.chip{
+  border:0;background:transparent;color:#C6D0E0;
+  font-family:var(--body);font-size:12.5px;
+  padding:5px 11px;border-radius:999px;cursor:pointer;
+}
+.chip[aria-pressed="true"]{background:#E7ECF6;color:#101A2E;font-weight:600}
+
+/* ---------- Deutung ---------- */
+.deutung{
+  margin-top:12px;
+  border:1px solid var(--linie);
+  border-left:4px solid var(--ali);
+  background:var(--karte);
+  border-radius:10px;
+  padding:14px 18px;
+  display:flex;gap:14px;align-items:baseline;flex-wrap:wrap;
+}
+.deutung .marke{
+  font-family:var(--mono);font-size:10.5px;letter-spacing:.16em;
+  text-transform:uppercase;color:var(--tinte-2);white-space:nowrap;
+}
+.deutung p{margin:0;flex:1;min-width:260px;font-size:15px}
+
+/* ---------- Raster ---------- */
+.raster{display:grid;grid-template-columns:1.15fr .85fr;gap:20px;margin-top:22px;align-items:start}
+@media(max-width:900px){.raster{grid-template-columns:1fr}}
+
+.karte{
+  background:var(--karte);
+  border:1px solid var(--linie);
+  border-radius:var(--r);
+  padding:22px;
+}
+.karte > h2{
+  font-family:var(--display);font-weight:600;letter-spacing:-.02em;
+  font-size:19px;margin:0 0 4px;
+}
+.karte > .sub{margin:0 0 18px;color:var(--tinte-2);font-size:13.5px}
+
+/* ---------- Regler ---------- */
+.gruppe{margin-bottom:22px}
+.gruppe:last-child{margin-bottom:0}
+.gruppe h3{
+  font-family:var(--mono);font-size:10.5px;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--tinte-2);margin:0 0 12px;padding-bottom:7px;border-bottom:1px solid var(--linie);
+  display:flex;align-items:center;gap:8px;
+}
+.punkt{width:8px;height:8px;border-radius:50%;background:currentColor;flex:none}
+.regler{margin-bottom:15px}
+.regler:last-child{margin-bottom:0}
+.zeile{display:flex;justify-content:space-between;align-items:baseline;gap:10px}
+.zeile label{font-weight:500;font-size:14px}
+.zeile output{font-family:var(--mono);font-size:12.5px;color:var(--tinte-2);white-space:nowrap}
+.hilfe{margin:1px 0 6px;font-size:12.5px;color:var(--tinte-2);line-height:1.4}
+input[type=range]{
+  width:100%;height:22px;margin:0;
+  -webkit-appearance:none;appearance:none;background:transparent;cursor:pointer;
+  accent-color:var(--tinte);
+}
+input[type=range]::-webkit-slider-runnable-track{height:4px;border-radius:2px;background:#DFE3EA}
+input[type=range]::-webkit-slider-thumb{
+  -webkit-appearance:none;width:17px;height:17px;border-radius:50%;
+  background:var(--daumen,var(--tinte));border:2px solid #fff;
+  box-shadow:0 1px 4px rgba(19,26,38,.35);margin-top:-6.5px;
+}
+input[type=range]::-moz-range-track{height:4px;border-radius:2px;background:#DFE3EA}
+input[type=range]::-moz-range-thumb{
+  width:15px;height:15px;border-radius:50%;border:2px solid #fff;
+  background:var(--daumen,var(--tinte));box-shadow:0 1px 4px rgba(19,26,38,.35);
+}
+input[type=range]:focus-visible{outline:2px solid var(--tinte);outline-offset:4px;border-radius:4px}
+
+/* Schalter */
+.schalter{display:flex;flex-wrap:wrap;gap:8px}
+.schalter button{
+  font-family:var(--body);font-size:13px;
+  border:1px solid var(--linie);background:#F6F7F9;color:var(--tinte-2);
+  border-radius:999px;padding:7px 13px;cursor:pointer;transition:.15s;
+}
+.schalter button:hover{border-color:#B9C1CE}
+.schalter button[aria-pressed="true"]{background:var(--tinte);border-color:var(--tinte);color:#fff}
+.schalter button:focus-visible{outline:2px solid var(--tinte);outline-offset:2px}
+
+select{
+  width:100%;font-family:var(--body);font-size:14px;color:var(--tinte);
+  padding:8px 10px;border:1px solid var(--linie);border-radius:8px;background:#F6F7F9;cursor:pointer;
+}
+
+/* ---------- Regelkarten ---------- */
+.regeln{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:34px}
+@media(max-width:820px){.regeln{grid-template-columns:1fr}}
+.regel{
+  background:var(--karte);border:1px solid var(--linie);border-radius:var(--r);
+  overflow:hidden;display:flex;flex-direction:column;
+}
+.regel .demo{background:var(--himmel);position:relative}
+.regel canvas{display:block;width:100%;height:150px}
+.regel .marke{
+  position:absolute;top:9px;left:11px;
+  font-family:var(--mono);font-size:10px;letter-spacing:.14em;text-transform:uppercase;
+  color:rgba(255,255,255,.5);
+}
+.regel .text{padding:18px 20px 20px}
+.regel h3{
+  font-family:var(--display);font-size:18px;font-weight:600;letter-spacing:-.02em;
+  margin:0 0 8px;display:flex;align-items:center;gap:9px;
+}
+.regel p{margin:0;font-size:14px;color:#3A4457}
+.regel .flimmer{
+  font-family:var(--mono);font-size:11px;color:var(--tinte-2);
+  margin-top:12px;padding-top:10px;border-top:1px dashed var(--linie);
+}
+
+/* ---------- Experimente ---------- */
+.abschnitt-kopf{margin:52px 0 18px}
+.abschnitt-kopf h2{
+  font-family:var(--display);font-weight:600;letter-spacing:-.025em;
+  font-size:26px;margin:10px 0 4px;
+}
+.abschnitt-kopf p{margin:0;color:var(--tinte-2);max-width:60ch}
+.versuche{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:14px}
+.versuch{
+  background:var(--karte);border:1px solid var(--linie);border-radius:var(--r);
+  padding:18px 20px 16px;display:flex;flex-direction:column;gap:9px;
+}
+.versuch .nr{font-family:var(--mono);font-size:11px;color:var(--tinte-2);letter-spacing:.1em}
+.versuch h3{font-family:var(--display);font-size:16.5px;font-weight:600;margin:0;letter-spacing:-.015em}
+.versuch p{margin:0;font-size:13.5px;color:#3A4457;flex:1}
+.versuch button{
+  align-self:flex-start;margin-top:4px;
+  font-family:var(--body);font-size:13px;font-weight:500;
+  background:var(--tinte);color:#fff;border:0;border-radius:999px;
+  padding:8px 16px;cursor:pointer;
+}
+.versuch button:hover{background:#28324a}
+.versuch button:focus-visible{outline:2px solid var(--tinte);outline-offset:3px}
+
+footer{
+  margin-top:60px;padding-top:22px;border-top:1px solid var(--linie);
+  color:var(--tinte-2);font-size:13px;display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap;
+}
+footer code{font-family:var(--mono);font-size:12px}
+
+@media (prefers-reduced-motion:reduce){
+  html{scroll-behavior:auto}
+  .balken i{transition:none}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header>
+  <div class="eyebrow">Schwarmsimulation · Schulungsmodul</div>
+  <h1>Drei einfache Regeln. <em>Ein ganzer Schwarm.</em></h1>
+  <p class="lead">Niemand führt diesen Schwarm an. Jeder Vogel schaut nur auf die Nachbarn in seiner Nähe und befolgt drei Regeln: Abstand halten, in dieselbe Richtung fliegen, nicht den Anschluss verlieren. Alles, was der Schwarm als Ganzes tut, entsteht daraus von allein. Dreh an den Reglern und schau zu, was passiert.</p>
+</header>
+
+<div class="buehne">
+  <canvas id="himmel" aria-label="Simulation eines Vogelschwarms"></canvas>
+  <div class="hud">
+    <div class="pille">Gleichlauf <span class="balken"><i id="balkenGleich"></i></span> <b id="wertGleich">–</b></div>
+    <div class="pille">Nachbarn im Blick <b id="wertNachbarn">–</b></div>
+    <div class="pille">Gruppen <b id="wertGruppen">–</b></div>
+    <div class="pille">Vögel <b id="wertAnzahl">–</b></div>
+  </div>
+  <div class="mausleiste">
+    <span>Maus</span>
+    <button class="chip" data-maus="aus" aria-pressed="true">nichts</button>
+    <button class="chip" data-maus="anlocken" aria-pressed="false">anlocken</button>
+    <button class="chip" data-maus="scheuchen" aria-pressed="false">verscheuchen</button>
+  </div>
+  <div class="werkzeuge">
+    <button class="knopf" id="btnBeobachten" aria-pressed="false">Einen Vogel beobachten</button>
+    <button class="knopf" id="btnPause" aria-pressed="false">Pause</button>
+    <button class="knopf" id="btnNeu">Neu starten</button>
+    <button class="knopf" id="btnVollbild">Vollbild</button>
+  </div>
+</div>
+
+<div class="deutung">
+  <span class="marke">Was gerade passiert</span>
+  <p id="deutungText">Die Simulation startet …</p>
+</div>
+
+<div class="raster">
+
+  <!-- Steuerung -->
+  <section class="karte">
+    <h2>Stellschrauben</h2>
+    <p class="sub">Jede Regel hat ihre eigene Farbe. Die Farbe findest du überall wieder: am Regler, am Kraftpfeil des beobachteten Vogels und in den Regelkarten weiter unten.</p>
+
+    <div class="gruppe" style="color:var(--sep)">
+      <h3><span class="punkt"></span><span style="color:var(--tinte-2)">Regel 1 — Abstand halten</span></h3>
+      <div class="regler">
+        <div class="zeile"><label for="sepW">Wie stark ausweichen</label><output id="sepW_v"></output></div>
+        <p class="hilfe">Wie entschieden ein Vogel wegdreht, wenn ihm jemand zu nahe kommt.</p>
+        <input type="range" id="sepW" min="0" max="3" step="0.05" style="--daumen:var(--sep)">
+      </div>
+      <div class="regler">
+        <div class="zeile"><label for="sepR">Persönlicher Freiraum</label><output id="sepR_v"></output></div>
+        <p class="hilfe">Ab welcher Nähe der Nachbar als zu nah gilt.</p>
+        <input type="range" id="sepR" min="5" max="80" step="1" style="--daumen:var(--sep)">
+      </div>
+    </div>
+
+    <div class="gruppe" style="color:var(--ali)">
+      <h3><span class="punkt"></span><span style="color:var(--tinte-2)">Regel 2 — Gleiche Richtung</span></h3>
+      <div class="regler">
+        <div class="zeile"><label for="aliW">Wie stark anpassen</label><output id="aliW_v"></output></div>
+        <p class="hilfe">Wie sehr sich ein Vogel der Flugrichtung seiner Nachbarn angleicht.</p>
+        <input type="range" id="aliW" min="0" max="3" step="0.05" style="--daumen:var(--ali)">
+      </div>
+    </div>
+
+    <div class="gruppe" style="color:var(--coh)">
+      <h3><span class="punkt"></span><span style="color:var(--tinte-2)">Regel 3 — Zusammenbleiben</span></h3>
+      <div class="regler">
+        <div class="zeile"><label for="cohW">Wie stark anziehen</label><output id="cohW_v"></output></div>
+        <p class="hilfe">Wie stark ein Vogel zur Mitte seiner Nachbarn strebt.</p>
+        <input type="range" id="cohW" min="0" max="3" step="0.05" style="--daumen:var(--coh)">
+      </div>
+    </div>
+
+    <div class="gruppe">
+      <h3><span style="color:var(--tinte-2)">Der einzelne Vogel</span></h3>
+      <div class="regler">
+        <div class="zeile"><label for="anzahl">Anzahl Vögel</label><output id="anzahl_v"></output></div>
+        <input type="range" id="anzahl" min="10" max="500" step="5">
+      </div>
+      <div class="regler">
+        <div class="zeile"><label for="radius">Sichtweite</label><output id="radius_v"></output></div>
+        <p class="hilfe">Wie weit ein Vogel schaut. Alles außerhalb existiert für ihn nicht.</p>
+        <input type="range" id="radius" min="15" max="180" step="1">
+      </div>
+      <div class="regler">
+        <div class="zeile"><label for="fov">Blickfeld</label><output id="fov_v"></output></div>
+        <p class="hilfe">Wie weit der Blick zur Seite reicht. 360° heißt: sieht auch nach hinten.</p>
+        <input type="range" id="fov" min="60" max="360" step="5">
+      </div>
+      <div class="regler">
+        <div class="zeile"><label for="tempo">Fluggeschwindigkeit</label><output id="tempo_v"></output></div>
+        <input type="range" id="tempo" min="0.5" max="7" step="0.1">
+      </div>
+      <div class="regler">
+        <div class="zeile"><label for="kraft">Wendigkeit</label><output id="kraft_v"></output></div>
+        <p class="hilfe">Wie schnell ein Vogel die Richtung ändern kann. Klein = träge Kurven.</p>
+        <input type="range" id="kraft" min="0.01" max="0.6" step="0.01">
+      </div>
+      <div class="regler">
+        <div class="zeile"><label for="unruhe">Unruhe</label><output id="unruhe_v"></output></div>
+        <p class="hilfe">Ein bisschen Zufall in jeder Bewegung — wie Wind oder Laune.</p>
+        <input type="range" id="unruhe" min="0" max="0.5" step="0.01">
+      </div>
+    </div>
+
+    <div class="gruppe">
+      <h3><span style="color:var(--tinte-2)">Umgebung</span></h3>
+      <div class="regler">
+        <div class="zeile"><label for="rand">Verhalten am Rand</label></div>
+        <select id="rand">
+          <option value="wrap">Durchfliegen (kommt gegenüber wieder raus)</option>
+          <option value="lenken">Sanft abdrehen</option>
+          <option value="prallen">Abprallen wie an einer Wand</option>
+        </select>
+      </div>
+      <div class="regler" style="margin-top:14px">
+        <div class="zeile"><label for="jaeger">Jäger im Bild</label><output id="jaeger_v"></output></div>
+        <p class="hilfe">Ein Greifvogel jagt den nächstgelegenen Vogel. Beobachte, wie sich der Schwarm teilt und wieder schließt.</p>
+        <input type="range" id="jaeger" min="0" max="3" step="0.1" style="--daumen:var(--jaeger)">
+      </div>
+    </div>
+
+    <div class="gruppe">
+      <h3><span style="color:var(--tinte-2)">Darstellung</span></h3>
+      <div class="regler">
+        <div class="zeile"><label for="farbe">Vögel einfärben nach</label></div>
+        <select id="farbe">
+          <option value="einheitlich">nichts — alle gleich</option>
+          <option value="regel">der Regel, die gerade am stärksten wirkt</option>
+          <option value="richtung">der Flugrichtung</option>
+          <option value="tempo">der Geschwindigkeit</option>
+        </select>
+      </div>
+      <div class="schalter" style="margin-top:14px">
+        <button data-an="spuren" aria-pressed="true">Flugspuren</button>
+        <button data-an="linien" aria-pressed="false">Wer sieht wen</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- Erklärung -->
+  <section class="karte">
+    <h2>Kurz erklärt</h2>
+    <p class="sub">Alles, was du zum Mitreden brauchst.</p>
+
+    <h3 style="font-family:var(--display);font-size:16px;margin:0 0 6px">Kein Anführer, kein Plan</h3>
+    <p style="margin:0 0 18px;font-size:14.2px;color:#3A4457">Es gibt keinen Vogel, der weiß, wie der Schwarm aussehen soll. Jeder rechnet nur für sich, aus dem was er sieht. Die Wolke, die entsteht, hat niemand entworfen. Genau das meint <strong>Selbstorganisation</strong>: Das Ganze kann mehr sein als die Summe der Einzelnen — ohne Zentrale.</p>
+
+    <h3 style="font-family:var(--display);font-size:16px;margin:0 0 6px">Jeder sieht nur ein kleines Stück</h3>
+    <p style="margin:0 0 18px;font-size:14.2px;color:#3A4457">Ein Vogel kennt nur seine paar Nachbarn im Umkreis der <em>Sichtweite</em>. Trotzdem wandert eine Richtungsänderung in Sekunden durch den ganzen Schwarm — jeder gibt sie an seine Nachbarn weiter. Stell die Sichtweite klein: der Schwarm zerfällt. Stell sie groß: er wird eine einzige träge Masse.</p>
+
+    <h3 style="font-family:var(--display);font-size:16px;margin:0 0 6px">Die Regeln arbeiten gegeneinander</h3>
+    <p style="margin:0 0 18px;font-size:14.2px;color:#3A4457">Abstand halten drückt auseinander, Zusammenbleiben zieht zusammen. Schöne Schwärme entstehen im Gleichgewicht dazwischen. Kippt eine Seite, wird es entweder ein zappelnder Klumpen oder loser Nebel. Probier es aus — es ist erstaunlich schmal, der Bereich, in dem es „richtig“ aussieht.</p>
+
+    <h3 style="font-family:var(--display);font-size:16px;margin:0 0 6px">Die drei Zahlen oben im Bild</h3>
+    <p style="margin:0 0 8px;font-size:14.2px;color:#3A4457"><strong>Gleichlauf</strong> — 100 % heißt: alle fliegen exakt parallel. 0 % heißt: jeder in eine andere Richtung.</p>
+    <p style="margin:0 0 8px;font-size:14.2px;color:#3A4457"><strong>Nachbarn im Blick</strong> — wie viele andere ein Vogel im Schnitt gerade sieht. Unter etwa 2 wird es einsam, über 30 wird es zäh.</p>
+    <p style="margin:0 0 18px;font-size:14.2px;color:#3A4457"><strong>Gruppen</strong> — in wie viele getrennte Schwärme das Bild gerade zerfallen ist.</p>
+
+    <h3 style="font-family:var(--display);font-size:16px;margin:0 0 6px">Wo das vorkommt</h3>
+    <p style="margin:0;font-size:14.2px;color:#3A4457">Stare und Heringe, Fußgänger in einer vollen Halle, Applaus der sich synchronisiert, Staus auf der Autobahn, Drohnenschwärme, Animationen in Kinofilmen. Überall dasselbe Prinzip: viele Einzelne, einfache lokale Regeln, überraschendes Gesamtbild.</p>
+  </section>
+</div>
+
+<!-- Regelkarten mit Einzeldemos -->
+<div class="abschnitt-kopf">
+  <div class="eyebrow">Die drei Regeln einzeln</div>
+  <h2>Jede Regel für sich allein sieht kaputt aus</h2>
+  <p>In jedem kleinen Fenster läuft eine eigene Simulation — mit genau einer aktiven Regel. Erst zusammen ergibt sich ein Schwarm.</p>
+</div>
+
+<div class="regeln">
+  <div class="regel">
+    <div class="demo"><span class="marke">nur Regel 1</span><canvas id="demoSep"></canvas></div>
+    <div class="text">
+      <h3><span class="punkt" style="color:var(--sep)"></span>Abstand halten</h3>
+      <p>Ist mir jemand zu nah, drehe ich weg. Je näher, desto stärker. Allein führt das dazu, dass sich alle gleichmäßig über die Fläche verteilen und sich nie wieder treffen.</p>
+      <div class="flimmer">Ohne diese Regel: alle stürzen in einen Punkt.</div>
+    </div>
+  </div>
+  <div class="regel">
+    <div class="demo"><span class="marke">nur Regel 2</span><canvas id="demoAli"></canvas></div>
+    <div class="text">
+      <h3><span class="punkt" style="color:var(--ali)"></span>Gleiche Richtung</h3>
+      <p>Ich fliege ungefähr dorthin, wohin meine Nachbarn fliegen. Allein entstehen so parallele Bänder, die schön ordentlich, aber weit auseinandergezogen sind.</p>
+      <div class="flimmer">Ohne diese Regel: ein zappelnder Haufen ohne Kurs.</div>
+    </div>
+  </div>
+  <div class="regel">
+    <div class="demo"><span class="marke">nur Regel 3</span><canvas id="demoCoh"></canvas></div>
+    <div class="text">
+      <h3><span class="punkt" style="color:var(--coh)"></span>Zusammenbleiben</h3>
+      <p>Ich halte auf die Mitte meiner Nachbarn zu. Allein klumpen alle zu einem dichten Knäuel zusammen und rempeln sich gegenseitig durchs Bild.</p>
+      <div class="flimmer">Ohne diese Regel: der Schwarm löst sich auf.</div>
+    </div>
+  </div>
+</div>
+
+<!-- Experimente -->
+<div class="abschnitt-kopf">
+  <div class="eyebrow">Zum Ausprobieren</div>
+  <h2>Sechs Versuche für die Schulung</h2>
+  <p>Ein Klick lädt die passende Einstellung. Erst raten lassen, was passiert — dann laufen lassen.</p>
+</div>
+
+<div class="versuche" id="versuche"></div>
+
+<footer>
+  <span>Modell nach Craig Reynolds, „Boids“ (1986) — bis heute die Grundlage für Schwarm-Animationen in Film und Forschung.</span>
+  <span><code>Leertaste</code> Pause · <code>N</code> neu starten · <code>B</code> Vogel beobachten · <code>F</code> Vollbild</span>
+</footer>
+
+</div>
+
+<script>
+(function(){
+"use strict";
+
+const FARBE = {
+  sep: [255,176,58],
+  ali: [46,217,195],
+  coh: [155,107,255],
+  jaeger: [255,77,109],
+  basis: [214,226,245],
+  himmel: [16,26,46]
+};
+const rgb = (c,a) => a===undefined ? `rgb(${c[0]},${c[1]},${c[2]})` : `rgba(${c[0]},${c[1]},${c[2]},${a})`;
+const kurz = Math.hypot;
+
+/* ============ Schwarm ============ */
+class Schwarm {
+  constructor(canvas, p){
+    this.cv = canvas;
+    this.ctx = canvas.getContext('2d');
+    this.p = p;
+    this.boids = [];
+    this.gitter = new Map();
+    this.w = 300; this.h = 200;
+    this.jaeger = {x:0,y:0,vx:1,vy:0};
+    this.maus = {x:0,y:0,aktiv:false};
+    this.gruppen = 1; this.gleichlauf = 0; this.schnittNachbarn = 0;
+    this._zaehler = 0;
+    this.messen(true);
+  }
+
+  messen(neu){
+    const dpr = Math.min(window.devicePixelRatio||1, 2);
+    const r = this.cv.getBoundingClientRect();
+    if(r.width < 2) return;
+    const w = Math.round(r.width), h = Math.round(r.height);
+    if(!neu && w===this.w && h===this.h) return;
+    this.w = w; this.h = h;
+    this.cv.width = Math.round(w*dpr);
+    this.cv.height = Math.round(h*dpr);
+    this.ctx.setTransform(dpr,0,0,dpr,0,0);
+    for(const b of this.boids){
+      b.x = Math.max(1, Math.min(w-1, b.x));
+      b.y = Math.max(1, Math.min(h-1, b.y));
+    }
+    this.jaeger.x = Math.max(1, Math.min(w-1, this.jaeger.x));
+    this.jaeger.y = Math.max(1, Math.min(h-1, this.jaeger.y));
+    this.malenHintergrund();
+  }
+
+  malenHintergrund(){
+    const g = this.ctx.createLinearGradient(0,0,0,this.h);
+    g.addColorStop(0,'#0C1425');
+    g.addColorStop(1,'#182545');
+    this.ctx.fillStyle = g;
+    this.ctx.fillRect(0,0,this.w,this.h);
+  }
+
+  fuellen(n){
+    this.boids.length = 0;
+    for(let i=0;i<n;i++) this.boids.push(this.neuerBoid());
+    this.jaeger.x = this.w*0.5; this.jaeger.y = this.h*0.5;
+    this.malenHintergrund();
+  }
+
+  neuerBoid(){
+    const a = Math.random()*Math.PI*2;
+    const s = this.p.tempo;
+    return {
+      x: Math.random()*this.w, y: Math.random()*this.h,
+      vx: Math.cos(a)*s, vy: Math.sin(a)*s,
+      fs:0, fa:0, fc:0, n:0
+    };
+  }
+
+  angleichen(){
+    const soll = Math.round(this.p.anzahl);
+    while(this.boids.length < soll) this.boids.push(this.neuerBoid());
+    if(this.boids.length > soll) this.boids.length = soll;
+  }
+
+  /* --- Nachbarschaftsgitter --- */
+  gitterBauen(zelle){
+    this.gitter.clear();
+    this.spalten = Math.max(1, Math.ceil(this.w/zelle));
+    this.zeilen  = Math.max(1, Math.ceil(this.h/zelle));
+    for(let i=0;i<this.boids.length;i++){
+      const b = this.boids[i];
+      const cx = Math.min(this.spalten-1, Math.max(0, Math.floor(b.x/zelle)));
+      const cy = Math.min(this.zeilen-1,  Math.max(0, Math.floor(b.y/zelle)));
+      const k = cy*this.spalten + cx;
+      let l = this.gitter.get(k);
+      if(!l){ l=[]; this.gitter.set(k,l); }
+      l.push(i);
+    }
+    this.zelle = zelle;
+  }
+
+  umgebung(b, aus){
+    aus.length = 0;
+    const z = this.zelle, wrap = this.p.rand === 'wrap';
+    const cx = Math.min(this.spalten-1, Math.max(0, Math.floor(b.x/z)));
+    const cy = Math.min(this.zeilen-1,  Math.max(0, Math.floor(b.y/z)));
+    for(let dy=-1;dy<=1;dy++){
+      for(let dx=-1;dx<=1;dx++){
+        let gx = cx+dx, gy = cy+dy;
+        if(wrap){
+          gx = (gx+this.spalten)%this.spalten;
+          gy = (gy+this.zeilen)%this.zeilen;
+        } else if(gx<0||gy<0||gx>=this.spalten||gy>=this.zeilen) continue;
+        const l = this.gitter.get(gy*this.spalten+gx);
+        if(l) for(let i=0;i<l.length;i++) aus.push(l[i]);
+      }
+    }
+    return aus;
+  }
+
+  delta(ax,ay,bx,by){
+    let dx = bx-ax, dy = by-ay;
+    if(this.p.rand === 'wrap'){
+      if(dx >  this.w/2) dx -= this.w;
+      if(dx < -this.w/2) dx += this.w;
+      if(dy >  this.h/2) dy -= this.h;
+      if(dy < -this.h/2) dy += this.h;
+    }
+    return [dx,dy];
+  }
+
+  /* --- ein Zeitschritt --- */
+  schritt(){
+    const p = this.p;
+    this.angleichen();
+    const R = p.radius, R2 = R*R, SR2 = p.sepR*p.sepR;
+    const kraft = p.kraft, tempo = p.tempo;
+    const kosFov = Math.cos((p.fov*Math.PI/180)/2);
+    const vollFov = p.fov >= 359;
+    this.gitterBauen(Math.max(R, p.sepR, 12));
+
+    const nachbarn = [];
+    let sumVX=0, sumVY=0, sumN=0;
+
+    for(let i=0;i<this.boids.length;i++){
+      const b = this.boids[i];
+      const geschw = kurz(b.vx,b.vy) || 1e-6;
+      let sx=0,sy=0, ax=0,ay=0, cx=0,cy=0, n=0;
+
+      this.umgebung(b, nachbarn);
+      for(let k=0;k<nachbarn.length;k++){
+        const j = nachbarn[k];
+        if(j===i) continue;
+        const o = this.boids[j];
+        const d = this.delta(b.x,b.y,o.x,o.y);
+        const dx = d[0], dy = d[1];
+        const d2 = dx*dx+dy*dy;
+        if(d2 > R2 || d2 < 1e-9) continue;
+        if(!vollFov){
+          const dot = (dx*b.vx + dy*b.vy)/(Math.sqrt(d2)*geschw);
+          if(dot < kosFov) continue;
+        }
+        n++;
+        ax += o.vx; ay += o.vy;
+        cx += dx;   cy += dy;
+        if(d2 < SR2){
+          const g = 1/Math.max(d2, 4);
+          sx -= dx*g; sy -= dy*g;
+        }
+      }
+
+      let fx=0, fy=0;
+      b.fs=0; b.fa=0; b.fc=0; b.n=n;
+
+      if(sx||sy){
+        const s = this.lenken(sx,sy,b,tempo,kraft*p.sepW);
+        b.fs = kurz(s[0],s[1]); fx += s[0]; fy += s[1];
+      }
+      if(n>0){
+        if(p.aliW>0){
+          const s = this.lenken(ax/n, ay/n, b, tempo, kraft*p.aliW);
+          b.fa = kurz(s[0],s[1]); fx += s[0]; fy += s[1];
+        }
+        if(p.cohW>0){
+          const s = this.lenken(cx/n, cy/n, b, tempo, kraft*p.cohW);
+          b.fc = kurz(s[0],s[1]); fx += s[0]; fy += s[1];
+        }
+      }
+
+      // Maus
+      if(this.maus.aktiv && p.maus !== 'aus'){
+        const d = this.delta(b.x,b.y,this.maus.x,this.maus.y);
+        const dd = kurz(d[0],d[1]);
+        if(dd < 170 && dd > 0.5){
+          const vz = p.maus === 'anlocken' ? 1 : -1;
+          const st = p.maus === 'anlocken' ? 1.2 : 2.6*(1-dd/170)+0.6;
+          const s = this.lenken(d[0]*vz, d[1]*vz, b, tempo, kraft*st);
+          fx += s[0]; fy += s[1];
+        }
+      }
+
+      // Jäger
+      if(p.jaeger > 0){
+        const d = this.delta(b.x,b.y,this.jaeger.x,this.jaeger.y);
+        const dd = kurz(d[0],d[1]);
+        if(dd < 130 && dd > 0.5){
+          const st = p.jaeger*(1.6 - dd/130);
+          const s = this.lenken(-d[0], -d[1], b, tempo, kraft*st*2);
+          fx += s[0]; fy += s[1];
+        }
+      }
+
+      // Rand
+      if(p.rand === 'lenken'){
+        const m = 60, st = kraft*3;
+        if(b.x < m) fx += st*(1-b.x/m);
+        if(b.x > this.w-m) fx -= st*(1-(this.w-b.x)/m);
+        if(b.y < m) fy += st*(1-b.y/m);
+        if(b.y > this.h-m) fy -= st*(1-(this.h-b.y)/m);
+      }
+
+      if(p.unruhe > 0){
+        fx += (Math.random()-0.5)*p.unruhe;
+        fy += (Math.random()-0.5)*p.unruhe;
+      }
+
+      b.vx += fx; b.vy += fy;
+      let v = kurz(b.vx,b.vy);
+      const min = tempo*0.55;
+      if(v > tempo){ b.vx = b.vx/v*tempo; b.vy = b.vy/v*tempo; v = tempo; }
+      else if(v < min && v > 1e-6){ b.vx = b.vx/v*min; b.vy = b.vy/v*min; v = min; }
+      b.x += b.vx; b.y += b.vy;
+
+      if(p.rand === 'wrap'){
+        if(b.x < 0) b.x += this.w; else if(b.x >= this.w) b.x -= this.w;
+        if(b.y < 0) b.y += this.h; else if(b.y >= this.h) b.y -= this.h;
+      } else if(p.rand === 'prallen'){
+        if(b.x < 4){ b.x = 4; b.vx = Math.abs(b.vx); }
+        if(b.x > this.w-4){ b.x = this.w-4; b.vx = -Math.abs(b.vx); }
+        if(b.y < 4){ b.y = 4; b.vy = Math.abs(b.vy); }
+        if(b.y > this.h-4){ b.y = this.h-4; b.vy = -Math.abs(b.vy); }
+      } else {
+        b.x = Math.max(1, Math.min(this.w-1, b.x));
+        b.y = Math.max(1, Math.min(this.h-1, b.y));
+      }
+
+      const vv = kurz(b.vx,b.vy)||1;
+      sumVX += b.vx/vv; sumVY += b.vy/vv; sumN += n;
+    }
+
+    const N = this.boids.length || 1;
+    this.gleichlauf = kurz(sumVX,sumVY)/N;
+    this.schnittNachbarn = sumN/N;
+
+    if(p.jaeger > 0) this.jaegerSchritt();
+    if((this._zaehler++ % 20) === 0) this.gruppenZaehlen();
+  }
+
+  lenken(dx,dy,b,tempo,maxKraft){
+    const l = kurz(dx,dy);
+    if(l < 1e-9) return [0,0];
+    let fx = dx/l*tempo - b.vx;
+    let fy = dy/l*tempo - b.vy;
+    const f = kurz(fx,fy);
+    if(f > maxKraft){ fx = fx/f*maxKraft; fy = fy/f*maxKraft; }
+    return [fx,fy];
+  }
+
+  jaegerSchritt(){
+    const j = this.jaeger;
+    let best=null, bd=1e9;
+    for(let i=0;i<this.boids.length;i+=2){
+      const b = this.boids[i];
+      const d = this.delta(j.x,j.y,b.x,b.y);
+      const dd = d[0]*d[0]+d[1]*d[1];
+      if(dd < bd){ bd = dd; best = d; }
+    }
+    if(best){
+      const l = kurz(best[0],best[1])||1;
+      j.vx += (best[0]/l*0.16);
+      j.vy += (best[1]/l*0.16);
+    }
+    const s = kurz(j.vx,j.vy)||1, max = this.p.tempo*1.15;
+    if(s > max){ j.vx = j.vx/s*max; j.vy = j.vy/s*max; }
+    j.x += j.vx; j.y += j.vy;
+    if(j.x < 0) j.x += this.w; if(j.x >= this.w) j.x -= this.w;
+    if(j.y < 0) j.y += this.h; if(j.y >= this.h) j.y -= this.h;
+  }
+
+  gruppenZaehlen(){
+    const n = this.boids.length;
+    if(!n){ this.gruppen = 0; return; }
+    const eltern = new Int32Array(n);
+    for(let i=0;i<n;i++) eltern[i]=i;
+    const find = a => { while(eltern[a]!==a){ eltern[a]=eltern[eltern[a]]; a=eltern[a]; } return a; };
+    const R2 = this.p.radius*this.p.radius;
+    const puffer = [];
+    for(let i=0;i<n;i++){
+      const b = this.boids[i];
+      this.umgebung(b, puffer);
+      for(let k=0;k<puffer.length;k++){
+        const j = puffer[k];
+        if(j<=i) continue;
+        const o = this.boids[j];
+        const d = this.delta(b.x,b.y,o.x,o.y);
+        if(d[0]*d[0]+d[1]*d[1] <= R2){
+          const ra = find(i), rb = find(j);
+          if(ra !== rb) eltern[ra] = rb;
+        }
+      }
+    }
+    let g = 0;
+    for(let i=0;i<n;i++) if(find(i)===i) g++;
+    this.gruppen = g;
+  }
+
+  /* --- Zeichnen --- */
+  zeichnen(opt){
+    const c = this.ctx, p = this.p;
+    if(p.spuren){
+      c.fillStyle = 'rgba(14,22,40,0.20)';
+      c.fillRect(0,0,this.w,this.h);
+    } else {
+      this.malenHintergrund();
+    }
+
+    const beob = opt && opt.beobachten ? this.boids[0] : null;
+
+    if(beob){
+      c.save();
+      c.beginPath();
+      c.arc(beob.x, beob.y, p.radius, 0, Math.PI*2);
+      c.fillStyle = 'rgba(255,255,255,0.045)';
+      c.fill();
+      c.strokeStyle = 'rgba(255,255,255,0.28)';
+      c.setLineDash([3,4]); c.lineWidth = 1; c.stroke();
+      c.setLineDash([]);
+      if(p.fov < 359){
+        const ri = Math.atan2(beob.vy, beob.vx), halb = (p.fov*Math.PI/180)/2;
+        c.beginPath();
+        c.moveTo(beob.x, beob.y);
+        c.arc(beob.x, beob.y, p.radius, ri-halb, ri+halb);
+        c.closePath();
+        c.fillStyle = 'rgba(255,255,255,0.07)';
+        c.fill();
+      }
+      c.restore();
+    }
+
+    if(p.linien || beob){
+      c.lineWidth = 1;
+      const R2 = p.radius*p.radius;
+      const puffer = [];
+      const grenze = beob ? 1 : Math.min(this.boids.length, 300);
+      for(let q=0;q<grenze;q++){
+        const i = beob ? 0 : q, b = this.boids[i];
+        this.umgebung(b, puffer);
+        for(let k=0;k<puffer.length;k++){
+          const j = puffer[k];
+          if(!beob && j<=i) continue;
+          if(j===i) continue;
+          const o = this.boids[j];
+          const d = this.delta(b.x,b.y,o.x,o.y);
+          const d2 = d[0]*d[0]+d[1]*d[1];
+          if(d2 > R2) continue;
+          c.strokeStyle = beob ? 'rgba(255,255,255,0.42)' : `rgba(150,180,225,${0.16*(1-d2/R2)})`;
+          c.beginPath();
+          c.moveTo(b.x,b.y);
+          c.lineTo(b.x+d[0], b.y+d[1]);
+          c.stroke();
+        }
+      }
+    }
+
+    const gr = opt && opt.groesse ? opt.groesse : 4.2;
+    for(let i=0;i<this.boids.length;i++){
+      const b = this.boids[i];
+      const v = kurz(b.vx,b.vy)||1;
+      const ux = b.vx/v, uy = b.vy/v;
+      let farbe;
+      if(p.farbe === 'regel'){
+        const m = Math.max(b.fs, b.fa, b.fc);
+        if(m < 1e-5) farbe = rgb(FARBE.basis, .55);
+        else if(m === b.fs) farbe = rgb(FARBE.sep, .95);
+        else if(m === b.fa) farbe = rgb(FARBE.ali, .95);
+        else farbe = rgb(FARBE.coh, .95);
+      } else if(p.farbe === 'richtung'){
+        const h = (Math.atan2(uy,ux)*180/Math.PI + 360) % 360;
+        farbe = `hsl(${h.toFixed(0)},72%,68%)`;
+      } else if(p.farbe === 'tempo'){
+        const t = Math.min(1, v/Math.max(p.tempo,0.001));
+        farbe = `hsl(${(210 - t*180).toFixed(0)},75%,${(52+t*18).toFixed(0)}%)`;
+      } else {
+        farbe = rgb(FARBE.basis, .92);
+      }
+      c.fillStyle = farbe;
+      c.beginPath();
+      c.moveTo(b.x + ux*gr*1.9, b.y + uy*gr*1.9);
+      c.lineTo(b.x - ux*gr - uy*gr*0.62, b.y - uy*gr + ux*gr*0.62);
+      c.lineTo(b.x - ux*gr*0.35, b.y - uy*gr*0.35);
+      c.lineTo(b.x - ux*gr + uy*gr*0.62, b.y - uy*gr - ux*gr*0.62);
+      c.closePath();
+      c.fill();
+    }
+
+    if(beob){
+      const pf = (fx,fy,farbe) => {
+        const l = kurz(fx,fy);
+        if(l < 1e-4) return;
+        const s = Math.min(70, l*260);
+        const ex = beob.x + fx/l*s, ey = beob.y + fy/l*s;
+        c.strokeStyle = farbe; c.lineWidth = 2.4;
+        c.beginPath(); c.moveTo(beob.x,beob.y); c.lineTo(ex,ey); c.stroke();
+        const a = Math.atan2(ey-beob.y, ex-beob.x);
+        c.fillStyle = farbe;
+        c.beginPath();
+        c.moveTo(ex,ey);
+        c.lineTo(ex - Math.cos(a-0.42)*7, ey - Math.sin(a-0.42)*7);
+        c.lineTo(ex - Math.cos(a+0.42)*7, ey - Math.sin(a+0.42)*7);
+        c.closePath(); c.fill();
+      };
+      // Richtungen der letzten Kräfte grob rekonstruieren: nutze gespeicherte Beträge entlang der Achsen
+      pf(beob.sx||0, beob.sy||0, rgb(FARBE.sep));
+      pf(beob.ax||0, beob.ay||0, rgb(FARBE.ali));
+      pf(beob.cx||0, beob.cy||0, rgb(FARBE.coh));
+      c.fillStyle = '#fff';
+      c.beginPath(); c.arc(beob.x, beob.y, 4.6, 0, Math.PI*2); c.fill();
+    }
+
+    if(p.jaeger > 0){
+      const j = this.jaeger;
+      const v = kurz(j.vx,j.vy)||1, ux=j.vx/v, uy=j.vy/v, g=9;
+      c.save();
+      c.shadowColor = rgb(FARBE.jaeger,.9); c.shadowBlur = 14;
+      c.fillStyle = rgb(FARBE.jaeger);
+      c.beginPath();
+      c.moveTo(j.x+ux*g*1.7, j.y+uy*g*1.7);
+      c.lineTo(j.x-ux*g-uy*g*0.7, j.y-uy*g+ux*g*0.7);
+      c.lineTo(j.x-ux*g*0.3, j.y-uy*g*0.3);
+      c.lineTo(j.x-ux*g+uy*g*0.7, j.y-uy*g-ux*g*0.7);
+      c.closePath(); c.fill();
+      c.restore();
+    }
+  }
+}
+
+/* ============ Hauptsimulation ============ */
+const P = {
+  anzahl:180, radius:62, fov:300, sepW:1.15, sepR:24, aliW:1.15, cohW:0.95,
+  tempo:3.0, kraft:0.16, unruhe:0.04, rand:'wrap', jaeger:0,
+  maus:'aus', spuren:true, linien:false, farbe:'einheitlich'
+};
+
+const cv = document.getElementById('himmel');
+const sim = new Schwarm(cv, P);
+sim.fuellen(P.anzahl);
+
+// Kräfte für den Beobachtungs-Vogel separat mitschreiben
+const echterSchritt = Schwarm.prototype.schritt;
+Schwarm.prototype.schritt = function(){
+  const b0 = this.boids[0];
+  if(b0){ b0.sx=0;b0.sy=0;b0.ax=0;b0.ay=0;b0.cx=0;b0.cy=0; }
+  echterSchritt.call(this);
+  if(b0 && this === sim && zustand.beobachten){
+    // Richtungen aus einer separaten, günstigen Auswertung
+    const p = this.p, R2 = p.radius*p.radius, SR2 = p.sepR*p.sepR;
+    let sx=0,sy=0,ax=0,ay=0,cx=0,cy=0,n=0;
+    const puffer = [];
+    this.umgebung(b0, puffer);
+    const g0 = kurz(b0.vx,b0.vy)||1;
+    const kf = Math.cos((p.fov*Math.PI/180)/2), voll = p.fov>=359;
+    for(let k=0;k<puffer.length;k++){
+      const j = puffer[k];
+      if(j===0) continue;
+      const o = this.boids[j];
+      const d = this.delta(b0.x,b0.y,o.x,o.y);
+      const d2 = d[0]*d[0]+d[1]*d[1];
+      if(d2>R2||d2<1e-9) continue;
+      if(!voll && (d[0]*b0.vx+d[1]*b0.vy)/(Math.sqrt(d2)*g0) < kf) continue;
+      n++; ax+=o.vx; ay+=o.vy; cx+=d[0]; cy+=d[1];
+      if(d2<SR2){ const g=1/Math.max(d2,4); sx-=d[0]*g; sy-=d[1]*g; }
+    }
+    b0.sx = sx*p.sepW; b0.sy = sy*p.sepW;
+    if(n){ b0.ax=(ax/n)*p.aliW*0.02; b0.ay=(ay/n)*p.aliW*0.02;
+           b0.cx=(cx/n)*p.cohW*0.02; b0.cy=(cy/n)*p.cohW*0.02; }
+  }
+};
+
+const zustand = { pause:false, beobachten:false };
+
+/* ---- Regler verdrahten ---- */
+const einheit = {
+  anzahl: v => Math.round(v),
+  radius: v => Math.round(v)+' px',
+  fov: v => Math.round(v)+'°',
+  sepR: v => Math.round(v)+' px',
+  tempo: v => v.toFixed(1),
+  kraft: v => v.toFixed(2),
+  unruhe: v => v.toFixed(2),
+  jaeger: v => v === 0 ? 'kein Jäger' : v.toFixed(1),
+  sepW: v => v.toFixed(2),
+  aliW: v => v.toFixed(2),
+  cohW: v => v.toFixed(2)
+};
+const reglerIds = ['sepW','sepR','aliW','cohW','anzahl','radius','fov','tempo','kraft','unruhe','jaeger'];
+const regler = {};
+reglerIds.forEach(id => {
+  const el = document.getElementById(id);
+  const out = document.getElementById(id+'_v');
+  regler[id] = {el,out};
+  el.value = P[id];
+  const zeigen = () => {
+    const v = parseFloat(el.value);
+    P[id] = v;
+    out.textContent = (einheit[id]||(x=>x))(v);
+  };
+  el.addEventListener('input', zeigen);
+  zeigen();
+});
+
+document.getElementById('rand').addEventListener('change', e => { P.rand = e.target.value; });
+document.getElementById('farbe').addEventListener('change', e => { P.farbe = e.target.value; });
+
+document.querySelectorAll('[data-an]').forEach(b => {
+  b.addEventListener('click', () => {
+    const k = b.dataset.an;
+    P[k] = !P[k];
+    b.setAttribute('aria-pressed', String(P[k]));
+    if(k === 'spuren' && !P.spuren) sim.malenHintergrund();
+  });
+});
+document.querySelectorAll('[data-maus]').forEach(b => {
+  b.addEventListener('click', () => {
+    P.maus = b.dataset.maus;
+    document.querySelectorAll('[data-maus]').forEach(o =>
+      o.setAttribute('aria-pressed', String(o === b)));
+  });
+});
+
+const btnPause = document.getElementById('btnPause');
+btnPause.addEventListener('click', () => {
+  zustand.pause = !zustand.pause;
+  btnPause.setAttribute('aria-pressed', String(zustand.pause));
+  btnPause.textContent = zustand.pause ? 'Weiter' : 'Pause';
+});
+const btnBeob = document.getElementById('btnBeobachten');
+btnBeob.addEventListener('click', () => {
+  zustand.beobachten = !zustand.beobachten;
+  btnBeob.setAttribute('aria-pressed', String(zustand.beobachten));
+});
+document.getElementById('btnNeu').addEventListener('click', () => sim.fuellen(Math.round(P.anzahl)));
+
+/* ---- Vollbild ---- */
+const buehne = document.querySelector('.buehne');
+const btnVoll = document.getElementById('btnVollbild');
+const imVollbild = () => !!(document.fullscreenElement || document.webkitFullscreenElement);
+
+btnVoll.addEventListener('click', () => {
+  if(imVollbild()){
+    (document.exitFullscreen || document.webkitExitFullscreen).call(document);
+  } else {
+    const an = buehne.requestFullscreen || buehne.webkitRequestFullscreen;
+    if(an) an.call(buehne);
+    else btnVoll.textContent = 'Vollbild nicht möglich';
+  }
+});
+
+function vollbildGewechselt(){
+  const v = imVollbild();
+  btnVoll.textContent = v ? 'Vollbild verlassen' : 'Vollbild';
+  btnVoll.setAttribute('aria-pressed', String(v));
+  requestAnimationFrame(() => { sim.messen(true); });
+}
+document.addEventListener('fullscreenchange', vollbildGewechselt);
+document.addEventListener('webkitfullscreenchange', vollbildGewechselt);
+
+document.addEventListener('keydown', e => {
+  if(e.target.matches('input,select,button')) return;
+  if(e.code === 'Space'){ e.preventDefault(); btnPause.click(); }
+  if(e.key === 'n' || e.key === 'N') document.getElementById('btnNeu').click();
+  if(e.key === 'b' || e.key === 'B') btnBeob.click();
+  if(e.key === 'f' || e.key === 'F') btnVoll.click();
+});
+
+/* ---- Maus/Touch ---- */
+function mausPos(e){
+  const r = cv.getBoundingClientRect();
+  sim.maus.x = e.clientX - r.left;
+  sim.maus.y = e.clientY - r.top;
+  sim.maus.aktiv = true;
+}
+cv.addEventListener('pointermove', mausPos);
+cv.addEventListener('pointerdown', mausPos);
+cv.addEventListener('pointerleave', () => { sim.maus.aktiv = false; });
+
+/* ---- Mini-Demos ---- */
+function mini(id, override){
+  const c = document.getElementById(id);
+  const p = Object.assign({}, {
+    anzahl:26, radius:70, fov:360, sepW:0, sepR:30, aliW:0, cohW:0,
+    tempo:1.7, kraft:0.12, unruhe:0.02, rand:'wrap', jaeger:0,
+    maus:'aus', spuren:false, linien:false, farbe:'einheitlich'
+  }, override);
+  const s = new Schwarm(c, p);
+  s.fuellen(p.anzahl);
+  return s;
+}
+const minis = [
+  mini('demoSep', {sepW:1.8, sepR:46, farbe:'einheitlich'}),
+  mini('demoAli', {aliW:1.6, sepW:0.5, sepR:16}),
+  mini('demoCoh', {cohW:1.4})
+];
+
+/* ---- Anzeige & Deutung ---- */
+const elGleich = document.getElementById('wertGleich');
+const elBalken = document.getElementById('balkenGleich');
+const elNach = document.getElementById('wertNachbarn');
+const elGrp = document.getElementById('wertGruppen');
+const elAnz = document.getElementById('wertAnzahl');
+const elDeut = document.getElementById('deutungText');
+
+function deuten(){
+  const g = sim.gleichlauf, n = sim.schnittNachbarn, grp = sim.gruppen;
+  const teile = [];
+  if(n < 1.2){
+    teile.push('Die Vögel sehen kaum jemanden — bei dieser Sichtweite und Anzahl fliegt jeder für sich. Erhöhe die Sichtweite oder die Anzahl.');
+  } else if(n > 45){
+    teile.push('Jeder sieht fast alle anderen. Der Schwarm reagiert dadurch träge und wirkt wie ein einziger großer Block.');
+  } else if(g > 0.9){
+    teile.push('Fast perfekter Gleichlauf: alle fliegen in dieselbe Richtung. Das ist der Zustand, den man am Himmel als ruhig ziehendes Band sieht.');
+  } else if(g < 0.3 && P.aliW < 0.3){
+    teile.push('Ohne die Regel „Gleiche Richtung“ findet der Schwarm keinen gemeinsamen Kurs — es bleibt beim Gewimmel.');
+  } else if(g < 0.35){
+    teile.push('Viel Bewegung, wenig gemeinsame Richtung. Die Vögel drehen ständig umeinander statt miteinander.');
+  } else {
+    teile.push('Ein guter Arbeitsbereich: genug Ordnung für einen erkennbaren Schwarm, genug Unordnung für lebendige Bewegung.');
+  }
+  if(grp > 6) teile.push(`Das Bild ist gerade in ${grp} getrennte Gruppen zerfallen.`);
+  else if(grp === 1 && n >= 1.2) teile.push('Alle hängen über Nachbarn zusammen — eine einzige durchgehende Gruppe.');
+  if(P.sepW > 2.2 && P.cohW < 0.6) teile.push('Abstoßung dominiert klar: die Vögel verteilen sich über die Fläche.');
+  if(P.cohW > 2 && P.sepW < 0.5) teile.push('Anziehung dominiert: es bildet sich ein dichter Klumpen.');
+  if(P.jaeger > 0) teile.push('Der Jäger reißt Löcher in den Schwarm, die sich sofort wieder schließen.');
+  elDeut.textContent = teile.join(' ');
+}
+
+let letzteDeutung = 0;
+let letzteMessung = 0;
+
+function schleife(t){
+  if(!zustand.pause){
+    sim.schritt();
+    for(const m of minis) m.schritt();
+  }
+  sim.zeichnen({beobachten: zustand.beobachten, groesse: P.anzahl > 320 ? 3.2 : 4.2});
+  for(const m of minis) m.zeichnen({groesse:3.4});
+
+  if(t - letzteMessung > 200){
+    letzteMessung = t;
+    elGleich.textContent = Math.round(sim.gleichlauf*100)+' %';
+    elBalken.style.width = (sim.gleichlauf*100).toFixed(0)+'%';
+    elNach.textContent = sim.schnittNachbarn.toFixed(1);
+    elGrp.textContent = sim.gruppen;
+    elAnz.textContent = sim.boids.length;
+  }
+  if(t - letzteDeutung > 1600){ letzteDeutung = t; deuten(); }
+  requestAnimationFrame(schleife);
+}
+
+function neuMessen(){
+  sim.messen(false);
+  for(const m of minis) m.messen(false);
+}
+window.addEventListener('resize', neuMessen);
+setTimeout(neuMessen, 60);
+requestAnimationFrame(schleife);
+
+/* ---- Versuche ---- */
+const versuche = [
+  {
+    titel:'Der klassische Starenschwarm',
+    frage:'Die Ausgangslage: ein dichter, geordneter Schwarm, wie man ihn im Herbst über Feldern sieht. Merk dir dieses Bild als Vergleich.',
+    werte:{anzahl:220, radius:62, fov:300, sepW:1.2, sepR:24, aliW:1.3, cohW:1.0, tempo:3.0, kraft:0.16, unruhe:0.04, jaeger:0}
+  },
+  {
+    titel:'Alle blind für Nachbarn',
+    frage:'Was passiert, wenn die Sichtweite winzig ist? Rate zuerst — löst sich der Schwarm auf oder wird er nur langsamer?',
+    werte:{anzahl:220, radius:20, aliW:1.3, cohW:1.0, sepW:1.2, sepR:16, tempo:3.0, unruhe:0.04, jaeger:0}
+  },
+  {
+    titel:'Anziehung ohne Abstand',
+    frage:'Zusammenbleiben stark, Abstand halten aus. Ein Lehrbuchbeispiel dafür, warum eine Regel ohne ihre Gegenspielerin nicht funktioniert.',
+    werte:{anzahl:150, radius:80, sepW:0, aliW:0.5, cohW:2.2, sepR:20, tempo:2.5, jaeger:0}
+  },
+  {
+    titel:'Ordnung ohne Zusammenhalt',
+    frage:'Nur die Richtungsregel wirkt. Der Gleichlauf steigt auf fast 100 % — trotzdem sieht es nicht nach Schwarm aus. Warum?',
+    werte:{anzahl:200, radius:70, sepW:0.4, sepR:14, aliW:2.2, cohW:0, tempo:3.0, jaeger:0}
+  },
+  {
+    titel:'Panik im Schwarm',
+    frage:'Ein Jäger kommt dazu. Beobachte, wie sich der Schwarm teilt, den Jäger umfließt und sich dahinter sofort wieder schließt.',
+    werte:{anzahl:260, radius:60, sepW:1.2, sepR:24, aliW:1.4, cohW:1.1, tempo:3.2, jaeger:2.2}
+  },
+  {
+    titel:'Träge Riesen',
+    frage:'Große Sichtweite, geringe Wendigkeit. Jeder sieht fast alle — und genau deshalb reagiert der Schwarm zäh. Mehr Information macht nicht automatisch schneller.',
+    werte:{anzahl:200, radius:170, sepW:1.0, sepR:30, aliW:1.5, cohW:1.0, tempo:2.6, kraft:0.04, jaeger:0}
+  }
+];
+
+const box = document.getElementById('versuche');
+versuche.forEach((v,i) => {
+  const d = document.createElement('div');
+  d.className = 'versuch';
+  const nr = document.createElement('div');
+  nr.className = 'nr'; nr.textContent = 'Versuch '+(i+1);
+  const h = document.createElement('h3'); h.textContent = v.titel;
+  const p = document.createElement('p'); p.textContent = v.frage;
+  const b = document.createElement('button'); b.textContent = 'Einstellung laden';
+  b.addEventListener('click', () => {
+    for(const k in v.werte){
+      if(regler[k]){
+        regler[k].el.value = v.werte[k];
+        regler[k].el.dispatchEvent(new Event('input'));
+      }
+    }
+    sim.fuellen(Math.round(P.anzahl));
+    document.querySelector('.buehne').scrollIntoView({behavior:'smooth', block:'center'});
+  });
+  d.append(nr,h,p,b);
+  box.appendChild(d);
+});
+
+})();
+</script>
+</body>
+</html>
