@@ -119,6 +119,35 @@ h2 .count{
   letter-spacing:.06em;font-weight:400;margin-left:.5rem;text-transform:none;white-space:nowrap;
 }
 
+/* top-level collapsible sections (publications onward) */
+details.section-toggle{border-top:0;}
+details.section-toggle > summary{
+  cursor:pointer;list-style:none;
+  display:flex;align-items:baseline;flex-wrap:wrap;gap:.15rem .55rem;
+  font-family:var(--sans);
+  font-size:1.02rem;font-weight:600;letter-spacing:.13em;text-transform:uppercase;
+  color:var(--deep);margin:0 0 1.4rem;padding-bottom:.6rem;
+  border-bottom:2px solid var(--deep);
+}
+details.section-toggle > summary::-webkit-details-marker{display:none;}
+details.section-toggle > summary::before{
+  content:"+";font-family:var(--mono);font-weight:400;font-size:.9rem;
+  color:var(--blue);flex:0 0 auto;letter-spacing:0;
+}
+details.section-toggle[open] > summary::before{content:"–";}
+details.section-toggle > summary:hover{color:var(--blue);}
+details.section-toggle > summary .count{margin-left:0;}
+
+.section-controls{
+  display:flex;gap:.6rem;justify-content:flex-end;margin:-0.4rem 0 1.6rem;
+}
+.section-controls button{
+  font-family:var(--mono);font-size:.68rem;letter-spacing:.08em;text-transform:uppercase;
+  background:var(--card);color:var(--ink-2);border:1px solid var(--rule);
+  padding:.35rem .7rem;cursor:pointer;
+}
+.section-controls button:hover{border-color:var(--blue);color:var(--deep);}
+
 /* ---------- intro ---------- */
 .intro{display:grid;grid-template-columns:240px 1fr;gap:2.4rem;padding-top:2.8rem;}
 .portrait img{width:100%;height:auto;display:block;filter:saturate(.92);}
@@ -415,8 +444,18 @@ footer p{margin:.2rem 0;}
     </div>
   </section>
   </template>
+  <div class="section-controls">
+    <button type="button" data-toggle-all="open">
+      <span data-lang="en">Expand all</span><span data-lang="de">Alle aufklappen</span>
+    </button>
+    <button type="button" data-toggle-all="close">
+      <span data-lang="en">Collapse all</span><span data-lang="de">Alle einklappen</span>
+    </button>
+  </div>
+
   <section id="publications">
-    <h2><span data-lang="en">Peer-reviewed publications</span><span data-lang="de">Begutachtete Publikationen</span><span class="count">n = 19</span></h2>
+    <details class="section-toggle">
+      <summary><span data-lang="en">Peer-reviewed publications</span><span data-lang="de">Begutachtete Publikationen</span><span class="count">n = 19</span></summary>
 
     <div class="yg">
       <div class="y">2025</div>
@@ -561,10 +600,13 @@ footer p{margin:.2rem 0;}
         </li>
       </ol>
     </div>
-  </section>
+  
+  </details>
+</section>
 
   <section id="abstracts">
-    <h2>Abstracts</h2>
+    <details class="section-toggle">
+      <summary>Abstracts</summary>
     <div class="yg">
       <div class="y">2024</div>
       <ol>
@@ -598,9 +640,12 @@ footer p{margin:.2rem 0;}
         </li>
       </ol>
     </div>
-  </section>
+  
+  </details>
+</section>
   <section id="whitepaper">
-    <h2>Whitepaper &amp; <span data-lang="en">Studies</span><span data-lang="de">Studien</span></h2>
+    <details class="section-toggle">
+      <summary>Whitepaper &amp; <span data-lang="en">Studies</span><span data-lang="de">Studien</span></summary>
 
     <div class="yg">
       <div class="y">2026</div>
@@ -682,12 +727,15 @@ footer p{margin:.2rem 0;}
         </li>
       </ol>
     </div>
-  </section>
+  
+  </details>
+</section>
 
   <!-- Section disabled. To reactivate: change "template" to "section" in the two tags below. -->
   <template id="tools-disabled">
   <section id="tools">
-    <h2><span data-lang="en">Tools &amp; simulations</span><span data-lang="de">Tools &amp; Simulationen</span></h2>
+    <details class="section-toggle">
+      <summary><span data-lang="en">Tools &amp; simulations</span><span data-lang="de">Tools &amp; Simulationen</span></summary>
     <p data-lang="en" style="margin-top:-.6rem;color:var(--ink-2);max-width:46em;">Browser-based, self-contained applications I build to explain concepts and to support project work. No installation, no data leaves the browser.</p>
     <p data-lang="de" style="margin-top:-.6rem;color:var(--ink-2);max-width:46em;">Browserbasierte, eigenständige Anwendungen, die ich baue, um Konzepte zu erklären und Projektarbeit zu unterstützen. Keine Installation, keine Daten verlassen den Browser.</p>
     <div class="tools" style="margin-top:1.2rem;">
@@ -702,11 +750,14 @@ footer p{margin:.2rem 0;}
         <p data-lang="de">TODO — href und Beschreibung ersetzen oder Karte löschen.</p>
       </div>
     </div>
-  </section>
+  
+  </details>
+</section>
   </template>
 
   <section id="supervision">
-    <h2><span data-lang="en">Supervision &amp; mentoring</span><span data-lang="de">Betreuung &amp; Mentoring</span></h2>
+    <details class="section-toggle">
+      <summary><span data-lang="en">Supervision &amp; mentoring</span><span data-lang="de">Betreuung &amp; Mentoring</span></summary>
     <ul class="plain">
       <li><span class="meta" style="margin:0 .6rem 0 0;display:inline-flex;">2025</span>
         <b>Hashtag Gesundheit Mentoringprogramm</b> &mdash; <a href="https://www.hashtag-gesundheit.de/mentoring">hashtag-gesundheit.de</a></li>
@@ -725,10 +776,13 @@ footer p{margin:.2rem 0;}
         <b>Florian Gallusser</b>: <em>Pre-Training of Transformers for Clinical Outcome Prediction on German Medical Claims Data</em>
         <span data-lang="en">(Master's thesis, University of Bonn)</span><span data-lang="de">(Masterarbeit, Universität Bonn)</span></li>
     </ul>
-  </section>
+  
+  </details>
+</section>
 
   <section id="awards">
-    <h2><span data-lang="en">Awards</span><span data-lang="de">Auszeichnungen</span></h2>
+    <details class="section-toggle">
+      <summary><span data-lang="en">Awards</span><span data-lang="de">Auszeichnungen</span></summary>
     <ul class="plain">
       <li><span class="meta" style="margin:0 .6rem 0 0;display:inline-flex;">2024</span>
         <b>Honorable Mention Paper Award</b>, EuroVA 2024 (at EuroVIS 2024)<br>
@@ -740,9 +794,12 @@ footer p{margin:.2rem 0;}
         <b>Honorable Mention Paper Award</b>, EuroVA 2021 (at EuroVIS 2021)<br>
         <span class="venue">Towards the Detection and Visual Analysis of COVID-19 Infection Clusters</span></li>
     </ul>
-  </section>
+  
+  </details>
+</section>
   <section id="talks">
-    <h2><span data-lang="en">Invited talks &amp; panels</span><span data-lang="de">Eingeladene Vorträge &amp; Panels</span></h2>
+    <details class="section-toggle">
+      <summary><span data-lang="en">Invited talks &amp; panels</span><span data-lang="de">Eingeladene Vorträge &amp; Panels</span></summary>
 
     <div class="yg">
       <div class="y">2026</div>
@@ -850,10 +907,13 @@ footer p{margin:.2rem 0;}
         </ol>
       </div>
     </details>
-  </section>
+  
+  </details>
+</section>
 
   <section id="scientific-talks">
-    <h2><span data-lang="en">Conference talks</span><span data-lang="de">Wissenschaftliche Vorträge</span></h2>
+    <details class="section-toggle">
+      <summary><span data-lang="en">Conference talks</span><span data-lang="de">Wissenschaftliche Vorträge</span></summary>
     <div class="yg">
       <div class="y">2023</div>
       <ol>
@@ -878,10 +938,13 @@ footer p{margin:.2rem 0;}
           <div class="meta">2020-12-06<span class="sep">|</span><a href="https://slideslive.com/38938442/temporal-graph-analysis-for-outbreak-pattern-detection-in-covid19-contact-tracing-networks">Video</a></div></li>
       </ol>
     </div>
-  </section>
+  
+  </details>
+</section>
 
   <section id="service">
-    <h2><span data-lang="en">Reviewing, memberships &amp; scholarships</span><span data-lang="de">Reviewing, Mitgliedschaften &amp; Stipendien</span></h2>
+    <details class="section-toggle">
+      <summary><span data-lang="en">Reviewing, memberships &amp; scholarships</span><span data-lang="de">Reviewing, Mitgliedschaften &amp; Stipendien</span></summary>
     <ul class="plain cols">
       <li><span class="meta" style="margin:0 .6rem 0 0;display:inline-flex;">Review</span>EuroVis 2025</li>
       <li><span class="meta" style="margin:0 .6rem 0 0;display:inline-flex;">Review</span>IEEE VIS 2023</li>
@@ -891,7 +954,9 @@ footer p{margin:.2rem 0;}
       <li><span class="meta" style="margin:0 .6rem 0 0;display:inline-flex;">Member</span>Eurographics Association</li>
       <li><span class="meta" style="margin:0 .6rem 0 0;display:inline-flex;">Fellow</span>Stiftung der deutschen Wirtschaft (sdw)</li>
     </ul>
-  </section>
+  
+  </details>
+</section>
 
 </div>
 </main>
@@ -951,6 +1016,29 @@ footer p{margin:.2rem 0;}
 
   buttons.forEach(function(b){
     b.addEventListener('click', function(){ apply(b.dataset.setlang); });
+  });
+})();
+
+(function(){
+  // Expand-all / collapse-all controls (top-level sections only).
+  var toggles = document.querySelectorAll('details.section-toggle');
+  document.querySelectorAll('[data-toggle-all]').forEach(function(btn){
+    btn.addEventListener('click', function(){
+      var open = btn.dataset.toggleAll === 'open';
+      toggles.forEach(function(d){ d.open = open; });
+    });
+  });
+
+  // Clicking a nav link to a section opens that section's toggle first,
+  // so the anchor jump doesn't land on collapsed, empty-looking content.
+  document.querySelectorAll('.nav a[href^="#"]').forEach(function(link){
+    link.addEventListener('click', function(){
+      var id = link.getAttribute('href').slice(1);
+      var target = document.getElementById(id);
+      if (!target) return;
+      var d = target.querySelector(':scope > details.section-toggle');
+      if (d) d.open = true;
+    });
   });
 })();
 </script>
