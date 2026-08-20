@@ -1,0 +1,915 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>2·7·10 — Zi Pai</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=VT323&display=swap" rel="stylesheet">
+<style>
+:root{
+  --void:#12121b;
+  --felt:#33445e;
+  --felt-dark:#212c40;
+  --panel:#1b1e2b;
+  --panel-hi:#262b3d;
+  --bone:#f2e9d4;
+  --ink:#14141c;
+  --vermilion:#ff4b4b;
+  --azure:#4a8dff;
+  --gold:#ffcb47;
+  --mint:#4ee08a;
+  --dim:#8b93ad;
+  --cw:60px;
+  --disp:'Press Start 2P','Courier New',monospace;
+  --body:'VT323','Courier New',monospace;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%}
+body{
+  background:
+    radial-gradient(circle at 50% 22%, #3a4d6b 0%, #1d2536 42%, var(--void) 100%);
+  color:var(--bone);
+  font-family:var(--body);
+  font-size:20px;
+  -webkit-font-smoothing:none;
+  overflow-x:hidden;
+}
+body::after{
+  content:"";position:fixed;inset:0;pointer-events:none;z-index:999;
+  background:repeating-linear-gradient(to bottom, rgba(0,0,0,.16) 0 2px, transparent 2px 4px);
+  mix-blend-mode:multiply;opacity:.5;
+}
+.disp{font-family:var(--disp);letter-spacing:.5px}
+button{font-family:var(--disp);cursor:pointer;color:var(--bone);border:none;background:none}
+button:focus-visible{outline:3px solid var(--gold);outline-offset:2px}
+
+/* ---------- chrome ---------- */
+#app{max-width:1080px;margin:0 auto;padding:14px 14px 24px;position:relative;z-index:1}
+header{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:14px}
+.logo{font-family:var(--disp);font-size:20px;color:var(--gold);
+  text-shadow:0 3px 0 #8a5b00, 0 6px 0 rgba(0,0,0,.5);letter-spacing:2px}
+.logo small{display:block;font-family:var(--body);font-size:16px;color:var(--dim);
+  text-shadow:none;letter-spacing:1px;margin-top:2px}
+.spacer{flex:1}
+.btn{
+  font-size:10px;padding:10px 12px;background:var(--panel-hi);
+  border:3px solid var(--ink);border-radius:5px;box-shadow:0 4px 0 rgba(0,0,0,.6);
+  transition:transform .08s steps(2), box-shadow .08s steps(2);
+}
+.btn:hover{transform:translateY(-2px);box-shadow:0 6px 0 rgba(0,0,0,.6)}
+.btn:active{transform:translateY(3px);box-shadow:0 1px 0 rgba(0,0,0,.6)}
+.btn.gold{background:var(--gold);color:#3a2600}
+.btn.mint{background:var(--mint);color:#04321a}
+.btn.red{background:var(--vermilion);color:#3a0000}
+.btn.sm{font-size:9px;padding:8px 10px}
+.langtog{display:flex;border:3px solid var(--ink);border-radius:5px;overflow:hidden;box-shadow:0 4px 0 rgba(0,0,0,.6)}
+.langtog button{font-size:10px;padding:10px 11px;background:var(--panel-hi)}
+.langtog button.on{background:var(--gold);color:#3a2600}
+
+/* ---------- table ---------- */
+.table{
+  background:linear-gradient(180deg,var(--felt),var(--felt-dark));
+  border:4px solid var(--ink);border-radius:10px;
+  box-shadow:0 8px 0 rgba(0,0,0,.55), inset 0 0 0 3px rgba(255,255,255,.06);
+  padding:14px;
+}
+.seatrow{display:flex;gap:12px;flex-wrap:wrap}
+.seat{
+  flex:1 1 300px;background:rgba(0,0,0,.24);border:3px solid rgba(0,0,0,.45);
+  border-radius:8px;padding:10px;min-height:118px;
+}
+.seat.active{border-color:var(--gold);box-shadow:0 0 0 2px rgba(255,203,71,.35)}
+.seat h3{font-family:var(--disp);font-size:11px;display:flex;align-items:center;gap:8px;margin-bottom:8px}
+.dot{width:10px;height:10px;background:var(--dim);border:2px solid var(--ink)}
+.seat.active .dot{background:var(--gold)}
+.tag{font-family:var(--body);font-size:16px;color:var(--dim);margin-left:auto}
+
+.center{display:flex;gap:14px;flex-wrap:wrap;align-items:flex-start;margin:14px 0}
+.pile{
+  flex:2 1 380px;background:rgba(0,0,0,.24);border:3px solid rgba(0,0,0,.45);
+  border-radius:8px;padding:10px;min-height:112px;
+}
+.pile h4,.side h4{font-family:var(--disp);font-size:9px;color:var(--dim);margin-bottom:8px;letter-spacing:1px}
+.side{flex:1 1 200px;background:rgba(0,0,0,.24);border:3px solid rgba(0,0,0,.45);border-radius:8px;padding:10px}
+.wallnum{font-family:var(--disp);font-size:22px;color:var(--gold);text-shadow:0 3px 0 #8a5b00}
+.log{margin-top:10px;font-size:17px;line-height:1.25;color:#c9d2e6;max-height:96px;overflow:hidden}
+.log div{opacity:.55}
+.log div:last-child{opacity:1;color:var(--bone)}
+
+/* ---------- cards ---------- */
+.row{display:flex;gap:6px;flex-wrap:wrap;align-items:flex-end}
+.card{
+  --w:var(--cw);
+  width:var(--w);height:calc(var(--w)*1.42);
+  background:linear-gradient(180deg,#fdf6e6,var(--bone));
+  border:3px solid var(--ink);border-radius:6px;
+  box-shadow:0 5px 0 rgba(0,0,0,.55);
+  position:relative;display:flex;align-items:center;justify-content:center;
+  flex:0 0 auto;
+}
+.card .glyph{width:64%;image-rendering:pixelated;display:block}
+.card .num{
+  position:absolute;top:3px;left:4px;font-family:var(--disp);
+  font-size:8px;color:var(--ink);opacity:.75
+}
+.card .mark{position:absolute;bottom:3px;right:4px;width:12px;image-rendering:pixelated;opacity:.85}
+.card::before{
+  content:"";position:absolute;left:0;right:0;top:0;height:5px;border-bottom:2px solid rgba(0,0,0,.15)
+}
+.card.sBig::before{background:var(--vermilion)}
+.card.sSmall::before{background:var(--azure)}
+.card.mini{--w:36px}
+.card.mini .num{font-size:6px}
+.card.mini .mark{display:none}
+.card.back{
+  background:repeating-linear-gradient(45deg,#2f4a86 0 6px,#243a6b 6px 12px);
+  border-color:var(--ink);
+}
+.card.back::before{background:#5b7fd4}
+.hand .card{cursor:pointer;transition:transform .1s steps(3), box-shadow .1s steps(3)}
+.hand .card:hover,.hand .card:focus-visible{transform:translateY(-12px) rotate(-2deg);box-shadow:0 14px 0 rgba(0,0,0,.5)}
+.hand.locked .card{cursor:default}
+.hand.locked .card:hover{transform:none;box-shadow:0 5px 0 rgba(0,0,0,.55)}
+.card.fresh{animation:pop .32s steps(4)}
+@keyframes pop{0%{transform:translateY(-26px) scale(1.14) rotate(4deg)}100%{transform:none}}
+.meldbox{display:inline-flex;gap:3px;padding:5px;background:rgba(0,0,0,.3);
+  border:2px solid rgba(255,255,255,.12);border-radius:6px;margin:0 6px 6px 0}
+.meldbox.combo{border-color:var(--gold);box-shadow:0 0 0 2px rgba(255,203,71,.25)}
+.meldbox .lbl{font-family:var(--disp);font-size:7px;color:var(--gold);align-self:center;padding:0 4px;writing-mode:vertical-rl}
+
+/* ---------- player area ---------- */
+.you{margin-top:14px;background:var(--panel);border:4px solid var(--ink);border-radius:10px;
+  box-shadow:0 8px 0 rgba(0,0,0,.55);padding:12px}
+.youhead{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:10px}
+.youhead h3{font-family:var(--disp);font-size:12px;color:var(--gold)}
+.prompt{font-size:19px;color:#cfd8ec}
+.hand{margin-top:10px;min-height:calc(var(--cw)*1.42 + 14px);padding-top:14px}
+.huwrap{min-height:0}
+#huBtn{font-size:12px;padding:12px 16px;animation:glow 1s steps(2) infinite}
+@keyframes glow{50%{filter:brightness(1.35)}}
+
+/* ---------- modal ---------- */
+.overlay{position:fixed;inset:0;background:rgba(6,7,12,.82);display:flex;align-items:center;
+  justify-content:center;padding:16px;z-index:100}
+.overlay[hidden]{display:none}
+.modal{
+  background:var(--panel);border:4px solid var(--ink);border-radius:12px;
+  box-shadow:0 10px 0 rgba(0,0,0,.6);max-width:640px;width:100%;
+  max-height:88vh;overflow:auto;padding:20px
+}
+.modal h2{font-family:var(--disp);font-size:15px;color:var(--gold);margin-bottom:6px;line-height:1.5}
+.modal h3{font-family:var(--disp);font-size:11px;color:var(--mint);margin:16px 0 6px}
+.modal p{font-size:19px;line-height:1.35;color:#d7deef;margin:8px 0}
+.modal ul{margin:8px 0 8px 22px;font-size:19px;line-height:1.35;color:#d7deef}
+.stepdots{display:flex;gap:6px;margin:14px 0 4px}
+.stepdots i{width:12px;height:12px;background:#3c4560;border:2px solid var(--ink);display:block}
+.stepdots i.on{background:var(--gold)}
+.modalfoot{display:flex;gap:10px;align-items:center;margin-top:18px;flex-wrap:wrap}
+.claimopt{display:flex;align-items:center;gap:10px;background:var(--panel-hi);border:3px solid var(--ink);
+  border-radius:8px;padding:8px;margin:8px 0;width:100%;text-align:left;box-shadow:0 4px 0 rgba(0,0,0,.6)}
+.claimopt:hover{background:#31384e}
+.claimopt .cname{font-family:var(--disp);font-size:9px;color:var(--gold)}
+.claimopt .cpts{font-family:var(--body);font-size:16px;color:var(--dim)}
+.scoretab{width:100%;border-collapse:collapse;font-size:18px;margin-top:10px}
+.scoretab td{padding:4px 6px;border-bottom:2px solid rgba(255,255,255,.08)}
+.scoretab td:last-child{text-align:right;color:var(--gold);font-family:var(--disp);font-size:10px}
+.tut-cards{display:flex;gap:8px;flex-wrap:wrap;margin:10px 0}
+@media (max-width:640px){
+  :root{--cw:46px}
+  .logo{font-size:15px}
+  body{font-size:18px}
+}
+@media (prefers-reduced-motion:reduce){
+  *{animation:none !important;transition:none !important}
+}
+</style>
+</head>
+<body>
+<div id="app">
+  <header>
+    <div class="logo">2·7·10<small id="subtitle">Zi Pai Kartenspiel</small></div>
+    <div class="spacer"></div>
+    <div class="langtog" role="group" aria-label="Sprache / Language">
+      <button id="langDE" class="on">DE</button>
+      <button id="langEN">EN</button>
+    </div>
+    <button class="btn" id="tutBtn">?</button>
+    <button class="btn gold" id="newBtn">NEU</button>
+  </header>
+
+  <div class="table">
+    <div class="seatrow">
+      <div class="seat" id="seat1"></div>
+      <div class="seat" id="seat2"></div>
+    </div>
+
+    <div class="center">
+      <div class="pile">
+        <h4 id="pileTitle">ABLAGE</h4>
+        <div class="row" id="discardRow"></div>
+      </div>
+      <div class="side">
+        <h4 id="wallTitle">STAPEL</h4>
+        <div class="wallnum" id="wallNum">50</div>
+        <div class="log" id="logBox"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="you">
+    <div class="youhead">
+      <h3 id="youName">DU</h3>
+      <span class="tag" id="youScore"></span>
+      <div class="spacer"></div>
+      <span class="prompt" id="prompt"></span>
+      <span class="huwrap" id="huWrap"></span>
+    </div>
+    <div id="youMelds"></div>
+    <div class="row hand locked" id="handRow"></div>
+  </div>
+</div>
+
+<div class="overlay" id="overlay" hidden><div class="modal" id="modal"></div></div>
+
+<script>
+/* ============================================================
+   2·7·10 — Zi Pai (字牌) Kartenspiel
+   Single-Page-App, keine externen Abhängigkeiten außer Webfonts.
+   ============================================================ */
+
+/* ---------- Karten-Grundlagen ---------- */
+const CH_BIG   = ['壹','贰','叁','肆','伍','陆','柒','捌','玖','拾']; // 大写
+const CH_SMALL = ['一','二','三','四','五','六','七','八','九','十']; // 小写
+const CH_MARK  = ['大','小'];
+const STYLE_BIG = 0, STYLE_SMALL = 1;
+
+const idxOf = (s,n) => s*10 + (n-1);
+const numOfIdx = i => (i%10)+1;
+const styOfIdx = i => Math.floor(i/10);
+const charOfIdx = i => styOfIdx(i)===STYLE_BIG ? CH_BIG[numOfIdx(i)-1] : CH_SMALL[numOfIdx(i)-1];
+
+/* ---------- Pixel-Glyphen: CJK-Zeichen -> 1-Bit-Sprite ---------- */
+const glyphCache = new Map();
+function glyphURL(ch, color, px){
+  const key = ch+'|'+color+'|'+px;
+  if(glyphCache.has(key)) return glyphCache.get(key);
+  const cv = document.createElement('canvas');
+  cv.width = cv.height = px;
+  const g = cv.getContext('2d', {willReadFrequently:true});
+  g.clearRect(0,0,px,px);
+  g.font = '700 ' + (px-2) + 'px "PingFang SC","Hiragino Sans GB","Noto Sans SC","Microsoft YaHei","Heiti SC",sans-serif';
+  g.textAlign = 'center'; g.textBaseline = 'middle';
+  g.fillStyle = '#000';
+  g.fillText(ch, px/2, px/2 + Math.round(px*0.04));
+  const img = g.getImageData(0,0,px,px), d = img.data;
+  const r = parseInt(color.slice(1,3),16), gg = parseInt(color.slice(3,5),16), b = parseInt(color.slice(5,7),16);
+  for(let i=0;i<d.length;i+=4){
+    if(d[i+3] > 95){ d[i]=r; d[i+1]=gg; d[i+2]=b; d[i+3]=255; }
+    else { d[i+3]=0; }
+  }
+  g.putImageData(img,0,0);
+  const url = cv.toDataURL();
+  glyphCache.set(key,url);
+  return url;
+}
+const COL_BIG = '#d8342f', COL_SMALL = '#1f4fa8';
+const colOfIdx = i => styOfIdx(i)===STYLE_BIG ? COL_BIG : COL_SMALL;
+
+/* ---------- Figuren (Melds) ---------- */
+// t: 'trip' Drilling | 'run' Straße | 'combo' 2-7-10 | 'pair' Paar
+const ALL_MELDS = [];
+for(let i=0;i<20;i++) ALL_MELDS.push({t:'trip', ix:[i,i,i]});
+for(let s=0;s<2;s++) for(let n=1;n<=8;n++) ALL_MELDS.push({t:'run', ix:[idxOf(s,n),idxOf(s,n+1),idxOf(s,n+2)]});
+for(let a=0;a<2;a++) for(let b=0;b<2;b++) for(let c=0;c<2;c++)
+  ALL_MELDS.push({t:'combo', ix:[idxOf(a,2),idxOf(b,7),idxOf(c,10)]});
+ALL_MELDS.forEach(m=>{
+  const need = {};
+  m.ix.forEach(i => need[i] = (need[i]||0)+1);
+  m.need = Object.entries(need).map(([i,c])=>[+i,c]);
+  m.pure = m.t==='combo' && styOfIdx(m.ix[0])===styOfIdx(m.ix[1]) && styOfIdx(m.ix[1])===styOfIdx(m.ix[2]);
+});
+const MELDS_AT = Array.from({length:20},(_,i)=>ALL_MELDS.filter(m=>m.ix.includes(i)));
+
+function meldPoints(m, exposed){
+  if(m.t==='pair') return 0;
+  if(m.t==='trip') return exposed ? 2 : 4;
+  if(m.t==='run')  return 2;
+  return m.pure ? 6 : 3;
+}
+const canTake = (cs,m) => m.need.every(([i,c]) => cs[i] >= c);
+const take    = (cs,m) => m.need.forEach(([i,c]) => cs[i]-=c);
+const give    = (cs,m) => m.need.forEach(([i,c]) => cs[i]+=c);
+
+function toCounts(cards){
+  const cs = new Array(20).fill(0);
+  cards.forEach(c => cs[idxOf(c.s,c.n)]++);
+  return cs;
+}
+
+/* Exakte Zerlegung: needMelds Figuren + genau 1 Paar, kein Rest. */
+function decompose(cs, need, needPair){
+  const i = cs.findIndex(x=>x>0);
+  if(i < 0) return (need===0 && !needPair) ? [] : null;
+  if(needPair && cs[i]>=2){
+    cs[i]-=2;
+    const r = decompose(cs, need, false);
+    cs[i]+=2;
+    if(r) return [{t:'pair', ix:[i,i]}, ...r];
+  }
+  if(need > 0){
+    for(const m of MELDS_AT[i]){
+      if(!canTake(cs,m)) continue;
+      take(cs,m);
+      const r = decompose(cs, need-1, needPair);
+      give(cs,m);
+      if(r) return [m, ...r];
+    }
+  }
+  return null;
+}
+
+/* ---------- Heuristik für die Computergegner ---------- */
+function partialScore(cs){
+  let p = 0;
+  for(let i=0;i<20;i++) if(cs[i]>=2) p++;
+  for(let s=0;s<2;s++) for(let n=1;n<=10;n++){
+    const i = idxOf(s,n);
+    if(!cs[i]) continue;
+    if(n<=9 && cs[i+1]>0) p++;
+    else if(n<=8 && cs[i+2]>0) p++;
+  }
+  const two=[idxOf(0,2),idxOf(1,2)], sev=[idxOf(0,7),idxOf(1,7)], ten=[idxOf(0,10),idxOf(1,10)];
+  const has = a => a.some(i=>cs[i]>0);
+  const k = [has(two),has(sev),has(ten)].filter(Boolean).length;
+  if(k===2) p++;
+  return p;
+}
+function evalCards(cards, need){
+  const cs = toCounts(cards);
+  const memo = new Map();
+  function rec(cs, need){
+    const key = cs.join('')+'|'+need;
+    if(memo.has(key)) return memo.get(key);
+    let best = {m:0, p:partialScore(cs)};
+    if(need>0){
+      for(const meld of ALL_MELDS){
+        if(!canTake(cs,meld)) continue;
+        take(cs,meld);
+        const r = rec(cs, need-1);
+        give(cs,meld);
+        if(r.m+1 > best.m || (r.m+1===best.m && r.p > best.p)) best = {m:r.m+1, p:r.p};
+      }
+    }
+    memo.set(key,best);
+    return best;
+  }
+  const r = rec(cs, need);
+  return r.m*100 + Math.min(r.p, Math.max(0, need-r.m)+1)*12;
+}
+
+/* ---------- Sprache ---------- */
+const T = {
+  de:{
+    subtitle:'Zi Pai Kartenspiel', discardPile:'ABLAGE', wall:'STAPEL', newGame:'NEU',
+    you:'DU', cpu1:'HERTA', cpu2:'MING', cards:'Karten',
+    yourTurn:'Du bist dran — lege eine Karte ab.', waiting:'…',
+    thinking:n=>n+' überlegt …', roundOver:'Runde beendet',
+    hu:'HU! GEWINNEN', pass:'Passen', claimTitle:'Karte rufen?',
+    claimBody:c=>'Abgelegt wurde '+c+'. Du kannst sie nehmen:',
+    winClaim:'GEWINNEN mit dieser Karte',
+    trip:'Drilling', run:'Straße', combo:'2-7-10', pureCombo:'Reines 2-7-10', pair:'Paar',
+    pts:n=>n+' Punkte',
+    logDraw:n=>n+' zieht.', logDiscard:(n,c)=>n+' legt '+c+' ab.',
+    logClaim:(n,m)=>n+' ruft — '+m+'.', logWin:n=>n+' gewinnt die Runde!',
+    logDrawGame:'Stapel leer — unentschieden.', logStart:'Neue Runde. Du beginnst.',
+    scoreTitle:'Rundenabrechnung', drawTitle:'Unentschieden',
+    drawBody:'Der Stapel ist leer. Niemand hat eine vollständige Hand.',
+    winBy:(n,d)=>n+' gewinnt mit der Ablage von '+d+'.', winSelf:n=>n+' gewinnt aus eigenem Zug (selbst gezogen).',
+    base:'Grundwert', selfDraw:'Selbst gezogen', concealed:'Komplett verdeckt',
+    total:'Gesamt', standings:'Punktestand', nextRound:'Nächste Runde',
+    close:'Schließen', back:'Zurück', next:'Weiter', start:'Spielen',
+    tut:[
+      {h:'Willkommen bei 2·7·10',
+       p:['2·7·10 gehört zur chinesischen Paohuzi-Familie und wird mit <b>Zi Pai</b> gespielt — Karten, auf denen Zahlen als Schriftzeichen stehen.',
+          'Drei Spieler, ein Ziel: als Erste:r eine vollständige Hand bilden. Du spielst gegen zwei einfache Computergegner.',
+          '<i>Hinweis: Regionale Varianten unterscheiden sich stark. Diese App setzt eine klar definierte, vereinfachte Variante um.</i>']},
+      {h:'Das Deck', cards:['b1','b2','b3','s1','s2','s3'],
+       p:['Es gibt zehn Zahlen von 1 bis 10 in zwei Schreibweisen: <b style="color:#ff4b4b">Groß</b> (壹 贰 叁 …) und <b style="color:#4a8dff">Klein</b> (一 二 三 …).',
+          'Das sind 20 Kartenarten zu je 4 Exemplaren — insgesamt 80 Karten. Die kleine Zahl oben links hilft beim Lesen, das Zeichen unten rechts zeigt die Schreibweise.']},
+      {h:'Ziel: 3 Figuren + 1 Paar',
+       p:['Deine Hand hat 10 Karten. Sobald du eine 11. Karte bekommst und daraus <b>drei Figuren und ein Paar</b> bilden kannst, gewinnst du sofort.',
+          'Eine Figur besteht immer aus genau drei Karten, ein Paar aus zwei gleichen Karten.']},
+      {h:'Die drei Figuren',
+       melds:[['trip','b5','b5','b5'],['run','s3','s4','s5'],['combo','s2','s7','s10']],
+       p:['<b>Drilling</b>: drei identische Karten.',
+          '<b>Straße</b>: drei aufeinanderfolgende Zahlen in derselben Schreibweise.',
+          '<b>2-7-10</b>: eine 2, eine 7 und eine 10 — die Signatur-Figur des Spiels. Schreibweise egal, aber alle drei gleich ("reines 2-7-10") zählt doppelt.']},
+      {h:'Spielablauf',
+       p:['Du bist am Zug: eine Karte vom Stapel ziehen, dann eine Karte ablegen. Klicke dazu auf eine Karte deiner Hand.',
+          'Legt jemand anderes eine Karte ab, darfst du sie <b>rufen</b>, wenn sie dir eine Figur vervollständigt — egal von wem. Die Figur liegt danach offen aus, und du bist sofort am Zug (ohne zu ziehen).',
+          'Gewinnen geht vor Rufen. Ist der Stapel leer, endet die Runde unentschieden.']},
+      {h:'Punkte',
+       p:['Sieg: 10 Punkte Grundwert. Selbst gezogen: +5. Komplett verdeckte Hand: +5.',
+          'Pro Figur: verdeckter Drilling 4 · offener Drilling 2 · Straße 2 · 2-7-10 3 · reines 2-7-10 6.',
+          'Wer die Gewinnkarte abgelegt hat, zahlt den vollen Betrag. Bei Selbstzug zahlen beide Gegner die Hälfte.']}
+    ]
+  },
+  en:{
+    subtitle:'Zi Pai card game', discardPile:'DISCARDS', wall:'WALL', newGame:'NEW',
+    you:'YOU', cpu1:'HERTA', cpu2:'MING', cards:'cards',
+    yourTurn:'Your turn — discard a card.', waiting:'…',
+    thinking:n=>n+' is thinking …', roundOver:'Round over',
+    hu:'HU! WIN', pass:'Pass', claimTitle:'Claim the card?',
+    claimBody:c=>c+' was discarded. You can take it:',
+    winClaim:'WIN with this card',
+    trip:'Triplet', run:'Run', combo:'2-7-10', pureCombo:'Pure 2-7-10', pair:'Pair',
+    pts:n=>n+' points',
+    logDraw:n=>n+' draws.', logDiscard:(n,c)=>n+' discards '+c+'.',
+    logClaim:(n,m)=>n+' claims — '+m+'.', logWin:n=>n+' wins the round!',
+    logDrawGame:'Wall empty — draw.', logStart:'New round. You lead.',
+    scoreTitle:'Round scoring', drawTitle:'Draw',
+    drawBody:'The wall is empty and nobody completed a hand.',
+    winBy:(n,d)=>n+' wins on '+d+"'s discard.", winSelf:n=>n+' wins on a self-drawn card.',
+    base:'Base value', selfDraw:'Self-drawn', concealed:'Fully concealed',
+    total:'Total', standings:'Standings', nextRound:'Next round',
+    close:'Close', back:'Back', next:'Next', start:'Play',
+    tut:[
+      {h:'Welcome to 2·7·10',
+       p:['2·7·10 belongs to the Chinese Paohuzi family and is played with <b>Zi Pai</b> — cards that show numbers as written characters.',
+          'Three players, one goal: be the first to complete a hand. You play against two simple computer opponents.',
+          '<i>Note: regional variants differ a lot. This app implements one clearly defined, simplified variant.</i>']},
+      {h:'The deck', cards:['b1','b2','b3','s1','s2','s3'],
+       p:['Ten numbers from 1 to 10 come in two writing styles: <b style="color:#ff4b4b">Formal</b> (壹 贰 叁 …) and <b style="color:#4a8dff">Simple</b> (一 二 三 …).',
+          'That makes 20 kinds of card, four copies each — 80 cards in total. The small digit top-left helps you read them; the character bottom-right marks the style.']},
+      {h:'Goal: 3 sets + 1 pair',
+       p:['Your hand holds 10 cards. The moment you receive an 11th card and can arrange it into <b>three sets and one pair</b>, you win.',
+          'A set is always exactly three cards; a pair is two identical cards.']},
+      {h:'The three sets',
+       melds:[['trip','b5','b5','b5'],['run','s3','s4','s5'],['combo','s2','s7','s10']],
+       p:['<b>Triplet</b>: three identical cards.',
+          '<b>Run</b>: three consecutive numbers in the same writing style.',
+          '<b>2-7-10</b>: a 2, a 7 and a 10 — the signature set of the game. Styles may be mixed, but all three alike ("pure 2-7-10") scores double.']},
+      {h:'How a turn works',
+       p:['On your turn you draw one card from the wall, then discard one. Click a card in your hand to discard it.',
+          'When anyone discards, you may <b>claim</b> that card if it completes a set for you — from any player. The set is then placed face-up and you continue immediately, without drawing.',
+          'Winning beats claiming. When the wall runs out, the round ends in a draw.']},
+      {h:'Scoring',
+       p:['Win: 10 points base. Self-drawn: +5. Fully concealed hand: +5.',
+          'Per set: concealed triplet 4 · exposed triplet 2 · run 2 · 2-7-10 3 · pure 2-7-10 6.',
+          'The player who discarded the winning card pays the full amount. On a self-draw both opponents pay half.']}
+    ]
+  }
+};
+let lang = 'de';
+const t = () => T[lang];
+
+/* ---------- Sound ---------- */
+let audioCtx = null;
+function beep(freq, dur, type){
+  try{
+    if(!audioCtx) audioCtx = new (window.AudioContext||window.webkitAudioContext)();
+    const o = audioCtx.createOscillator(), g = audioCtx.createGain();
+    o.type = type||'square'; o.frequency.value = freq;
+    g.gain.setValueAtTime(0.045, audioCtx.currentTime);
+    g.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + (dur||0.08));
+    o.connect(g); g.connect(audioCtx.destination);
+    o.start(); o.stop(audioCtx.currentTime + (dur||0.08));
+  }catch(e){}
+}
+
+/* ---------- Spielzustand ---------- */
+let uid = 0;
+const state = {
+  players: [], wall: [], discards: [], turn: 0,
+  log: [], totals: [0,0,0], over: true, busy: false,
+  resolver: null, canWinNow: false, gen: 0
+};
+
+function playerName(i){ return [t().you, t().cpu1, t().cpu2][i]; }
+
+function buildDeck(){
+  const d = [];
+  for(let s=0;s<2;s++) for(let n=1;n<=10;n++) for(let k=0;k<4;k++) d.push({s,n,uid:uid++});
+  for(let i=d.length-1;i>0;i--){ const j = Math.floor(Math.random()*(i+1)); [d[i],d[j]]=[d[j],d[i]]; }
+  return d;
+}
+const sortHand = h => h.sort((a,b)=> a.s-b.s || a.n-b.n);
+const sleep = ms => new Promise(r=>setTimeout(r,ms));
+const cardLabel = c => charOfIdx(idxOf(c.s,c.n)) + ' (' + c.n + ')';
+function pushLog(s){ state.log.push(s); if(state.log.length>5) state.log.shift(); renderLog(); }
+
+function newRound(){
+  state.wall = buildDeck();
+  state.players = [0,1,2].map(i => ({ i, hand:[], melds:[], human:i===0, passed:false }));
+  for(let k=0;k<10;k++) state.players.forEach(p => p.hand.push(state.wall.pop()));
+  state.players.forEach(p => sortHand(p.hand));
+  state.discards = []; state.turn = 0; state.log = []; state.over = false;
+  state.gen++; state.resolver = null; state.canWinNow = false;
+  pushLog(t().logStart);
+  render();
+  loop(state.gen);
+}
+
+/* ---------- Rendering ---------- */
+function cardHTML(idxOrCard, cls){
+  const i = typeof idxOrCard === 'number' ? idxOrCard : idxOf(idxOrCard.s, idxOrCard.n);
+  const u = typeof idxOrCard === 'number' ? '' : idxOrCard.uid;
+  const col = colOfIdx(i), st = styOfIdx(i);
+  return '<div class="card '+(st===STYLE_BIG?'sBig':'sSmall')+' '+(cls||'')+'" data-uid="'+u+'" '+
+    (cls&&cls.indexOf('click')>=0?'tabindex="0" role="button"':'')+'>'+
+    '<span class="num">'+numOfIdx(i)+'</span>'+
+    '<img class="glyph" src="'+glyphURL(charOfIdx(i), col, 26)+'" alt="'+charOfIdx(i)+'">'+
+    '<img class="mark" src="'+glyphURL(CH_MARK[st], col, 14)+'" alt="">'+
+    '</div>';
+}
+function meldName(m){
+  if(m.t==='trip') return t().trip;
+  if(m.t==='run') return t().run;
+  if(m.t==='combo') return m.pure ? t().pureCombo : t().combo;
+  return t().pair;
+}
+function meldHTML(m, mini){
+  const cards = m.ix.map(i => cardHTML(i, mini?'mini':'')).join('');
+  return '<div class="meldbox '+(m.t==='combo'?'combo':'')+'"><span class="lbl">'+meldName(m)+'</span>'+cards+'</div>';
+}
+function renderLog(){
+  document.getElementById('logBox').innerHTML = state.log.map(l=>'<div>'+l+'</div>').join('');
+}
+function renderSeat(i){
+  const el = document.getElementById('seat'+i);
+  const p = state.players[i];
+  if(!p){ el.innerHTML=''; return; }
+  el.className = 'seat' + (state.turn===i && !state.over ? ' active' : '');
+  const backs = p.hand.map(()=>'<div class="card back mini"></div>').join('');
+  const melds = p.melds.map(m=>meldHTML(m.meld, true)).join('');
+  el.innerHTML =
+    '<h3><span class="dot"></span>'+playerName(i)+
+    '<span class="tag">'+p.hand.length+' '+t().cards+' · '+state.totals[i]+'</span></h3>'+
+    '<div>'+melds+'</div><div class="row">'+backs+'</div>';
+}
+function render(){
+  document.getElementById('subtitle').textContent = t().subtitle;
+  document.getElementById('pileTitle').textContent = t().discardPile;
+  document.getElementById('wallTitle').textContent = t().wall;
+  document.getElementById('newBtn').textContent = t().newGame;
+  document.getElementById('youName').textContent = t().you;
+  document.getElementById('wallNum').textContent = state.wall.length;
+  document.getElementById('youScore').textContent = state.totals[0] + ' P';
+  renderSeat(1); renderSeat(2); renderLog();
+
+  const last = state.discards.slice(-9);
+  document.getElementById('discardRow').innerHTML = last.map((d,k)=>
+    cardHTML(d.card, 'mini' + (k===last.length-1 ? ' fresh' : ''))).join('');
+
+  const me = state.players[0];
+  if(me){
+    document.getElementById('youMelds').innerHTML = me.melds.map(m=>meldHTML(m.meld, true)).join('');
+    const hand = document.getElementById('handRow');
+    hand.className = 'row hand' + (state.resolver ? '' : ' locked');
+    hand.innerHTML = me.hand.map(c=>cardHTML(c, 'click')).join('');
+  }
+  document.getElementById('huWrap').innerHTML = state.canWinNow
+    ? '<button class="btn mint" id="huBtn">'+t().hu+'</button>' : '';
+}
+function setPrompt(s){ document.getElementById('prompt').textContent = s || ''; }
+
+/* ---------- Interaktion ---------- */
+document.getElementById('handRow').addEventListener('click', e=>{
+  const el = e.target.closest('.card'); if(!el || !state.resolver) return;
+  const u = +el.dataset.uid;
+  const r = state.resolver; state.resolver = null;
+  r({type:'discard', uid:u});
+});
+document.getElementById('handRow').addEventListener('keydown', e=>{
+  if(e.key!=='Enter' && e.key!==' ') return;
+  const el = e.target.closest('.card'); if(!el || !state.resolver) return;
+  e.preventDefault();
+  const u = +el.dataset.uid;
+  const r = state.resolver; state.resolver = null;
+  r({type:'discard', uid:u});
+});
+document.getElementById('huWrap').addEventListener('click', e=>{
+  if(!e.target.closest('#huBtn') || !state.resolver) return;
+  const r = state.resolver; state.resolver = null;
+  r({type:'win'});
+});
+
+function awaitHumanAction(){
+  setPrompt(t().yourTurn);
+  return new Promise(res => { state.resolver = res; render(); });
+}
+
+/* ---------- Spielschleife ---------- */
+async function loop(gen){
+  const alive = () => gen === state.gen && !state.over;
+  while(alive()){
+    const pi = state.turn, p = state.players[pi];
+    const need = 3 - p.melds.length;
+
+    if(!p.skipDraw){
+      if(state.wall.length === 0){ return endRound(null); }
+      const c = state.wall.pop();
+      p.hand.push(c); sortHand(p.hand);
+      if(p.human) beep(520,.05);
+      pushLog(t().logDraw(playerName(pi)));
+      render();
+      await sleep(p.human ? 120 : 420);
+      if(!alive()) return;
+    }
+    p.skipDraw = false;
+    state.canWinNow = p.human && !!decompose(toCounts(p.hand), need, true);
+    if(!p.human) setPrompt(t().thinking(playerName(pi)));
+
+    let act;
+    if(p.human){
+      act = await awaitHumanAction();
+    }else{
+      act = decompose(toCounts(p.hand), need, true)
+        ? {type:'win'}
+        : {type:'discard', uid: aiDiscard(p, need).uid};
+    }
+    state.canWinNow = false; setPrompt('');
+
+    if(act.type === 'win'){ return endRound({pi, from:null, selfDraw:true}); }
+
+    const ci = p.hand.findIndex(c => c.uid === act.uid);
+    if(ci < 0) continue;
+    const card = p.hand.splice(ci,1)[0];
+    state.discards.push({card, by:pi});
+    beep(300,.05);
+    pushLog(t().logDiscard(playerName(pi), cardLabel(card)));
+    render();
+    await sleep(320);
+    if(!alive()) return;
+
+    const claim = await resolveClaims(pi, card);
+    if(!alive()) return;
+    if(claim){
+      if(claim.type === 'win'){
+        state.discards.pop();
+        return endRound({pi:claim.pi, from:pi, selfDraw:false, extra:card});
+      }
+      state.discards.pop();
+      applyClaim(claim.pi, claim.meld, card);
+      state.turn = claim.pi;
+      state.players[claim.pi].skipDraw = true;
+      render();
+      await sleep(320);
+      if(!alive()) return;
+      continue;
+    }
+    state.turn = (pi+1) % 3;
+    render();
+  }
+}
+
+/* ---------- Rufen ---------- */
+function claimOptions(p, card){
+  if(p.melds.length >= 3) return [];
+  const cs = toCounts(p.hand);
+  const ci = idxOf(card.s, card.n);
+  const out = [], seen = new Set();
+  for(const m of MELDS_AT[ci]){
+    const tmp = cs.slice(); tmp[ci]++;
+    if(!canTake(tmp, m)) continue;
+    const key = m.ix.slice().sort((a,b)=>a-b).join('-');
+    if(seen.has(key)) continue;
+    seen.add(key);
+    out.push(m);
+  }
+  out.sort((a,b)=> meldPoints(b,true) - meldPoints(a,true));
+  return out;
+}
+async function resolveClaims(fromPi, card){
+  const order = [1,2].map(o => (fromPi+o) % 3);
+  const entries = [];
+  for(const pi of order){
+    const p = state.players[pi];
+    const need = 3 - p.melds.length;
+    const cs = toCounts(p.hand); cs[idxOf(card.s,card.n)]++;
+    if(decompose(cs, need, true)) entries.push({pi, type:'win'});
+  }
+  for(const pi of order){
+    const opts = claimOptions(state.players[pi], card);
+    if(opts.length) entries.push({pi, type:'meld', opts});
+  }
+  let humanAsked = false;
+  for(const e of entries){
+    if(e.pi === 0){
+      if(humanAsked) continue;
+      humanAsked = true;
+      const all = entries.filter(x => x.pi === 0);
+      const pick = await askHumanClaim(card, all);
+      if(pick) return pick;
+      continue;
+    }
+    const p = state.players[e.pi];
+    if(e.type === 'win') return {pi:e.pi, type:'win'};
+    const m = aiPickClaim(p, e.opts, card);
+    if(m) return {pi:e.pi, type:'meld', meld:m};
+  }
+  return null;
+}
+function applyClaim(pi, meld, card){
+  const p = state.players[pi];
+  const ci = idxOf(card.s, card.n);
+  const rest = meld.ix.slice();
+  rest.splice(rest.indexOf(ci), 1);
+  for(const i of rest){
+    const k = p.hand.findIndex(c => idxOf(c.s,c.n) === i);
+    p.hand.splice(k,1);
+  }
+  p.melds.push({meld, exposed:true});
+  beep(660,.09);
+  pushLog(t().logClaim(playerName(pi), meldName(meld)));
+}
+
+/* ---------- KI ---------- */
+function aiDiscard(p, need){
+  const seen = new Set();
+  let best = p.hand[0], bestScore = -1e9;
+  for(const c of p.hand){
+    const k = idxOf(c.s,c.n);
+    if(seen.has(k)) continue;
+    seen.add(k);
+    const rest = p.hand.filter(x => x.uid !== c.uid);
+    const s = evalCards(rest, need) + Math.random()*4;
+    if(s > bestScore){ bestScore = s; best = c; }
+  }
+  return best;
+}
+function aiPickClaim(p, opts, card){
+  const need = 3 - p.melds.length;
+  const before = evalCards(p.hand, need);
+  let best = null, bestScore = before;
+  const ci = idxOf(card.s, card.n);
+  for(const m of opts){
+    const rest = m.ix.slice(); rest.splice(rest.indexOf(ci),1);
+    const hand = p.hand.slice();
+    let ok = true;
+    for(const i of rest){
+      const k = hand.findIndex(c => idxOf(c.s,c.n) === i);
+      if(k < 0){ ok = false; break; }
+      hand.splice(k,1);
+    }
+    if(!ok) continue;
+    const after = 100 + evalCards(hand, need-1) + meldPoints(m,true)*2;
+    if(after > bestScore + 6){ bestScore = after; best = m; }
+  }
+  return best;
+}
+
+/* ---------- Rundenende & Punkte ---------- */
+function endRound(res){
+  state.over = true; state.canWinNow = false; setPrompt('');
+  render();
+  if(!res){ pushLog(t().logDrawGame); return showDraw(); }
+  const p = state.players[res.pi];
+  const hand = p.hand.slice();
+  if(res.extra) hand.push(res.extra);
+  const parts = decompose(toCounts(hand), 3 - p.melds.length, true) || [];
+  const exposed = p.melds.map(m => ({...m.meld, exposed:true}));
+  const all = [...exposed, ...parts.filter(m=>m.t!=='pair').map(m=>({...m, exposed:false}))];
+  const pair = parts.find(m => m.t==='pair');
+
+  let pts = 10;
+  const rows = [[t().base, 10]];
+  if(res.selfDraw){ pts += 5; rows.push([t().selfDraw, 5]); }
+  if(exposed.length === 0){ pts += 5; rows.push([t().concealed, 5]); }
+  for(const m of all){
+    const v = meldPoints(m, m.exposed);
+    pts += v; rows.push([meldName(m), v]);
+  }
+  state.totals[res.pi] += pts;
+  if(res.selfDraw){
+    const h = Math.ceil(pts/2);
+    state.players.forEach(q => { if(q.i !== res.pi) state.totals[q.i] -= h; });
+  }else{
+    state.totals[res.from] -= pts;
+  }
+  pushLog(t().logWin(playerName(res.pi)));
+  beep(880,.12); setTimeout(()=>beep(1180,.16), 110);
+  render();
+  showScore(res, all, pair, rows, pts);
+}
+
+/* ---------- Modale ---------- */
+const overlay = document.getElementById('overlay');
+const modal = document.getElementById('modal');
+function openModal(html){ modal.innerHTML = html; overlay.hidden = false; }
+function closeModal(){ overlay.hidden = true; modal.innerHTML = ''; }
+
+function askHumanClaim(card, entries){
+  return new Promise(res => {
+    const opts = [];
+    entries.forEach(e => {
+      if(e.type === 'win') opts.push({win:true});
+      else e.opts.forEach(m => opts.push({meld:m}));
+    });
+    const body = opts.map((o,k) => {
+      if(o.win) return '<button class="claimopt" data-k="'+k+'">'+
+        '<span class="cname" style="color:var(--mint)">'+t().winClaim+'</span></button>';
+      return '<button class="claimopt" data-k="'+k+'">'+
+        o.meld.ix.map(i=>cardHTML(i,'mini')).join('')+
+        '<span><span class="cname">'+meldName(o.meld)+'</span><br>'+
+        '<span class="cpts">'+t().pts(meldPoints(o.meld,true))+'</span></span></button>';
+    }).join('');
+    openModal(
+      '<h2>'+t().claimTitle+'</h2>'+
+      '<p>'+t().claimBody(cardLabel(card))+'</p>'+
+      '<div class="tut-cards">'+cardHTML(card,'')+'</div>'+
+      body +
+      '<div class="modalfoot"><button class="btn" id="passBtn">'+t().pass+'</button></div>');
+    beep(740,.06);
+    modal.querySelectorAll('.claimopt').forEach(b => b.onclick = () => {
+      const o = opts[+b.dataset.k];
+      closeModal();
+      res(o.win ? {pi:0, type:'win'} : {pi:0, type:'meld', meld:o.meld});
+    });
+    modal.querySelector('#passBtn').onclick = () => { closeModal(); res(null); };
+  });
+}
+function standingsHTML(){
+  return '<h3>'+t().standings+'</h3><table class="scoretab">'+
+    [0,1,2].map(i=>'<tr><td>'+playerName(i)+'</td><td>'+state.totals[i]+'</td></tr>').join('')+
+    '</table>';
+}
+function showScore(res, melds, pair, rows, pts){
+  const head = res.selfDraw ? t().winSelf(playerName(res.pi)) : t().winBy(playerName(res.pi), playerName(res.from));
+  openModal(
+    '<h2>'+t().scoreTitle+'</h2><p>'+head+'</p>'+
+    '<div style="margin:12px 0">'+melds.map(m=>meldHTML(m,true)).join('')+
+      (pair ? meldHTML(pair,true) : '')+'</div>'+
+    '<table class="scoretab">'+rows.map(r=>'<tr><td>'+r[0]+'</td><td>+'+r[1]+'</td></tr>').join('')+
+    '<tr><td><b>'+t().total+'</b></td><td>'+pts+'</td></tr></table>'+
+    standingsHTML()+
+    '<div class="modalfoot"><button class="btn gold" id="againBtn">'+t().nextRound+'</button></div>');
+  modal.querySelector('#againBtn').onclick = () => { closeModal(); newRound(); };
+}
+function showDraw(){
+  openModal('<h2>'+t().drawTitle+'</h2><p>'+t().drawBody+'</p>'+standingsHTML()+
+    '<div class="modalfoot"><button class="btn gold" id="againBtn">'+t().nextRound+'</button></div>');
+  modal.querySelector('#againBtn').onclick = () => { closeModal(); newRound(); };
+}
+
+/* ---------- Tutorial ---------- */
+const specIdx = s => idxOf(s[0]==='b'?STYLE_BIG:STYLE_SMALL, +s.slice(1));
+let tutStep = 0;
+function showTut(step){
+  tutStep = Math.max(0, Math.min(t().tut.length-1, step));
+  const s = t().tut[tutStep];
+  let extra = '';
+  if(s.cards) extra += '<div class="tut-cards">'+s.cards.map(c=>cardHTML(specIdx(c),'')).join('')+'</div>';
+  if(s.melds) extra += '<div class="tut-cards">'+s.melds.map(m=>
+      (function(mm){
+        const ix = mm.slice(1).map(specIdx);
+        const pure = mm[0]==='combo' && styOfIdx(ix[0])===styOfIdx(ix[1]) && styOfIdx(ix[1])===styOfIdx(ix[2]);
+        return meldHTML({t:mm[0], ix, pure}, false);
+      })(m)).join('')+'</div>';
+  const dots = t().tut.map((_,k)=>'<i class="'+(k===tutStep?'on':'')+'"></i>').join('');
+  const isLast = tutStep === t().tut.length-1;
+  openModal(
+    '<h2>'+s.h+'</h2>'+ extra + s.p.map(x=>'<p>'+x+'</p>').join('')+
+    '<div class="stepdots">'+dots+'</div>'+
+    '<div class="modalfoot">'+
+      (tutStep>0 ? '<button class="btn" id="prevBtn">'+t().back+'</button>' : '')+
+      '<button class="btn gold" id="nextBtn">'+(isLast ? t().start : t().next)+'</button>'+
+      '<div class="spacer"></div>'+
+      '<button class="btn sm" id="closeBtn">'+t().close+'</button>'+
+    '</div>');
+  const prev = modal.querySelector('#prevBtn');
+  if(prev) prev.onclick = () => showTut(tutStep-1);
+  modal.querySelector('#nextBtn').onclick = () => isLast ? closeModal() : showTut(tutStep+1);
+  modal.querySelector('#closeBtn').onclick = closeModal;
+}
+
+/* ---------- Steuerung ---------- */
+function setLang(l){
+  lang = l;
+  document.documentElement.lang = l;
+  document.getElementById('langDE').classList.toggle('on', l==='de');
+  document.getElementById('langEN').classList.toggle('on', l==='en');
+  render();
+  if(!overlay.hidden && modal.querySelector('.stepdots')) showTut(tutStep);
+}
+document.getElementById('langDE').onclick = () => setLang('de');
+document.getElementById('langEN').onclick = () => setLang('en');
+document.getElementById('tutBtn').onclick = () => showTut(0);
+document.getElementById('newBtn').onclick = () => {
+  state.resolver = null;
+  state.over = true;
+  state.totals = [0,0,0];
+  closeModal();
+  setTimeout(newRound, 60);
+};
+document.addEventListener('keydown', e => { if(e.key === 'Escape' && !overlay.hidden) closeModal(); });
+
+/* ---------- Start ---------- */
+render();
+newRound();
+setTimeout(()=>showTut(0), 350);
+</script>
+</body>
+</html>
