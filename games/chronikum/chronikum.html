@@ -1,0 +1,628 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Chronikum – Das Timeline-Spiel der Geschichte</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,900&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --nacht:#0F1826;
+  --panel:#17233A;
+  --panel2:#1D2C47;
+  --linie:#2C3D5C;
+  --pergament:#F0E7D2;
+  --pergament2:#E4D8BC;
+  --tinte:#232A38;
+  --messing:#C9A24B;
+  --messing-hell:#E4C878;
+  --nebel:#8FA1B8;
+  --gruen:#7FB069;
+  --rot:#C25B4A;
+  --radius:10px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%}
+body{
+  background:var(--nacht);
+  color:#E9EDF4;
+  font-family:"IBM Plex Sans",system-ui,sans-serif;
+  min-height:100vh;
+  background-image:
+    radial-gradient(ellipse 80% 50% at 50% -10%, rgba(201,162,75,0.08), transparent),
+    repeating-linear-gradient(90deg, transparent 0 119px, rgba(255,255,255,0.015) 119px 120px);
+}
+h1,h2,h3,.serif{font-family:"Fraunces",serif}
+.mono{font-family:"IBM Plex Mono",monospace}
+button{font-family:inherit;cursor:pointer;border:none}
+button:focus-visible,input:focus-visible{outline:2px solid var(--messing-hell);outline-offset:2px}
+
+.wrap{max-width:1100px;margin:0 auto;padding:20px 16px 60px}
+
+/* ---------- Header ---------- */
+header{display:flex;align-items:baseline;justify-content:space-between;gap:12px;padding:10px 0 22px;border-bottom:1px solid var(--linie);margin-bottom:24px}
+header h1{font-size:clamp(1.5rem,4vw,2.1rem);font-weight:900;letter-spacing:.5px;color:var(--pergament)}
+header h1 span{color:var(--messing)}
+header .sub{color:var(--nebel);font-size:.85rem}
+
+/* ---------- Setup ---------- */
+.card-panel{background:var(--panel);border:1px solid var(--linie);border-radius:var(--radius);padding:28px 24px}
+.setup h2{font-size:1.4rem;color:var(--pergament);margin-bottom:6px}
+.setup p{color:var(--nebel);margin-bottom:20px;max-width:60ch;line-height:1.55}
+.setup label{display:block;font-size:.8rem;text-transform:uppercase;letter-spacing:.08em;color:var(--nebel);margin:14px 0 6px}
+.setup input[type=text]{
+  width:100%;max-width:340px;background:var(--nacht);border:1px solid var(--linie);
+  border-radius:6px;padding:10px 12px;color:#E9EDF4;font-size:1rem}
+.chips{display:flex;gap:8px;flex-wrap:wrap}
+.chip{background:var(--nacht);border:1px solid var(--linie);color:var(--nebel);padding:8px 16px;border-radius:999px;font-size:.95rem;font-weight:500}
+.chip.on{background:var(--messing);border-color:var(--messing);color:var(--tinte)}
+.btn{
+  background:var(--messing);color:var(--tinte);font-weight:600;font-size:1rem;
+  padding:12px 26px;border-radius:8px;transition:transform .12s, background .12s}
+.btn:hover{background:var(--messing-hell);transform:translateY(-1px)}
+.btn.ghost{background:transparent;color:var(--nebel);border:1px solid var(--linie)}
+.btn.ghost:hover{color:#E9EDF4;background:var(--panel2)}
+.btn:disabled{opacity:.4;cursor:not-allowed;transform:none}
+.setup .start{margin-top:26px}
+
+/* ---------- Scoreboard ---------- */
+.scores{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:18px}
+.score{
+  flex:1;min-width:130px;background:var(--panel);border:1px solid var(--linie);
+  border-radius:8px;padding:10px 14px;display:flex;justify-content:space-between;align-items:center;gap:10px}
+.score.active{border-color:var(--messing);box-shadow:0 0 0 1px var(--messing), 0 4px 18px rgba(201,162,75,.15)}
+.score .name{font-weight:600;font-size:.95rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.score .pts{font-family:"IBM Plex Mono",monospace;color:var(--messing-hell);font-size:1.05rem}
+
+/* ---------- Zieh-Karte ---------- */
+.stage{display:flex;flex-direction:column;gap:22px}
+.draw-area{display:flex;justify-content:center}
+.event-card{
+  width:min(420px,100%);background:linear-gradient(160deg,var(--pergament),var(--pergament2));
+  color:var(--tinte);border-radius:12px;padding:26px 24px 22px;text-align:center;
+  box-shadow:0 10px 30px rgba(0,0,0,.45), inset 0 0 0 1px rgba(35,42,56,.15);
+  position:relative}
+.event-card::before{
+  content:"";position:absolute;inset:7px;border:1px solid rgba(35,42,56,.28);border-radius:8px;pointer-events:none}
+.event-card .eyebrow{font-size:.7rem;text-transform:uppercase;letter-spacing:.18em;color:#7A6A45;margin-bottom:10px}
+.event-card h3{font-size:clamp(1.15rem,3vw,1.5rem);font-weight:600;line-height:1.3}
+.event-card .year{
+  font-family:"Fraunces",serif;font-weight:900;font-size:2.4rem;color:#8A6E2F;margin-top:10px;
+  display:none}
+.event-card .desc{display:none;color:#4A4230;font-size:.9rem;margin-top:10px;line-height:1.5}
+.event-card.revealed .year,.event-card.revealed .desc{display:block}
+.event-card.correct{box-shadow:0 0 0 3px var(--gruen), 0 10px 30px rgba(0,0,0,.45)}
+.event-card.wrong{box-shadow:0 0 0 3px var(--rot), 0 10px 30px rgba(0,0,0,.45)}
+.hint{text-align:center;color:var(--nebel);font-size:.9rem}
+.hint b{color:var(--messing-hell)}
+
+/* ---------- Timeline ---------- */
+#timelines{display:flex;flex-direction:column;gap:14px}
+.timeline-wrap{background:var(--panel);border:1px solid var(--linie);border-radius:var(--radius);padding:18px 8px 22px;position:relative;overflow:hidden;transition:border-color .15s, box-shadow .15s}
+.timeline-wrap.active{border-color:var(--messing);box-shadow:0 0 0 1px var(--messing), 0 6px 22px rgba(201,162,75,.12)}
+.timeline-wrap.inactive{opacity:.72}
+.timeline-wrap.inactive .tcard{width:96px;padding:9px 8px}
+.timeline-wrap.inactive .tcard .y{font-size:1.05rem}
+.timeline-wrap.inactive .tcard .t{font-size:.68rem}
+.timeline-label{font-size:.72rem;text-transform:uppercase;letter-spacing:.16em;color:var(--nebel);padding:0 14px 12px;display:flex;justify-content:space-between;gap:10px}
+.timeline-label .owner{color:var(--pergament);font-weight:600}
+.timeline-wrap.active .timeline-label .owner{color:var(--messing-hell)}
+.timeline-label .turn-tag{color:var(--messing);letter-spacing:.12em}
+.timeline-scroll{overflow-x:auto;padding:8px 14px 14px;-webkit-overflow-scrolling:touch}
+.timeline{display:flex;align-items:stretch;gap:0;min-width:min-content;position:relative;padding-top:14px}
+.timeline::before{
+  content:"";position:absolute;top:0;left:0;right:0;height:8px;
+  background:repeating-linear-gradient(90deg, var(--linie) 0 1px, transparent 1px 14px);
+  border-top:1px solid var(--linie)}
+.tcard{
+  width:132px;flex:0 0 auto;background:linear-gradient(165deg,var(--pergament),var(--pergament2));
+  color:var(--tinte);border-radius:8px;padding:12px 10px;margin:0 2px;
+  box-shadow:0 4px 12px rgba(0,0,0,.35);
+  display:flex;flex-direction:column;gap:6px;animation:drop .35s ease}
+@keyframes drop{from{transform:translateY(-14px);opacity:0}to{transform:none;opacity:1}}
+.tcard .y{font-family:"Fraunces",serif;font-weight:900;font-size:1.3rem;color:#8A6E2F}
+.tcard .t{font-size:.78rem;font-weight:600;line-height:1.3}
+.slot{
+  flex:0 0 auto;width:34px;align-self:stretch;margin:0 2px;border-radius:8px;
+  border:2px dashed var(--linie);background:transparent;color:var(--nebel);
+  font-size:1.2rem;transition:all .15s;min-height:90px}
+.slot.enabled{border-color:var(--messing);color:var(--messing);cursor:pointer;background:rgba(201,162,75,.06)}
+.slot.enabled:hover{background:rgba(201,162,75,.2);width:46px;color:var(--messing-hell)}
+.slot:not(.enabled){opacity:.25;cursor:default}
+
+/* ---------- Feedback / Modals ---------- */
+.feedback{text-align:center;padding:6px 0}
+.feedback .msg{font-family:"Fraunces",serif;font-size:1.5rem;font-weight:600}
+.feedback .msg.ok{color:var(--gruen)}
+.feedback .msg.no{color:var(--rot)}
+.feedback .next{margin-top:14px}
+.controls{display:flex;justify-content:center;gap:10px;flex-wrap:wrap}
+
+.overlay{
+  position:fixed;inset:0;background:rgba(8,12,20,.8);display:flex;align-items:center;justify-content:center;
+  padding:20px;z-index:50}
+.overlay .inner{background:var(--panel);border:1px solid var(--messing);border-radius:14px;padding:36px 30px;text-align:center;max-width:480px}
+.overlay .inner-final{max-width:760px;max-height:88vh;overflow-y:auto}
+.overlay h2{font-size:2rem;color:var(--messing-hell);font-weight:900;margin-bottom:8px}
+.overlay p{color:var(--nebel);margin-bottom:22px;line-height:1.5}
+.hidden{display:none!important}
+
+/* ---------- Finale Listen ---------- */
+#finalLists{display:flex;flex-direction:column;gap:16px;margin-bottom:24px;text-align:left}
+.final-block{background:var(--nacht);border:1px solid var(--linie);border-radius:10px;padding:14px 16px}
+.final-block.winner{border-color:var(--messing);box-shadow:0 0 0 1px var(--messing)}
+.final-head{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:10px}
+.final-head .fname{font-family:"Fraunces",serif;font-weight:600;font-size:1.1rem;color:var(--pergament)}
+.final-block.winner .final-head .fname{color:var(--messing-hell)}
+.final-head .fcount{font-family:"IBM Plex Mono",monospace;color:var(--nebel);font-size:.9rem}
+.final-rows{display:flex;flex-direction:column;gap:4px}
+.final-row{display:flex;gap:12px;align-items:baseline;font-size:.9rem;padding:3px 0;border-bottom:1px solid rgba(255,255,255,.05)}
+.final-row:last-child{border-bottom:none}
+.final-row .fy{font-family:"IBM Plex Mono",monospace;color:var(--messing);min-width:82px;flex:0 0 auto;text-align:right}
+.final-row .ft{color:#D9E0EA}
+
+@media (prefers-reduced-motion: reduce){
+  *,*::before,*::after{animation:none!important;transition:none!important}
+}
+@media (max-width:560px){
+  .event-card{padding:20px 16px 18px}
+  .tcard{width:112px}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>Chroni<span>kum</span></h1>
+    <div class="sub serif">Ordne die Geschichte. Zehn Karten gewinnen.</div>
+  </header>
+
+  <!-- SETUP -->
+  <section id="setup" class="card-panel setup">
+    <h2>Neue Partie</h2>
+    <p>Wie Hitster, nur mit Weltgeschichte: Ziehe ein Ereignis, ordne es in deine Zeitleiste ein – ohne die Jahreszahl zu kennen. Liegt es richtig, bleibt die Karte. Wer zuerst <b style="color:var(--messing-hell)">10 Karten</b> gesammelt hat, gewinnt.</p>
+    <label>Anzahl Spieler</label>
+    <div class="chips" id="playerCount">
+      <button class="chip" data-n="1">1</button>
+      <button class="chip on" data-n="2">2</button>
+      <button class="chip" data-n="3">3</button>
+      <button class="chip" data-n="4">4</button>
+    </div>
+    <div id="nameInputs"></div>
+    <label>Schwierigkeit</label>
+    <div class="chips" id="difficulty">
+      <button class="chip on" data-d="all">Alle Epochen</button>
+      <button class="chip" data-d="modern">Ab 1500</button>
+      <button class="chip" data-d="20th">Ab 1900</button>
+    </div>
+    <button class="btn start" id="startBtn">Partie starten</button>
+  </section>
+
+  <!-- GAME -->
+  <section id="game" class="hidden">
+    <div class="scores" id="scores"></div>
+    <div class="stage">
+      <div class="draw-area">
+        <div class="event-card" id="eventCard">
+          <div class="eyebrow" id="cardEyebrow">Ereignis</div>
+          <h3 id="cardTitle"></h3>
+          <div class="year" id="cardYear"></div>
+          <div class="desc" id="cardDesc"></div>
+        </div>
+      </div>
+      <div class="hint" id="hint"></div>
+      <div class="feedback hidden" id="feedback">
+        <div class="msg" id="feedbackMsg"></div>
+        <div class="next"><button class="btn" id="nextBtn">Weiter</button></div>
+      </div>
+      <div id="timelines"></div>
+      <div class="controls">
+        <button class="btn ghost" id="quitBtn">Partie beenden</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- WIN -->
+  <div class="overlay hidden" id="winOverlay">
+    <div class="inner inner-final">
+      <h2 id="winTitle"></h2>
+      <p id="winText"></p>
+      <div id="finalLists"></div>
+      <button class="btn" id="againBtn">Neue Partie</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ---------------- Daten: Historische Ereignisse ----------------
+// y: Jahr (negativ = v. Chr.), t: Titel, d: Kurzbeschreibung
+const EVENTS = [
+{y:-2560,t:"Fertigstellung der Cheops-Pyramide",d:"Die große Pyramide von Gizeh wird als Grabmal des Pharaos Cheops vollendet."},
+{y:-1754,t:"Codex Hammurapi",d:"Einer der ältesten Gesetzestexte der Welt entsteht in Babylon."},
+{y:-776,t:"Erste Olympische Spiele der Antike",d:"In Olympia werden erstmals Wettkämpfe zu Ehren des Zeus ausgetragen."},
+{y:-753,t:"Sagenhafte Gründung Roms",d:"Der Legende nach gründet Romulus die Stadt Rom."},
+{y:-490,t:"Schlacht bei Marathon",d:"Athen besiegt das persische Heer; Ursprung des Marathonlaufs."},
+{y:-447,t:"Baubeginn des Parthenon",d:"Athen errichtet den berühmten Tempel auf der Akropolis."},
+{y:-336,t:"Alexander der Große wird König",d:"Der Makedone beginnt seinen Eroberungszug bis nach Indien."},
+{y:-221,t:"Erste Einigung Chinas",d:"Qin Shihuangdi wird erster Kaiser des geeinten Chinas."},
+{y:-44,t:"Ermordung Julius Caesars",d:"An den Iden des März wird Caesar im Senat erstochen."},
+{y:-31,t:"Schlacht bei Actium",d:"Octavian besiegt Antonius und Kleopatra – der Weg zum Kaisertum ist frei."},
+{y:79,t:"Ausbruch des Vesuv",d:"Pompeji und Herculaneum werden unter Asche begraben."},
+{y:122,t:"Baubeginn des Hadrianswalls",d:"Rom sichert die Nordgrenze Britanniens mit einem Grenzwall."},
+{y:313,t:"Mailänder Vereinbarung",d:"Konstantin gewährt dem Christentum im Römischen Reich Religionsfreiheit."},
+{y:476,t:"Ende des Weströmischen Reiches",d:"Der letzte weströmische Kaiser Romulus Augustulus wird abgesetzt."},
+{y:622,t:"Hidschra",d:"Mohammed zieht von Mekka nach Medina – Beginn der islamischen Zeitrechnung."},
+{y:800,t:"Kaiserkrönung Karls des Großen",d:"Papst Leo III. krönt Karl in Rom zum Kaiser."},
+{y:962,t:"Otto I. wird Kaiser",d:"Beginn des Heiligen Römischen Reiches deutscher Nation."},
+{y:1066,t:"Schlacht bei Hastings",d:"Wilhelm der Eroberer erobert England von der Normandie aus."},
+{y:1096,t:"Beginn des Ersten Kreuzzugs",d:"Christliche Heere ziehen Richtung Jerusalem."},
+{y:1206,t:"Dschingis Khan eint die Mongolen",d:"Beginn des größten zusammenhängenden Landreiches der Geschichte."},
+{y:1215,t:"Magna Carta",d:"Englische Barone zwingen König Johann zu ersten Rechtsgarantien."},
+{y:1347,t:"Der Schwarze Tod erreicht Europa",d:"Die Pest tötet in wenigen Jahren rund ein Drittel der Europäer."},
+{y:1431,t:"Jeanne d'Arc wird verbrannt",d:"Die französische Nationalheldin stirbt in Rouen auf dem Scheiterhaufen."},
+{y:1453,t:"Fall Konstantinopels",d:"Die Osmanen erobern die byzantinische Hauptstadt."},
+{y:1455,t:"Gutenberg-Bibel",d:"Der Buchdruck mit beweglichen Lettern revolutioniert die Wissensverbreitung."},
+{y:1492,t:"Kolumbus erreicht Amerika",d:"Die europäische Expansion in die 'Neue Welt' beginnt."},
+{y:1498,t:"Vasco da Gama erreicht Indien",d:"Der Seeweg nach Indien um Afrika herum ist gefunden."},
+{y:1517,t:"Luthers 95 Thesen",d:"Beginn der Reformation in Wittenberg."},
+{y:1519,t:"Beginn der Magellan-Expedition",d:"Erste Weltumsegelung der Geschichte startet."},
+{y:1543,t:"Kopernikus veröffentlicht das heliozentrische Weltbild",d:"'De revolutionibus' stellt die Sonne ins Zentrum."},
+{y:1588,t:"Untergang der Spanischen Armada",d:"England wehrt die spanische Invasionsflotte ab."},
+{y:1600,t:"Giordano Bruno wird hingerichtet",d:"Der Philosoph stirbt in Rom auf dem Scheiterhaufen."},
+{y:1618,t:"Prager Fenstersturz",d:"Beginn des Dreißigjährigen Krieges."},
+{y:1648,t:"Westfälischer Friede",d:"Ende des Dreißigjährigen Krieges, Neuordnung Europas."},
+{y:1687,t:"Newtons Principia",d:"Newton formuliert die Gesetze der Mechanik und Gravitation."},
+{y:1712,t:"Erste brauchbare Dampfmaschine",d:"Thomas Newcomen baut eine Dampfmaschine zur Wasserförderung."},
+{y:1755,t:"Erdbeben von Lissabon",d:"Eine der größten Naturkatastrophen Europas erschüttert Philosophie und Theologie."},
+{y:1776,t:"Amerikanische Unabhängigkeitserklärung",d:"Die 13 Kolonien erklären ihre Loslösung von Großbritannien."},
+{y:1789,t:"Sturm auf die Bastille",d:"Beginn der Französischen Revolution."},
+{y:1796,t:"Erste Pockenimpfung",d:"Edward Jenner begründet die moderne Impfung."},
+{y:1804,t:"Napoleon krönt sich zum Kaiser",d:"In Notre-Dame setzt sich Napoleon selbst die Krone auf."},
+{y:1815,t:"Schlacht bei Waterloo",d:"Napoleons endgültige Niederlage."},
+{y:1815,t:"Wiener Kongress endet",d:"Europa wird nach den Napoleonischen Kriegen neu geordnet."},
+{y:1825,t:"Erste öffentliche Eisenbahn",d:"Die Strecke Stockton–Darlington eröffnet das Eisenbahnzeitalter."},
+{y:1833,t:"Abschaffung der Sklaverei im Britischen Empire",d:"Der Slavery Abolition Act tritt in Kraft."},
+{y:1848,t:"Märzrevolution in Deutschland",d:"Revolutionäre fordern Einheit und demokratische Rechte."},
+{y:1859,t:"Darwins 'Entstehung der Arten'",d:"Die Evolutionstheorie verändert das Weltbild."},
+{y:1861,t:"Beginn des Amerikanischen Bürgerkriegs",d:"Nord- und Südstaaten geraten in einen vierjährigen Krieg."},
+{y:1865,t:"Ermordung Abraham Lincolns",d:"Der US-Präsident wird kurz nach Kriegsende erschossen."},
+{y:1869,t:"Eröffnung des Suezkanals",d:"Mittelmeer und Rotes Meer sind verbunden."},
+{y:1871,t:"Deutsche Reichsgründung",d:"Wilhelm I. wird in Versailles zum Kaiser proklamiert."},
+{y:1876,t:"Patent auf das Telefon",d:"Alexander Graham Bell meldet das Telefon zum Patent an."},
+{y:1885,t:"Erstes Automobil von Carl Benz",d:"Der Benz Patent-Motorwagen fährt in Mannheim."},
+{y:1895,t:"Entdeckung der Röntgenstrahlen",d:"Wilhelm Conrad Röntgen entdeckt die 'X-Strahlen' in Würzburg."},
+{y:1896,t:"Erste Olympische Spiele der Neuzeit",d:"In Athen leben die Spiele nach über 1500 Jahren wieder auf."},
+{y:1903,t:"Erster Motorflug der Gebrüder Wright",d:"In Kitty Hawk hebt erstmals ein Motorflugzeug ab."},
+{y:1905,t:"Einsteins Spezielle Relativitätstheorie",d:"Das 'Wunderjahr' der Physik verändert Raum und Zeit."},
+{y:1912,t:"Untergang der Titanic",d:"Das 'unsinkbare' Schiff kollidiert mit einem Eisberg."},
+{y:1914,t:"Attentat von Sarajevo",d:"Die Ermordung Franz Ferdinands löst den Ersten Weltkrieg aus."},
+{y:1917,t:"Oktoberrevolution in Russland",d:"Die Bolschewiki übernehmen die Macht."},
+{y:1918,t:"Ende des Ersten Weltkriegs",d:"Waffenstillstand von Compiègne; das Kaiserreich endet."},
+{y:1919,t:"Versailler Vertrag",d:"Der Friedensvertrag legt Deutschland harte Bedingungen auf."},
+{y:1928,t:"Entdeckung des Penicillins",d:"Alexander Fleming entdeckt das erste Antibiotikum."},
+{y:1929,t:"Schwarzer Donnerstag",d:"Der Börsencrash an der Wall Street löst die Weltwirtschaftskrise aus."},
+{y:1933,t:"Hitlers Machtübernahme",d:"Hitler wird Reichskanzler; Beginn der NS-Diktatur."},
+{y:1936,t:"Turing beschreibt die Turingmaschine",d:"Das theoretische Fundament der Informatik entsteht."},
+{y:1939,t:"Überfall auf Polen",d:"Deutschland beginnt den Zweiten Weltkrieg."},
+{y:1941,t:"Angriff auf Pearl Harbor",d:"Japan greift die US-Pazifikflotte an; die USA treten in den Krieg ein."},
+{y:1944,t:"D-Day: Landung in der Normandie",d:"Die Alliierten eröffnen die Westfront."},
+{y:1945,t:"Ende des Zweiten Weltkriegs in Europa",d:"Bedingungslose Kapitulation der Wehrmacht am 8. Mai."},
+{y:1945,t:"Atombombenabwurf auf Hiroshima",d:"Erste Kernwaffe im Kriegseinsatz."},
+{y:1945,t:"Gründung der Vereinten Nationen",d:"51 Staaten unterzeichnen die UN-Charta."},
+{y:1947,t:"Unabhängigkeit Indiens",d:"Britisch-Indien wird in Indien und Pakistan geteilt."},
+{y:1948,t:"Gründung des Staates Israel",d:"David Ben-Gurion verliest die Unabhängigkeitserklärung."},
+{y:1949,t:"Gründung der Bundesrepublik Deutschland",d:"Das Grundgesetz tritt in Kraft."},
+{y:1953,t:"Entschlüsselung der DNA-Struktur",d:"Watson und Crick beschreiben die Doppelhelix."},
+{y:1953,t:"Erstbesteigung des Mount Everest",d:"Hillary und Norgay erreichen den höchsten Gipfel der Erde."},
+{y:1955,t:"Rosa Parks bleibt sitzen",d:"Der Busboykott von Montgomery beflügelt die Bürgerrechtsbewegung."},
+{y:1957,t:"Sputnik 1",d:"Der erste künstliche Satellit umkreist die Erde."},
+{y:1957,t:"Römische Verträge",d:"Sechs Staaten gründen die Europäische Wirtschaftsgemeinschaft."},
+{y:1961,t:"Bau der Berliner Mauer",d:"Die DDR riegelt West-Berlin ab."},
+{y:1961,t:"Erster Mensch im Weltall",d:"Juri Gagarin umrundet die Erde."},
+{y:1962,t:"Kubakrise",d:"Die Welt steht am Rand eines Atomkriegs."},
+{y:1963,t:"Ermordung John F. Kennedys",d:"Der US-Präsident wird in Dallas erschossen."},
+{y:1963,t:"'I Have a Dream'",d:"Martin Luther Kings Rede beim Marsch auf Washington."},
+{y:1969,t:"Mondlandung von Apollo 11",d:"Neil Armstrong betritt als erster Mensch den Mond."},
+{y:1969,t:"ARPANET geht online",d:"Der Vorläufer des Internets verbindet erste Rechner."},
+{y:1973,t:"Ölkrise",d:"Das OPEC-Embargo erschüttert die Weltwirtschaft."},
+{y:1975,t:"Ende des Vietnamkriegs",d:"Saigon fällt; Nord- und Südvietnam werden vereint."},
+{y:1977,t:"Start der Voyager-Sonden",d:"Zwei Raumsonden beginnen ihre Reise ins äußere Sonnensystem."},
+{y:1979,t:"Islamische Revolution im Iran",d:"Der Schah wird gestürzt, Khomeini übernimmt die Macht."},
+{y:1980,t:"WHO erklärt Pocken für ausgerottet",d:"Erste vollständig ausgerottete Infektionskrankheit des Menschen."},
+{y:1986,t:"Reaktorkatastrophe von Tschernobyl",d:"Der GAU verstrahlt weite Teile Europas."},
+{y:1986,t:"Explosion der Challenger",d:"Das Space Shuttle bricht kurz nach dem Start auseinander."},
+{y:1989,t:"Fall der Berliner Mauer",d:"Die innerdeutsche Grenze öffnet sich am 9. November."},
+{y:1989,t:"Massaker am Tian'anmen-Platz",d:"China schlägt die Demokratiebewegung gewaltsam nieder."},
+{y:1990,t:"Deutsche Wiedervereinigung",d:"DDR und Bundesrepublik werden am 3. Oktober vereint."},
+{y:1990,t:"Freilassung Nelson Mandelas",d:"Nach 27 Jahren Haft kommt Mandela frei."},
+{y:1991,t:"Auflösung der Sowjetunion",d:"Die UdSSR hört auf zu existieren."},
+{y:1991,t:"Das World Wide Web wird öffentlich",d:"Tim Berners-Lee gibt das WWW am CERN frei."},
+{y:1994,t:"Ende der Apartheid",d:"Nelson Mandela wird Südafrikas erster schwarzer Präsident."},
+{y:1997,t:"Deep Blue schlägt Kasparow",d:"Erstmals besiegt ein Computer den Schachweltmeister im Wettkampf."},
+{y:1998,t:"Gründung von Google",d:"Zwei Stanford-Doktoranden starten eine Suchmaschine."},
+{y:1999,t:"Einführung des Euro",d:"Die Gemeinschaftswährung startet als Buchgeld."},
+{y:2001,t:"Terroranschläge des 11. September",d:"Anschläge auf World Trade Center und Pentagon."},
+{y:2003,t:"Humangenomprojekt abgeschlossen",d:"Das menschliche Genom ist vollständig sequenziert."},
+{y:2004,t:"Gründung von Facebook",d:"Beginn des Zeitalters der sozialen Netzwerke."},
+{y:2004,t:"EU-Osterweiterung",d:"Zehn Staaten treten der Europäischen Union bei."},
+{y:2007,t:"Vorstellung des iPhone",d:"Das Smartphone-Zeitalter beginnt."},
+{y:2008,t:"Globale Finanzkrise",d:"Die Lehman-Pleite löst eine weltweite Krise aus."},
+{y:2011,t:"Fukushima",d:"Erdbeben und Tsunami führen zur Reaktorkatastrophe in Japan."},
+{y:2012,t:"Nachweis des Higgs-Bosons",d:"Das CERN bestätigt das lange gesuchte Teilchen."},
+{y:2015,t:"Pariser Klimaabkommen",d:"195 Staaten einigen sich auf das 1,5-Grad-Ziel."},
+{y:2016,t:"Brexit-Referendum",d:"Großbritannien stimmt für den EU-Austritt."},
+{y:2019,t:"Erstes Bild eines Schwarzen Lochs",d:"Das Event Horizon Telescope fotografiert M87*."},
+{y:2020,t:"Beginn der COVID-19-Pandemie",d:"Ein neuartiges Coronavirus legt die Welt lahm."},
+{y:2021,t:"Erster Helikopterflug auf dem Mars",d:"'Ingenuity' hebt auf einem anderen Planeten ab."},
+{y:2022,t:"Russischer Überfall auf die Ukraine",d:"Beginn des größten Krieges in Europa seit 1945."},
+{y:2022,t:"Veröffentlichung von ChatGPT",d:"Generative KI erreicht die breite Öffentlichkeit."},
+// --- Erweiterung: 80 weitere Ereignisse ---
+{y:-3200,t:"Erste Schrift in Mesopotamien",d:"Die Sumerer entwickeln die Keilschrift – der Beginn der Geschichtsschreibung."},
+{y:-3100,t:"Vereinigung Ägyptens",d:"Ober- und Unterägypten werden unter einem Pharao vereint."},
+{y:-1750,t:"Blüte der Minoischen Kultur",d:"Auf Kreta entstehen die Palastanlagen von Knossos."},
+{y:-1274,t:"Schlacht bei Kadesch",d:"Ägypter und Hethiter schließen einen der ersten überlieferten Friedensverträge."},
+{y:-1200,t:"Zusammenbruch der Bronzezeit",d:"Mehrere Hochkulturen im östlichen Mittelmeerraum brechen zusammen."},
+{y:-563,t:"Geburt Buddhas",d:"Siddhartha Gautama, Begründer des Buddhismus, wird geboren."},
+{y:-551,t:"Geburt des Konfuzius",d:"Der Philosoph prägt das Denken Chinas über Jahrtausende."},
+{y:-509,t:"Gründung der Römischen Republik",d:"Rom vertreibt seine Könige und wird Republik."},
+{y:-480,t:"Schlacht bei den Thermopylen",d:"300 Spartaner halten das persische Heer auf."},
+{y:-399,t:"Tod des Sokrates",d:"Der Philosoph wird in Athen zum Schierlingsbecher verurteilt."},
+{y:-323,t:"Tod Alexanders des Großen",d:"Sein Weltreich zerfällt unter den Diadochen."},
+{y:-146,t:"Zerstörung Karthagos",d:"Rom beendet die Punischen Kriege und zerstört die Rivalin."},
+{y:-4,t:"Wahrscheinliche Geburt Jesu",d:"Nach heutiger Forschung wurde Jesus wenige Jahre 'vor Christus' geboren."},
+{y:64,t:"Großer Brand von Rom",d:"Weite Teile der Stadt werden zerstört; Nero macht Christen verantwortlich."},
+{y:70,t:"Zerstörung des Jerusalemer Tempels",d:"Römische Truppen erobern und zerstören den Zweiten Tempel."},
+{y:105,t:"Erfindung des Papiers in China",d:"Cai Lun perfektioniert die Papierherstellung."},
+{y:325,t:"Erstes Konzil von Nicäa",d:"Die Kirche legt das christliche Glaubensbekenntnis fest."},
+{y:395,t:"Teilung des Römischen Reiches",d:"Das Reich zerfällt endgültig in Ost- und Westrom."},
+{y:410,t:"Plünderung Roms durch die Goten",d:"Erstmals seit 800 Jahren wird Rom erobert."},
+{y:527,t:"Justinian wird Kaiser",d:"Der oströmische Herrscher lässt das Römische Recht kodifizieren."},
+{y:632,t:"Tod Mohammeds",d:"Nach seinem Tod beginnt die rasche Ausbreitung des Islam."},
+{y:711,t:"Muslimische Eroberung Spaniens",d:"Ein arabisch-berberisches Heer landet auf der Iberischen Halbinsel."},
+{y:732,t:"Schlacht von Tours und Poitiers",d:"Karl Martell stoppt den muslimischen Vormarsch in Westeuropa."},
+{y:793,t:"Wikingerüberfall auf Lindisfarne",d:"Der Angriff auf das Kloster gilt als Beginn der Wikingerzeit."},
+{y:1054,t:"Morgenländisches Schisma",d:"Die Christenheit spaltet sich in katholische und orthodoxe Kirche."},
+{y:1204,t:"Plünderung Konstantinopels",d:"Der Vierte Kreuzzug erobert die christliche Metropole."},
+{y:1271,t:"Marco Polo bricht nach China auf",d:"Der venezianische Kaufmann beginnt seine berühmte Reise."},
+{y:1348,t:"Gründung der Universität Prag",d:"Die erste Universität Mitteleuropas wird gegründet."},
+{y:1378,t:"Beginn des Abendländischen Schismas",d:"Zeitweise beanspruchen mehrere Päpste gleichzeitig das Amt."},
+{y:1415,t:"Schlacht von Azincourt",d:"England siegt im Hundertjährigen Krieg gegen Frankreich."},
+{y:1440,t:"Blüte des Aztekenreichs",d:"Tenochtitlán wird zu einer der größten Städte der Welt."},
+{y:1487,t:"Bartolomeu Dias umsegelt Afrika",d:"Das Kap der Guten Hoffnung wird erstmals umrundet."},
+{y:1521,t:"Eroberung des Aztekenreichs",d:"Hernán Cortés besiegt die Azteken."},
+{y:1534,t:"Englische Reformation",d:"Heinrich VIII. löst die Kirche Englands von Rom."},
+{y:1564,t:"Geburt Shakespeares",d:"Der bedeutendste Dramatiker der englischen Sprache wird geboren."},
+{y:1582,t:"Einführung des Gregorianischen Kalenders",d:"Papst Gregor XIII. reformiert die Zeitrechnung."},
+{y:1609,t:"Galileis erste Teleskop-Beobachtungen",d:"Galilei richtet das Fernrohr an den Himmel und entdeckt Jupitermonde."},
+{y:1620,t:"Ankunft der Mayflower",d:"Die Pilgerväter landen an der Küste Neuenglands."},
+{y:1632,t:"Baubeginn des Taj Mahal",d:"Der Mogulherrscher Shah Jahan errichtet das Mausoleum für seine Frau."},
+{y:1666,t:"Großer Brand von London",d:"Ein Feuer zerstört große Teile der Stadt."},
+{y:1682,t:"Ludwig XIV. bezieht Versailles",d:"Der Sonnenkönig macht das Schloss zum Machtzentrum."},
+{y:1707,t:"Vereinigung von England und Schottland",d:"Das Königreich Großbritannien entsteht."},
+{y:1740,t:"Beginn der Herrschaft Friedrichs II.",d:"Der 'Alte Fritz' macht Preußen zur Großmacht."},
+{y:1769,t:"Watts verbesserte Dampfmaschine",d:"James Watt patentiert eine effizientere Dampfmaschine."},
+{y:1783,t:"Erster bemannter Ballonflug",d:"Die Brüder Montgolfier lassen Menschen aufsteigen."},
+{y:1793,t:"Hinrichtung Ludwigs XVI.",d:"Der französische König stirbt unter der Guillotine."},
+{y:1799,t:"Fund des Steins von Rosette",d:"Der Schlüssel zur Entzifferung der Hieroglyphen wird gefunden."},
+{y:1803,t:"Louisiana Purchase",d:"Die USA verdoppeln ihr Staatsgebiet durch den Kauf von Frankreich."},
+{y:1812,t:"Napoleons Russlandfeldzug",d:"Der Rückzug aus Moskau wird zur Katastrophe."},
+{y:1821,t:"Beginn des griechischen Unabhängigkeitskriegs",d:"Griechenland erhebt sich gegen die osmanische Herrschaft."},
+{y:1837,t:"Erste elektrische Telegrafenleitung",d:"Morse und Cooke/Wheatstone ermöglichen Fernkommunikation."},
+{y:1848,t:"Kommunistisches Manifest",d:"Marx und Engels veröffentlichen ihre Programmschrift."},
+{y:1853,t:"Öffnung Japans",d:"Commodore Perry erzwingt das Ende der japanischen Isolation."},
+{y:1863,t:"Schlacht von Gettysburg",d:"Wendepunkt im Amerikanischen Bürgerkrieg."},
+{y:1867,t:"Marx' 'Das Kapital'",d:"Der erste Band von Marx' Hauptwerk erscheint."},
+{y:1876,t:"Schlacht am Little Bighorn",d:"Indigene Krieger besiegen die US-Kavallerie unter Custer."},
+{y:1889,t:"Eröffnung des Eiffelturms",d:"Das Wahrzeichen entsteht zur Weltausstellung in Paris."},
+{y:1898,t:"Entdeckung des Radiums",d:"Marie und Pierre Curie isolieren das radioaktive Element."},
+{y:1900,t:"Plancks Quantenhypothese",d:"Max Planck legt den Grundstein der Quantenphysik."},
+{y:1908,t:"Ford Model T",d:"Die Fließbandproduktion macht das Auto erschwinglich."},
+{y:1911,t:"Amundsen erreicht den Südpol",d:"Erste Menschen am geografischen Südpol."},
+{y:1922,t:"Entdeckung des Grabes von Tutanchamun",d:"Howard Carter öffnet das nahezu ungeplünderte Pharaonengrab."},
+{y:1927,t:"Erster Tonfilm",d:"'The Jazz Singer' läutet das Ende der Stummfilmära ein."},
+{y:1936,t:"Beginn des Spanischen Bürgerkriegs",d:"Ein Militärputsch stürzt Spanien in den Bürgerkrieg."},
+{y:1937,t:"Hindenburg-Katastrophe",d:"Das Luftschiff geht bei der Landung in Flammen auf."},
+{y:1942,t:"Erste kontrollierte Kernspaltung",d:"Fermis Reaktor in Chicago erreicht die erste Kettenreaktion."},
+{y:1948,t:"Erfindung des Transistors",d:"Bell Labs stellt das Bauteil vor, das die Elektronik revolutioniert."},
+{y:1950,t:"Beginn des Koreakriegs",d:"Nordkorea greift den Süden an; ein Stellvertreterkrieg beginnt."},
+{y:1954,t:"Beginn des Algerienkriegs",d:"Algerien kämpft für die Unabhängigkeit von Frankreich."},
+{y:1960,t:"'Jahr Afrikas'",d:"17 afrikanische Staaten erlangen die Unabhängigkeit."},
+{y:1964,t:"Civil Rights Act",d:"Die USA verbieten Rassendiskriminierung per Gesetz."},
+{y:1971,t:"Erster Mikroprozessor",d:"Intel bringt den 4004 auf den Markt."},
+{y:1972,t:"Watergate-Skandal",d:"Der Skandal führt zwei Jahre später zum Rücktritt Nixons."},
+{y:1978,t:"Erstes Retortenbaby",d:"Louise Brown wird als erstes durch IVF gezeugtes Kind geboren."},
+{y:1981,t:"Erster IBM-PC",d:"Der Personal Computer erobert die Büros der Welt."},
+{y:1985,t:"Entdeckung des Ozonlochs",d:"Über der Antarktis wird ein Ozonloch nachgewiesen."},
+{y:1995,t:"Massaker von Srebrenica",d:"Schlimmstes Kriegsverbrechen in Europa seit dem Zweiten Weltkrieg."},
+{y:2000,t:"Millennium-Feiern weltweit",d:"Der Wechsel ins neue Jahrtausend wird global begangen."},
+{y:2010,t:"Beginn des Arabischen Frühlings",d:"Protestwellen erschüttern autoritäre Regime im Nahen Osten."},
+{y:2015,t:"Europäische Flüchtlingskrise",d:"Über eine Million Menschen suchen Schutz in Europa."},
+];
+
+// ---------------- State ----------------
+const WIN_CARDS = 10;
+let players = [], current = 0, deck = [], drawn = null, phase = "place", difficulty = "all";
+
+const $ = id => document.getElementById(id);
+const fmtYear = y => y < 0 ? Math.abs(y) + " v. Chr." : String(y);
+
+function shuffle(a){for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
+
+// ---------------- Setup UI ----------------
+let playerN = 2;
+$("playerCount").addEventListener("click", e=>{
+  const b = e.target.closest(".chip"); if(!b) return;
+  playerN = +b.dataset.n;
+  [...$("playerCount").children].forEach(c=>c.classList.toggle("on", c===b));
+  renderNameInputs();
+});
+$("difficulty").addEventListener("click", e=>{
+  const b = e.target.closest(".chip"); if(!b) return;
+  difficulty = b.dataset.d;
+  [...$("difficulty").children].forEach(c=>c.classList.toggle("on", c===b));
+});
+function renderNameInputs(){
+  const box = $("nameInputs"); box.innerHTML = "";
+  for(let i=0;i<playerN;i++){
+    const lab = document.createElement("label"); lab.textContent = "Name Spieler " + (i+1);
+    const inp = document.createElement("input"); inp.type="text"; inp.placeholder="Spieler " + (i+1); inp.dataset.idx=i; inp.maxLength=20;
+    box.append(lab, inp);
+  }
+}
+renderNameInputs();
+
+$("startBtn").addEventListener("click", startGame);
+$("againBtn").addEventListener("click", ()=>{ $("winOverlay").classList.add("hidden"); $("game").classList.add("hidden"); $("setup").classList.remove("hidden"); });
+$("quitBtn").addEventListener("click", ()=>{ $("game").classList.add("hidden"); $("setup").classList.remove("hidden"); });
+$("nextBtn").addEventListener("click", nextTurn);
+
+// ---------------- Game ----------------
+function startGame(){
+  let pool = EVENTS.slice();
+  if(difficulty==="modern") pool = pool.filter(e=>e.y>=1500);
+  if(difficulty==="20th") pool = pool.filter(e=>e.y>=1900);
+  deck = shuffle(pool.slice());
+
+  players = [];
+  const inputs = [...$("nameInputs").querySelectorAll("input")];
+  for(let i=0;i<playerN;i++){
+    const name = (inputs[i]?.value.trim()) || "Spieler " + (i+1);
+    players.push({name, timeline:[deck.pop()]});
+  }
+  current = 0;
+  $("setup").classList.add("hidden");
+  $("game").classList.remove("hidden");
+  beginTurn();
+}
+
+function beginTurn(){
+  if(deck.length===0){ endByDeck(); return; }
+  drawn = deck.pop();
+  phase = "place";
+  const ec = $("eventCard");
+  ec.classList.remove("revealed","correct","wrong");
+  $("cardEyebrow").textContent = "Ereignis für " + players[current].name;
+  $("cardTitle").textContent = drawn.t;
+  $("cardYear").textContent = fmtYear(drawn.y);
+  $("cardDesc").textContent = drawn.d;
+  $("feedback").classList.add("hidden");
+  $("hint").innerHTML = "<b>" + esc(players[current].name) + "</b>, wann war das? Wähle eine Lücke in deiner Zeitleiste.";
+  render();
+}
+
+function render(){
+  // Scoreboard
+  const sb = $("scores"); sb.innerHTML = "";
+  players.forEach((p,i)=>{
+    const d = document.createElement("div");
+    d.className = "score" + (i===current ? " active":"");
+    d.innerHTML = '<span class="name">'+esc(p.name)+'</span><span class="pts">'+p.timeline.length+' / '+WIN_CARDS+'</span>';
+    sb.append(d);
+  });
+  // Zeitleisten aller Spieler
+  const box = $("timelines"); box.innerHTML = "";
+  players.forEach((p, pIdx)=>{
+    const isActive = pIdx===current;
+    const wrap = document.createElement("div");
+    wrap.className = "timeline-wrap " + (isActive ? "active" : "inactive");
+
+    const label = document.createElement("div");
+    label.className = "timeline-label";
+    label.innerHTML = '<span class="owner">'+esc(p.name)+
+      '</span><span>'+(isActive ? '<span class="turn-tag">am Zug</span> &nbsp;·&nbsp; ' : '')+
+      '← früher · später →</span>';
+    wrap.append(label);
+
+    const scroll = document.createElement("div"); scroll.className = "timeline-scroll";
+    const tl = document.createElement("div"); tl.className = "timeline";
+    const cards = p.timeline.slice().sort((a,b)=>a.y-b.y);
+    const canPlace = isActive && phase==="place";
+
+    for(let i=0;i<=cards.length;i++){
+      const slot = document.createElement("button");
+      slot.className = "slot" + (canPlace ? " enabled":"");
+      slot.textContent = "+";
+      slot.setAttribute("aria-label","Hier einordnen");
+      slot.disabled = !canPlace;
+      if(canPlace) slot.addEventListener("click", ()=>place(i, cards));
+      tl.append(slot);
+      if(i<cards.length){
+        const c = document.createElement("div");
+        c.className = "tcard";
+        c.innerHTML = '<div class="y">'+fmtYear(cards[i].y)+'</div><div class="t">'+esc(cards[i].t)+'</div>';
+        tl.append(c);
+      }
+    }
+    scroll.append(tl); wrap.append(scroll); box.append(wrap);
+  });
+}
+
+function place(idx, cards){
+  if(phase!=="place") return;
+  phase = "revealed";
+  const left = idx>0 ? cards[idx-1].y : -Infinity;
+  const right = idx<cards.length ? cards[idx].y : Infinity;
+  const ok = drawn.y >= left && drawn.y <= right;
+
+  const ec = $("eventCard");
+  ec.classList.add("revealed", ok ? "correct" : "wrong");
+  $("hint").textContent = "";
+
+  if(ok) players[current].timeline.push(drawn);
+
+  const fb = $("feedback"), msg = $("feedbackMsg");
+  fb.classList.remove("hidden");
+  msg.className = "msg " + (ok ? "ok" : "no");
+  msg.textContent = ok ? "Richtig eingeordnet!" : "Leider falsch – Karte verworfen.";
+  render();
+
+  if(players[current].timeline.length >= WIN_CARDS){
+    setTimeout(()=>win(players[current]), 700);
+  }
+}
+
+function nextTurn(){
+  current = (current+1) % players.length;
+  beginTurn();
+}
+
+function renderFinalLists(winnerName){
+  const box = $("finalLists"); box.innerHTML = "";
+  players.forEach(p=>{
+    const cards = p.timeline.slice().sort((a,b)=>a.y-b.y);
+    const block = document.createElement("div");
+    block.className = "final-block" + (p.name===winnerName ? " winner" : "");
+    let rows = "";
+    cards.forEach(c=>{
+      rows += '<div class="final-row"><span class="fy">'+fmtYear(c.y)+
+              '</span><span class="ft">'+esc(c.t)+'</span></div>';
+    });
+    block.innerHTML =
+      '<div class="final-head"><span class="fname">'+esc(p.name)+
+      (p.name===winnerName ? ' 🏛️' : '')+'</span>'+
+      '<span class="fcount">'+cards.length+' Karten</span></div>'+
+      '<div class="final-rows">'+rows+'</div>';
+    box.append(block);
+  });
+}
+
+function win(p){
+  $("winTitle").textContent = "🏛️ " + p.name + " gewinnt!";
+  $("winText").textContent = p.name + " hat als Erste:r " + WIN_CARDS + " Ereignisse korrekt in die Zeitleiste eingeordnet. Hier die finalen Zeitleisten:";
+  renderFinalLists(p.name);
+  $("winOverlay").classList.remove("hidden");
+}
+
+function endByDeck(){
+  const best = players.slice().sort((a,b)=>b.timeline.length-a.timeline.length)[0];
+  $("winTitle").textContent = "Kartenstapel leer";
+  $("winText").textContent = "Die längste Zeitleiste hat " + best.name + " mit " + best.timeline.length + " Karten. Hier die finalen Zeitleisten:";
+  renderFinalLists(best.name);
+  $("winOverlay").classList.remove("hidden");
+}
+
+function esc(s){const d=document.createElement("div");d.textContent=s;return d.innerHTML;}
+</script>
+</body>
+</html>
