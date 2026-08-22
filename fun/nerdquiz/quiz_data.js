@@ -2,8 +2,8 @@
 window.QUIZ_DATA = {
   "meta": {
     "title": "Quizsammlung",
-    "quizCount": 18,
-    "questionCount": 345
+    "quizCount": 22,
+    "questionCount": 430
   },
   "categories": {
     "base-geo": {
@@ -2297,6 +2297,669 @@ window.QUIZ_DATA = {
           "kind": "schaetz"
         }
       ]
+    },
+    "fact-staat": {
+      "id": "fact-staat",
+      "name": "Staat & Verwaltung",
+      "source": "Faktensammlung",
+      "questions": [
+        {
+          "points": 100,
+          "question": "Wie viele Polizistinnen und Polizisten gibt es in Deutschland?",
+          "answer": "ca. 250.000",
+          "kind": "schaetz"
+        },
+        {
+          "points": 200,
+          "question": "Wie viele aktive Soldatinnen und Soldaten hatte die Bundeswehr Anfang 2019?",
+          "answer": "180.000",
+          "note": "Davon 120.000 Zeitsoldaten und 53.000 Berufssoldaten.",
+          "kind": "schaetz"
+        },
+        {
+          "points": 300,
+          "question": "Was ist der teuerste Einzelverstoß im Bußgeldkatalog der neuen StVO?",
+          "answer": "Unberechtigtes Benutzen der Rettungsgasse – 240 €"
+        },
+        {
+          "points": 600,
+          "question": "Wann wurde auf heutigem deutschen Boden zum letzten Mal ein Mensch durch die Todesstrafe hingerichtet?",
+          "answer": "Am 11. Mai 1949 in Berlin"
+        },
+        {
+          "points": 1000,
+          "question": "Wie viele Castor-Behälter lagern in den 16 deutschen Zwischenlagern?",
+          "answer": "1.079",
+          "note": "Insgesamt 10.173 Tonnen Schwermetall müssen endgelagert werden. Quelle: BGE.",
+          "kind": "schaetz"
+        }
+      ]
+    },
+    "fact-justiz": {
+      "id": "fact-justiz",
+      "name": "Hinter Gittern",
+      "source": "Faktensammlung",
+      "questions": [
+        {
+          "points": 100,
+          "question": "Wie viel Prozent der Strafgefangenen in Deutschland sind Frauen?",
+          "answer": "ca. 5–6 %",
+          "note": "Von 589 Sicherungsverwahrten war genau eine eine Frau.",
+          "kind": "schaetz"
+        },
+        {
+          "points": 200,
+          "question": "Wie viele Überfälle auf Banken, Sparkassen und Postfilialen gab es 2020 in Deutschland?",
+          "answer": "80",
+          "kind": "schaetz"
+        },
+        {
+          "points": 300,
+          "question": "Wie viele Menschen sitzen in Deutschland jährlich wegen Schwarzfahrens im Gefängnis?",
+          "answer": "ca. 7.000",
+          "note": "Straftatbestand: Beförderungserschleichung.",
+          "kind": "schaetz"
+        },
+        {
+          "points": 600,
+          "question": "Wie viele Gefangene kommen in Deutschland auf 100.000 Einwohner – und wie viele in den USA?",
+          "answer": "Deutschland 76, USA 698",
+          "note": "Stand 2015. Quelle: prisonstudies.org.",
+          "kind": "schaetz"
+        },
+        {
+          "points": 1000,
+          "question": "Welches ist mit rund 17.000 Gefangenen der größte Gefängniskomplex der Welt?",
+          "answer": "Rikers Island in New York"
+        }
+      ]
+    },
+    "fact-soziales": {
+      "id": "fact-soziales",
+      "name": "Soziales",
+      "source": "Faktensammlung",
+      "questions": [
+        {
+          "points": 100,
+          "question": "Wie viel Taschengeld bekommen 10- bis 13-Jährige in Deutschland im Schnitt pro Monat?",
+          "answer": "31,76 €",
+          "note": "Kinder-Medien-Studie 2019.",
+          "kind": "schaetz"
+        },
+        {
+          "points": 200,
+          "question": "Wie viele Adoptionen gab es 2023 in Deutschland?",
+          "answer": "3.601",
+          "note": "Tendenz rückläufig – 2019 waren es noch 3.744.",
+          "kind": "schaetz"
+        },
+        {
+          "points": 300,
+          "question": "Wie viele Menschen in Deutschland gelten als wohnungslos?",
+          "answer": "ca. 536.000",
+          "note": "Schätzung für 2018, davon etwa ein Drittel Frauen.",
+          "kind": "schaetz"
+        },
+        {
+          "points": 600,
+          "question": "Wie viele Werkstätten für Menschen mit Behinderung gibt es in Deutschland – und wie viele Beschäftigte?",
+          "answer": "ca. 700 Werkstätten mit rund 300.000 Beschäftigten",
+          "kind": "schaetz"
+        },
+        {
+          "points": 1000,
+          "question": "Wie viele Kinder in Deutschland leben in Heimen oder bei Pflegefamilien?",
+          "answer": "173.000",
+          "note": "Stand 2016; 2011 waren es 129.000.",
+          "kind": "schaetz"
+        }
+      ]
+    },
+    "fact-gesellschaft": {
+      "id": "fact-gesellschaft",
+      "name": "Gesellschaft in Prozent",
+      "source": "Faktensammlung",
+      "questions": [
+        {
+          "points": 100,
+          "question": "Wie viel Prozent der Menschen weltweit sprechen genau eine Sprache?",
+          "answer": "78,2 %",
+          "kind": "schaetz"
+        },
+        {
+          "points": 200,
+          "question": "Wie viel Prozent der Menschen in Deutschland haben einen Migrationshintergrund?",
+          "answer": "ca. 25 %",
+          "kind": "schaetz"
+        },
+        {
+          "points": 300,
+          "question": "Wie viele Arbeitsstunden leistet eine erwerbstätige Person in Deutschland pro Jahr – und in den USA?",
+          "answer": "Deutschland 1.341, USA 1.811",
+          "note": "OECD, Hours worked, 2022.",
+          "kind": "schaetz"
+        },
+        {
+          "points": 600,
+          "question": "Wie viel Prozent aller jemals geborenen Menschen lebten im Jahr 2011?",
+          "answer": "Über 6 %",
+          "note": "7 Milliarden Lebende von rund 110 Milliarden jemals geborenen modernen Menschen.",
+          "kind": "schaetz"
+        },
+        {
+          "points": 1000,
+          "question": "Wie viel Prozent sind in Deutschland als Organspender registriert – und wie viele in Österreich?",
+          "answer": "Deutschland 12 %, Österreich 99,9 %",
+          "note": "Klassisches Beispiel für Opt-in vs. Opt-out (Kahneman).",
+          "kind": "schaetz"
+        }
+      ]
+    },
+    "fact-wirtschaft": {
+      "id": "fact-wirtschaft",
+      "name": "Wirtschaft & Geld",
+      "source": "Faktensammlung",
+      "questions": [
+        {
+          "points": 100,
+          "question": "Wie viele Produkte hat Aldi dauerhaft im Sortiment?",
+          "answer": "1.700",
+          "kind": "schaetz"
+        },
+        {
+          "points": 200,
+          "question": "Wie viel Prozent seines Gewinns macht McDonald’s weltweit mit Frühstücksprodukten?",
+          "answer": "40 %",
+          "kind": "schaetz"
+        },
+        {
+          "points": 300,
+          "question": "Wie viele Spielautomaten gibt es in Deutschland – und wie viele Bankautomaten?",
+          "answer": "300.000 Spielautomaten, 60.000 Bankautomaten",
+          "note": "Laut Spielverordnung §13 darf man nur 60 € pro Stunde verspielen.",
+          "kind": "schaetz"
+        },
+        {
+          "points": 600,
+          "question": "In welchem Land stehen die meisten Unternehmen, die älter als 200 Jahre sind?",
+          "answer": "Japan",
+          "note": "3.146 von weltweit 5.586; Deutschland folgt mit 837."
+        },
+        {
+          "points": 1000,
+          "question": "Was kostet eine einzelne Schiffspassage durch den Suezkanal?",
+          "answer": "ca. 298.000 US-Dollar",
+          "note": "Bei rund 45 Passagen pro Tag.",
+          "kind": "schaetz"
+        }
+      ]
+    },
+    "fact-bildung": {
+      "id": "fact-bildung",
+      "name": "Bildungsrepublik",
+      "source": "Faktensammlung",
+      "questions": [
+        {
+          "points": 100,
+          "question": "Wie viele Schülerinnen und Schüler kommen in Deutschland auf eine Lehrkraft?",
+          "answer": "ca. 13",
+          "kind": "schaetz"
+        },
+        {
+          "points": 200,
+          "question": "Wie hoch ist die Studienabbruchquote im Bachelor in Deutschland?",
+          "answer": "32 %",
+          "kind": "schaetz"
+        },
+        {
+          "points": 300,
+          "question": "Wie viele Bewerbungen gab es 2018 auf die rund 11.000 Medizinstudienplätze?",
+          "answer": "62.000",
+          "kind": "schaetz"
+        },
+        {
+          "points": 600,
+          "question": "Wie viele Promotionen wurden 2018 in Deutschland abgeschlossen?",
+          "answer": "27.838",
+          "kind": "schaetz"
+        },
+        {
+          "points": 1000,
+          "question": "Wie viel Prozent der Professuren in Deutschland sind mit Frauen besetzt?",
+          "answer": "24,1 %",
+          "note": "Stand 2019.",
+          "kind": "schaetz"
+        }
+      ]
+    },
+    "fact-wissenschaft": {
+      "id": "fact-wissenschaft",
+      "name": "Wissen & Bibliotheken",
+      "source": "Faktensammlung",
+      "questions": [
+        {
+          "points": 100,
+          "question": "Wie viele Universitätsklinika gibt es in Deutschland?",
+          "answer": "33",
+          "kind": "schaetz"
+        },
+        {
+          "points": 200,
+          "question": "Wie viele Waldorfschulen gibt es in Deutschland?",
+          "answer": "250",
+          "note": "Stand 2019; weltweit 956 Schulen und 1.576 Waldorf-Kindergärten.",
+          "kind": "schaetz"
+        },
+        {
+          "points": 300,
+          "question": "Wie viele Bibliotheksstandorte gibt es in Deutschland?",
+          "answer": "9.297",
+          "note": "Mit 223 Mio. Besuchen pro Jahr.",
+          "kind": "schaetz"
+        },
+        {
+          "points": 600,
+          "question": "Welcher Verlag besitzt rund 3.000 Journals und verantwortet etwa 18 % des wissenschaftlichen Outputs?",
+          "answer": "Elsevier"
+        },
+        {
+          "points": 1000,
+          "question": "Wie viele Promotionen werden weltweit pro Jahr vergeben?",
+          "answer": "ca. 160.000",
+          "note": "Je rund 50.000 in China und den USA, 25.000 in Großbritannien.",
+          "kind": "schaetz"
+        }
+      ]
+    },
+    "fact-studium": {
+      "id": "fact-studium",
+      "name": "Studieren & Fördern",
+      "source": "Faktensammlung",
+      "questions": [
+        {
+          "points": 100,
+          "question": "Seit welchem Jahr gibt es das BAföG?",
+          "answer": "Seit 1971"
+        },
+        {
+          "points": 200,
+          "question": "Wie viel Prozent der Studierenden in Deutschland erhielten 2016 BAföG?",
+          "answer": "20 %",
+          "kind": "schaetz"
+        },
+        {
+          "points": 300,
+          "question": "In welche fünf Länder gehen deutsche Erasmus-Studierende am häufigsten?",
+          "answer": "Spanien, Frankreich, Großbritannien, Schweden, Türkei"
+        },
+        {
+          "points": 600,
+          "question": "Wie viele Erasmus-Stipendien wurden in den ersten 30 Jahren des Programms vergeben?",
+          "answer": "4,5 Millionen",
+          "note": "Budget rund 450 Mio. € pro Jahr für alle Programmländer.",
+          "kind": "schaetz"
+        },
+        {
+          "points": 1000,
+          "question": "Wie viel Prozent der Studierenden erhalten ein Deutschlandstipendium?",
+          "answer": "0,84 %",
+          "note": "Stand 2014 – geplant waren ursprünglich 8 %.",
+          "kind": "schaetz"
+        }
+      ]
+    },
+    "fact-gesundheit": {
+      "id": "fact-gesundheit",
+      "name": "Medizin & Gesundheit",
+      "source": "Faktensammlung",
+      "questions": [
+        {
+          "points": 100,
+          "question": "Was ist die häufigste Ursache für Verletzungen an den Augen?",
+          "answer": "Korken",
+          "note": "Laut Amerikanischer Akademie der Augenärzte."
+        },
+        {
+          "points": 200,
+          "question": "Wie viel Prozent der Deutschen über 70 leben im Pflegeheim?",
+          "answer": "6 %",
+          "kind": "schaetz"
+        },
+        {
+          "points": 300,
+          "question": "Wie viele Menschen arbeiten in Deutschland im Rettungsdienst?",
+          "answer": "67.000",
+          "note": "Stand 2016, rund 75 % davon männlich.",
+          "kind": "schaetz"
+        },
+        {
+          "points": 600,
+          "question": "Was ist die weltweit häufigste Operation?",
+          "answer": "Die männliche Beschneidung"
+        },
+        {
+          "points": 1000,
+          "question": "Wie viele Operationen werden weltweit pro Jahr durchgeführt?",
+          "answer": "234,2 Millionen",
+          "note": "Das reichste Drittel der Weltbevölkerung erhält drei Viertel aller Eingriffe.",
+          "kind": "schaetz"
+        }
+      ]
+    },
+    "fact-risiko": {
+      "id": "fact-risiko",
+      "name": "Wie riskant ist das?",
+      "source": "Faktensammlung",
+      "questions": [
+        {
+          "points": 100,
+          "question": "Wie viele Menschen sterben in den USA pro Jahr im Schnitt durch Blitzschlag?",
+          "answer": "ca. 30",
+          "kind": "schaetz"
+        },
+        {
+          "points": 200,
+          "question": "Wie viele Haiangriffe gab es 2015 weltweit – und wie viele endeten tödlich?",
+          "answer": "98 Angriffe, 6 Todesfälle",
+          "kind": "schaetz"
+        },
+        {
+          "points": 300,
+          "question": "Wie viele Menschen sind 2020 in Deutschland ertrunken?",
+          "answer": "377",
+          "note": "Quelle: DLRG.",
+          "kind": "schaetz"
+        },
+        {
+          "points": 600,
+          "question": "Wie viele Motorradfahrende kamen 2019 in Deutschland ums Leben?",
+          "answer": "542",
+          "note": "Bei insgesamt 28.426 Verunglückten.",
+          "kind": "schaetz"
+        },
+        {
+          "points": 1000,
+          "question": "Wie viel Prozent aller gewaltsamen Todesfälle weltweit gehen auf Krieg zurück?",
+          "answer": "18 %",
+          "kind": "schaetz"
+        }
+      ]
+    },
+    "fact-verkehr": {
+      "id": "fact-verkehr",
+      "name": "Straße & Schiene",
+      "source": "Faktensammlung",
+      "questions": [
+        {
+          "points": 100,
+          "question": "Wie viele Nachbarländer hat Deutschland?",
+          "answer": "9",
+          "note": "Längste Grenze zu Österreich, kürzeste zu Dänemark."
+        },
+        {
+          "points": 200,
+          "question": "Wie viele Kilometer Autobahn gibt es in Deutschland?",
+          "answer": "ca. 13.000 km",
+          "note": "Das sind rund 6 % des gesamten Straßennetzes.",
+          "kind": "schaetz"
+        },
+        {
+          "points": 300,
+          "question": "Wie viele Autos kommen in Deutschland auf 100 Haushalte?",
+          "answer": "108",
+          "note": "Stand 2020.",
+          "kind": "schaetz"
+        },
+        {
+          "points": 600,
+          "question": "Wie lange dauert die Herstellung eines Autos?",
+          "answer": "12 bis 40 Stunden",
+          "note": "Ford Fiesta in Köln 12 h, BMW 3er 40 h.",
+          "kind": "schaetz"
+        },
+        {
+          "points": 1000,
+          "question": "Wie viele ICE-Züge besaß die Deutsche Bahn 2024?",
+          "answer": "401",
+          "note": "2019 waren es 280; gebaut wird der ICE seit 1990.",
+          "kind": "schaetz"
+        }
+      ]
+    },
+    "fact-luft": {
+      "id": "fact-luft",
+      "name": "Abgehoben",
+      "source": "Faktensammlung",
+      "questions": [
+        {
+          "points": 100,
+          "question": "Wo befindet sich die größte Polizeidienststelle Deutschlands?",
+          "answer": "Am Frankfurter Flughafen",
+          "note": "Über 2.000 Polizistinnen und Polizisten."
+        },
+        {
+          "points": 200,
+          "question": "Wie viele Hubschrauber sind in Deutschland zugelassen?",
+          "answer": "745",
+          "note": "Stand 2014, davon 89 Rettungshubschrauber.",
+          "kind": "schaetz"
+        },
+        {
+          "points": 300,
+          "question": "Wie viel Prozent ihres Umsatzes erwirtschaften US-Flughäfen im Schnitt mit Parkgebühren?",
+          "answer": "19 %",
+          "note": "Manche sogar über 25 %.",
+          "kind": "schaetz"
+        },
+        {
+          "points": 600,
+          "question": "Wie viele Handgepäckstücke scannt die US-Sicherheitsbehörde TSA pro Jahr?",
+          "answer": "1,7 Milliarden",
+          "kind": "schaetz"
+        },
+        {
+          "points": 1000,
+          "question": "Wie viele Boeing 747 wurden insgesamt ausgeliefert?",
+          "answer": "1.528",
+          "note": "Listenpreis rund 350 Mio. US-Dollar pro Stück.",
+          "kind": "schaetz"
+        }
+      ]
+    },
+    "fact-koeln": {
+      "id": "fact-koeln",
+      "name": "Köln in Zahlen",
+      "source": "Faktensammlung",
+      "questions": [
+        {
+          "points": 100,
+          "question": "Wie viele Kirchen gibt es in Köln?",
+          "answer": "240",
+          "note": "Quelle: Stadt Köln.",
+          "kind": "schaetz"
+        },
+        {
+          "points": 200,
+          "question": "Wie viel Hundesteuer zahlt man in Köln pro Jahr?",
+          "answer": "156 €",
+          "note": "Stand 2020.",
+          "kind": "schaetz"
+        },
+        {
+          "points": 300,
+          "question": "Wie viele Fahrräder werden in Köln pro Jahr gestohlen?",
+          "answer": "ca. 8.000",
+          "note": "Doppelt so viele wie im Bundesdurchschnitt; Aufklärungsquote unter 6 %.",
+          "kind": "schaetz"
+        },
+        {
+          "points": 600,
+          "question": "Wie viele Fahrgäste beförderte die KVB 2025?",
+          "answer": "237 Millionen",
+          "note": "Bei 268 Mio. € Verkehrserlösen und 5 Mio. Ausleihen des KVB-Rads.",
+          "kind": "schaetz"
+        },
+        {
+          "points": 1000,
+          "question": "Wie viele Bahn- und Buslinien betreibt die KVB?",
+          "answer": "12 Bahnlinien und 62 Buslinien",
+          "note": "Mit 382 Stadtbahnwagen, 329 Bussen und 235 Stadtbahnhaltestellen.",
+          "kind": "schaetz"
+        }
+      ]
+    },
+    "fact-digital": {
+      "id": "fact-digital",
+      "name": "Digital & Medien",
+      "source": "Faktensammlung",
+      "questions": [
+        {
+          "points": 100,
+          "question": "Wie viel bekommt ein Tagesschau-Sprecher für eine Moderation zur Hauptsendezeit?",
+          "answer": "rund 260 €",
+          "kind": "schaetz"
+        },
+        {
+          "points": 200,
+          "question": "Wie viel Prozent aller YouTube-Videos erreichen mehr als 100.000 Aufrufe?",
+          "answer": "0,64 %",
+          "note": "Sie sind aber für über vier Fünftel des Traffics verantwortlich.",
+          "kind": "schaetz"
+        },
+        {
+          "points": 300,
+          "question": "Wie viele .com-Domains sind registriert?",
+          "answer": "137 Millionen",
+          "kind": "schaetz"
+        },
+        {
+          "points": 600,
+          "question": "In welchem Land entstand 1999 das erste virtuelle soziale Netzwerk?",
+          "answer": "In Südkorea",
+          "note": "cyworld.co.kr."
+        },
+        {
+          "points": 1000,
+          "question": "Wie viele Coworking Spaces gab es weltweit 2007 – und wie viele 2017?",
+          "answer": "2007: 14, 2017: 14.411",
+          "kind": "schaetz"
+        }
+      ]
+    },
+    "fact-kurios": {
+      "id": "fact-kurios",
+      "name": "Kurios, aber wahr",
+      "source": "Faktensammlung",
+      "questions": [
+        {
+          "points": 100,
+          "question": "Gegen welche Stadt setzte sich Bonn in der Abstimmung über die Bundeshauptstadt durch?",
+          "answer": "Frankfurt"
+        },
+        {
+          "points": 200,
+          "question": "Wie viele Menschen waren bisher auf dem Mond – und wie viele davon waren Frauen?",
+          "answer": "12 Männer, keine einzige Frau"
+        },
+        {
+          "points": 300,
+          "question": "Blinde Menschen können in Deutschland einen dieser beiden Berufe ausüben – Richter oder Notar. Welchen?",
+          "answer": "Richter",
+          "note": "Das Notaramt bleibt ihnen verschlossen."
+        },
+        {
+          "points": 600,
+          "question": "Wie viele Pilze darf man in Deutschland im Wald sammeln?",
+          "answer": "1–2 kg",
+          "note": "„Eigengebrauch“ nach Bundesnaturschutzverordnung, also 1–2 Familienmahlzeiten."
+        },
+        {
+          "points": 1000,
+          "question": "Auf welchem Kontinent wurde als einzigem die Landwirtschaft nicht eigenständig erfunden?",
+          "answer": "Australien",
+          "note": "Aus „Guns, Germs & Steel“."
+        }
+      ]
+    },
+    "fact-welt": {
+      "id": "fact-welt",
+      "name": "Weltweit gesehen",
+      "source": "Faktensammlung",
+      "questions": [
+        {
+          "points": 100,
+          "question": "Wie viel Prozent aller Kinder weltweit besuchen eine Grundschule?",
+          "answer": "91 %",
+          "kind": "schaetz"
+        },
+        {
+          "points": 200,
+          "question": "Wie hoch ist die weltweite Alphabetisierungsrate heute – und wie hoch war sie 1960?",
+          "answer": "2015: 85 %, 1960: 60 %",
+          "kind": "schaetz"
+        },
+        {
+          "points": 300,
+          "question": "Wie viele der über 200 Staaten weltweit haben ein weibliches Staatsoberhaupt?",
+          "answer": "26",
+          "note": "Stand 2022; 2018 waren es 17 von 149 untersuchten Staaten.",
+          "kind": "schaetz"
+        },
+        {
+          "points": 600,
+          "question": "Wie viel Prozent der Menschen weltweit bezeichnen sich als Atheisten – und wie viele in China?",
+          "answer": "Weltweit ca. 10 %, in China 60 %",
+          "note": "In der EU rund 20 %.",
+          "kind": "schaetz"
+        },
+        {
+          "points": 1000,
+          "question": "Wie viele Analphabeten gibt es weltweit – und welcher Anteil davon ist weiblich?",
+          "answer": "781 Millionen, zwei Drittel davon Frauen",
+          "note": "In Deutschland 2,3 Millionen.",
+          "kind": "schaetz"
+        }
+      ]
+    },
+    "fact-zahlensalat": {
+      "id": "fact-zahlensalat",
+      "name": "Zahlensalat",
+      "source": "Faktensammlung",
+      "questions": [
+        {
+          "points": 100,
+          "question": "Wie viel Prozent der Elfmeter im Fußball verwandelt der Schütze?",
+          "answer": "75–80 %",
+          "kind": "schaetz"
+        },
+        {
+          "points": 200,
+          "question": "Wie viele Schachgroßmeister gibt es in Deutschland?",
+          "answer": "92",
+          "note": "Weltweit 1.743 (FIDE, 2021).",
+          "kind": "schaetz"
+        },
+        {
+          "points": 300,
+          "question": "Wie viele Fahrlehrerinnen und Fahrlehrer gibt es in Deutschland?",
+          "answer": "45.000",
+          "note": "Stand 2022, Quelle: KBA.",
+          "kind": "schaetz"
+        },
+        {
+          "points": 600,
+          "question": "Wie viele Vereine gibt es in Deutschland?",
+          "answer": "rund 600.000",
+          "note": "Nur 44 % der Deutschen sind Mitglied in einem Verein.",
+          "kind": "schaetz"
+        },
+        {
+          "points": 1000,
+          "question": "Wie viele Tupperpartys fanden 2006 weltweit statt?",
+          "answer": "11,9 Millionen",
+          "kind": "schaetz"
+        }
+      ]
     }
   },
   "quizzes": [
@@ -2532,6 +3195,58 @@ window.QUIZ_DATA = {
         "nq-koerper",
         "l-wissenschaft",
         "d2-tiere"
+      ]
+    },
+    {
+      "id": "fakten-1",
+      "title": "Faktencheck I",
+      "tagline": "Staat, Justiz und Gesellschaft – fast alles zum Schätzen",
+      "mix": false,
+      "categories": [
+        "fact-staat",
+        "fact-justiz",
+        "fact-soziales",
+        "fact-gesellschaft",
+        "fact-wirtschaft"
+      ]
+    },
+    {
+      "id": "fakten-2",
+      "title": "Faktencheck II",
+      "tagline": "Bildung, Forschung und Gesundheit in Zahlen",
+      "mix": false,
+      "categories": [
+        "fact-bildung",
+        "fact-wissenschaft",
+        "fact-studium",
+        "fact-gesundheit",
+        "fact-digital"
+      ]
+    },
+    {
+      "id": "fakten-3",
+      "title": "Faktencheck III",
+      "tagline": "Unterwegs, riskant und ziemlich kurios",
+      "mix": false,
+      "categories": [
+        "fact-verkehr",
+        "fact-luft",
+        "fact-koeln",
+        "fact-risiko",
+        "fact-kurios"
+      ]
+    },
+    {
+      "id": "mix-schaetzmeister",
+      "title": "Schätzmeister",
+      "tagline": "Fünf Spalten, keine Frage mit exakter Antwort",
+      "mix": true,
+      "categories": [
+        "fact-zahlensalat",
+        "fact-welt",
+        "misc-schaetz",
+        "fact-wirtschaft",
+        "l-zahlen"
       ]
     }
   ]
