@@ -1,0 +1,828 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Spieleduell – Elo-Ranking</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,600;12..96,800&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --table:#1B2030;
+  --table-deep:#141826;
+  --ivory:#F4F0E6;
+  --ivory-dim:#DAD4C4;
+  --ink:#191C25;
+  --mustard:#E8B93C;
+  --teal:#2FA69B;
+  --coral:#E2664B;
+  --plum:#8367D8;
+  --line:rgba(244,240,230,.14);
+  --display:'Bricolage Grotesque','Trebuchet MS',system-ui,sans-serif;
+  --body:system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;
+  --mono:'JetBrains Mono',ui-monospace,'SF Mono',Consolas,monospace;
+  --r:14px;
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{
+  background:
+    radial-gradient(120% 80% at 50% -10%, #262C42 0%, var(--table) 45%, var(--table-deep) 100%) fixed;
+  color:var(--ivory);
+  font-family:var(--body);
+  font-size:16px;
+  line-height:1.5;
+  -webkit-font-smoothing:antialiased;
+  padding-bottom:64px;
+}
+button{font:inherit;color:inherit;cursor:pointer;border:none;background:none}
+input,select,textarea{font:inherit;color:inherit}
+:focus-visible{outline:2.5px solid var(--mustard);outline-offset:2px;border-radius:4px}
+
+/* ---------- Kopfleiste ---------- */
+.topbar{
+  position:sticky;top:0;z-index:40;
+  background:rgba(20,24,38,.86);
+  backdrop-filter:blur(14px);
+  border-bottom:1px solid var(--line);
+}
+.topbar-in{max-width:960px;margin:0 auto;padding:12px 16px 10px;}
+.brand{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap}
+.brand h1{
+  font-family:var(--display);font-weight:800;font-size:22px;letter-spacing:-.02em;
+  margin:0;
+}
+.brand .sub{font-family:var(--mono);font-size:11px;color:var(--ivory-dim);opacity:.75;letter-spacing:.04em}
+.userrow{display:flex;gap:8px;align-items:center;margin-top:10px;flex-wrap:wrap}
+select.user, input.txt{
+  background:rgba(244,240,230,.07);border:1px solid var(--line);
+  border-radius:10px;padding:9px 11px;min-width:0;
+}
+select.user{flex:1;font-weight:600}
+select.user option{background:#1B2030;color:var(--ivory)}
+.iconbtn{
+  border:1px solid var(--line);border-radius:10px;padding:9px 12px;
+  background:rgba(244,240,230,.07);font-size:14px;white-space:nowrap;
+}
+.iconbtn:hover{background:rgba(244,240,230,.14)}
+.nav{display:flex;gap:4px;margin-top:10px;background:rgba(0,0,0,.25);padding:4px;border-radius:12px}
+.nav button{
+  flex:1;padding:8px 6px;border-radius:9px;font-size:13.5px;font-weight:600;
+  color:var(--ivory-dim);transition:.15s;
+}
+.nav button[aria-current="true"]{background:var(--ivory);color:var(--ink)}
+.wrap{max-width:960px;margin:0 auto;padding:20px 16px}
+.hidden{display:none !important}
+
+/* ---------- Duell ---------- */
+.duel-head{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:14px}
+.duel-head .q{font-family:var(--display);font-weight:600;font-size:17px}
+.counter{font-family:var(--mono);font-size:12px;color:var(--ivory-dim)}
+.arena{display:grid;grid-template-columns:1fr auto 1fr;gap:12px;align-items:stretch}
+.card{
+  position:relative;
+  background:var(--ivory);color:var(--ink);
+  border-radius:var(--r);
+  padding:22px 16px 14px;
+  min-height:190px;
+  display:flex;flex-direction:column;justify-content:space-between;
+  text-align:left;width:100%;
+  box-shadow:0 14px 28px rgba(0,0,0,.42), 0 2px 0 rgba(255,255,255,.25) inset;
+  transition:transform .18s cubic-bezier(.2,.8,.3,1), box-shadow .18s;
+}
+.card.l{transform:rotate(-1.4deg)}
+.card.r{transform:rotate(1.4deg)}
+.card:hover,.card:focus-visible{transform:rotate(0deg) translateY(-4px);box-shadow:0 20px 40px rgba(0,0,0,.5)}
+.card .tag{
+  font-family:var(--mono);font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;
+  color:#6B7080;
+}
+.card .name{
+  font-family:var(--display);font-weight:800;font-size:clamp(20px,5.2vw,27px);
+  line-height:1.1;letter-spacing:-.02em;margin:10px 0 0;
+}
+.card .meta{font-family:var(--mono);font-size:11.5px;color:#6B7080;margin-top:12px}
+.stripe{position:absolute;left:0;top:0;bottom:0;width:6px;border-radius:var(--r) 0 0 var(--r)}
+.unknown{
+  align-self:flex-start;margin-top:10px;font-size:12px;font-weight:600;
+  color:#6B7080;border-bottom:1.5px dotted #A9AEBB;padding:2px 0;
+}
+.unknown:hover{color:var(--coral);border-color:var(--coral)}
+.vs{
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;
+  font-family:var(--mono);font-size:12px;color:var(--ivory-dim);letter-spacing:.14em;
+}
+.vs .bar{width:1px;flex:1;background:linear-gradient(var(--line),transparent)}
+.delta{
+  position:absolute;top:10px;right:12px;font-family:var(--mono);font-weight:700;font-size:14px;
+  opacity:0;transform:translateY(6px);
+}
+.delta.show{animation:pop .7s ease forwards}
+@keyframes pop{0%{opacity:0;transform:translateY(6px)}25%{opacity:1;transform:translateY(0)}75%{opacity:1}100%{opacity:0}}
+.actions{display:flex;gap:8px;margin-top:14px;flex-wrap:wrap}
+.actions button{
+  flex:1;min-width:120px;border:1px solid var(--line);border-radius:11px;padding:11px 10px;
+  font-size:14px;font-weight:600;background:rgba(244,240,230,.06);
+}
+.actions button:hover{background:rgba(244,240,230,.13)}
+.hint{font-family:var(--mono);font-size:11px;color:var(--ivory-dim);opacity:.6;margin-top:12px;text-align:center}
+.progress{height:5px;background:rgba(0,0,0,.3);border-radius:99px;overflow:hidden;margin-top:16px}
+.progress i{display:block;height:100%;background:var(--mustard);transition:width .4s}
+
+/* ---------- Ranking ---------- */
+.seg{display:flex;gap:4px;background:rgba(0,0,0,.25);padding:4px;border-radius:11px;margin-bottom:14px}
+.seg button{flex:1;padding:8px;border-radius:8px;font-size:13px;font-weight:600;color:var(--ivory-dim)}
+.seg button[aria-pressed="true"]{background:var(--ivory);color:var(--ink)}
+.rank{list-style:none;margin:0;padding:0}
+.rank li{border-bottom:1px solid var(--line)}
+.row{display:grid;grid-template-columns:34px 1fr auto;gap:10px;align-items:center;padding:11px 2px;width:100%;text-align:left}
+.pos{font-family:var(--mono);font-size:13px;color:var(--ivory-dim);text-align:right}
+.pos.top{color:var(--mustard);font-weight:700}
+.gname{font-family:var(--display);font-weight:600;font-size:16px;letter-spacing:-.01em}
+.gbar{height:4px;border-radius:99px;background:rgba(244,240,230,.12);margin-top:6px;overflow:hidden;max-width:340px}
+.gbar i{display:block;height:100%;border-radius:99px}
+.elo{font-family:var(--mono);font-weight:700;font-size:15px;text-align:right}
+.elo small{display:block;font-weight:400;font-size:10.5px;color:var(--ivory-dim);opacity:.8}
+.detail{padding:0 2px 14px 44px;font-family:var(--mono);font-size:12px;color:var(--ivory-dim)}
+.detail div{display:flex;justify-content:space-between;max-width:340px;padding:2px 0}
+.empty{
+  border:1px dashed var(--line);border-radius:var(--r);padding:26px 18px;text-align:center;
+  color:var(--ivory-dim);
+}
+.empty b{display:block;font-family:var(--display);font-size:17px;color:var(--ivory);margin-bottom:6px}
+
+/* ---------- Listen / Daten ---------- */
+.section{margin-bottom:26px}
+.section h2{
+  font-family:var(--display);font-weight:800;font-size:15px;letter-spacing:.02em;
+  margin:0 0 4px;
+}
+.section p.lead{font-size:13.5px;color:var(--ivory-dim);margin:0 0 12px}
+.chips{display:flex;flex-wrap:wrap;gap:7px}
+.chip{
+  border:1px solid var(--line);border-radius:99px;padding:7px 13px;font-size:13.5px;
+  background:rgba(244,240,230,.05);
+}
+.chip.off{opacity:.42;text-decoration:line-through}
+.chip:hover{border-color:var(--mustard)}
+.addrow{display:flex;gap:8px;margin-bottom:12px}
+.addrow .txt{flex:1}
+.btn-primary{
+  background:var(--mustard);color:#241C00;font-weight:700;border-radius:10px;padding:10px 16px;
+}
+.btn-primary:hover{filter:brightness(1.08)}
+.btn-danger{border:1px solid rgba(226,102,75,.5);color:var(--coral);border-radius:10px;padding:10px 14px;font-weight:600}
+.btn-danger:hover{background:rgba(226,102,75,.12)}
+textarea.txt{width:100%;min-height:120px;font-family:var(--mono);font-size:11.5px;resize:vertical;border-radius:12px}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.stat{border:1px solid var(--line);border-radius:12px;padding:12px}
+.stat b{display:block;font-family:var(--mono);font-size:21px}
+.stat span{font-size:12px;color:var(--ivory-dim)}
+.toast{
+  position:fixed;left:50%;bottom:22px;transform:translateX(-50%) translateY(20px);
+  background:var(--ivory);color:var(--ink);padding:11px 18px;border-radius:99px;
+  font-size:14px;font-weight:600;box-shadow:0 10px 30px rgba(0,0,0,.4);
+  opacity:0;pointer-events:none;transition:.25s;z-index:90;max-width:90vw;text-align:center
+}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+.note{font-size:12.5px;color:var(--ivory-dim);line-height:1.6}
+
+@media (max-width:640px){
+  .arena{grid-template-columns:1fr;gap:8px}
+  .vs{flex-direction:row;padding:2px 0}
+  .vs .bar{height:1px;width:auto;flex:1;background:var(--line)}
+  .card{min-height:0;padding:16px 14px 12px}
+  .card.l,.card.r{transform:none}
+  .grid2{grid-template-columns:1fr}
+}
+@media (prefers-reduced-motion:reduce){
+  *{animation-duration:.001s !important;transition-duration:.001s !important}
+}
+</style>
+</head>
+<body>
+
+<header class="topbar">
+  <div class="topbar-in">
+    <div class="brand">
+      <h1>Spieleduell</h1>
+      <span class="sub">ELO · PAARVERGLEICH</span>
+    </div>
+    <div class="userrow">
+      <select class="user" id="userSel" aria-label="Nutzer auswählen"></select>
+      <button class="iconbtn" id="newUser">+ Nutzer</button>
+    </div>
+    <nav class="nav" id="nav">
+      <button data-view="duel" aria-current="true">Duell</button>
+      <button data-view="rank">Ranking</button>
+      <button data-view="games">Spiele</button>
+      <button data-view="data">Daten</button>
+    </nav>
+  </div>
+</header>
+
+<main class="wrap">
+
+  <!-- ============ DUELL ============ -->
+  <section id="v-duel">
+    <div class="duel-head">
+      <div class="q" id="duelQ">Welches Spiel spielst du lieber?</div>
+      <div class="counter" id="duelCount"></div>
+    </div>
+    <div id="duelBody"></div>
+  </section>
+
+  <!-- ============ RANKING ============ -->
+  <section id="v-rank" class="hidden">
+    <div class="seg" id="rankSeg">
+      <button data-scope="me" aria-pressed="true">Dieser Nutzer</button>
+      <button data-scope="all" aria-pressed="false">Alle Nutzer</button>
+    </div>
+    <div id="rankBody"></div>
+  </section>
+
+  <!-- ============ SPIELE ============ -->
+  <section id="v-games" class="hidden">
+    <div class="section">
+      <h2>Spiel hinzufügen</h2>
+      <p class="lead">Neue Spiele starten bei 1000 Punkten und tauchen sofort in den Duellen auf.</p>
+      <div class="addrow">
+        <input class="txt" id="newGameName" placeholder="Name des Spiels" autocomplete="off">
+        <button class="btn-primary" id="addGame">Hinzufügen</button>
+      </div>
+    </div>
+    <div class="section">
+      <h2>Kenne ich nicht</h2>
+      <p class="lead">Tippe ein Spiel an, um es für <b id="whoUnknown"></b> aus- oder wieder einzublenden. Durchgestrichene Spiele kommen in keinem Duell mehr vor.</p>
+      <div class="chips" id="gameChips"></div>
+    </div>
+    <div class="section">
+      <h2>Spiel löschen</h2>
+      <p class="lead">Entfernt das Spiel samt aller Wertungen bei allen Nutzern.</p>
+      <div class="addrow">
+        <select class="user" id="delGameSel" aria-label="Spiel zum Löschen"></select>
+        <button class="btn-danger" id="delGame">Löschen</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ DATEN ============ -->
+  <section id="v-data" class="hidden">
+    <div class="section">
+      <h2>Überblick</h2>
+      <div class="grid2" id="statGrid"></div>
+    </div>
+    <div class="section">
+      <h2>Exportieren</h2>
+      <p class="lead">Alle Nutzer, Spiele und Wertungen als JSON.</p>
+      <div class="addrow">
+        <button class="btn-primary" id="dlJson">Datei speichern</button>
+        <button class="iconbtn" id="copyJson">In Zwischenablage kopieren</button>
+      </div>
+      <textarea class="txt" id="exportArea" readonly aria-label="Export-JSON"></textarea>
+    </div>
+    <div class="section">
+      <h2>Importieren</h2>
+      <p class="lead">JSON-Datei wählen oder Text unten einfügen.</p>
+      <div class="addrow">
+        <input type="file" id="fileIn" accept="application/json,.json" class="txt" style="flex:1">
+      </div>
+      <textarea class="txt" id="importArea" placeholder='{"app":"spielranking", ...}' aria-label="Import-JSON"></textarea>
+      <div class="addrow" style="margin-top:10px">
+        <button class="btn-primary" id="impMerge">Zusammenführen</button>
+        <button class="btn-danger" id="impReplace">Alles ersetzen</button>
+      </div>
+      <p class="note">Beim Zusammenführen werden neue Spiele und Nutzer ergänzt; bei bereits vorhandenen Nutzern wird pro Spiel das mit der Duellzahl gewichtete Mittel der Elo-Werte gebildet.</p>
+    </div>
+    <div class="section">
+      <h2>Zurücksetzen</h2>
+      <div class="addrow">
+        <button class="btn-danger" id="resetUser">Wertungen dieses Nutzers</button>
+        <button class="btn-danger" id="delUser">Nutzer löschen</button>
+      </div>
+    </div>
+    <div class="section">
+      <h2>Wie gerechnet wird</h2>
+      <p class="note">
+        Jedes Spiel startet bei 1000. Nach einem Duell gilt
+        <span style="font-family:var(--mono)">E<sub>A</sub> = 1 / (1 + 10<sup>(R<sub>B</sub>−R<sub>A</sub>)/400</sup>)</span>
+        und <span style="font-family:var(--mono)">R′<sub>A</sub> = R<sub>A</sub> + K · (S<sub>A</sub> − E<sub>A</sub>)</span>,
+        mit S = 1 / 0,5 / 0. K fällt von 40 über 24 auf 16, sobald ein Spiel 10 bzw. 25 Duelle hinter sich hat.
+        Paare werden bevorzugt aus selten verglichenen Spielen mit ähnlicher Wertung gebildet – das bringt pro Duell die meiste Information.
+        Im Ranking über alle Nutzer wird zusätzlich zum Mittelwert zur Sicherheit auf 1000 hin geschrumpft
+        (<span style="font-family:var(--mono)">m = 5</span> Pseudo-Duelle), damit ein Spiel mit zwei Duellen nicht zufällig oben landet.
+      </p>
+    </div>
+  </section>
+
+</main>
+
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script>
+/* =======================================================================
+   Zustand & Speicher
+   ======================================================================= */
+const SEED_GAMES = [
+  "Duell um die Geld","Wortergänzung","Codenames","Kartografin","Smart 10","Spikeball",
+  "Psychiater","Kneipenquiz","Hitster","Top 10","So Kleever","Lügen mit Würfeln","Fun Facts",
+  "Tischtennis","The Crew","Just One","Halali","Dominion","Wer im Raum","The Game","Werwörter",
+  "Orte-Spiel","Stille Post mit Malen","Targi","Kuhhandel","Carcassonne","Risiko","Dice Town",
+  "Stapelmännchen","Exploding Kittens","Cabo","Paco Ŝako","7 Wonders Duel","Istanbul",
+  "Ubongo Extrem","Exit","Phase 10","Bang! The Dice Game","Hitster Guilty Pleasures","Skull King",
+  "Uno Mercy","Palm Island","Die Baumeister von Köln","Boule","Kicker","Krocket","Dito!",
+  "Decrypto","Next Station London","Darts","Fitzek Killer Cruise","Splendor","Agricola","Billard"
+];
+const START = 1000, SHRINK = 5, KEY = "spieleduell:v1";
+const COLORS = ["#E8B93C","#2FA69B","#E2664B","#8367D8"];
+
+const Store = (() => {
+  const mem = {};
+  const hasWS = typeof window !== "undefined" && window.storage && typeof window.storage.get === "function";
+  return {
+    async load(){
+      if (hasWS){ try{ const r = await window.storage.get(KEY); if(r&&r.value) return JSON.parse(r.value); }catch(e){} }
+      try{ const v = localStorage.getItem(KEY); if(v) return JSON.parse(v); }catch(e){}
+      return mem[KEY] || null;
+    },
+    async save(obj){
+      const s = JSON.stringify(obj);
+      mem[KEY] = obj;
+      if (hasWS){ try{ await window.storage.set(KEY, s); return; }catch(e){} }
+      try{ localStorage.setItem(KEY, s); }catch(e){}
+    }
+  };
+})();
+
+let S = null;             // Anwendungszustand
+let view = "duel";
+let rankScope = "me";
+let pair = null;          // aktuelles Duell [idA, idB]
+let undoStack = [];
+let openRow = null;
+
+const slug = n => n.toLowerCase()
+  .replace(/ä/g,"ae").replace(/ö/g,"oe").replace(/ü/g,"ue").replace(/ß/g,"ss")
+  .replace(/[^a-z0-9]+/g,"-").replace(/^-|-$/g,"");
+
+function freshState(){
+  const games = [];
+  const seen = new Set();
+  SEED_GAMES.forEach(n => { const id = slug(n); if(!seen.has(id)){ seen.add(id); games.push({id, name:n}); } });
+  return { app:"spielranking", version:1, games, users:{}, current:null };
+}
+function ensureUser(name){
+  if(!S.users[name]) S.users[name] = { ratings:{}, unknown:[], pairs:{}, duels:0 };
+  return S.users[name];
+}
+function U(){ return S.current ? S.users[S.current] : null; }
+function R(u, id){
+  if(!u.ratings[id]) u.ratings[id] = { elo:START, n:0, w:0, l:0, d:0 };
+  return u.ratings[id];
+}
+const gameName = id => (S.games.find(g=>g.id===id)||{name:id}).name;
+
+let saveTimer = null;
+function save(){ clearTimeout(saveTimer); saveTimer = setTimeout(()=>Store.save(S), 250); }
+
+/* =======================================================================
+   Elo
+   ======================================================================= */
+const kFactor = n => n < 10 ? 40 : n < 25 ? 24 : 16;
+const expected = (ra, rb) => 1 / (1 + Math.pow(10, (rb - ra) / 400));
+
+function applyResult(idA, idB, scoreA){
+  const u = U(), a = R(u, idA), b = R(u, idB);
+  const before = { a:{...a}, b:{...b}, duels:u.duels };
+  const ea = expected(a.elo, b.elo);
+  const da = kFactor(a.n) * (scoreA - ea);
+  const db = kFactor(b.n) * ((1 - scoreA) - (1 - ea));
+  a.elo += da; b.elo += db;
+  a.n++; b.n++;
+  if (scoreA === 1){ a.w++; b.l++; } else if (scoreA === 0){ a.l++; b.w++; } else { a.d++; b.d++; }
+  const key = [idA, idB].sort().join("|");
+  u.pairs[key] = (u.pairs[key] || 0) + 1;
+  u.duels++;
+  undoStack.push({ user:S.current, idA, idB, before, key });
+  if (undoStack.length > 30) undoStack.shift();
+  save();
+  return { da:Math.round(da), db:Math.round(db) };
+}
+function undo(){
+  const last = undoStack.pop();
+  if(!last){ toast("Nichts zum Zurücknehmen"); return; }
+  const u = S.users[last.user];
+  u.ratings[last.idA] = last.before.a;
+  u.ratings[last.idB] = last.before.b;
+  u.duels = last.before.duels;
+  u.pairs[last.key] = Math.max(0, (u.pairs[last.key]||1) - 1);
+  pair = [last.idA, last.idB];
+  save(); renderDuel(); toast("Duell zurückgenommen");
+}
+
+/* =======================================================================
+   Paarauswahl
+   ======================================================================= */
+function pool(){
+  const u = U(); if(!u) return [];
+  return S.games.filter(g => !u.unknown.includes(g.id)).map(g => g.id);
+}
+function pickPair(){
+  const u = U(), p = pool();
+  if (p.length < 2) return null;
+  const n = id => R(u, id).n;
+  // A: aus dem Drittel mit den wenigsten Duellen
+  const sorted = [...p].sort((x,y) => n(x) - n(y));
+  const head = sorted.slice(0, Math.max(4, Math.ceil(sorted.length / 3)));
+  const idA = head[Math.floor(Math.random() * head.length)];
+  // B: ähnliche Wertung, selten gepaart, wenige Duelle
+  const eloA = R(u, idA).elo;
+  const cand = p.filter(id => id !== idA).map(id => {
+    const key = [idA, id].sort().join("|");
+    const cost = Math.abs(eloA - R(u, id).elo)
+               + 260 * (u.pairs[key] || 0)
+               + 14 * n(id)
+               + Math.random() * 90;
+    return { id, cost };
+  }).sort((x,y) => x.cost - y.cost);
+  const top = cand.slice(0, Math.min(6, cand.length));
+  const idB = top[Math.floor(Math.random() * top.length)].id;
+  return Math.random() < .5 ? [idA, idB] : [idB, idA];
+}
+
+/* =======================================================================
+   Rendering: Duell
+   ======================================================================= */
+function renderDuel(){
+  const body = document.getElementById("duelBody");
+  const u = U();
+  if(!u){
+    body.innerHTML = tplEmpty("Noch kein Nutzer angelegt", "Lege oben einen Nutzer an, dann kann das erste Duell starten.");
+    document.getElementById("duelCount").textContent = "";
+    return;
+  }
+  const p = pool();
+  if (p.length < 2){
+    body.innerHTML = tplEmpty("Zu wenige Spiele", "Für " + esc(S.current) + " sind weniger als zwei Spiele als bekannt markiert. Unter „Spiele“ lassen sich Spiele wieder einblenden oder neue hinzufügen.");
+    return;
+  }
+  if(!pair || pair.some(id => !p.includes(id))) pair = pickPair();
+  const [a, b] = pair;
+  const rated = p.filter(id => R(u,id).n >= 3).length;
+  document.getElementById("duelCount").textContent = u.duels + " Duelle · " + rated + "/" + p.length + " solide";
+
+  body.innerHTML = `
+    <div class="arena">
+      ${tplCard(a, "l", 0)}
+      <div class="vs"><span class="bar"></span><span>VS</span><span class="bar"></span></div>
+      ${tplCard(b, "r", 1)}
+    </div>
+    <div class="actions">
+      <button data-act="draw">Gleich gut</button>
+      <button data-act="skip">Überspringen</button>
+      <button data-act="undo">Zurücknehmen</button>
+    </div>
+    <div class="progress"><i style="width:${Math.min(100, Math.round(rated / p.length * 100))}%"></i></div>
+    <p class="hint">Tastatur: 1 links · 2 rechts · 3 gleich gut · S überspringen · Z zurück</p>
+  `;
+  body.querySelectorAll(".card").forEach(el => {
+    el.addEventListener("click", () => choose(+el.dataset.side === 0 ? 1 : 0));
+  });
+  body.querySelectorAll(".unknown").forEach(el => {
+    el.addEventListener("click", ev => { ev.stopPropagation(); markUnknown(el.dataset.id); });
+  });
+  body.querySelectorAll(".actions button").forEach(el => {
+    el.addEventListener("click", () => {
+      const a2 = el.dataset.act;
+      if (a2 === "draw") choose(.5);
+      else if (a2 === "skip"){ pair = pickPair(); renderDuel(); }
+      else undo();
+    });
+  });
+}
+function tplCard(id, side, idx){
+  const u = U(), r = R(u, id), c = COLORS[Math.abs(hash(id)) % COLORS.length];
+  return `
+    <button class="card ${side}" data-side="${idx}" aria-label="${esc(gameName(id))} wählen">
+      <span class="stripe" style="background:${c}"></span>
+      <span class="delta" data-delta="${id}"></span>
+      <div>
+        <div class="tag">${idx === 0 ? "Links" : "Rechts"} · ${r.n} Duelle</div>
+        <div class="name">${esc(gameName(id))}</div>
+      </div>
+      <div>
+        <div class="meta">Elo ${Math.round(r.elo)}</div>
+        <span class="unknown" data-id="${id}" role="button" tabindex="0">Kenne ich nicht</span>
+      </div>
+    </button>`;
+}
+function choose(scoreA){
+  if(!pair) return;
+  const [a, b] = pair;
+  const { da, db } = applyResult(a, b, scoreA);
+  showDelta(a, da); showDelta(b, db);
+  setTimeout(() => { pair = pickPair(); renderDuel(); }, 260);
+}
+function showDelta(id, d){
+  const el = document.querySelector(`[data-delta="${id}"]`);
+  if(!el) return;
+  el.textContent = (d >= 0 ? "+" : "") + d;
+  el.style.color = d >= 0 ? "#1E7A5F" : "#B4453A";
+  el.classList.add("show");
+}
+function markUnknown(id){
+  const u = U(); if(!u) return;
+  if(!u.unknown.includes(id)) u.unknown.push(id);
+  delete u.ratings[id];
+  save();
+  pair = pickPair(); renderDuel();
+  toast(gameName(id) + " ausgeblendet");
+}
+
+/* =======================================================================
+   Rendering: Ranking
+   ======================================================================= */
+function renderRank(){
+  const body = document.getElementById("rankBody");
+  const rows = rankScope === "me" ? rowsForUser() : rowsForAll();
+  if (rows === null){
+    body.innerHTML = tplEmpty("Kein Nutzer ausgewählt", "Lege oben einen Nutzer an."); return;
+  }
+  if (!rows.length){
+    body.innerHTML = tplEmpty("Noch keine Wertung", "Spiele ein paar Duelle, dann füllt sich die Tabelle."); return;
+  }
+  const max = Math.max(...rows.map(r => r.score)), min = Math.min(...rows.map(r => r.score));
+  const span = Math.max(1, max - min);
+  body.innerHTML = `<ol class="rank">` + rows.map((r, i) => {
+    const c = COLORS[Math.abs(hash(r.id)) % COLORS.length];
+    const w = 6 + 94 * (r.score - min) / span;
+    return `<li>
+      <button class="row" data-id="${r.id}">
+        <span class="pos ${i < 3 ? "top" : ""}">${i + 1}</span>
+        <span>
+          <span class="gname">${esc(r.name)}</span>
+          <span class="gbar"><i style="width:${w}%;background:${c}"></i></span>
+        </span>
+        <span class="elo">${Math.round(r.score)}<small>${r.sub}</small></span>
+      </button>
+      <div class="detail hidden" data-detail="${r.id}">${r.detail}</div>
+    </li>`;
+  }).join("") + `</ol>`;
+  body.querySelectorAll(".row").forEach(el => el.addEventListener("click", () => {
+    const d = body.querySelector(`[data-detail="${el.dataset.id}"]`);
+    const wasOpen = !d.classList.contains("hidden");
+    body.querySelectorAll(".detail").forEach(x => x.classList.add("hidden"));
+    if(!wasOpen) d.classList.remove("hidden");
+  }));
+}
+function rowsForUser(){
+  const u = U(); if(!u) return null;
+  return Object.entries(u.ratings)
+    .filter(([id, r]) => r.n > 0 && S.games.some(g => g.id === id))
+    .map(([id, r]) => ({
+      id, name: gameName(id), score: r.elo,
+      sub: r.n + " Duelle",
+      detail: line("Siege", r.w) + line("Niederlagen", r.l) + line("Gleichstand", r.d)
+            + line("Trefferquote", r.n ? Math.round((r.w + r.d / 2) / r.n * 100) + " %" : "–")
+    }))
+    .sort((a, b) => b.score - a.score);
+}
+function rowsForAll(){
+  const acc = {};
+  Object.entries(S.users).forEach(([name, u]) => {
+    Object.entries(u.ratings).forEach(([id, r]) => {
+      if (r.n === 0 || !S.games.some(g => g.id === id)) return;
+      (acc[id] = acc[id] || []).push({ name, elo:r.elo, n:r.n });
+    });
+  });
+  return Object.entries(acc).map(([id, list]) => {
+    const N = list.reduce((s, x) => s + x.n, 0);
+    const raw = list.reduce((s, x) => s + x.elo * x.n, 0) / N;
+    const score = (raw * N + START * SHRINK) / (N + SHRINK);
+    const mean = list.reduce((s, x) => s + x.elo, 0) / list.length;
+    const sd = Math.sqrt(list.reduce((s, x) => s + (x.elo - mean) ** 2, 0) / list.length);
+    return {
+      id, name: gameName(id), score,
+      sub: list.length + (list.length === 1 ? " Nutzer" : " Nutzer") + " · ±" + Math.round(sd),
+      detail: list.sort((a, b) => b.elo - a.elo)
+                  .map(x => line(x.name, Math.round(x.elo) + " (" + x.n + ")")).join("")
+            + line("Duelle gesamt", N)
+    };
+  }).sort((a, b) => b.score - a.score);
+}
+const line = (k, v) => `<div><span>${esc(String(k))}</span><span>${esc(String(v))}</span></div>`;
+
+/* =======================================================================
+   Rendering: Spiele & Daten
+   ======================================================================= */
+function renderGames(){
+  const u = U();
+  document.getElementById("whoUnknown").textContent = S.current || "–";
+  const chips = document.getElementById("gameChips");
+  chips.innerHTML = S.games.map(g => {
+    const off = u && u.unknown.includes(g.id);
+    return `<button class="chip ${off ? "off" : ""}" data-id="${g.id}">${esc(g.name)}</button>`;
+  }).join("");
+  chips.querySelectorAll(".chip").forEach(el => el.addEventListener("click", () => {
+    if(!U()){ toast("Erst einen Nutzer anlegen"); return; }
+    const id = el.dataset.id, un = U().unknown, i = un.indexOf(id);
+    if (i >= 0) un.splice(i, 1); else { un.push(id); delete U().ratings[id]; }
+    save(); renderGames(); pair = pickPair();
+  }));
+  const sel = document.getElementById("delGameSel");
+  sel.innerHTML = S.games.map(g => `<option value="${g.id}">${esc(g.name)}</option>`).join("");
+}
+function renderData(){
+  const users = Object.keys(S.users);
+  const duels = users.reduce((s, n) => s + S.users[n].duels, 0);
+  const rated = new Set();
+  users.forEach(n => Object.entries(S.users[n].ratings).forEach(([id, r]) => { if (r.n) rated.add(id); }));
+  document.getElementById("statGrid").innerHTML =
+      stat(S.games.length, "Spiele") + stat(users.length, "Nutzer")
+    + stat(duels, "Duelle insgesamt") + stat(rated.size, "Spiele mit Wertung");
+  document.getElementById("exportArea").value = JSON.stringify(exportObj(), null, 2);
+}
+const stat = (b, s) => `<div class="stat"><b>${b}</b><span>${s}</span></div>`;
+function exportObj(){
+  return { app:"spielranking", version:1, exported:new Date().toISOString(),
+           games:S.games, users:S.users };
+}
+
+/* =======================================================================
+   Import / Export
+   ======================================================================= */
+function doImport(text, mode){
+  let obj;
+  try { obj = JSON.parse(text); }
+  catch(e){ toast("JSON lässt sich nicht lesen"); return; }
+  if (!obj || typeof obj !== "object" || !obj.users || !obj.games){
+    toast("Datei enthält keine Spiele und Nutzer"); return;
+  }
+  if (mode === "replace"){
+    S = { app:"spielranking", version:1, games:obj.games, users:obj.users,
+          current:Object.keys(obj.users)[0] || null };
+  } else {
+    obj.games.forEach(g => { if(!S.games.some(x => x.id === g.id)) S.games.push(g); });
+    Object.entries(obj.users).forEach(([name, nu]) => {
+      if(!S.users[name]){ S.users[name] = nu; return; }
+      const cu = S.users[name];
+      Object.entries(nu.ratings || {}).forEach(([id, r]) => {
+        const c = cu.ratings[id];
+        if(!c){ cu.ratings[id] = r; return; }
+        const N = c.n + r.n;
+        cu.ratings[id] = {
+          elo: N ? (c.elo * c.n + r.elo * r.n) / N : START,
+          n:N, w:c.w + r.w, l:c.l + r.l, d:c.d + r.d
+        };
+      });
+      (nu.unknown || []).forEach(id => { if(!cu.unknown.includes(id)) cu.unknown.push(id); });
+      Object.entries(nu.pairs || {}).forEach(([k, v]) => cu.pairs[k] = (cu.pairs[k] || 0) + v);
+      cu.duels += nu.duels || 0;
+    });
+  }
+  undoStack = []; pair = null;
+  save(); renderAll(); toast(mode === "replace" ? "Daten ersetzt" : "Daten zusammengeführt");
+}
+
+/* =======================================================================
+   Hilfsfunktionen & Bedienung
+   ======================================================================= */
+function esc(s){ return String(s).replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c])); }
+function hash(s){ let h = 0; for (let i = 0; i < s.length; i++) h = (h * 31 + s.charCodeAt(i)) | 0; return h; }
+function tplEmpty(t, s){ return `<div class="empty"><b>${esc(t)}</b>${esc(s)}</div>`; }
+let toastT;
+function toast(msg){
+  const el = document.getElementById("toast");
+  el.textContent = msg; el.classList.add("show");
+  clearTimeout(toastT); toastT = setTimeout(() => el.classList.remove("show"), 1900);
+}
+function renderUserSel(){
+  const sel = document.getElementById("userSel");
+  const names = Object.keys(S.users);
+  sel.innerHTML = names.length
+    ? names.map(n => `<option ${n === S.current ? "selected" : ""}>${esc(n)}</option>`).join("")
+    : `<option value="">Noch kein Nutzer</option>`;
+}
+function renderAll(){
+  renderUserSel(); renderDuel(); renderRank(); renderGames(); renderData();
+}
+function setView(v){
+  view = v;
+  ["duel","rank","games","data"].forEach(x =>
+    document.getElementById("v-" + x).classList.toggle("hidden", x !== v));
+  document.querySelectorAll("#nav button").forEach(b =>
+    b.setAttribute("aria-current", b.dataset.view === v ? "true" : "false"));
+  if (v === "rank") renderRank();
+  if (v === "games") renderGames();
+  if (v === "data") renderData();
+  window.scrollTo({ top:0, behavior:"instant" });
+}
+
+document.getElementById("nav").addEventListener("click", e => {
+  const b = e.target.closest("button"); if (b) setView(b.dataset.view);
+});
+document.getElementById("userSel").addEventListener("change", e => {
+  S.current = e.target.value || null; pair = null; undoStack = [];
+  save(); renderAll();
+});
+document.getElementById("newUser").addEventListener("click", () => {
+  const n = (prompt("Name des Nutzers") || "").trim();
+  if(!n) return;
+  if (S.users[n]){ toast("Nutzer gibt es schon"); S.current = n; }
+  else { ensureUser(n); S.current = n; toast(n + " angelegt"); }
+  pair = null; save(); renderAll(); setView("duel");
+});
+document.getElementById("rankSeg").addEventListener("click", e => {
+  const b = e.target.closest("button"); if(!b) return;
+  rankScope = b.dataset.scope;
+  document.querySelectorAll("#rankSeg button").forEach(x =>
+    x.setAttribute("aria-pressed", x === b ? "true" : "false"));
+  renderRank();
+});
+document.getElementById("addGame").addEventListener("click", () => {
+  const inp = document.getElementById("newGameName");
+  const name = inp.value.trim(); if(!name) return;
+  const id = slug(name);
+  if (S.games.some(g => g.id === id)){ toast("Spiel steht schon in der Liste"); return; }
+  S.games.push({ id, name }); inp.value = "";
+  save(); renderGames(); renderData(); toast(name + " hinzugefügt");
+});
+document.getElementById("delGame").addEventListener("click", () => {
+  const id = document.getElementById("delGameSel").value; if(!id) return;
+  if(!confirm(gameName(id) + " wirklich bei allen Nutzern löschen?")) return;
+  S.games = S.games.filter(g => g.id !== id);
+  Object.values(S.users).forEach(u => {
+    delete u.ratings[id];
+    u.unknown = u.unknown.filter(x => x !== id);
+    Object.keys(u.pairs).forEach(k => { if (k.split("|").includes(id)) delete u.pairs[k]; });
+  });
+  pair = null; save(); renderAll(); toast("Spiel gelöscht");
+});
+document.getElementById("dlJson").addEventListener("click", () => {
+  const blob = new Blob([JSON.stringify(exportObj(), null, 2)], { type:"application/json" });
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(blob);
+  a.download = "spieleduell-" + new Date().toISOString().slice(0, 10) + ".json";
+  document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(() => URL.revokeObjectURL(a.href), 4000);
+  toast("Datei gespeichert");
+});
+document.getElementById("copyJson").addEventListener("click", async () => {
+  const t = JSON.stringify(exportObj(), null, 2);
+  try { await navigator.clipboard.writeText(t); toast("Kopiert"); }
+  catch(e){ const a = document.getElementById("exportArea"); a.select(); toast("Text markiert – bitte kopieren"); }
+});
+document.getElementById("fileIn").addEventListener("change", e => {
+  const f = e.target.files[0]; if(!f) return;
+  const r = new FileReader();
+  r.onload = () => { document.getElementById("importArea").value = r.result; toast("Datei geladen – jetzt Modus wählen"); };
+  r.readAsText(f);
+});
+document.getElementById("impMerge").addEventListener("click", () =>
+  doImport(document.getElementById("importArea").value, "merge"));
+document.getElementById("impReplace").addEventListener("click", () => {
+  if(!confirm("Alle vorhandenen Daten ersetzen?")) return;
+  doImport(document.getElementById("importArea").value, "replace");
+});
+document.getElementById("resetUser").addEventListener("click", () => {
+  if(!S.current) return;
+  if(!confirm("Alle Wertungen von " + S.current + " zurücksetzen?")) return;
+  S.users[S.current] = { ratings:{}, unknown:[], pairs:{}, duels:0 };
+  pair = null; undoStack = []; save(); renderAll(); toast("Wertungen zurückgesetzt");
+});
+document.getElementById("delUser").addEventListener("click", () => {
+  if(!S.current) return;
+  if(!confirm(S.current + " mitsamt allen Wertungen löschen?")) return;
+  delete S.users[S.current];
+  S.current = Object.keys(S.users)[0] || null;
+  pair = null; undoStack = []; save(); renderAll(); toast("Nutzer gelöscht");
+});
+document.addEventListener("keydown", e => {
+  if (view !== "duel" || e.metaKey || e.ctrlKey) return;
+  if (/^(INPUT|TEXTAREA|SELECT)$/.test(document.activeElement.tagName)) return;
+  const k = e.key.toLowerCase();
+  if (k === "1" || k === "arrowleft") choose(1);
+  else if (k === "2" || k === "arrowright") choose(0);
+  else if (k === "3") choose(.5);
+  else if (k === "s"){ pair = pickPair(); renderDuel(); }
+  else if (k === "z") undo();
+});
+
+/* =======================================================================
+   Start
+   ======================================================================= */
+(async function init(){
+  const loaded = await Store.load();
+  S = loaded && loaded.games ? loaded : freshState();
+  if (!S.current) S.current = Object.keys(S.users)[0] || null;
+  Object.keys(S.users).forEach(n => {
+    const u = S.users[n];
+    u.ratings = u.ratings || {}; u.unknown = u.unknown || [];
+    u.pairs = u.pairs || {}; u.duels = u.duels || 0;
+  });
+  renderAll();
+})();
+</script>
+</body>
+</html>
