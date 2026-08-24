@@ -607,6 +607,8 @@ function newRound(keepStarter){
     failed:players.map(()=>false),
     turn:startPlayer,
     results:QUESTIONS[qIndex].a.map(()=>null),  // null | {ok:bool, by:playerIdx|null}
+    order:shuffle([...QUESTIONS[qIndex].a.keys()]),
+    _pop:null,
     _snapshot:players.map(p=>p.score)
   };
   if(!keepStarter)startPlayer=(startPlayer+1)%players.length;
@@ -661,15 +663,16 @@ function renderGame(){
   } else $('turnline').textContent='';
   // Grid
   const g=$('grid');g.innerHTML='';
-  Q.a.forEach((a,i)=>{
-    const r=round.results[i];
+  round.order.forEach((ai,pos)=>{
+    const a=Q.a[ai];
+    const r=round.results[ai];
     const d=document.createElement('div');
-    d.className='ans'+(r?' done '+(r.ok?'ok':'bad')+(r.leftover?' leftover':''):'');
-    d.innerHTML=`<div class="idx">${i+1}</div>
+    d.className='ans'+(r?' done '+(r.ok?'ok':'bad')+(r.leftover?' leftover':'')+(round._pop===ai?' pop':''):'');
+    d.innerHTML=`<div class="idx">${pos+1}</div>
       <div class="atext">${esc(a.t)}</div>
       <div class="aval">${r?esc(valLabel(a,Q)) : ''}</div>
       <div class="who ${r&&r.by!=null?'show':''}" style="background:${r&&r.by!=null?players[r.by].color:'transparent'}"></div>`;
-    if(!r)d.addEventListener('click',()=>pick(i));
+    if(!r)d.addEventListener('click',()=>pick(ai));
     g.appendChild(d);
   });
   $('passBtn').style.display=activeCount()>0?'':'none';
@@ -714,6 +717,7 @@ function resolvePick(i,ok){
   pushHistory();
   const p=round.turn;
   round.results[i]={ok,by:p};
+  round._pop=i;
   if(ok){
     round.chips[p]++;
   }else{
@@ -745,11 +749,7 @@ function afterAction(advanceFromAnswer){
   }
   nextTurn();ensureTurnValid();
   renderGame();
-  // Pop-Animation auf zuletzt aufgedeckter Karte
-  if(advanceFromAnswer){
-    const last=[...document.querySelectorAll('.ans.done')].pop();
-    if(last)last.classList.add('pop');
-  }
+  round._pop=null; // Pop-Animation gilt nur für das gerade aufgedeckte Feld
 }
 
 /* ===================== Rundenende ===================== */
@@ -762,6 +762,7 @@ function endRound(allRevealed){
   // Übrige Antworten aufdecken (abgedimmt)
   const Q=q();
   round.results=round.results.map((r,i)=>r||{ok:Q.type==='yn'?Q.a[i].ok:true,by:null,leftover:true});
+  round._pop=null;
   renderGame();
   // Sieger?
   const winIdx=players.findIndex(p=>p.score>=target);
