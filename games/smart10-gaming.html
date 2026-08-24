@@ -1,0 +1,822 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SMART GAMER 10 – Das Gaming-Quiz</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bungee&family=Space+Grotesk:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#0c0f20;
+  --panel:#161a33;
+  --panel2:#1e2342;
+  --line:#2b3160;
+  --text:#eef0ff;
+  --dim:#9aa0c8;
+  --pink:#ff3d8b;
+  --cyan:#2de2e6;
+  --yellow:#ffd23f;
+  --green:#3ddc84;
+  --red:#ff5964;
+  --radius:18px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%}
+body{
+  background:
+    radial-gradient(1200px 600px at 70% -10%, #232a5a 0%, transparent 60%),
+    radial-gradient(900px 500px at 0% 110%, #241238 0%, transparent 55%),
+    var(--bg);
+  color:var(--text);
+  font-family:"Space Grotesk",system-ui,sans-serif;
+  min-height:100%;
+  overflow-x:hidden;
+}
+.screen{display:none;min-height:100vh;flex-direction:column}
+.screen.active{display:flex}
+
+/* ---------- Setup ---------- */
+#setup{align-items:center;justify-content:center;padding:4vh 4vw;gap:3vh}
+.logo{
+  font-family:"Bungee",cursive;
+  font-size:clamp(2.2rem,6vw,4.5rem);
+  line-height:1;
+  text-align:center;
+  letter-spacing:.02em;
+}
+.logo .l1{color:var(--cyan)}
+.logo .l2{color:var(--pink)}
+.logo .num{
+  display:inline-block;
+  background:var(--yellow);color:#1a1400;
+  border-radius:.35em;padding:0 .18em;
+  transform:rotate(-4deg);
+  box-shadow:0 .12em 0 #b8912a;
+}
+.tagline{color:var(--dim);font-size:clamp(.95rem,1.6vw,1.2rem);text-align:center;max-width:46ch}
+.card{
+  background:var(--panel);
+  border:1px solid var(--line);
+  border-radius:var(--radius);
+  padding:clamp(16px,2.5vw,28px);
+  width:min(680px,94vw);
+}
+.card h2{font-size:1.05rem;text-transform:uppercase;letter-spacing:.14em;color:var(--dim);margin-bottom:14px}
+.players-edit{display:flex;flex-direction:column;gap:10px}
+.p-row{display:flex;gap:10px;align-items:center}
+.p-dot{width:34px;height:34px;border-radius:50%;flex:none;border:3px solid #fff2;box-shadow:0 0 0 2px #0006 inset}
+.p-row input{
+  flex:1;background:var(--panel2);border:1px solid var(--line);border-radius:10px;
+  color:var(--text);font:inherit;font-size:1.05rem;padding:10px 14px;min-width:0;
+}
+.p-row input:focus{outline:2px solid var(--cyan);outline-offset:1px}
+.p-row button{background:none;border:none;color:var(--dim);font-size:1.3rem;cursor:pointer;padding:6px}
+.p-row button:hover{color:var(--red)}
+.small-btn{
+  margin-top:12px;background:var(--panel2);border:1px dashed var(--line);color:var(--dim);
+  border-radius:10px;padding:10px 14px;font:inherit;cursor:pointer;width:100%;
+}
+.small-btn:hover{color:var(--text);border-color:var(--cyan)}
+.target-row{display:flex;gap:10px;margin-top:4px}
+.seg{
+  flex:1;text-align:center;padding:12px 0;border-radius:10px;cursor:pointer;
+  background:var(--panel2);border:1px solid var(--line);font-weight:700;font-size:1.1rem;
+}
+.seg.on{background:var(--yellow);color:#1a1400;border-color:var(--yellow)}
+.big-btn{
+  font-family:"Bungee",cursive;font-size:clamp(1.1rem,2.4vw,1.5rem);
+  background:var(--pink);color:#fff;border:none;border-radius:16px;
+  padding:16px 40px;cursor:pointer;letter-spacing:.04em;
+  box-shadow:0 6px 0 #a01e55;transition:transform .08s, box-shadow .08s;
+}
+.big-btn:active{transform:translateY(4px);box-shadow:0 2px 0 #a01e55}
+.big-btn:disabled{opacity:.4;cursor:not-allowed}
+
+/* ---------- Game ---------- */
+#game{padding:1.5vh 2vw 2vh;gap:1.4vh}
+.topbar{display:flex;gap:10px;flex-wrap:wrap;justify-content:center}
+.badge{
+  display:flex;align-items:center;gap:10px;
+  background:var(--panel);border:1px solid var(--line);border-radius:14px;
+  padding:8px 14px;min-width:150px;position:relative;
+  transition:box-shadow .2s, transform .2s;
+}
+.badge .bdot{width:16px;height:16px;border-radius:50%;flex:none}
+.badge .bname{font-weight:700;font-size:1.05rem;max-width:14ch;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.badge .bscore{font-family:"Bungee",cursive;font-size:1.2rem;margin-left:auto;color:var(--yellow)}
+.badge .chips{display:flex;gap:4px;position:absolute;left:12px;bottom:-7px}
+.badge .chip{width:12px;height:12px;border-radius:50%;background:var(--green);border:2px solid var(--bg)}
+.badge.current{box-shadow:0 0 0 3px var(--cyan), 0 0 24px #2de2e677;transform:translateY(-2px)}
+.badge.out{opacity:.45}
+.badge.out .bname{text-decoration:line-through}
+.badge .status{font-size:.72rem;color:var(--dim);position:absolute;right:12px;bottom:-9px;background:var(--bg);padding:0 6px;border-radius:6px}
+
+.qbox{
+  text-align:center;background:var(--panel);border:1px solid var(--line);
+  border-radius:var(--radius);padding:clamp(12px,2vh,22px) 20px;position:relative;
+}
+.qmeta{font-size:.8rem;letter-spacing:.16em;text-transform:uppercase;color:var(--dim);margin-bottom:6px}
+.qtext{font-size:clamp(1.2rem,2.6vw,2rem);font-weight:700;line-height:1.25}
+.qhint{margin-top:6px;font-size:.9rem;color:var(--cyan)}
+
+.turnline{
+  text-align:center;font-size:clamp(1rem,2vw,1.3rem);
+}
+.turnline b{color:var(--cyan)}
+
+.grid{
+  display:grid;grid-template-columns:repeat(5,1fr);gap:clamp(8px,1.2vw,14px);
+  flex:1;align-content:stretch;
+}
+@media (max-width:820px){.grid{grid-template-columns:repeat(2,1fr)}}
+.ans{
+  position:relative;border-radius:14px;cursor:pointer;border:1px solid var(--line);
+  background:linear-gradient(160deg,var(--panel2),var(--panel));
+  padding:clamp(10px,1.6vh,18px) 12px clamp(10px,1.6vh,18px) 12px;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;
+  text-align:center;min-height:11vh;
+  transition:transform .12s, box-shadow .12s, background .2s, border-color .2s;
+}
+.ans:not(.done):hover{transform:translateY(-3px);box-shadow:0 8px 20px #0007;border-color:var(--cyan)}
+.ans .idx{
+  font-family:"Bungee",cursive;font-size:.85rem;color:var(--bg);
+  background:var(--cyan);width:26px;height:26px;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;flex:none;
+  position:absolute;top:-9px;left:-6px;transform:rotate(-8deg);
+}
+.ans .atext{font-size:clamp(.95rem,1.5vw,1.25rem);font-weight:500;line-height:1.2}
+.ans .aval{
+  font-family:"Bungee",cursive;font-size:clamp(1rem,1.8vw,1.4rem);
+  color:var(--yellow);display:none;
+}
+.ans.done{cursor:default}
+.ans.done .aval{display:block}
+.ans.ok{background:linear-gradient(160deg,#123f2a,#0e2f21);border-color:var(--green)}
+.ans.ok .idx{background:var(--green)}
+.ans.bad{background:linear-gradient(160deg,#4a1620,#33111a);border-color:var(--red)}
+.ans.bad .idx{background:var(--red)}
+.ans.leftover{opacity:.55}
+.ans .who{
+  position:absolute;right:-6px;top:-9px;width:24px;height:24px;border-radius:50%;
+  border:3px solid var(--bg);display:none;
+}
+.ans.done .who.show{display:block}
+.ans.pop{animation:pop .35s}
+@keyframes pop{0%{transform:scale(.92)}55%{transform:scale(1.06)}100%{transform:scale(1)}}
+
+.actionbar{display:flex;gap:12px;justify-content:center;align-items:center;flex-wrap:wrap}
+.pass-btn{
+  font-family:"Bungee",cursive;font-size:1rem;background:var(--panel2);color:var(--yellow);
+  border:2px solid var(--yellow);border-radius:14px;padding:12px 26px;cursor:pointer;
+}
+.pass-btn:hover{background:var(--yellow);color:#1a1400}
+.ghost-btn{
+  font-family:"Space Grotesk",sans-serif;font-weight:700;font-size:.95rem;
+  background:var(--panel);color:var(--dim);border:1px solid var(--line);
+  border-radius:14px;padding:13px 20px;cursor:pointer;
+}
+.ghost-btn:hover:not(:disabled){color:var(--text);border-color:var(--cyan)}
+.ghost-btn:disabled{opacity:.35;cursor:not-allowed}
+.cancel-btn{
+  background:none;border:none;color:var(--dim);font:inherit;font-size:.9rem;
+  cursor:pointer;text-decoration:underline;padding:4px;
+}
+.cancel-btn:hover{color:var(--text)}
+button:focus-visible,.seg:focus-visible,.ans:focus-visible{outline:3px solid var(--cyan);outline-offset:2px}
+.actionbar .note{color:var(--dim);font-size:.9rem;max-width:38ch;text-align:center}
+
+/* ---------- Overlays ---------- */
+.overlay{
+  position:fixed;inset:0;background:#0c0f20e6;backdrop-filter:blur(4px);
+  display:none;align-items:center;justify-content:center;z-index:50;padding:4vw;
+}
+.overlay.active{display:flex}
+.obox{
+  background:var(--panel);border:1px solid var(--line);border-radius:22px;
+  padding:clamp(20px,3vw,36px);width:min(620px,94vw);text-align:center;
+  display:flex;flex-direction:column;gap:18px;align-items:center;
+  max-height:92vh;overflow-y:auto;
+}
+.obox h2{font-family:"Bungee",cursive;font-size:clamp(1.4rem,3.4vw,2.2rem)}
+.obox .sub{color:var(--dim)}
+.reveal-panel .bigval{
+  font-family:"Bungee",cursive;font-size:clamp(1.6rem,4.5vw,2.8rem);color:var(--yellow);
+}
+.judge-row{display:flex;gap:14px;width:100%}
+.judge-row button{
+  flex:1;font-family:"Bungee",cursive;font-size:1.05rem;border:none;border-radius:14px;
+  padding:16px 8px;cursor:pointer;color:#fff;
+}
+.j-ok{background:var(--green);color:#062b18;box-shadow:0 5px 0 #1d7a49}
+.j-bad{background:var(--red);color:#33060a;box-shadow:0 5px 0 #a02c34}
+.j-ok:active,.j-bad:active{transform:translateY(4px);box-shadow:none}
+.gains{width:100%;display:flex;flex-direction:column;gap:8px}
+.gain-row{
+  display:flex;justify-content:space-between;align-items:center;
+  background:var(--panel2);border-radius:10px;padding:10px 16px;font-size:1.05rem;
+}
+.gain-row .plus{font-family:"Bungee",cursive;color:var(--green)}
+.gain-row .zero{font-family:"Bungee",cursive;color:var(--dim)}
+.winner-name{
+  font-family:"Bungee",cursive;font-size:clamp(2rem,6vw,3.6rem);
+  background:linear-gradient(90deg,var(--cyan),var(--pink),var(--yellow));
+  -webkit-background-clip:text;background-clip:text;color:transparent;
+}
+.confetti{position:fixed;top:-20px;border-radius:3px;z-index:60;pointer-events:none}
+@keyframes fall{to{transform:translateY(110vh) rotate(720deg)}}
+@media (prefers-reduced-motion:reduce){
+  *{animation:none !important;transition:none !important}
+}
+.footerhint{text-align:center;color:var(--dim);font-size:.8rem;padding-bottom:6px}
+</style>
+</head>
+<body>
+
+<!-- ================= SETUP ================= -->
+<div class="screen active" id="setup">
+  <div class="logo"><span class="l1">SMART</span> <span class="l2">GAMER</span> <span class="num">10</span></div>
+  <p class="tagline">Das Trivia-Spiel rund um Gaming &amp; Videospiele. Jede Frage hat 10 Antworten – antworten oder passen? Wer zu gierig ist, verliert seine Marker!</p>
+
+  <div class="card">
+    <h2>Spieler:innen (2–8)</h2>
+    <div class="players-edit" id="playersEdit"></div>
+    <button class="small-btn" id="addPlayer">+ Spieler:in hinzufügen</button>
+  </div>
+
+  <div class="card">
+    <h2>Punkte zum Sieg</h2>
+    <div class="target-row" id="targetRow">
+      <div class="seg" data-t="15">15</div>
+      <div class="seg on" data-t="20">20</div>
+      <div class="seg" data-t="30">30</div>
+    </div>
+  </div>
+
+  <button class="big-btn" id="startBtn">Spiel starten</button>
+</div>
+
+<!-- ================= GAME ================= -->
+<div class="screen" id="game">
+  <div class="topbar" id="topbar"></div>
+
+  <div class="qbox">
+    <div class="qmeta" id="qmeta"></div>
+    <div class="qtext" id="qtext"></div>
+    <div class="qhint" id="qhint"></div>
+  </div>
+
+  <div class="turnline" id="turnline"></div>
+
+  <div class="grid" id="grid"></div>
+
+  <div class="actionbar">
+    <button class="ghost-btn" id="undoBtn" title="Letzten Zug rückgängig machen">↩ Zurück</button>
+    <button class="pass-btn" id="passBtn">Passen &amp; Punkte sichern</button>
+    <button class="ghost-btn" id="skipBtn" title="Diese Frage verwerfen, keine Punkte">⟳ Neue Frage</button>
+  </div>
+  <div class="actionbar">
+    <div class="note">Passen sichert deine Marker dieser Runde als Punkte. Eine falsche Antwort – und alle Marker der Runde sind weg!</div>
+  </div>
+  <div class="footerhint">Smart Gamer 10 · inoffizielle Hommage für den Spieleabend</div>
+</div>
+
+<!-- ============ Wert-Aufdecken-Overlay ============ -->
+<div class="overlay" id="valOverlay">
+  <div class="obox reveal-panel">
+    <h2 id="valTitle">Antwort ansagen!</h2>
+    <p class="sub" id="valSub"></p>
+    <div class="bigval" id="valAnswer" style="display:none"></div>
+    <button class="big-btn" id="valRevealBtn">Aufdecken</button>
+    <div class="judge-row" id="judgeRow" style="display:none">
+      <button class="j-ok" id="judgeOk">✓ Richtig</button>
+      <button class="j-bad" id="judgeBad">✗ Falsch</button>
+    </div>
+    <button class="cancel-btn" id="valCancel">Abbrechen – anderes Feld wählen</button>
+  </div>
+</div>
+
+<!-- ============ Rundenende ============ -->
+<div class="overlay" id="roundOverlay">
+  <div class="obox">
+    <h2>Runde beendet</h2>
+    <p class="sub" id="roundSub"></p>
+    <div class="gains" id="gains"></div>
+    <button class="big-btn" id="nextRoundBtn">Nächste Frage</button>
+    <button class="cancel-btn" id="roundUndo">↩ Letzten Zug zurücknehmen</button>
+  </div>
+</div>
+
+<!-- ============ Sieger ============ -->
+<div class="overlay" id="winOverlay">
+  <div class="obox">
+    <h2>🏆 Gewonnen!</h2>
+    <div class="winner-name" id="winnerName"></div>
+    <p class="sub" id="winSub"></p>
+    <button class="big-btn" id="restartBtn">Neues Spiel</button>
+  </div>
+</div>
+
+<script>
+/* =====================================================
+   FRAGEN
+   type 'yn'  : jede Antwort ist richtig (ok:true) oder falsch (ok:false) – automatische Wertung
+   type 'val' : Spieler:in wählt einen Eintrag, sagt die Antwort laut an,
+                dann wird der Wert (v) aufgedeckt und die Gruppe wertet selbst.
+   ===================================================== */
+const QUESTIONS = [
+{type:'yn', q:'Welche dieser Spiele stammen von Nintendo (First-Party)?', a:[
+ {t:'Zelda: Breath of the Wild',ok:true},{t:'Splatoon',ok:true},{t:'Crash Bandicoot',ok:false},{t:'Halo',ok:false},{t:'Animal Crossing',ok:true},
+ {t:'Sonic the Hedgehog',ok:false},{t:'Metroid Prime',ok:true},{t:'God of War',ok:false},{t:'Kirby',ok:true},{t:'Fortnite',ok:false}]},
+{type:'yn', q:'Welche dieser Figuren stammen ursprünglich aus dem Super-Mario-Universum?', a:[
+ {t:'Toad',ok:true},{t:'Bowser',ok:true},{t:'Rosalina',ok:true},{t:'Kirby',ok:false},{t:'Link',ok:false},
+ {t:'Yoshi',ok:true},{t:'Pikachu',ok:false},{t:'Wario',ok:true},{t:'Sackboy',ok:false},{t:'Banjo',ok:false}]},
+{type:'yn', q:'Welche dieser Spiele sind Ego-Shooter?', a:[
+ {t:'Doom',ok:true},{t:'Counter-Strike',ok:true},{t:'Half-Life',ok:true},{t:'Battlefield',ok:true},{t:'Call of Duty',ok:true},
+ {t:'StarCraft',ok:false},{t:'Civilization VI',ok:false},{t:'Die Sims',ok:false},{t:'Rocket League',ok:false},{t:'Anno 1800',ok:false}]},
+{type:'yn', q:'Welche dieser Spiele erschienen ursprünglich in den 1980er-Jahren?', a:[
+ {t:'Tetris',ok:true},{t:'Pac-Man',ok:true},{t:'Super Mario Bros.',ok:true},{t:'The Legend of Zelda',ok:true},{t:'Mega Man',ok:true},
+ {t:'Doom',ok:false},{t:'Sonic the Hedgehog',ok:false},{t:'Space Invaders',ok:false},{t:'Street Fighter II',ok:false},{t:'Minecraft',ok:false}]},
+{type:'yn', q:'Welche dieser Konsolen / Handhelds stammen von Sony?', a:[
+ {t:'PlayStation 2',ok:true},{t:'PSP',ok:true},{t:'PS Vita',ok:true},{t:'PlayStation 5',ok:true},{t:'Dreamcast',ok:false},
+ {t:'GameCube',ok:false},{t:'Xbox 360',ok:false},{t:'Sega Saturn',ok:false},{t:'Wii U',ok:false},{t:'Neo Geo',ok:false}]},
+{type:'yn', q:'Welche dieser Spiele sind (Action-)Rollenspiele?', a:[
+ {t:'Skyrim',ok:true},{t:'Final Fantasy VII',ok:true},{t:'The Witcher 3',ok:true},{t:'Pokémon Rot',ok:true},{t:'Persona 5',ok:true},
+ {t:'Dark Souls',ok:true},{t:'Tetris',ok:false},{t:'FIFA / EA FC',ok:false},{t:'Mario Kart',ok:false},{t:'Pong',ok:false}]},
+{type:'yn', q:'Welche dieser Figuren sind spielbare Kämpfer in Super Smash Bros. Ultimate?', a:[
+ {t:'Pikachu',ok:true},{t:'Sonic',ok:true},{t:'Steve (Minecraft)',ok:true},{t:'Cloud (FF VII)',ok:true},{t:'Banjo & Kazooie',ok:true},
+ {t:'Pac-Man',ok:true},{t:'Master Chief',ok:false},{t:'Kratos',ok:false},{t:'Crash Bandicoot',ok:false},{t:'Lara Croft',ok:false}]},
+{type:'yn', q:'Welche dieser Spiele wurden von Studios in Deutschland entwickelt?', a:[
+ {t:'Anno 1800',ok:true},{t:'Gothic',ok:true},{t:'Crysis',ok:true},{t:'Die Siedler',ok:true},{t:'Far Cry (Original 2004)',ok:true},
+ {t:'The Witcher 3',ok:false},{t:'Minecraft',ok:false},{t:'Angry Birds',ok:false},{t:'Cyberpunk 2077',ok:false},{t:'Hitman',ok:false}]},
+{type:'yn', q:'Welche dieser Spiele sind Free-to-Play spielbar?', a:[
+ {t:'Fortnite',ok:true},{t:'League of Legends',ok:true},{t:'Rocket League',ok:true},{t:'CoD: Warzone',ok:true},{t:'Genshin Impact',ok:true},
+ {t:'Minecraft',ok:false},{t:'GTA V',ok:false},{t:'Zelda: Breath of the Wild',ok:false},{t:'EA FC 25',ok:false},{t:'Stardew Valley',ok:false}]},
+{type:'yn', q:'Welche dieser Spiele stammen von Blizzard?', a:[
+ {t:'World of Warcraft',ok:true},{t:'Diablo',ok:true},{t:'Overwatch',ok:true},{t:'StarCraft',ok:true},{t:'Hearthstone',ok:true},
+ {t:'Fallout',ok:false},{t:'League of Legends',ok:false},{t:'Dota 2',ok:false},{t:'The Elder Scrolls',ok:false},{t:'Half-Life',ok:false}]},
+{type:'yn', q:'Welche dieser Spiele gelten als Indie-Spiele?', a:[
+ {t:'Stardew Valley',ok:true},{t:'Hollow Knight',ok:true},{t:'Celeste',ok:true},{t:'Undertale',ok:true},{t:'Hades',ok:true},
+ {t:'Cyberpunk 2077',ok:false},{t:'Zelda: Tears of the Kingdom',ok:false},{t:'Call of Duty',ok:false},{t:'EA FC 25',ok:false},{t:'Halo Infinite',ok:false}]},
+{type:'yn', q:'Welche dieser eSport-Titel werden hauptsächlich im Team (z.\u202fB. 5 vs. 5) gespielt?', a:[
+ {t:'League of Legends',ok:true},{t:'Counter-Strike 2',ok:true},{t:'Dota 2',ok:true},{t:'Valorant',ok:true},{t:'Overwatch 2',ok:true},
+ {t:'StarCraft II',ok:false},{t:'Street Fighter 6',ok:false},{t:'Tekken 8',ok:false},{t:'EA FC (1v1)',ok:false},{t:'Hearthstone',ok:false}]},
+{type:'yn', q:'Welche dieser Spiele spielen überwiegend in einer offenen Welt?', a:[
+ {t:'Zelda: Breath of the Wild',ok:true},{t:'GTA V',ok:true},{t:'Skyrim',ok:true},{t:'The Witcher 3',ok:true},{t:'Elden Ring',ok:true},
+ {t:'Tetris',ok:false},{t:'Portal 2',ok:false},{t:'EA FC 25',ok:false},{t:'Mario Kart 8',ok:false},{t:'Celeste',ok:false}]},
+{type:'val', q:'In welchem Jahr erschien dieses Spiel ursprünglich?', hint:'Antwort laut ansagen – die Gruppe entscheidet, ob es zählt (z.\u202fB. exakt oder ±1 Jahr).', a:[
+ {t:'Minecraft (Vollversion)',v:'2011'},{t:'GTA V',v:'2013'},{t:'Tetris',v:'1984'},{t:'Super Mario 64',v:'1996'},{t:'The Witcher 3',v:'2015'},
+ {t:'Doom',v:'1993'},{t:'Wii Sports',v:'2006'},{t:'Among Us',v:'2018'},{t:'Elden Ring',v:'2022'},{t:'Pokémon Rot/Blau (Japan)',v:'1996'}]},
+{type:'val', q:'Von welchem Unternehmen stammt dieses Spiel (Entwickler oder Publisher)?', a:[
+ {t:'Halo',v:'Microsoft / Bungie'},{t:'The Legend of Zelda',v:'Nintendo'},{t:'God of War',v:'Sony'},{t:'EA FC / FIFA',v:'Electronic Arts'},{t:"Assassin's Creed",v:'Ubisoft'},
+ {t:'Cyberpunk 2077',v:'CD Projekt Red'},{t:'Minecraft',v:'Mojang'},{t:'Fortnite',v:'Epic Games'},{t:'Sonic',v:'Sega'},{t:'Candy Crush',v:'King'}]},
+{type:'val', q:'Wie heißt die Hauptfigur dieses Spiels?', a:[
+ {t:'The Legend of Zelda',v:'Link'},{t:'Metroid',v:'Samus Aran'},{t:'God of War',v:'Kratos'},{t:'Tomb Raider',v:'Lara Croft'},{t:'Uncharted',v:'Nathan Drake'},
+ {t:'Halo',v:'Master Chief'},{t:'The Witcher',v:'Geralt von Riva'},{t:'Half-Life',v:'Gordon Freeman'},{t:'Zelda-Bösewicht',v:'Ganon(dorf)'},{t:'Super Mario – der Bruder',v:'Luigi'}]},
+{type:'val', q:'Zu welchem Genre gehört dieses Spiel?', hint:'Die Gruppe entscheidet, ob die Genre-Angabe passt.', a:[
+ {t:'Stardew Valley',v:'Farming-Simulation'},{t:'Civilization VI',v:'Rundenstrategie'},{t:'Tekken',v:'Fighting / Beat \u2019em up'},{t:'Gran Turismo',v:'Rennspiel'},{t:'Hollow Knight',v:'Metroidvania'},
+ {t:'Football Manager',v:'Sport-Management'},{t:'Slay the Spire',v:'Deckbuilder / Roguelike'},{t:'Age of Empires',v:'Echtzeitstrategie'},{t:'Guitar Hero',v:'Rhythmusspiel'},{t:'Phasmophobia',v:'Koop-Horror'}]},
+{type:'val', q:'In welchem Jahr erschien diese Konsole erstmals (weltweit erste Veröffentlichung)?', hint:'Gruppe entscheidet – Tipp: ±1 Jahr gelten lassen.', a:[
+ {t:'NES / Famicom',v:'1983'},{t:'SNES / Super Famicom',v:'1990'},{t:'Nintendo 64',v:'1996'},{t:'PlayStation',v:'1994'},{t:'PlayStation 2',v:'2000'},
+ {t:'Xbox',v:'2001'},{t:'Wii',v:'2006'},{t:'Nintendo Switch',v:'2017'},{t:'PlayStation 5',v:'2020'},{t:'Game Boy',v:'1989'}]},
+{type:'val', q:'Aus welchem Land stammt das (ursprüngliche) Entwicklerstudio dieses Spiels?', a:[
+ {t:'The Witcher 3',v:'Polen'},{t:'Minecraft',v:'Schweden'},{t:'Angry Birds',v:'Finnland'},{t:'Super Mario',v:'Japan'},{t:'GTA (Rockstar North)',v:'Schottland / UK'},
+ {t:'Anno 1800',v:'Deutschland'},{t:"Assassin's Creed (Ubisoft Montreal)",v:'Kanada'},{t:'Cuphead',v:'Kanada'},{t:'Hitman (IO Interactive)',v:'Dänemark'},{t:'Horizon Zero Dawn (Guerrilla)',v:'Niederlande'}]},
+{type:'val', q:'Wie heißt die Spielwelt bzw. der Schauplatz dieses Spiels?', a:[
+ {t:'Skyrim',v:'Himmelsrand (Tamriel)'},{t:'The Legend of Zelda',v:'Hyrule'},{t:'Pokémon Rot/Blau',v:'Kanto'},{t:'World of Warcraft',v:'Azeroth'},{t:'Elden Ring',v:'Zwischenland'},
+ {t:'Super Mario',v:'Pilz-Königreich'},{t:'GTA V',v:'Los Santos'},{t:'Dark Souls',v:'Lordran'},{t:'Cyberpunk 2077',v:'Night City'},{t:'Final Fantasy X',v:'Spira'}]},
+
+/* ---------- Erweiterung: 50 weitere Fragen ---------- */
+{type:'yn', q:'Welche dieser Spiele erschienen für den Game Boy bzw. Game Boy Color?', a:[
+ {t:'Tetris',ok:true},{t:'Pokémon Gelb',ok:true},{t:'Super Mario Land',ok:true},{t:"Zelda: Link's Awakening",ok:true},{t:'Wario Land',ok:true},
+ {t:'Metroid Prime',ok:false},{t:'Halo',ok:false},{t:'Sonic Adventure',ok:false},{t:'Mario Kart 64',ok:false},{t:'Portal',ok:false}]},
+{type:'yn', q:'Welche dieser Spiele stammen von FromSoftware?', a:[
+ {t:'Dark Souls',ok:true},{t:"Demon's Souls",ok:true},{t:'Bloodborne',ok:true},{t:'Sekiro',ok:true},{t:'Elden Ring',ok:true},
+ {t:'Armored Core VI',ok:true},{t:'Nioh',ok:false},{t:'Lies of P',ok:false},{t:'Hollow Knight',ok:false},{t:'Salt and Sanctuary',ok:false}]},
+{type:'yn', q:'Welche dieser Pokémon der ersten Generation sind vom Typ Feuer?', a:[
+ {t:'Glumanda',ok:true},{t:'Fukano',ok:true},{t:'Magmar',ok:true},{t:'Ponita',ok:true},{t:'Vulpix',ok:true},
+ {t:'Bisasam',ok:false},{t:'Schiggy',ok:false},{t:'Abra',ok:false},{t:'Zubat',ok:false},{t:'Karpador',ok:false}]},
+{type:'yn', q:'Welche dieser Spiele haben einen Battle-Royale-Modus?', a:[
+ {t:'Fortnite',ok:true},{t:'PUBG',ok:true},{t:'Apex Legends',ok:true},{t:'CoD: Warzone',ok:true},{t:'Fall Guys',ok:true},
+ {t:'Tetris 99',ok:true},{t:'Minecraft',ok:false},{t:'Stardew Valley',ok:false},{t:'Portal 2',ok:false},{t:'Civilization VI',ok:false}]},
+{type:'yn', q:'Welche dieser Spiele wurden von Valve entwickelt?', a:[
+ {t:'Half-Life',ok:true},{t:'Portal',ok:true},{t:'Team Fortress 2',ok:true},{t:'Left 4 Dead',ok:true},{t:'Dota 2',ok:true},
+ {t:'Counter-Strike 2',ok:true},{t:'Overwatch',ok:false},{t:'Titanfall',ok:false},{t:'Quake',ok:false},{t:'Rust',ok:false}]},
+{type:'yn', q:'Welche dieser Geräte sind reine Handheld-Konsolen?', a:[
+ {t:'Game Boy Advance',ok:true},{t:'Nintendo DS',ok:true},{t:'PSP',ok:true},{t:'PS Vita',ok:true},{t:'Game Gear',ok:true},
+ {t:'Nintendo 3DS',ok:true},{t:'Xbox Series X',ok:false},{t:'GameCube',ok:false},{t:'Dreamcast',ok:false},{t:'Wii',ok:false}]},
+{type:'yn', q:'Welche dieser Spiele sind auf der Nintendo Switch erschienen?', a:[
+ {t:'Zelda: Tears of the Kingdom',ok:true},{t:'Animal Crossing: New Horizons',ok:true},{t:'Mario Kart 8 Deluxe',ok:true},{t:'Splatoon 3',ok:true},{t:'The Witcher 3',ok:true},
+ {t:'Doom Eternal',ok:true},{t:'Halo Infinite',ok:false},{t:'God of War Ragnarök',ok:false},{t:'Forza Horizon 5',ok:false},{t:'Bloodborne',ok:false}]},
+{type:'yn', q:'Welche dieser Begriffe bezeichnen ein Spielgenre?', a:[
+ {t:'Roguelike',ok:true},{t:'Metroidvania',ok:true},{t:'Battle Royale',ok:true},{t:'Tower Defense',ok:true},{t:'Idle-/Clicker-Game',ok:true},
+ {t:'Visual Novel',ok:true},{t:'Raytracing',ok:false},{t:'Framerate',ok:false},{t:'Modding',ok:false},{t:'Emulation',ok:false}]},
+{type:'yn', q:'Welche dieser Spiele wurden ursprünglich vom Studio Rare entwickelt?', a:[
+ {t:'GoldenEye 007',ok:true},{t:'Banjo-Kazooie',ok:true},{t:'Donkey Kong Country',ok:true},{t:'Perfect Dark',ok:true},{t:"Conker's Bad Fur Day",ok:true},
+ {t:'Sea of Thieves',ok:true},{t:'Crash Bandicoot',ok:false},{t:'Spyro',ok:false},{t:'Rayman',ok:false},{t:'Jak and Daxter',ok:false}]},
+{type:'yn', q:'Welche dieser Spiele kann man zu zweit im lokalen Koop spielen?', a:[
+ {t:'Overcooked',ok:true},{t:'It Takes Two',ok:true},{t:'Die Lego-Spiele',ok:true},{t:'Borderlands',ok:true},{t:'Mario Kart 8',ok:true},
+ {t:'Halo (Kampagne)',ok:true},{t:'The Witcher 3',ok:false},{t:'Disco Elysium',ok:false},{t:'Hades',ok:false},{t:'Journey',ok:false}]},
+{type:'yn', q:'Welche dieser Spiele sind klassische Point-and-Click-Adventures?', a:[
+ {t:'Monkey Island',ok:true},{t:'Day of the Tentacle',ok:true},{t:'Grim Fandango',ok:true},{t:'Baphomets Fluch',ok:true},{t:'Sam & Max',ok:true},
+ {t:'Machinarium',ok:true},{t:'Doom',ok:false},{t:'Diablo',ok:false},{t:'Tetris',ok:false},{t:'EA FC',ok:false}]},
+{type:'yn', q:'Welche dieser Spiele erschienen für die erste PlayStation?', a:[
+ {t:'Final Fantasy VII',ok:true},{t:'Metal Gear Solid',ok:true},{t:'Crash Bandicoot',ok:true},{t:'Gran Turismo',ok:true},{t:'Resident Evil',ok:true},
+ {t:'Tekken 3',ok:true},{t:'Halo',ok:false},{t:'GTA V',ok:false},{t:'Shadow of the Colossus',ok:false},{t:'Uncharted',ok:false}]},
+{type:'yn', q:'An welchen dieser Spiele war Hideo Kojima maßgeblich beteiligt?', a:[
+ {t:'Metal Gear Solid',ok:true},{t:'Death Stranding',ok:true},{t:'P.T.',ok:true},{t:'Metal Gear Solid V',ok:true},{t:'Zone of the Enders',ok:true},
+ {t:'Silent Hill 2 (2001)',ok:false},{t:'Resident Evil',ok:false},{t:'Dark Souls',ok:false},{t:'Bayonetta',ok:false},{t:'NieR: Automata',ok:false}]},
+{type:'yn', q:'Welche dieser Spiele sind Aufbau- oder Städtebau-Simulationen?', a:[
+ {t:'SimCity',ok:true},{t:'Cities: Skylines',ok:true},{t:'Anno 1800',ok:true},{t:'Banished',ok:true},{t:'Frostpunk',ok:true},
+ {t:'Tropico',ok:true},{t:'Doom',ok:false},{t:'Rocket League',ok:false},{t:'Hades',ok:false},{t:'Among Us',ok:false}]},
+{type:'yn', q:'Welche dieser Spiele erschienen 2023 oder später?', a:[
+ {t:'Baldur\u2019s Gate 3',ok:true},{t:'Zelda: Tears of the Kingdom',ok:true},{t:'Alan Wake 2',ok:true},{t:'Hogwarts Legacy',ok:true},{t:'Elden Ring',ok:false},
+ {t:'God of War Ragnarök',ok:false},{t:'Cyberpunk 2077',ok:false},{t:'Among Us',ok:false},{t:'Hades',ok:false},{t:'Fall Guys',ok:false}]},
+{type:'yn', q:'Welche dieser Spiele sind Roguelites/Roguelikes mit Neustart nach dem Tod?', a:[
+ {t:'Hades',ok:true},{t:'The Binding of Isaac',ok:true},{t:'Slay the Spire',ok:true},{t:'Dead Cells',ok:true},{t:'Rogue Legacy',ok:true},
+ {t:'Risk of Rain',ok:true},{t:'Skyrim',ok:false},{t:'Mario Kart',ok:false},{t:'Portal',ok:false},{t:'Firewatch',ok:false}]},
+{type:'yn', q:'Welche dieser Spiele sind Horror-Titel?', a:[
+ {t:'Resident Evil',ok:true},{t:'Silent Hill',ok:true},{t:'Amnesia',ok:true},{t:'Outlast',ok:true},{t:'Dead Space',ok:true},
+ {t:'Alien: Isolation',ok:true},{t:'Stardew Valley',ok:false},{t:'Animal Crossing',ok:false},{t:'Rocket League',ok:false},{t:'Journey',ok:false}]},
+{type:'yn', q:'Welche dieser Spiele gibt es in einer VR-Fassung?', a:[
+ {t:'Beat Saber',ok:true},{t:'Half-Life: Alyx',ok:true},{t:'Superhot VR',ok:true},{t:'No Man\u2019s Sky',ok:true},{t:'Resident Evil 7',ok:true},
+ {t:'Skyrim VR',ok:true},{t:'Celeste',ok:false},{t:'Hollow Knight',ok:false},{t:'Stardew Valley',ok:false},{t:'Papers, Please',ok:false}]},
+{type:'yn', q:'Welche dieser Spiele stammen von Bethesda Game Studios?', a:[
+ {t:'Skyrim',ok:true},{t:'Fallout 3',ok:true},{t:'Fallout 4',ok:true},{t:'Oblivion',ok:true},{t:'Starfield',ok:true},
+ {t:'Morrowind',ok:true},{t:'Fallout: New Vegas',ok:false},{t:'Doom (2016)',ok:false},{t:'Dishonored',ok:false},{t:'The Witcher',ok:false}]},
+{type:'yn', q:'Welche dieser Spiele sind offene Sandbox-Spiele ohne festes Endziel?', a:[
+ {t:'Minecraft (Kreativmodus)',ok:true},{t:'Terraria',ok:true},{t:"Garry's Mod",ok:true},{t:'Roblox',ok:true},{t:'Die Sims',ok:true},
+ {t:'Dreams',ok:true},{t:'Portal',ok:false},{t:'Uncharted 4',ok:false},{t:'Halo',ok:false},{t:'Tetris',ok:false}]},
+{type:'yn', q:'Welche dieser Spiele haben ein Zombie- oder Untoten-Thema?', a:[
+ {t:'Resident Evil',ok:true},{t:'Left 4 Dead',ok:true},{t:'Dying Light',ok:true},{t:'Days Gone',ok:true},{t:'Plants vs. Zombies',ok:true},
+ {t:'CoD: Zombies',ok:true},{t:'Portal',ok:false},{t:'Celeste',ok:false},{t:'Super Mario Odyssey',ok:false},{t:'Gran Turismo',ok:false}]},
+{type:'yn', q:'Welche dieser Spiele sind Karten- bzw. Deckbuilding-Spiele?', a:[
+ {t:'Hearthstone',ok:true},{t:'Slay the Spire',ok:true},{t:'Gwent',ok:true},{t:'Magic: The Gathering Arena',ok:true},{t:'Balatro',ok:true},
+ {t:'Inscryption',ok:true},{t:'Overwatch',ok:false},{t:'Terraria',ok:false},{t:'Subnautica',ok:false},{t:'Fall Guys',ok:false}]},
+{type:'yn', q:'Welche dieser Spiele erschienen für das Sega Mega Drive?', a:[
+ {t:'Sonic the Hedgehog',ok:true},{t:'Streets of Rage',ok:true},{t:'Golden Axe',ok:true},{t:'Shinobi',ok:true},{t:'Altered Beast',ok:true},
+ {t:'Super Mario World',ok:false},{t:'Chrono Trigger',ok:false},{t:'Halo',ok:false},{t:'Metal Gear Solid',ok:false},{t:'Crash Bandicoot',ok:false}]},
+{type:'yn', q:'Welche dieser Konsolen gelten kommerziell als Misserfolg?', a:[
+ {t:'Virtual Boy',ok:true},{t:'Wii U',ok:true},{t:'Sega Saturn',ok:true},{t:'Atari Jaguar',ok:true},{t:'PS Vita',ok:true},
+ {t:'Sega Dreamcast',ok:true},{t:'Nintendo Switch',ok:false},{t:'PlayStation 2',ok:false},{t:'Game Boy',ok:false},{t:'Wii',ok:false}]},
+{type:'yn', q:'Welche dieser Rollen gibt es typischerweise in einem Spieleentwicklungs-Team?', a:[
+ {t:'Game Designer',ok:true},{t:'Level Designer',ok:true},{t:'Technical Artist',ok:true},{t:'QA-Tester',ok:true},{t:'Sound Designer',ok:true},
+ {t:'Narrative Designer',ok:true},{t:'Chirurg',ok:false},{t:'Fluglotse',ok:false},{t:'Notar',ok:false},{t:'Winzer',ok:false}]},
+{type:'yn', q:'Welche dieser Titel gehören zur Assassin\u2019s-Creed-Reihe?', a:[
+ {t:'Odyssey',ok:true},{t:'Valhalla',ok:true},{t:'Origins',ok:true},{t:'Black Flag',ok:true},{t:'Unity',ok:true},
+ {t:'Mirage',ok:true},{t:'Ghost of Tsushima',ok:false},{t:'Watch Dogs',ok:false},{t:'Prince of Persia',ok:false},{t:'Horizon Zero Dawn',ok:false}]},
+{type:'yn', q:'Zu welchen dieser Spiele gibt es eine offizielle Film- oder Serienadaption?', a:[
+ {t:'The Last of Us',ok:true},{t:'Super Mario Bros.',ok:true},{t:'Sonic the Hedgehog',ok:true},{t:'The Witcher',ok:true},{t:'Fallout',ok:true},
+ {t:'League of Legends (Arcane)',ok:true},{t:'Hollow Knight',ok:false},{t:'Stardew Valley',ok:false},{t:'Hades',ok:false},{t:'Celeste',ok:false}]},
+{type:'yn', q:'Welche dieser Begriffe stammen aus der Speedrunning-Szene?', a:[
+ {t:'Any%',ok:true},{t:'100%',ok:true},{t:'Glitchless',ok:true},{t:'TAS',ok:true},{t:'Splits',ok:true},
+ {t:'RNG-Manipulation',ok:true},{t:'Gacha',ok:false},{t:'Loot-Box',ok:false},{t:'Season Pass',ok:false},{t:'Battle Pass',ok:false}]},
+{type:'yn', q:'Welche dieser Spiele nutzen prozedural generierte Inhalte?', a:[
+ {t:'Minecraft',ok:true},{t:'No Man\u2019s Sky',ok:true},{t:'Terraria',ok:true},{t:'Spelunky',ok:true},{t:'Diablo (Dungeons)',ok:true},
+ {t:'Rogue Legacy',ok:true},{t:'Half-Life 2',ok:false},{t:'Uncharted 4',ok:false},{t:'Portal',ok:false},{t:'The Last of Us',ok:false}]},
+{type:'yn', q:'Welche dieser Spiele erschienen für den Nintendo 64?', a:[
+ {t:'Super Mario 64',ok:true},{t:'Ocarina of Time',ok:true},{t:'GoldenEye 007',ok:true},{t:'Mario Kart 64',ok:true},{t:'Banjo-Kazooie',ok:true},
+ {t:'Star Fox 64',ok:true},{t:'The Wind Waker',ok:false},{t:'Metroid Prime',ok:false},{t:'Final Fantasy VII',ok:false},{t:'Crash Bandicoot',ok:false}]},
+{type:'yn', q:'Welche dieser Spielereihen stammen ursprünglich aus Japan?', a:[
+ {t:'Final Fantasy',ok:true},{t:'Resident Evil',ok:true},{t:'Dark Souls',ok:true},{t:'Metal Gear',ok:true},{t:'Street Fighter',ok:true},
+ {t:'Monster Hunter',ok:true},{t:'Doom',ok:false},{t:'Half-Life',ok:false},{t:'The Witcher',ok:false},{t:'Grand Theft Auto',ok:false}]},
+{type:'yn', q:'Welche dieser Spiele hatten einen berüchtigt holprigen Release?', a:[
+ {t:'Cyberpunk 2077',ok:true},{t:'No Man\u2019s Sky',ok:true},{t:'SimCity (2013)',ok:true},{t:'Fallout 76',ok:true},{t:'Battlefield 2042',ok:true},
+ {t:'Anthem',ok:true},{t:'Portal 2',ok:false},{t:'Zelda: Breath of the Wild',ok:false},{t:'Hades',ok:false},{t:'Stardew Valley',ok:false}]},
+{type:'yn', q:'Welche dieser Zubehörteile erschienen offiziell für Nintendo-Konsolen?', a:[
+ {t:'Wii Balance Board',ok:true},{t:'N64 Rumble Pak',ok:true},{t:'NES Zapper',ok:true},{t:'Power Glove',ok:true},{t:'Ring-Con (Ring Fit)',ok:true},
+ {t:'Nintendo Labo',ok:true},{t:'PlayStation Move',ok:false},{t:'Kinect',ok:false},{t:'Steam Deck',ok:false},{t:'PlayStation VR2',ok:false}]},
+{type:'yn', q:'Welche dieser Spiele spielen im Weltraum oder in einem Sci-Fi-Setting?', a:[
+ {t:'Mass Effect',ok:true},{t:'No Man\u2019s Sky',ok:true},{t:'Elite Dangerous',ok:true},{t:'Starfield',ok:true},{t:'Kerbal Space Program',ok:true},
+ {t:'Dead Space',ok:true},{t:'Stardew Valley',ok:false},{t:'The Witcher 3',ok:false},{t:'Assassin\u2019s Creed Odyssey',ok:false},{t:'Football Manager',ok:false}]},
+{type:'yn', q:'Welche dieser Spiele drehen sich im Kern um Wirtschaft, Logistik oder Management?', a:[
+ {t:'Factorio',ok:true},{t:'Satisfactory',ok:true},{t:'RollerCoaster Tycoon',ok:true},{t:'Transport Fever',ok:true},{t:'Two Point Hospital',ok:true},
+ {t:'Die Siedler',ok:true},{t:'Doom Eternal',ok:false},{t:'Tekken 8',ok:false},{t:'Rocket League',ok:false},{t:'Celeste',ok:false}]},
+{type:'yn', q:'Welche dieser Begriffe sind Grafik- oder Technikbegriffe (keine Spielerslang-Begriffe)?', a:[
+ {t:'Raytracing',ok:true},{t:'DLSS',ok:true},{t:'Anti-Aliasing',ok:true},{t:'V-Sync',ok:true},{t:'Frame Generation',ok:true},
+ {t:'Tessellation',ok:true},{t:'Aggro',ok:false},{t:'Nerf',ok:false},{t:'Grinding',ok:false},{t:'Camping',ok:false}]},
+{type:'yn', q:'Welche dieser Begriffe beschreiben ein Verhalten von Spielenden?', a:[
+ {t:'Camping',ok:true},{t:'Grinding',ok:true},{t:'Rage-Quit',ok:true},{t:'Trolling',ok:true},{t:'Smurfing',ok:true},
+ {t:'Backseat-Gaming',ok:true},{t:'Mipmap',ok:false},{t:'Shader',ok:false},{t:'Netcode',ok:false},{t:'Hitbox',ok:false}]},
+{type:'yn', q:'Welche dieser Spiele erschienen zuerst auf Smartphones?', a:[
+ {t:'Angry Birds',ok:true},{t:'Clash of Clans',ok:true},{t:'Candy Crush Saga',ok:true},{t:'Pokémon GO',ok:true},{t:'Monument Valley',ok:true},
+ {t:'Among Us',ok:false},{t:'Minecraft',ok:false},{t:'Fortnite',ok:false},{t:'Stardew Valley',ok:false},{t:'Rocket League',ok:false}]},
+{type:'val', q:'Auf welcher Konsole bzw. Plattform erschien dieses Spiel zuerst?', a:[
+ {t:'Halo: Combat Evolved',v:'Xbox'},{t:'Super Mario 64',v:'Nintendo 64'},{t:'Wii Sports',v:'Wii'},{t:'Bloodborne',v:'PlayStation 4'},{t:'Sonic the Hedgehog',v:'Sega Mega Drive'},
+ {t:'Shadow of the Colossus',v:'PlayStation 2'},{t:'Metroid Prime',v:'GameCube'},{t:'Angry Birds',v:'iPhone / iOS'},{t:'Tetris (Nintendo-Fassung)',v:'Game Boy'},{t:'Gears of War',v:'Xbox 360'}]},
+{type:'val', q:'Wie heißt der Hauptbösewicht dieser Reihe?', a:[
+ {t:'Super Mario',v:'Bowser'},{t:'Sonic',v:'Dr. Robotnik / Eggman'},{t:'The Legend of Zelda',v:'Ganondorf'},{t:'Final Fantasy VII',v:'Sephiroth'},{t:'Portal',v:'GLaDOS'},
+ {t:'Crash Bandicoot',v:'Dr. Neo Cortex'},{t:'Donkey Kong Country',v:'King K. Rool'},{t:'Street Fighter',v:'M. Bison'},{t:'Kirby',v:'König Nickerchen (Dedede)'},{t:'Mega Man',v:'Dr. Wily'}]},
+{type:'val', q:'Was für ein Wesen bzw. Tier ist diese Spielfigur?', a:[
+ {t:'Sonic',v:'Igel'},{t:'Crash Bandicoot',v:'Beutelbär / Bandicoot'},{t:'Donkey Kong',v:'Gorilla'},{t:'Yoshi',v:'Dinosaurier'},{t:'Banjo',v:'Bär'},
+ {t:'Kazooie',v:'Vogel'},{t:'Spyro',v:'Drache'},{t:'Tails',v:'Fuchs'},{t:'Ratchet',v:'Lombax'},{t:'Slippy Toad (Star Fox)',v:'Frosch'}]},
+{type:'val', q:'Wofür steht diese Abkürzung?', a:[
+ {t:'GTA',v:'Grand Theft Auto'},{t:'WoW',v:'World of Warcraft'},{t:'CoD',v:'Call of Duty'},{t:'LoL',v:'League of Legends'},{t:'NPC',v:'Non-Player Character'},
+ {t:'FPS (Genre)',v:'First-Person Shooter'},{t:'MMO',v:'Massively Multiplayer Online'},{t:'DLC',v:'Downloadable Content'},{t:'RPG',v:'Role-Playing Game'},{t:'RTS',v:'Real-Time Strategy'}]},
+{type:'val', q:'In welchem Jahr erschien dieses Spiel? (Runde 2)', hint:'Gruppe entscheidet – Tipp: ±1 Jahr gelten lassen.', a:[
+ {t:'Half-Life 2',v:'2004'},{t:'World of Warcraft',v:'2004'},{t:'Portal',v:'2007'},{t:'Skyrim',v:'2011'},{t:'Dark Souls',v:'2011'},
+ {t:'Overwatch',v:'2016'},{t:'Fortnite Battle Royale',v:'2017'},{t:'Zelda: Breath of the Wild',v:'2017'},{t:'Red Dead Redemption 2',v:'2018'},{t:'Baldur\u2019s Gate 3',v:'2023'}]},
+{type:'val', q:'Welches Studio steckt hinter diesem Spiel?', a:[
+ {t:'Elden Ring',v:'FromSoftware'},{t:'Stardew Valley',v:'ConcernedApe (Eric Barone)'},{t:'Hades',v:'Supergiant Games'},{t:'Hollow Knight',v:'Team Cherry'},{t:'Undertale',v:'Toby Fox'},
+ {t:'Baldur\u2019s Gate 3',v:'Larian Studios'},{t:'Red Dead Redemption 2',v:'Rockstar Games'},{t:'Portal',v:'Valve'},{t:'Doom (1993)',v:'id Software'},{t:'Journey',v:'thatgamecompany'}]},
+{type:'val', q:'Wie heißt die Währung bzw. das Sammelobjekt in diesem Spiel?', a:[
+ {t:'Super Mario',v:'Münzen'},{t:'Sonic',v:'Ringe'},{t:'The Legend of Zelda',v:'Rubine'},{t:'Crash Bandicoot',v:'Wumpa-Früchte'},{t:'Donkey Kong Country',v:'Bananen'},
+ {t:'Animal Crossing',v:'Sternis'},{t:'Fortnite',v:'V-Bucks'},{t:'Ratchet & Clank',v:'Bolts / Schrauben'},{t:'Minecraft (Handel)',v:'Smaragde'},{t:'Runescape',v:'Gold Coins'}]},
+{type:'val', q:'Welches Spiel gewann in diesem Jahr den Game Award als „Game of the Year“?', a:[
+ {t:'2015',v:'The Witcher 3'},{t:'2016',v:'Overwatch'},{t:'2017',v:'Zelda: Breath of the Wild'},{t:'2018',v:'God of War'},{t:'2019',v:'Sekiro'},
+ {t:'2020',v:'The Last of Us Part II'},{t:'2021',v:'It Takes Two'},{t:'2022',v:'Elden Ring'},{t:'2023',v:'Baldur\u2019s Gate 3'},{t:'2014',v:'Dragon Age: Inquisition'}]},
+{type:'val', q:'Wie heißt die Hauptfigur dieses Spiels? (Runde 2)', a:[
+ {t:'Portal',v:'Chell'},{t:'Mass Effect',v:'Commander Shepard'},{t:'Red Dead Redemption 2',v:'Arthur Morgan'},{t:'The Last of Us',v:'Joel (und Ellie)'},{t:'Kingdom Hearts',v:'Sora'},
+ {t:'Persona 5',v:'Joker'},{t:'Hades',v:'Zagreus'},{t:'BioShock Infinite',v:'Booker DeWitt'},{t:'Doom (2016)',v:'Doom Slayer'},{t:'Bayonetta',v:'Bayonetta / Cereza'}]},
+{type:'val', q:'Wer komponierte die Musik zu diesem Spiel bzw. dieser Reihe?', hint:'Für Profis – die Gruppe darf großzügig werten.', a:[
+ {t:'Super Mario',v:'Koji Kondo'},{t:'Final Fantasy',v:'Nobuo Uematsu'},{t:'Undertale',v:'Toby Fox'},{t:'Halo',v:"Martin O'Donnell"},{t:'Doom (2016)',v:'Mick Gordon'},
+ {t:'Minecraft',v:'C418 (Daniel Rosenfeld)'},{t:'Journey',v:'Austin Wintory'},{t:'NieR',v:'Keiichi Okabe'},{t:'The Elder Scrolls',v:'Jeremy Soule'},{t:'Castlevania: SotN',v:'Michiru Yamane'}]},
+{type:'val', q:'Aus welchem Spiel stammt dieses Zitat?', a:[
+ {t:'„It\u2019s dangerous to go alone! Take this.“',v:'The Legend of Zelda (1986)'},{t:'„War. War never changes.“',v:'Fallout'},{t:'„The cake is a lie.“',v:'Portal'},{t:'„Do a barrel roll!“',v:'Star Fox 64'},{t:'„Finish him!“',v:'Mortal Kombat'},
+ {t:'„Hey! Listen!“',v:'Zelda: Ocarina of Time (Navi)'},{t:'„Would you kindly?“',v:'BioShock'},{t:'„Praise the Sun!“',v:'Dark Souls'},{t:'„Wake up, Mr. Freeman.“',v:'Half-Life 2'},{t:'„It\u2019s-a me, Mario!“',v:'Super Mario 64'}]},
+{type:'val', q:'Welches Unternehmen betreibt diese Plattform bzw. diesen Dienst?', a:[
+ {t:'Steam',v:'Valve'},{t:'Epic Games Store',v:'Epic Games'},{t:'Game Pass',v:'Microsoft'},{t:'PlayStation Plus',v:'Sony'},{t:'Nintendo eShop',v:'Nintendo'},
+ {t:'GOG',v:'CD Projekt'},{t:'EA App / Origin',v:'Electronic Arts'},{t:'Ubisoft Connect',v:'Ubisoft'},{t:'Battle.net',v:'Blizzard'},{t:'Xbox Live',v:'Microsoft'}]},
+{type:'val', q:'Zu welcher Spielereihe gehört dieses Sub-Franchise oder Spin-off?', a:[
+ {t:'Mario Kart',v:'Super Mario'},{t:'Hyrule Warriors',v:'The Legend of Zelda'},{t:'Pokémon Mystery Dungeon',v:'Pokémon'},{t:'Warcraft III',v:'Warcraft'},{t:'CoD: Warzone',v:'Call of Duty'},
+ {t:'Fallout Shelter',v:'Fallout'},{t:'Gwent',v:'The Witcher'},{t:'Luigi\u2019s Mansion',v:'Super Mario'},{t:'Metroid Dread',v:'Metroid'},{t:'Halo Wars',v:'Halo'}]},
+{type:'yn', q:'Welche dieser Spiele haben einen offiziellen Story-Modus für eine einzelne Person?', a:[
+ {t:'The Last of Us',ok:true},{t:'Half-Life 2',ok:true},{t:'God of War',ok:true},{t:'Mass Effect',ok:true},{t:'Bioshock',ok:true},
+ {t:'Uncharted 4',ok:true},{t:'Counter-Strike 2',ok:false},{t:'Rocket League',ok:false},{t:'Fall Guys',ok:false},{t:'Among Us',ok:false}]},
+{type:'yn', q:'Welche dieser Spiele wurden mehr als 50 Millionen Mal verkauft?', a:[
+ {t:'Minecraft',ok:true},{t:'GTA V',ok:true},{t:'Tetris',ok:true},{t:'Wii Sports',ok:true},{t:'Mario Kart 8 (inkl. Deluxe)',ok:true},
+ {t:'Red Dead Redemption 2',ok:true},{t:'Celeste',ok:false},{t:'Hollow Knight',ok:false},{t:'Disco Elysium',ok:false},{t:'Papers, Please',ok:false}]},
+{type:'yn', q:'Welche dieser Spiele erschienen für die Nintendo Wii?', a:[
+ {t:'Wii Sports',ok:true},{t:'Super Mario Galaxy',ok:true},{t:'Mario Kart Wii',ok:true},{t:'Zelda: Twilight Princess',ok:true},{t:'Wii Fit',ok:true},
+ {t:'Super Smash Bros. Brawl',ok:true},{t:'Zelda: Breath of the Wild',ok:false},{t:'Splatoon',ok:false},{t:'Metroid Dread',ok:false},{t:'Bayonetta 3',ok:false}]}
+];
+
+/* ===================== State ===================== */
+const COLORS=['#2de2e6','#ff3d8b','#ffd23f','#3ddc84','#b388ff','#ff9e42','#64b5f6','#f06292'];
+let players=[];            // {name,color,score}
+let deck=[], qPos=0;
+let target=20;
+let round=null;            // {qIndex, chips[], in[], failed[], turn, revealedCount, results[]}
+let startPlayer=0;
+let pendingVal=null;       // {ansIdx}
+
+const $=id=>document.getElementById(id);
+const shuffle=a=>{for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a};
+
+/* ===================== Setup ===================== */
+function renderSetup(){
+  const box=$('playersEdit');box.innerHTML='';
+  players.forEach((p,i)=>{
+    const row=document.createElement('div');row.className='p-row';
+    row.innerHTML=`<div class="p-dot" style="background:${p.color}"></div>
+      <input value="${p.name.replace(/"/g,'&quot;')}" maxlength="16" data-i="${i}" placeholder="Name">
+      ${players.length>2?`<button title="Entfernen" data-del="${i}">✕</button>`:''}`;
+    box.appendChild(row);
+  });
+  box.querySelectorAll('input').forEach(inp=>inp.addEventListener('input',e=>{players[+e.target.dataset.i].name=e.target.value}));
+  box.querySelectorAll('[data-del]').forEach(b=>b.addEventListener('click',e=>{players.splice(+e.target.dataset.del,1);renderSetup()}));
+  $('addPlayer').style.display=players.length>=8?'none':'block';
+}
+function initSetup(){
+  players=[{name:'Spieler 1',color:COLORS[0],score:0},{name:'Spieler 2',color:COLORS[1],score:0}];
+  renderSetup();
+}
+$('addPlayer').addEventListener('click',()=>{
+  if(players.length<8){players.push({name:'Spieler '+(players.length+1),color:COLORS[players.length%COLORS.length],score:0});renderSetup();}
+});
+$('targetRow').addEventListener('click',e=>{
+  const s=e.target.closest('.seg');if(!s)return;
+  document.querySelectorAll('.seg').forEach(x=>x.classList.remove('on'));
+  s.classList.add('on');target=+s.dataset.t;
+});
+$('startBtn').addEventListener('click',()=>{
+  players.forEach((p,i)=>{if(!p.name.trim())p.name='Spieler '+(i+1);p.score=0});
+  deck=shuffle([...QUESTIONS.keys()]);qPos=0;startPlayer=0;
+  $('setup').classList.remove('active');$('game').classList.add('active');
+  newRound();
+});
+
+/* ===================== Runde ===================== */
+function newRound(keepStarter){
+  if(qPos>=deck.length){deck=shuffle([...QUESTIONS.keys()]);qPos=0;}
+  const qIndex=deck[qPos++];
+  round={
+    qIndex,
+    chips:players.map(()=>0),
+    in:players.map(()=>true),
+    failed:players.map(()=>false),
+    turn:startPlayer,
+    results:QUESTIONS[qIndex].a.map(()=>null),  // null | {ok:bool, by:playerIdx|null}
+    _snapshot:players.map(p=>p.score)
+  };
+  if(!keepStarter)startPlayer=(startPlayer+1)%players.length;
+  undoStack=[];
+  renderGame();
+}
+
+/* --- Verlauf für den Zurück-Button --- */
+let undoStack=[];
+function pushHistory(){
+  undoStack.push({round:JSON.parse(JSON.stringify(round)),scores:players.map(p=>p.score)});
+  if(undoStack.length>60)undoStack.shift();
+}
+function undo(){
+  if(!undoStack.length)return;
+  const s=undoStack.pop();
+  round=s.round;
+  players.forEach((p,i)=>p.score=s.scores[i]);
+  ['roundOverlay','valOverlay','winOverlay'].forEach(id=>$(id).classList.remove('active'));
+  pendingVal=null;
+  renderGame();
+}
+function q(){return QUESTIONS[round.qIndex]}
+function activeCount(){return round.in.filter(Boolean).length}
+function nextTurn(){
+  if(activeCount()===0)return;
+  let t=round.turn;
+  for(let k=0;k<players.length;k++){t=(t+1)%players.length;if(round.in[t]){round.turn=t;return}}
+}
+function ensureTurnValid(){if(!round.in[round.turn])nextTurn()}
+
+function renderGame(){
+  const Q=q();
+  $('qmeta').textContent=`Frage ${qPos} · ${Q.type==='yn'?'Richtig oder falsch?':'Wert ansagen'} · Ziel: ${target} Punkte`;
+  $('qtext').textContent=Q.q;
+  $('qhint').textContent=Q.hint||(Q.type==='yn'?'Wählt eine Antwort, die ihr für RICHTIG haltet.':'Feld wählen, Antwort laut sagen, dann aufdecken.');
+  // Topbar
+  const tb=$('topbar');tb.innerHTML='';
+  players.forEach((p,i)=>{
+    const b=document.createElement('div');
+    b.className='badge'+(i===round.turn&&round.in[i]?' current':'')+(!round.in[i]?' out':'');
+    b.innerHTML=`<div class="bdot" style="background:${p.color}"></div>
+      <div class="bname">${esc(p.name)}</div><div class="bscore">${p.score}</div>
+      <div class="chips">${'<div class="chip"></div>'.repeat(round.chips[i])}</div>
+      ${!round.in[i]?`<div class="status">${round.failed[i]?'ausgeschieden':'gepasst'}</div>`:''}`;
+    tb.appendChild(b);
+  });
+  // Turnline
+  if(activeCount()>0){
+    const cur=players[round.turn];
+    $('turnline').innerHTML=`Am Zug: <b style="color:${cur.color}">${esc(cur.name)}</b> — antworten oder passen?`;
+  } else $('turnline').textContent='';
+  // Grid
+  const g=$('grid');g.innerHTML='';
+  Q.a.forEach((a,i)=>{
+    const r=round.results[i];
+    const d=document.createElement('div');
+    d.className='ans'+(r?' done '+(r.ok?'ok':'bad')+(r.leftover?' leftover':''):'');
+    d.innerHTML=`<div class="idx">${i+1}</div>
+      <div class="atext">${esc(a.t)}</div>
+      <div class="aval">${r?esc(valLabel(a,Q)) : ''}</div>
+      <div class="who ${r&&r.by!=null?'show':''}" style="background:${r&&r.by!=null?players[r.by].color:'transparent'}"></div>`;
+    if(!r)d.addEventListener('click',()=>pick(i));
+    g.appendChild(d);
+  });
+  $('passBtn').style.display=activeCount()>0?'':'none';
+  $('undoBtn').disabled=undoStack.length===0;
+}
+function valLabel(a,Q){
+  if(Q.type==='yn')return a.ok?'✓ RICHTIG':'✗ FALSCH';
+  return a.v;
+}
+function esc(s){return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
+
+/* ===================== Antworten ===================== */
+function pick(i){
+  if(activeCount()===0||round.results[i])return;
+  const Q=q();
+  if(Q.type==='yn'){
+    resolvePick(i,Q.a[i].ok);
+  }else{
+    pendingVal={ansIdx:i};
+    $('valTitle').textContent=players[round.turn].name+', sag deine Antwort laut an!';
+    $('valSub').textContent='»'+Q.a[i].t+'« — '+Q.q;
+    $('valAnswer').style.display='none';$('valAnswer').textContent='';
+    $('valRevealBtn').style.display='';$('judgeRow').style.display='none';
+    $('valOverlay').classList.add('active');
+  }
+}
+$('valRevealBtn').addEventListener('click',()=>{
+  const Q=q(),i=pendingVal.ansIdx;
+  $('valAnswer').textContent=Q.a[i].v;
+  $('valAnswer').style.display='';
+  $('valRevealBtn').style.display='none';
+  $('judgeRow').style.display='flex';
+});
+$('judgeOk').addEventListener('click',()=>{closeVal(true)});
+$('judgeBad').addEventListener('click',()=>{closeVal(false)});
+function closeVal(ok){
+  const i=pendingVal.ansIdx;pendingVal=null;
+  $('valOverlay').classList.remove('active');
+  resolvePick(i,ok);
+}
+function resolvePick(i,ok){
+  pushHistory();
+  const p=round.turn;
+  round.results[i]={ok,by:p};
+  if(ok){
+    round.chips[p]++;
+  }else{
+    round.chips[p]=0;round.in[p]=false;round.failed[p]=true;
+  }
+  afterAction(true);
+}
+$('undoBtn').addEventListener('click',undo);
+$('skipBtn').addEventListener('click',()=>{
+  if(activeCount()>0&&!confirm('Diese Frage verwerfen? Die Marker dieser Runde verfallen, Punkte bleiben unverändert.'))return;
+  $('roundOverlay').classList.remove('active');
+  newRound(true);
+});
+$('valCancel').addEventListener('click',()=>{
+  pendingVal=null;$('valOverlay').classList.remove('active');
+});
+$('passBtn').addEventListener('click',()=>{
+  pushHistory();
+  const p=round.turn;
+  players[p].score+=round.chips[p];
+  round.chips[p]=0;round.in[p]=false;
+  afterAction(false);
+});
+function afterAction(advanceFromAnswer){
+  // Runde vorbei?
+  const allRevealed=round.results.every(r=>r!==null);
+  if(activeCount()===0||allRevealed){
+    endRound(allRevealed);return;
+  }
+  nextTurn();ensureTurnValid();
+  renderGame();
+  // Pop-Animation auf zuletzt aufgedeckter Karte
+  if(advanceFromAnswer){
+    const last=[...document.querySelectorAll('.ans.done')].pop();
+    if(last)last.classList.add('pop');
+  }
+}
+
+/* ===================== Rundenende ===================== */
+function endRound(allRevealed){
+  const gains=players.map(()=>0);
+  // verbleibende aktive Spieler sichern ihre Marker (alle Antworten aufgedeckt)
+  players.forEach((p,i)=>{
+    if(round.in[i]){gains[i]=round.chips[i];p.score+=round.chips[i];round.chips[i]=0;round.in[i]=false;}
+  });
+  // Übrige Antworten aufdecken (abgedimmt)
+  const Q=q();
+  round.results=round.results.map((r,i)=>r||{ok:Q.type==='yn'?Q.a[i].ok:true,by:null,leftover:true});
+  renderGame();
+  // Sieger?
+  const winIdx=players.findIndex(p=>p.score>=target);
+  setTimeout(()=>{
+    if(winIdx>=0){showWinner(winIdx);return;}
+    // Overlay
+    const gbox=$('gains');gbox.innerHTML='';
+    players.forEach((p,i)=>{
+      const g=roundGainDisplay(i,gains);
+      const row=document.createElement('div');row.className='gain-row';
+      row.innerHTML=`<span><span style="color:${p.color}">●</span> ${esc(p.name)}</span>
+        <span class="${g>0?'plus':'zero'}">${g>0?'+'+g:'±0'} → ${p.score}</span>`;
+      gbox.appendChild(row);
+    });
+    $('roundSub').textContent=allRevealed?'Alle 10 Antworten aufgedeckt – verbliebene Spieler:innen sichern ihre Marker.':'Alle haben gepasst oder sind ausgeschieden.';
+    $('roundOverlay').classList.add('active');
+  },700);
+}
+function roundGainDisplay(i,gains){
+  // Zu Rundenbeginn wird ein Punkte-Snapshot gespeichert; Gewinn = Differenz.
+  if(round._snapshot)return players[i].score-round._snapshot[i];
+  return gains[i];
+}
+$('roundUndo').addEventListener('click',undo);
+$('nextRoundBtn').addEventListener('click',()=>{
+  $('roundOverlay').classList.remove('active');
+  newRound();
+});
+
+/* ===================== Sieg ===================== */
+function showWinner(i){
+  $('winnerName').textContent=players[i].name;
+  $('winSub').textContent=players[i].score+' Punkte · Ziel war '+target;
+  $('winOverlay').classList.add('active');
+  confetti(players[i].color);
+}
+$('restartBtn').addEventListener('click',()=>{
+  $('winOverlay').classList.remove('active');
+  $('game').classList.remove('active');$('setup').classList.add('active');
+  renderSetup();
+});
+function confetti(mainColor){
+  if(matchMedia('(prefers-reduced-motion: reduce)').matches)return;
+  const cols=[mainColor,'#2de2e6','#ff3d8b','#ffd23f','#3ddc84','#b388ff'];
+  for(let k=0;k<120;k++){
+    const c=document.createElement('div');c.className='confetti';
+    const s=6+Math.random()*8;
+    c.style.cssText=`left:${Math.random()*100}vw;width:${s}px;height:${s*1.4}px;background:${cols[k%cols.length]};animation:fall ${2.4+Math.random()*2.4}s linear ${Math.random()*1.4}s forwards;`;
+    document.body.appendChild(c);
+    setTimeout(()=>c.remove(),7000);
+  }
+}
+
+/* ===================== Los ===================== */
+initSetup();
+</script>
+</body>
+</html>
