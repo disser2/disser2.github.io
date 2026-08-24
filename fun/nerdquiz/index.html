@@ -396,6 +396,73 @@
     .later-btn { background: #eee; color: #666; }
     .later-btn:hover { background: #ddd; }
 
+    .question-card.locked {
+        opacity: .12;
+        cursor: not-allowed;
+        filter: grayscale(.6);
+    }
+
+    .x2-badge {
+        display: inline-block;
+        font-family: Arial, sans-serif;
+        font-size: 11px;
+        font-weight: bold;
+        letter-spacing: 1px;
+        padding: 3px 8px;
+        border-radius: 3px;
+        background: rgba(255,255,255,.9);
+        color: #c25e1f;
+        vertical-align: middle;
+    }
+
+    /* Halbzeit- / Schlussdialog */
+    .sheet {
+        display: none;
+        position: fixed;
+        inset: 0;
+        background: rgba(0,0,0,.88);
+        z-index: 1100;
+        justify-content: center;
+        align-items: center;
+        padding: 20px;
+    }
+    .sheet.active { display: flex; }
+    .sheet-inner {
+        background: #fff;
+        border-radius: 10px;
+        padding: 48px 46px 38px;
+        max-width: 560px;
+        width: 100%;
+        text-align: center;
+    }
+    .sheet-inner .kicker {
+        font-family: Arial, sans-serif;
+        font-size: 12px;
+        letter-spacing: 2px;
+        text-transform: uppercase;
+        color: #c25e1f;
+        margin-bottom: 14px;
+    }
+    .sheet-inner h3 {
+        font-family: 'Impact', sans-serif;
+        font-size: 2.1em;
+        color: #333;
+        line-height: 1.2;
+        margin-bottom: 16px;
+    }
+    .sheet-inner p {
+        font-family: Arial, sans-serif;
+        font-size: 15px;
+        line-height: 1.6;
+        color: #666;
+        margin-bottom: 30px;
+    }
+    .sheet-buttons { display: flex; gap: 14px; justify-content: center; flex-wrap: wrap; }
+    .yes-btn { background: #6b9d3f; color: #fff; }
+    .yes-btn:hover { background: #5a8534; }
+    .no-btn { background: #eee; color: #666; }
+    .no-btn:hover { background: #ddd; }
+
     .empty-hint {
         font-family: Arial, sans-serif;
         color: rgba(255,255,255,.8);
@@ -494,15 +561,29 @@
     </div>
 </div>
 
+<div id="sheet" class="sheet">
+    <div class="sheet-inner">
+        <div class="kicker" id="sheet-kicker"></div>
+        <h3 id="sheet-title"></h3>
+        <p id="sheet-text"></p>
+        <div class="sheet-buttons" id="sheet-buttons"></div>
+    </div>
+</div>
+
 <script src="quiz_data.js"></script>
 <script>
 /* ------------------------------------------------------------------ State */
 const STORE_PLAYED = 'quiz.playedQuestions.v2';   // { quizId: [questionKey, ...] }
 const STORE_DONE   = 'quiz.finishedQuizzes.v2';   // [quizId, ...]
+const STORE_DBL    = 'quiz.doubling.v2';          // { quizId: 'ja' | 'nein' }
+
+const HALFTIME = 10;   // nach so vielen Fragen kommt die Nachfrage
+const MAX_ROUNDS = 20; // so viele Fragen werden pro Board höchstens gespielt
 
 let DATA = null;
 let played = {};
 let finished = new Set();
+let doubling = {};
 let currentQuiz = null;
 let currentQuestion = null;
 let filter = 'alle';
@@ -512,15 +593,21 @@ const ACCENTS = ['#c74a3d', '#5ba3c7', '#c74a8d', '#1e3a8a', '#7ab04a'];
 function load() {
     try { played = JSON.parse(localStorage.getItem(STORE_PLAYED)) || {}; } catch (e) { played = {}; }
     try { finished = new Set(JSON.parse(localStorage.getItem(STORE_DONE)) || []); } catch (e) { finished = new Set(); }
+    try { doubling = JSON.parse(localStorage.getItem(STORE_DBL)) || {}; } catch (e) { doubling = {}; }
 }
 function save() {
     localStorage.setItem(STORE_PLAYED, JSON.stringify(played));
     localStorage.setItem(STORE_DONE, JSON.stringify([...finished]));
+    localStorage.setItem(STORE_DBL, JSON.stringify(doubling));
 }
 
 const cat = id => DATA.categories[id];
 const playedOf = qid => new Set(played[qid] || []);
-const totalOf  = quiz => quiz.categories.reduce((n, c) => n + cat(c).questions.length, 0);
+const totalOf  = quiz => MAX_ROUNDS;
+
+/* Punktwert, wie er aktuell auf dem Board gilt */
+const isDoubled = qid => doubling[qid] === 'ja';
+const valueOf = (qid, points) => isDoubled(qid) ? points * 2 : points;
 
 /* Herkunftszeile: Quellen ohne Dopplung, in Reihenfolge der Kategorien */
 function origins(quiz) {
@@ -560,8 +647,9 @@ function renderSelect() {
             <div class="cat-chips">${qz.categories.map(c => `<span class="cat-chip">${esc(cat(c).name)}</span>`).join('')}</div>
             <div class="origin">${esc(srcLine)}</div>
             <div class="progress">
-                <span>${done}/${total}</span>
-                <span class="bar"><span style="width:${total ? (done / total * 100) : 0}%"></span></span>
+                <span>${Math.min(done, total)}/${total}</span>
+                <span class="bar"><span style="width:${Math.min(100, done / total * 100)}%"></span></span>
+                ${isDoubled(qz.id) ? '<span class="x2-badge">×2</span>' : ''}
                 ${finished.has(qz.id) ? '<span>gespielt</span>' : ''}
             </div>`;
 
@@ -599,7 +687,9 @@ function showSelect() {
 function renderBoard() {
     const board = document.getElementById('quiz-board');
     board.innerHTML = '';
-    const done = playedOf(currentQuiz.id);
+    const qid = currentQuiz.id;
+    const done = playedOf(qid);
+    const over = done.size >= MAX_ROUNDS;
 
     currentQuiz.categories.forEach(cid => {
         const c = cat(cid);
@@ -613,30 +703,38 @@ function renderBoard() {
 
         c.questions.forEach(q => {
             const key = `${cid}::${q.points}`;
+            const isDone = done.has(key);
             const el = document.createElement('div');
-            el.className = 'question-card' + (done.has(key) ? ' played' : '');
-            el.textContent = q.points;
-            el.addEventListener('click', () => { if (!done.has(key)) openModal(c, q, key); });
+            el.className = 'question-card' + (isDone ? ' played' : (over ? ' locked' : ''));
+            el.textContent = valueOf(qid, q.points);
+            el.addEventListener('click', () => { if (!isDone && !over) openModal(c, q, key); });
             col.appendChild(el);
         });
         board.appendChild(col);
     });
 
-    const total = totalOf(currentQuiz);
-    document.getElementById('board-progress').textContent = `${done.size}/${total} Fragen gespielt`;
+    const parts = [`${done.size}/${MAX_ROUNDS} Fragen gespielt`];
+    if (isDoubled(qid)) parts.push('doppelte Punkte');
+    if (over) parts.push('Board beendet');
+    document.getElementById('board-progress').textContent = parts.join(' · ');
 
-    // Board komplett? Quiz automatisch als gespielt vormerken.
-    if (done.size === total && total > 0) { finished.add(currentQuiz.id); save(); }
+    if (over) { finished.add(qid); save(); }
 }
 
 /* ------------------------------------------------------------------ Modal */
-const KIND_LABEL = { schaetz: 'Schätzfrage', musik: 'Musik- / Videofrage', namen: 'Wozu gehören diese Namen?' };
+const KIND_LABEL = {
+    schaetz: 'Schätzfrage',
+    musik: 'Musik- / Videofrage',
+    namen: 'Wozu gehören diese Namen?',
+    werbinich: 'Wer oder was bin ich?'
+};
 
 function openModal(c, q, key) {
     currentQuestion = { key, quizId: currentQuiz.id };
 
+    const shown = valueOf(currentQuiz.id, q.points);
     document.getElementById('modal-meta').innerHTML =
-        `${esc(c.name)} · <span class="pts">${q.points}</span> · ${esc(c.source)}`;
+        `${esc(c.name)} · <span class="pts">${shown}</span>${isDoubled(currentQuiz.id) ? ' (×2)' : ''} · ${esc(c.source)}`;
 
     const tag = document.getElementById('modal-tag');
     if (q.kind && KIND_LABEL[q.kind]) { tag.textContent = KIND_LABEL[q.kind]; tag.style.display = 'inline-block'; }
@@ -669,15 +767,60 @@ function showAnswer() {
 }
 
 function closeModal(markPlayed) {
+    let justPlayed = null;
     if (markPlayed && currentQuestion) {
         const { quizId, key } = currentQuestion;
         played[quizId] = played[quizId] || [];
         if (!played[quizId].includes(key)) played[quizId].push(key);
         save();
         renderBoard();
+        justPlayed = quizId;
     }
     currentQuestion = null;
     document.getElementById('modal').classList.remove('active');
+
+    if (justPlayed) {
+        const count = playedOf(justPlayed).size;
+        if (count >= MAX_ROUNDS) showFinalSheet();
+        else if (count === HALFTIME && !doubling[justPlayed]) showHalftimeSheet();
+    }
+}
+
+/* ------------------------------------------------------- Halbzeit & Ende */
+function openSheet(kicker, title, text, buttons) {
+    document.getElementById('sheet-kicker').textContent = kicker;
+    document.getElementById('sheet-title').textContent = title;
+    document.getElementById('sheet-text').textContent = text;
+    const box = document.getElementById('sheet-buttons');
+    box.innerHTML = '';
+    buttons.forEach(b => {
+        const el = document.createElement('button');
+        el.className = 'modal-btn ' + b.cls;
+        el.textContent = b.label;
+        el.addEventListener('click', () => { closeSheet(); b.action(); });
+        box.appendChild(el);
+    });
+    document.getElementById('sheet').classList.add('active');
+}
+function closeSheet() { document.getElementById('sheet').classList.remove('active'); }
+
+function showHalftimeSheet() {
+    const qid = currentQuiz.id;
+    openSheet('Halbzeit', 'Doppelte Punkte für die zweite Hälfte?',
+        `${HALFTIME} von ${MAX_ROUNDS} Fragen sind gespielt. Ab jetzt können alle Felder das Doppelte zählen – aus 100 wird 200, aus 1000 werden 2000. Wer hinten liegt, kann damit noch aufholen.`,
+        [
+            { label: 'Ja, verdoppeln', cls: 'yes-btn', action: () => { doubling[qid] = 'ja'; save(); renderBoard(); } },
+            { label: 'Nein, so lassen', cls: 'no-btn', action: () => { doubling[qid] = 'nein'; save(); renderBoard(); } }
+        ]);
+}
+
+function showFinalSheet() {
+    openSheet('Schluss', 'Board beendet',
+        `${MAX_ROUNDS} Fragen sind gespielt – mehr gibt dieses Board nicht her. Zeit, die Punkte zusammenzuzählen.`,
+        [
+            { label: 'Zur Übersicht', cls: 'yes-btn', action: showSelect },
+            { label: 'Board hierlassen', cls: 'no-btn', action: () => {} }
+        ]);
 }
 
 /* ------------------------------------------------------------------ Reset */
@@ -685,6 +828,7 @@ function resetCurrentQuiz() {
     if (!currentQuiz) return;
     if (!confirm(`„${currentQuiz.title}“ zurücksetzen? Alle Fragen werden wieder freigegeben.`)) return;
     delete played[currentQuiz.id];
+    delete doubling[currentQuiz.id];
     finished.delete(currentQuiz.id);
     save();
     renderBoard();
@@ -692,7 +836,7 @@ function resetCurrentQuiz() {
 
 function resetEverything() {
     if (!confirm('Wirklich alle Quizze zurücksetzen? Fortschritt und Markierungen gehen verloren.')) return;
-    played = {}; finished = new Set(); save(); renderSelect();
+    played = {}; finished = new Set(); doubling = {}; save(); renderSelect();
 }
 
 /* ------------------------------------------------------------------ Setup */
@@ -710,6 +854,7 @@ document.querySelectorAll('.chip').forEach(chip => {
 });
 
 document.addEventListener('keydown', e => {
+    if (document.getElementById('sheet').classList.contains('active')) return; // Wahl erzwingen
     if (e.key === 'Escape') closeModal(false);
     if (e.key === ' ' && document.getElementById('modal').classList.contains('active')) {
         e.preventDefault();
