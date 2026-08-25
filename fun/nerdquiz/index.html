@@ -463,6 +463,112 @@
     .no-btn { background: #eee; color: #666; }
     .no-btn:hover { background: #ddd; }
 
+    /* ------------------------------------------------ Teams */
+    .panel {
+        background: rgba(0,0,0,.22);
+        border-radius: 8px;
+        padding: 20px 22px;
+        margin-bottom: 22px;
+    }
+    .panel-head {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        flex-wrap: wrap;
+        margin-bottom: 16px;
+    }
+    .panel-head h2 {
+        color: #fff;
+        font-size: 1.4em;
+        letter-spacing: 2px;
+        text-transform: uppercase;
+    }
+    .panel-head .spacer { flex: 1 1 auto; }
+    .btn.small { padding: 6px 14px; font-size: 13px; border-width: 1px; }
+
+    .team-rows { display: flex; flex-direction: column; gap: 8px; margin-bottom: 14px; }
+    .team-row { display: flex; align-items: center; gap: 8px; }
+    .team-row input[type=text], .team-row input[type=number] {
+        font-family: Arial, sans-serif;
+        font-size: 15px;
+        padding: 9px 12px;
+        border: 1px solid rgba(255,255,255,.35);
+        background: rgba(0,0,0,.25);
+        color: #fff;
+        border-radius: 4px;
+    }
+    .team-row input[type=text] { flex: 1 1 auto; min-width: 0; }
+    .team-row input[type=number] { width: 92px; text-align: right; }
+    .team-row input::placeholder { color: rgba(255,255,255,.4); }
+    .team-row input:focus { outline: none; border-color: #fff; }
+    .team-row .drop {
+        background: none; border: none; color: rgba(255,255,255,.5);
+        font-family: Arial, sans-serif; font-size: 20px; cursor: pointer; padding: 0 6px;
+    }
+    .team-row .drop:hover { color: #fff; }
+    .team-row.spot input[type=text] { background: #fff; color: #c25e1f; font-weight: bold; border-color: #fff; }
+    .team-row.active input[type=text] { border-color: #fff; box-shadow: inset 0 0 0 1px #fff; }
+
+    .hint {
+        font-family: Arial, sans-serif;
+        font-size: 12.5px;
+        color: rgba(255,255,255,.55);
+        line-height: 1.5;
+    }
+
+    /* Scoreboard im Board */
+    .scoreboard { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 18px; }
+    .score-chip {
+        display: flex; align-items: baseline; gap: 9px;
+        background: rgba(0,0,0,.25);
+        border: 1px solid rgba(255,255,255,.2);
+        border-radius: 5px;
+        padding: 8px 14px;
+        font-family: Arial, sans-serif;
+        font-size: 13px;
+        color: rgba(255,255,255,.8);
+    }
+    .score-chip b { font-family: 'Impact', sans-serif; font-size: 20px; letter-spacing: 1px; color: #fff; font-weight: normal; }
+    .score-chip.active { background: #fff; border-color: #fff; color: #b5561c; }
+    .score-chip.active b { color: #c25e1f; }
+    .score-chip .turn { font-size: 10px; letter-spacing: 1.4px; text-transform: uppercase; opacity: .8; }
+
+    /* Punktevergabe im Modal */
+    .team-scoring { display: flex; flex-direction: column; gap: 8px; margin: 26px 0 20px; text-align: left; }
+    .score-row {
+        display: flex; align-items: center; gap: 10px;
+        border-top: 1px solid #eee; padding-top: 8px;
+    }
+    .score-row:first-child { border-top: none; }
+    .score-row .who {
+        flex: 1 1 auto;
+        font-family: Arial, sans-serif;
+        font-size: 15px;
+        color: #333;
+        min-width: 0;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+    .score-row .who small { color: #aaa; font-size: 12px; margin-left: 8px; }
+    .score-row.out .who { color: #bbb; text-decoration: line-through; }
+    .score-row .plus, .score-row .minus {
+        font-family: Arial, sans-serif;
+        font-size: 14px;
+        font-weight: bold;
+        padding: 9px 16px;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        min-width: 76px;
+        transition: all .2s;
+    }
+    .score-row .plus { background: #27ae60; color: #fff; }
+    .score-row .plus:hover { background: #1f8b4d; }
+    .score-row .minus { background: #f2dede; color: #b03a2e; }
+    .score-row .minus:hover { background: #e6c3c0; }
+    .score-row .minus:disabled { background: #f4f4f4; color: #ccc; cursor: not-allowed; }
+
     .empty-hint {
         font-family: Arial, sans-serif;
         color: rgba(255,255,255,.8);
@@ -516,6 +622,18 @@
             <button class="btn" onclick="resetEverything()">Alles zurücksetzen</button>
         </div>
 
+        <div class="panel">
+            <div class="panel-head">
+                <h2>Teams</h2>
+                <div class="spacer"></div>
+                <button class="btn small" id="add-team" onclick="addTeam()">+ Team</button>
+                <button class="btn small" onclick="drawStartTeam()">Startteam auslosen</button>
+                <button class="btn small" onclick="resetScores()">Punkte auf 0</button>
+            </div>
+            <div id="team-rows" class="team-rows"></div>
+            <div class="hint" id="team-hint"></div>
+        </div>
+
         <div class="filters">
             <button class="chip active" data-filter="alle">Alle</button>
             <button class="chip" data-filter="offen">Noch offen</button>
@@ -538,6 +656,7 @@
             <div class="spacer"></div>
             <button class="btn" onclick="resetCurrentQuiz()">Board zurücksetzen</button>
         </div>
+        <div id="scoreboard" class="scoreboard"></div>
         <div id="quiz-board" class="quiz-board"></div>
     </section>
 
@@ -555,8 +674,11 @@
         <div id="modal-note" class="modal-note"></div>
         <div class="modal-buttons">
             <button id="show-answer-btn" class="modal-btn show-answer-btn" onclick="showAnswer()">Antwort zeigen</button>
-            <button class="modal-btn close-btn" onclick="closeModal(true)">Frage abhaken</button>
-            <button class="modal-btn later-btn" onclick="closeModal(false)">Später nochmal</button>
+        </div>
+        <div id="team-scoring" class="team-scoring"></div>
+        <div class="modal-buttons">
+            <button id="nobody-btn" class="modal-btn close-btn" onclick="closeModal(true)">Niemand</button>
+            <button class="modal-btn later-btn" onclick="closeModal(false)">Abbrechen, Frage bleibt offen</button>
         </div>
     </div>
 </div>
@@ -576,14 +698,20 @@
 const STORE_PLAYED = 'quiz.playedQuestions.v2';   // { quizId: [questionKey, ...] }
 const STORE_DONE   = 'quiz.finishedQuizzes.v2';   // [quizId, ...]
 const STORE_DBL    = 'quiz.doubling.v2';          // { quizId: 'ja' | 'nein' }
+const STORE_TEAMS  = 'quiz.teams.v2';             // { teams: [...], active: id }
 
 const HALFTIME = 10;   // nach so vielen Fragen kommt die Nachfrage
 const MAX_ROUNDS = 20; // so viele Fragen werden pro Board höchstens gespielt
+const MIN_TEAMS = 2, MAX_TEAMS = 6;
 
 let DATA = null;
 let played = {};
 let finished = new Set();
 let doubling = {};
+let teams = [];
+let activeTeam = null;
+let blockedTeams = new Set();   // Teams, die bei der offenen Frage schon danebenlagen
+let drawing = false;
 let currentQuiz = null;
 let currentQuestion = null;
 let filter = 'alle';
@@ -594,11 +722,126 @@ function load() {
     try { played = JSON.parse(localStorage.getItem(STORE_PLAYED)) || {}; } catch (e) { played = {}; }
     try { finished = new Set(JSON.parse(localStorage.getItem(STORE_DONE)) || []); } catch (e) { finished = new Set(); }
     try { doubling = JSON.parse(localStorage.getItem(STORE_DBL)) || {}; } catch (e) { doubling = {}; }
+    let t = null;
+    try { t = JSON.parse(localStorage.getItem(STORE_TEAMS)); } catch (e) { t = null; }
+    teams = (t && Array.isArray(t.teams) && t.teams.length) ? t.teams
+          : [{ id: 't1', name: '', score: 0 }, { id: 't2', name: '', score: 0 }];
+    activeTeam = t ? t.active : null;
+    if (!teams.some(x => x.id === activeTeam)) activeTeam = null;
 }
 function save() {
     localStorage.setItem(STORE_PLAYED, JSON.stringify(played));
     localStorage.setItem(STORE_DONE, JSON.stringify([...finished]));
     localStorage.setItem(STORE_DBL, JSON.stringify(doubling));
+    localStorage.setItem(STORE_TEAMS, JSON.stringify({ teams, active: activeTeam }));
+}
+
+/* --------------------------------------------------------------- Teams */
+const namedTeams = () => teams.filter(t => t.name.trim());
+const teamLabel = (t, i) => t.name.trim() || `Team ${i + 1}`;
+
+function renderTeams() {
+    const box = document.getElementById('team-rows');
+    box.innerHTML = '';
+    teams.forEach((t, i) => {
+        const row = document.createElement('div');
+        row.className = 'team-row' + (t.id === activeTeam ? ' active' : '');
+        row.dataset.id = t.id;
+        row.innerHTML = `
+            <input type="text" value="${esc(t.name)}" placeholder="Team ${i + 1}" maxlength="24">
+            <input type="number" value="${t.score}" step="10">
+            ${teams.length > MIN_TEAMS ? '<button class="drop" title="Team entfernen">×</button>' : ''}`;
+
+        row.querySelector('input[type=text]').addEventListener('input', ev => {
+            t.name = ev.target.value; save(); renderScoreboard();
+        });
+        row.querySelector('input[type=number]').addEventListener('change', ev => {
+            t.score = parseInt(ev.target.value, 10) || 0; save(); renderScoreboard();
+        });
+        const drop = row.querySelector('.drop');
+        if (drop) drop.addEventListener('click', () => {
+            teams = teams.filter(x => x.id !== t.id);
+            if (activeTeam === t.id) activeTeam = null;
+            save(); renderTeams(); renderScoreboard();
+        });
+        box.appendChild(row);
+    });
+
+    document.getElementById('add-team').style.display = teams.length >= MAX_TEAMS ? 'none' : 'inline-block';
+
+    const named = namedTeams().length;
+    const active = teams.find(t => t.id === activeTeam && t.name.trim());
+    let hint;
+    if (named < MIN_TEAMS)
+        hint = `Mindestens ${MIN_TEAMS} Teams eintragen, höchstens ${MAX_TEAMS}. Ohne Teams läuft das Quiz auch – dann werden Fragen nur abgehakt.`;
+    else if (active)
+        hint = `${teamLabel(active, teams.indexOf(active))} ist am Zug und wählt das nächste Feld.`;
+    else
+        hint = 'Startteam noch nicht ausgelost. Punktestände lassen sich jederzeit direkt im Feld korrigieren.';
+    document.getElementById('team-hint').textContent = hint;
+}
+
+function addTeam() {
+    if (teams.length >= MAX_TEAMS) return;
+    teams.push({ id: 't' + Date.now(), name: '', score: 0 });
+    save(); renderTeams();
+}
+
+function resetScores() {
+    if (!confirm('Alle Punktestände auf 0 setzen?')) return;
+    teams.forEach(t => t.score = 0);
+    activeTeam = null;
+    save(); renderTeams(); renderScoreboard();
+}
+
+/* Lauflicht über die Teamnamen */
+function drawStartTeam() {
+    if (drawing) return;
+    const pool = namedTeams();
+    if (pool.length < MIN_TEAMS) {
+        alert(`Bitte erst mindestens ${MIN_TEAMS} Teams benennen.`);
+        return;
+    }
+    drawing = true;
+    activeTeam = null;
+    renderTeams();
+
+    const rows = [...document.querySelectorAll('.team-row')];
+    const idx = teams.map((t, i) => t.name.trim() ? i : -1).filter(i => i >= 0);
+    const ticks = idx.length * 3 + Math.floor(Math.random() * idx.length) + 6;
+    let step = 0;
+
+    const tick = () => {
+        rows.forEach(r => r.classList.remove('spot'));
+        const here = idx[step % idx.length];
+        rows[here].classList.add('spot');
+        step++;
+        if (step < ticks) {
+            const t = step / ticks;                 // langsamer werden zum Schluss
+            setTimeout(tick, 55 + Math.pow(t, 3.2) * 460);
+        } else {
+            activeTeam = teams[here].id;
+            drawing = false;
+            save(); renderTeams(); renderScoreboard();
+        }
+    };
+    tick();
+}
+
+function renderScoreboard() {
+    const box = document.getElementById('scoreboard');
+    if (!box) return;
+    const pool = namedTeams();
+    box.innerHTML = '';
+    if (!pool.length) return;
+    teams.forEach((t, i) => {
+        if (!t.name.trim()) return;
+        const chip = document.createElement('div');
+        chip.className = 'score-chip' + (t.id === activeTeam ? ' active' : '');
+        chip.innerHTML = `<span>${esc(teamLabel(t, i))}</span><b>${t.score}</b>` +
+            (t.id === activeTeam ? '<span class="turn">am Zug</span>' : '');
+        box.appendChild(chip);
+    });
 }
 
 const cat = id => DATA.categories[id];
@@ -673,6 +916,7 @@ function openQuiz(id) {
     document.getElementById('view-select').style.display = 'none';
     document.getElementById('view-board').style.display = 'block';
     document.getElementById('board-title').textContent = currentQuiz.title;
+    renderScoreboard();
     renderBoard();
     window.scrollTo(0, 0);
 }
@@ -681,6 +925,7 @@ function showSelect() {
     currentQuiz = null;
     document.getElementById('view-board').style.display = 'none';
     document.getElementById('view-select').style.display = 'block';
+    renderTeams();
     renderSelect();
 }
 
@@ -756,7 +1001,51 @@ function openModal(c, q, key) {
     note.dataset.has = q.note ? '1' : '';
 
     document.getElementById('show-answer-btn').style.display = 'inline-block';
+    blockedTeams = new Set();
+    renderModalTeams(q);
     document.getElementById('modal').classList.add('active');
+}
+
+/* Eine Zeile pro Team: +Wert schließt die Frage, −Wert lässt sie offen */
+function renderModalTeams(q) {
+    const box = document.getElementById('team-scoring');
+    const pool = namedTeams();
+    const value = valueOf(currentQuiz.id, q.points);
+    box.innerHTML = '';
+
+    document.getElementById('nobody-btn').textContent = pool.length ? 'Niemand' : 'Frage abhaken';
+    box.style.display = pool.length ? 'flex' : 'none';
+    if (!pool.length) return;
+
+    teams.forEach((t, i) => {
+        if (!t.name.trim()) return;
+        const out = blockedTeams.has(t.id);
+        const row = document.createElement('div');
+        row.className = 'score-row' + (out ? ' out' : '');
+        row.innerHTML = `
+            <span class="who">${esc(teamLabel(t, i))}<small>${t.score}</small></span>
+            <button class="plus">+${value}</button>
+            <button class="minus"${out ? ' disabled' : ''}>−${value}</button>`;
+        row.querySelector('.plus').addEventListener('click', () => award(t, value, q));
+        row.querySelector('.minus').addEventListener('click', () => penalize(t, value, q));
+        box.appendChild(row);
+    });
+}
+
+function award(team, value, q) {
+    team.score += value;
+    activeTeam = team.id;      // richtig geraten heißt: dieses Team wählt als Nächstes
+    save();
+    renderScoreboard();
+    closeModal(true);
+}
+
+function penalize(team, value, q) {
+    team.score -= value;
+    blockedTeams.add(team.id); // dieses Team ist für diese Frage raus
+    save();
+    renderScoreboard();
+    renderModalTeams(q);       // Frage bleibt offen, nächstes Team ist dran
 }
 
 function showAnswer() {
@@ -836,7 +1125,9 @@ function resetCurrentQuiz() {
 
 function resetEverything() {
     if (!confirm('Wirklich alle Quizze zurücksetzen? Fortschritt und Markierungen gehen verloren.')) return;
-    played = {}; finished = new Set(); doubling = {}; save(); renderSelect();
+    played = {}; finished = new Set(); doubling = {};
+    teams.forEach(t => t.score = 0); activeTeam = null;
+    save(); renderTeams(); renderSelect();
 }
 
 /* ------------------------------------------------------------------ Setup */
@@ -875,6 +1166,7 @@ document.getElementById('modal').addEventListener('click', e => {
     }
     DATA = window.QUIZ_DATA;
     load();
+    renderTeams();
     renderSelect();
 })();
 </script>
