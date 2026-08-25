@@ -229,6 +229,18 @@ button:focus-visible,.seg:focus-visible,.ans:focus-visible{outline:3px solid var
   *{animation:none !important;transition:none !important}
 }
 .footerhint{text-align:center;color:var(--dim);font-size:.8rem;padding-bottom:6px}
+
+#peekBar{
+  display:none;position:fixed;left:50%;bottom:18px;transform:translateX(-50%);
+  z-index:40;align-items:center;gap:14px;flex-wrap:wrap;justify-content:center;
+  background:#161a33f2;border:1px solid var(--line);border-radius:18px;
+  padding:12px 18px;box-shadow:0 10px 30px #0009;max-width:94vw;
+}
+#peekBar.active{display:flex}
+body.peeking #game{padding-bottom:120px}
+#peekBar .pb-text{color:var(--dim);font-size:.95rem}
+#peekBar .pass-btn{padding:10px 20px;font-size:.95rem}
+#peekBar .ghost-btn{padding:10px 16px}
 </style>
 </head>
 <body>
@@ -303,8 +315,16 @@ button:focus-visible,.seg:focus-visible,.ans:focus-visible{outline:3px solid var
     <p class="sub" id="roundSub"></p>
     <div class="gains" id="gains"></div>
     <button class="big-btn" id="nextRoundBtn">Nächste Frage</button>
+    <button class="cancel-btn" id="peekBtn">👁 Auflösung ansehen</button>
     <button class="cancel-btn" id="roundUndo">↩ Letzten Zug zurücknehmen</button>
   </div>
+</div>
+
+<!-- ============ Auflösungs-Leiste ============ -->
+<div id="peekBar">
+  <span class="pb-text">Auflösung – alle 10 Antworten sind aufgedeckt</span>
+  <button class="ghost-btn" id="peekBack">Punkte anzeigen</button>
+  <button class="pass-btn" id="peekNext">Nächste Frage</button>
 </div>
 
 <!-- ============ Sieger ============ -->
@@ -628,6 +648,7 @@ function undo(){
   round=s.round;
   players.forEach((p,i)=>p.score=s.scores[i]);
   ['roundOverlay','valOverlay','winOverlay'].forEach(id=>$(id).classList.remove('active'));
+  closePeek();
   pendingVal=null;
   renderGame();
 }
@@ -729,6 +750,7 @@ $('undoBtn').addEventListener('click',undo);
 $('skipBtn').addEventListener('click',()=>{
   if(activeCount()>0&&!confirm('Diese Frage verwerfen? Die Marker dieser Runde verfallen, Punkte bleiben unverändert.'))return;
   $('roundOverlay').classList.remove('active');
+  closePeek();
   newRound(true);
 });
 $('valCancel').addEventListener('click',()=>{
@@ -787,13 +809,30 @@ function roundGainDisplay(i,gains){
   return gains[i];
 }
 $('roundUndo').addEventListener('click',undo);
-$('nextRoundBtn').addEventListener('click',()=>{
+function closePeek(){
+  $('peekBar').classList.remove('active');
+  document.body.classList.remove('peeking');
+}
+function continueGame(){
   $('roundOverlay').classList.remove('active');
+  closePeek();
   newRound();
+}
+$('nextRoundBtn').addEventListener('click',continueGame);
+$('peekNext').addEventListener('click',continueGame);
+$('peekBtn').addEventListener('click',()=>{
+  $('roundOverlay').classList.remove('active');
+  $('peekBar').classList.add('active');
+  document.body.classList.add('peeking');
+});
+$('peekBack').addEventListener('click',()=>{
+  closePeek();
+  $('roundOverlay').classList.add('active');
 });
 
 /* ===================== Sieg ===================== */
 function showWinner(i){
+  closePeek();
   $('winnerName').textContent=players[i].name;
   $('winSub').textContent=players[i].score+' Punkte · Ziel war '+target;
   $('winOverlay').classList.add('active');
