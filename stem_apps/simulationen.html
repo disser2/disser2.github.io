@@ -159,9 +159,23 @@ h1{
 .section{margin:0 0 44px}
 .section:last-child{margin-bottom:0}
 .section-head{
-  display:flex;align-items:baseline;gap:16px;
-  border-bottom:1px solid var(--blue-900);padding-bottom:8px;margin-bottom:0;
+  display:flex;align-items:baseline;gap:10px;width:100%;
+  border:0;border-bottom:1px solid var(--blue-900);
+  background:none;color:inherit;font:inherit;text-align:left;
+  padding:0 0 8px;margin-bottom:0;cursor:pointer;
 }
+.section-head:hover h2{color:var(--blue-500)}
+.section-head:focus-visible{outline:2px solid var(--blue-500);outline-offset:2px}
+.section-head .chev{
+  flex:none;align-self:center;
+  width:0;height:0;
+  border-left:5px solid currentColor;
+  border-top:4px solid transparent;
+  border-bottom:4px solid transparent;
+  color:var(--blue-500);
+  transition:transform .15s ease;
+}
+.section-head[aria-expanded="true"] .chev{transform:rotate(90deg)}
 .section-head h2{
   font-size:12.5px;letter-spacing:.2em;text-transform:uppercase;
   font-weight:600;margin:0;
@@ -430,9 +444,10 @@ const CATALOG = [
       desc:'Neue Knoten docken bevorzugt an bereits gut vernetzte an — so wachsen Hubs, ohne dass irgendwer sie plant.',
       path:'skalenfreie-netze/skalenfreie-netze.html',
       tags:'Netzwerktheorie · Präferentielle Anlagerung' },
-    { id:'pagerank', sim:'pagerank', status:'todo',
+    { id:'pagerank', sim:'pagerank',
       title:'PageRank',
-      desc:'Ein Zufallssurfer klickt endlos durchs Netz; die Häufigkeit, mit der er auf einer Seite landet, ist ihr Rang.',
+      desc:'Wie Suchmaschinen Wichtigkeit messen. Rang ist Masse, die durch Links fließt. Starte die Simulation und schau zu.',
+      path:'pagerank/pagerank.html',
       tags:'Netzwerktheorie · Markov-Ketten' },
     { id:'pythagorasbaum', sim:'pythagorastree',
       title:'Fraktaler Pythagorasbaum',
@@ -500,6 +515,53 @@ const CATALOG = [
       title:'Galton-Brett',
       desc:'Tausend Kugeln fallen durch ein Nagelbrett und ordnen sich von selbst zur Glockenkurve.',
       path:'galton-brett/galton-brett.html',tags:'Zentraler Grenzwertsatz · Stochastik' },
+    { id:'kernel-density', sim:'kde',
+      title:'Kerndichteschätzung',
+      desc:'Aus einzelnen Messpunkten eine glatte Verteilung schätzen – und sehen, was die Glättung kostet.',
+      path:'kernel-density/kernel-density.html',
+      tags:'Nichtparametrische Statistik · Dichteschätzung' },
+    { id:'bayessche-optimierung', sim:'bayesianopt',
+      title:'Bayessche Optimierung für Design of Experiments',
+      desc:'Jeder Messpunkt kostet Zeit und Geld. Wo sollte das nächste Experiment liegen?',
+      path:'bayessche-optimierung/bayessche-optimierung.html',
+      tags:'Optimierung · Bayessche Statistik' },
+  ]},
+  { id:'spiele', name:'Spiele', collapsed:true, apps:[
+    { id:'hogwarts-quiz', sim:'quiz',
+      title:'Hogwarts-Quiz',
+      desc:'Fragerunde für Kenner der Zauberschule.',
+      path:'https://disser2.github.io/fun/hogwarts_quiz/hogwarts_quiz.html',
+      tags:'Quiz · Wissen' },
+    { id:'forest-runner', sim:'platformer',
+      title:'Forest Runner',
+      desc:'Pixel-Art-Jump-’n’-Run: laufen, springen, nicht abstürzen.',
+      path:'https://disser2.github.io/fun/jump_n_run/index.html',
+      tags:'Jump ’n’ Run · Pixel-Art' },
+    { id:'lets-dance', sim:'dance',
+      title:'Let’s Dance',
+      desc:'Analyse der deutschen Ausgabe: Wertungen, Paare und Verläufe über die Staffeln.',
+      path:'https://disser2.github.io/fun/lets_dance/index.html',
+      tags:'Datenanalyse · TV' },
+    { id:'nerdquiz', sim:'jeopardy',
+      title:'Nerdquiz',
+      desc:'Fragen quer durch alle Themen, aufgezogen im Jeopardy-Stil.',
+      path:'https://disser2.github.io/fun/nerdquiz/index.html',
+      tags:'Quiz · Jeopardy' },
+    { id:'zwei-sieben-zehn', sim:'cards',
+      title:'2-7-10',
+      desc:'Chinesisches Kartenspiel: Stiche und Reihenfolge entscheiden über die Runde.',
+      path:'https://disser2.github.io/games/2-7-10/2-7-10.html',
+      tags:'Kartenspiel · Strategie' },
+    { id:'chronikum', sim:'timeline',
+      title:'Chronikum',
+      desc:'Historische Ereignisse an die richtige Stelle im Zeitstrahl einsortieren.',
+      path:'https://disser2.github.io/games/chronikum/chronikum.html',
+      tags:'Geschichte · Zeitstrahl' },
+    { id:'kuchen', sim:'merge',
+      title:'Kuchen',
+      desc:'Möglichst viele Kuchen platzieren und gleiche Sorten zu größeren verschmelzen.',
+      path:'https://disser2.github.io/games/kuchen/kuchen.html',
+      tags:'Puzzle · Merge' },
   ]},
 ];
 
@@ -509,7 +571,12 @@ const ALL_APPS = CATALOG.flatMap(c => c.apps.map(a => ({...a, category:c.id, cat
    Zustand und Persistenz
    ======================================================================= */
 const STORE_KEY = 'simulationen-katalog-v1';
-const state = { hidden:new Set(), filter:'all', hideTodo:false };
+const state = {
+  hidden:new Set(),
+  filter:'all',
+  hideTodo:false,
+  collapsed:new Set(CATALOG.filter(c => c.collapsed).map(c => c.id)),
+};
 
 async function loadState(){
   let raw = null;
@@ -520,11 +587,12 @@ async function loadState(){
     const data = JSON.parse(raw);
     if (Array.isArray(data.hidden)) state.hidden = new Set(data.hidden);
     if (typeof data.hideTodo === 'boolean') state.hideTodo = data.hideTodo;
+    if (Array.isArray(data.collapsed)) state.collapsed = new Set(data.collapsed);
   } catch(e){}
 }
 
 async function saveState(){
-  const raw = JSON.stringify({ hidden:[...state.hidden], hideTodo:state.hideTodo });
+  const raw = JSON.stringify({ hidden:[...state.hidden], hideTodo:state.hideTodo, collapsed:[...state.collapsed] });
   try { if (window.storage && window.storage.set){ await window.storage.set(STORE_KEY, raw); return; } } catch(e){}
   try { window.localStorage.setItem(STORE_KEY, raw); } catch(e){}
 }
@@ -614,14 +682,26 @@ function renderMain(){
     return;
   }
 
-  els.main.innerHTML = sections.map(({c, apps}) => `
+  els.main.innerHTML = sections.map(({c, apps}) => {
+    const open = !state.collapsed.has(c.id) || state.filter === c.id;
+    return `
     <section class="section">
-      <div class="section-head">
+      <button class="section-head" data-section="${c.id}" aria-expanded="${open}">
+        <span class="chev" aria-hidden="true"></span>
         <h2>${c.name}</h2>
         <span class="n">${String(apps.length).padStart(2,'0')}</span>
-      </div>
-      <div class="grid">${apps.map(tileMarkup).join('')}</div>
-    </section>`).join('');
+      </button>
+      ${open ? `<div class="grid">${apps.map(tileMarkup).join('')}</div>` : ''}
+    </section>`;
+  }).join('');
+
+  els.main.querySelectorAll('.section-head').forEach(b => {
+    b.addEventListener('click', () => {
+      const id = b.dataset.section;
+      if (state.collapsed.has(id)) state.collapsed.delete(id); else state.collapsed.add(id);
+      saveState(); renderMain();
+    });
+  });
 }
 
 function renderTodoToggle(){
@@ -670,7 +750,9 @@ document.getElementById('toggle-todo').addEventListener('click', () => {
   state.hideTodo = !state.hideTodo; saveState(); renderAll();
 });
 document.getElementById('reset').addEventListener('click', () => {
-  state.hidden.clear(); state.filter = 'all'; state.hideTodo = false; saveState(); renderAll();
+  state.hidden.clear(); state.filter = 'all'; state.hideTodo = false;
+  state.collapsed = new Set(CATALOG.filter(c => c.collapsed).map(c => c.id));
+  saveState(); renderAll();
 });
 document.getElementById('export').addEventListener('click', () => {
   const data = {

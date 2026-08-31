@@ -1,0 +1,521 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Quiz-Tafel</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=Archivo:wght@400;600;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --nacht:#0d0e26;
+    --buehne:#1b1d47;
+    --buehne-hell:#2a2e6b;
+    --gold:#f2b12c;
+    --rot:#e0413f;
+    --creme:#f6efdf;
+    --grau:#6a6f9c;
+    --display:"Bricolage Grotesque","Archivo",system-ui,sans-serif;
+    --body:"Archivo",system-ui,-apple-system,sans-serif;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;height:100%}
+  body{
+    background:
+      radial-gradient(120% 80% at 50% -10%, #23265c 0%, var(--nacht) 60%),
+      var(--nacht);
+    color:var(--creme);
+    font-family:var(--body);
+    -webkit-font-smoothing:antialiased;
+    display:flex;flex-direction:column;align-items:center;
+    padding:clamp(10px,2vw,28px);
+    min-height:100%;
+  }
+
+  /* ---------- Bühnenrahmen mit Lichterkette ---------- */
+  .rahmen{
+    position:relative;
+    width:min(1240px,100%);
+    border:2px solid #33376f;
+    border-radius:6px;
+    padding:clamp(16px,2.4vw,30px);
+    background:linear-gradient(180deg,rgba(38,42,99,.35),rgba(13,14,38,.2));
+  }
+  .rahmen::before,.rahmen::after{
+    content:"";position:absolute;inset:8px;pointer-events:none;border-radius:3px;
+    background-image:
+      radial-gradient(circle,var(--gold) 2.1px,transparent 2.6px),
+      radial-gradient(circle,var(--gold) 2.1px,transparent 2.6px),
+      radial-gradient(circle,var(--gold) 2.1px,transparent 2.6px),
+      radial-gradient(circle,var(--gold) 2.1px,transparent 2.6px);
+    background-repeat:repeat-x,repeat-x,repeat-y,repeat-y;
+    background-size:34px 6px,34px 6px,6px 34px,6px 34px;
+    background-position:0 0,0 100%,0 0,100% 0;
+  }
+  .rahmen::after{background-position:17px 0,17px 100%,0 17px,100% 17px;}
+  .rahmen::before{animation:blink 1.6s steps(1,end) infinite;}
+  .rahmen::after{animation:blink 1.6s steps(1,end) .8s infinite;opacity:.25}
+  @keyframes blink{0%,49%{opacity:1;filter:drop-shadow(0 0 4px rgba(242,177,44,.7))}50%,100%{opacity:.25;filter:none}}
+
+  /* ---------- Kopfzeile ---------- */
+  header{display:flex;flex-wrap:wrap;align-items:baseline;gap:12px 22px;margin-bottom:clamp(14px,2vw,22px)}
+  h1{
+    font-family:var(--display);font-weight:800;
+    font-size:clamp(1.5rem,3.6vw,2.6rem);line-height:.95;margin:0;
+    letter-spacing:-.02em;
+  }
+  h1 em{font-style:normal;color:var(--gold)}
+  .zaehler{margin-left:auto;font-weight:800;font-variant-numeric:tabular-nums;letter-spacing:.14em;font-size:.78rem;text-transform:uppercase;color:var(--grau)}
+  .zaehler b{color:var(--creme);font-size:1.05rem;letter-spacing:0}
+  .x2{background:var(--rot);color:#fff;padding:3px 9px;border-radius:99px;font-size:.72rem;letter-spacing:.1em;margin-left:10px}
+
+  /* ---------- Spielfeld ---------- */
+  .tafel{display:grid;grid-template-columns:repeat(5,1fr);gap:clamp(5px,.7vw,10px)}
+  .kat{
+    background:var(--rot);
+    font-family:var(--display);font-weight:800;
+    font-size:clamp(.62rem,1.15vw,.98rem);line-height:1.15;
+    padding:clamp(9px,1.4vw,16px) 8px;
+    display:flex;align-items:center;justify-content:center;text-align:center;
+    min-height:clamp(52px,7vw,84px);
+    border-radius:3px;
+    text-wrap:balance;
+  }
+  .feld{
+    all:unset;
+    cursor:pointer;
+    background:var(--buehne);
+    border-radius:3px;
+    min-height:clamp(52px,7.4vw,92px);
+    display:flex;align-items:center;justify-content:center;
+    font-weight:800;font-variant-numeric:tabular-nums;
+    font-size:clamp(1.05rem,2.9vw,2.15rem);
+    color:var(--gold);
+    box-shadow:inset 0 0 0 1px #33376f;
+    transition:transform .12s ease,background .12s ease;
+  }
+  .feld:hover{background:var(--buehne-hell);transform:translateY(-2px)}
+  .feld:focus-visible{outline:3px solid var(--creme);outline-offset:2px}
+  .feld[disabled]{cursor:default;background:#15162f;color:#2f3260;box-shadow:inset 0 0 0 1px #202348;transform:none}
+  .feld[disabled]::after{content:"";}
+
+  /* ---------- Teamleiste ---------- */
+  .teams{display:flex;flex-wrap:wrap;gap:8px;margin-top:clamp(14px,2vw,22px)}
+  .team{
+    all:unset;cursor:pointer;flex:1 1 150px;
+    padding:10px 14px;border-radius:3px;
+    background:rgba(255,255,255,.04);box-shadow:inset 0 0 0 1px #33376f;
+    display:flex;align-items:baseline;justify-content:space-between;gap:10px;
+  }
+  .team:focus-visible{outline:3px solid var(--creme);outline-offset:2px}
+  .team.dran{background:rgba(242,177,44,.12);box-shadow:inset 0 0 0 2px var(--gold)}
+  .team .name{font-weight:600;font-size:.9rem;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .team.dran .name::before{content:"▶ ";color:var(--gold)}
+  .team .pkt{font-family:var(--display);font-weight:800;font-size:1.35rem;font-variant-numeric:tabular-nums}
+  .fuss{display:flex;flex-wrap:wrap;gap:14px;align-items:center;margin-top:14px;font-size:.78rem;color:var(--grau)}
+  .link{all:unset;cursor:pointer;color:var(--grau);text-decoration:underline;text-underline-offset:3px}
+  .link:hover{color:var(--creme)}
+  .link:focus-visible{outline:2px solid var(--creme);outline-offset:2px}
+  .link[disabled]{opacity:.35;cursor:default;text-decoration:none}
+
+  /* ---------- Overlays ---------- */
+  .layer{
+    position:fixed;inset:0;z-index:20;
+    background:rgba(6,7,22,.9);backdrop-filter:blur(3px);
+    display:flex;align-items:center;justify-content:center;padding:16px;
+  }
+  .layer[hidden]{display:none}
+  .karte{
+    width:min(760px,100%);max-height:92vh;overflow:auto;
+    background:var(--buehne);border-radius:5px;
+    box-shadow:0 0 0 2px var(--gold),0 30px 80px rgba(0,0,0,.6);
+    padding:clamp(20px,3.4vw,40px);
+    animation:auf .18s ease-out;
+  }
+  @keyframes auf{from{transform:scale(.96);opacity:0}to{transform:scale(1);opacity:1}}
+  .eyebrow{font-size:.72rem;letter-spacing:.18em;text-transform:uppercase;color:var(--gold);font-weight:800}
+  .karte h2{font-family:var(--display);font-weight:800;font-size:clamp(1.4rem,3.4vw,2.2rem);margin:.35em 0 0;line-height:1.05;letter-spacing:-.02em;text-wrap:balance}
+  .wert{font-family:var(--display);font-weight:800;font-size:clamp(3.4rem,12vw,7rem);line-height:.85;color:var(--gold);font-variant-numeric:tabular-nums;margin:.12em 0 .1em}
+  .hinweis{color:var(--grau);font-size:.9rem;margin:0 0 22px}
+  .vergabe{display:grid;gap:8px}
+  .zeile{display:flex;align-items:center;gap:8px;background:rgba(0,0,0,.22);border-radius:3px;padding:8px 8px 8px 14px}
+  .zeile .name{flex:1;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .btn{
+    all:unset;cursor:pointer;text-align:center;
+    padding:10px 16px;border-radius:3px;font-weight:800;font-size:.9rem;
+    font-variant-numeric:tabular-nums;white-space:nowrap;
+  }
+  .btn:focus-visible{outline:3px solid var(--creme);outline-offset:2px}
+  .btn.gut{background:var(--gold);color:#221a05}
+  .btn.gut:hover{background:#ffc74e}
+  .btn.schlecht{background:transparent;color:var(--rot);box-shadow:inset 0 0 0 1px var(--rot)}
+  .btn.schlecht:hover{background:rgba(224,65,63,.16)}
+  .btn.neutral{background:rgba(255,255,255,.08);color:var(--creme)}
+  .btn.neutral:hover{background:rgba(255,255,255,.16)}
+  .btn.gross{display:block;width:100%;padding:15px;font-size:1rem}
+  .abschluss{display:flex;flex-wrap:wrap;gap:8px;margin-top:16px}
+  .abschluss .btn{flex:1 1 180px}
+
+  /* ---------- Startbildschirm ---------- */
+  .setup{width:min(620px,100%)}
+  .setup h1{font-size:clamp(2rem,7vw,3.4rem);margin-bottom:.1em}
+  .setup p.intro{color:var(--grau);margin:0 0 28px;max-width:44ch}
+  .eingabe{display:flex;gap:8px;margin-bottom:8px;align-items:center}
+  .eingabe input{
+    flex:1;font:inherit;font-weight:600;color:var(--creme);
+    background:rgba(0,0,0,.25);border:none;box-shadow:inset 0 0 0 1px #33376f;
+    padding:12px 14px;border-radius:3px;
+  }
+  .eingabe input:focus{outline:2px solid var(--gold);outline-offset:0}
+  .eingabe.leuchtet input{box-shadow:inset 0 0 0 2px var(--gold);background:rgba(242,177,44,.18)}
+  .weg{all:unset;cursor:pointer;color:var(--grau);padding:6px 10px;font-size:1.1rem;line-height:1}
+  .weg:hover{color:var(--rot)}
+  .weg:focus-visible{outline:2px solid var(--creme)}
+  .los{font-family:var(--display);font-weight:800;font-size:1.15rem}
+  .startteam{
+    margin:18px 0 0;padding:16px;border-radius:3px;
+    background:rgba(242,177,44,.12);box-shadow:inset 0 0 0 1px var(--gold);
+    font-weight:600;
+  }
+  .startteam b{font-family:var(--display);font-size:1.3rem;color:var(--gold)}
+
+  /* ---------- Endstand ---------- */
+  .rang{display:flex;align-items:baseline;gap:14px;padding:12px 0;border-bottom:1px solid #33376f}
+  .rang:last-of-type{border:none}
+  .rang .pos{font-family:var(--display);font-weight:800;font-size:1.5rem;color:var(--grau);min-width:1.6em}
+  .rang.sieg .pos,.rang.sieg .name{color:var(--gold)}
+  .rang .name{flex:1;font-weight:600;font-size:1.1rem}
+  .rang .pkt{font-family:var(--display);font-weight:800;font-size:1.5rem;font-variant-numeric:tabular-nums}
+
+  @media (max-width:620px){
+    .tafel{grid-template-columns:repeat(5,minmax(58px,1fr));overflow-x:auto}
+    .zaehler{margin-left:0;width:100%}
+  }
+  @media (prefers-reduced-motion:reduce){
+    *{animation-duration:.001ms!important;animation-iteration-count:1!important;transition-duration:.001ms!important}
+    .rahmen::after{opacity:1}
+  }
+</style>
+</head>
+<body>
+
+<!-- ============ START ============ -->
+<main class="rahmen setup" id="setup">
+  <h1>Die <em>Quiz</em>-Tafel</h1>
+  <p class="intro">Fünf Kategorien, 20 Fragen, mündlich gestellt. Ab der 11. Frage zählt jede Antwort doppelt.</p>
+
+  <div class="eyebrow">Teams</div>
+  <div id="teamfelder" style="margin-top:10px"></div>
+  <button class="link" id="teamPlus">+ Team hinzufügen</button>
+
+  <div style="margin-top:26px;display:flex;flex-wrap:wrap;gap:10px">
+    <button class="btn neutral los" id="auslosen">Startteam auslosen</button>
+    <button class="btn gut los" id="starten">Spiel starten</button>
+  </div>
+  <p class="startteam" id="startteam" hidden></p>
+</main>
+
+<!-- ============ SPIELFELD ============ -->
+<main class="rahmen" id="spiel" hidden>
+  <header>
+    <h1>Die <em>Quiz</em>-Tafel</h1>
+    <div class="zaehler">Frage <b id="fortschritt">0 / 20</b><span class="x2" id="x2" hidden>doppelte Punkte</span></div>
+  </header>
+  <div class="tafel" id="tafel"></div>
+  <div class="teams" id="teamleiste"></div>
+  <div class="fuss">
+    <span>Klick auf ein Team, um den Zug zu übergeben.</span>
+    <button class="link" id="undo" disabled>Letzte Frage zurücknehmen</button>
+    <button class="link" id="neu">Neues Spiel</button>
+  </div>
+</main>
+
+<!-- ============ FRAGE ============ -->
+<div class="layer" id="frageLayer" hidden>
+  <div class="karte" role="dialog" aria-modal="true" aria-labelledby="frageKat">
+    <div class="eyebrow">Kategorie</div>
+    <h2 id="frageKat"></h2>
+    <div class="wert" id="frageWert"></div>
+    <p class="hinweis" id="frageHinweis">Frage vorlesen. Danach die Punkte vergeben.</p>
+    <div class="vergabe" id="vergabe"></div>
+    <div class="abschluss">
+      <button class="btn neutral" id="niemand">Niemand – keine Punkte</button>
+      <button class="btn neutral" id="zurueck">Abbrechen, Frage bleibt offen</button>
+    </div>
+  </div>
+</div>
+
+<!-- ============ VERDOPPLUNG ============ -->
+<div class="layer" id="doppelLayer" hidden>
+  <div class="karte" style="text-align:center" role="dialog" aria-modal="true" aria-labelledby="doppelTitel">
+    <div class="eyebrow">Halbzeit</div>
+    <h2 id="doppelTitel">10 Fragen gespielt</h2>
+    <div class="wert">×2</div>
+    <p class="hinweis">Ab jetzt sind alle Felder doppelt so viel wert.</p>
+    <button class="btn gut gross" id="doppelJa">Ja, Punkte verdoppeln</button>
+    <button class="btn neutral gross" id="doppelNein" style="margin-top:8px">Nein, einfach weiterspielen</button>
+  </div>
+</div>
+
+<!-- ============ ENDE ============ -->
+<div class="layer" id="endeLayer" hidden>
+  <div class="karte" role="dialog" aria-modal="true" aria-labelledby="endeTitel">
+    <div class="eyebrow">20 von 20 Fragen</div>
+    <h2 id="endeTitel">Endstand</h2>
+    <div id="rangliste" style="margin:24px 0"></div>
+    <button class="btn gut gross" id="nochmal">Neues Spiel</button>
+  </div>
+</div>
+
+<script>
+const KATEGORIEN = [
+  "Da simmer dabei…",
+  "Bebot, bebot…",
+  "Ich will doch nur spielen…",
+  "Who runs the world? Girls",
+  "Your world is my world"
+];
+const WERTE = [100,200,300,600,1000];
+const MAX_FRAGEN = 20;
+const VERDOPPELN_AB = 10;
+
+let teams = [{name:"Team 1",score:0},{name:"Team 2",score:0}];
+let dran = 0;
+let gespielt = [];              // "spalte-zeile"
+let anzahl = 0;
+let faktor = 1;
+let doppelGefragt = false;
+let offen = null;               // {c,r,wert}
+let snapshot = null;
+
+const $ = id => document.getElementById(id);
+
+/* ---------- Startbildschirm ---------- */
+function zeichneTeamfelder(){
+  const box = $("teamfelder");
+  box.innerHTML = "";
+  teams.forEach((t,i)=>{
+    const zeile = document.createElement("div");
+    zeile.className = "eingabe";
+    zeile.dataset.i = i;
+    const input = document.createElement("input");
+    input.value = t.name;
+    input.setAttribute("aria-label","Name Team "+(i+1));
+    input.addEventListener("input", e => teams[i].name = e.target.value);
+    zeile.appendChild(input);
+    if(teams.length > 2){
+      const weg = document.createElement("button");
+      weg.className = "weg"; weg.textContent = "×";
+      weg.setAttribute("aria-label","Team entfernen");
+      weg.onclick = () => { teams.splice(i,1); zeichneTeamfelder(); $("startteam").hidden = true; };
+      zeile.appendChild(weg);
+    }
+    box.appendChild(zeile);
+  });
+}
+$("teamPlus").onclick = () => {
+  if(teams.length >= 6) return;
+  teams.push({name:"Team "+(teams.length+1),score:0});
+  zeichneTeamfelder();
+};
+
+$("auslosen").onclick = () => {
+  const zeilen = [...document.querySelectorAll(".eingabe")];
+  if(zeilen.length < 2) return;
+  $("auslosen").disabled = true;
+  $("startteam").hidden = true;
+  let i = 0, schritt = 0;
+  const runden = 12 + Math.floor(Math.random()*teams.length);
+  (function lauf(){
+    zeilen.forEach(z => z.classList.remove("leuchtet"));
+    zeilen[i % zeilen.length].classList.add("leuchtet");
+    schritt++;
+    if(schritt >= runden){
+      dran = i % zeilen.length;
+      $("startteam").innerHTML = "Es beginnt: <b>"+teams[dran].name+"</b>";
+      $("startteam").hidden = false;
+      $("auslosen").disabled = false;
+      return;
+    }
+    i++;
+    setTimeout(lauf, 70 + schritt*schritt*1.6);
+  })();
+};
+
+$("starten").onclick = () => {
+  teams.forEach((t,i) => { if(!t.name.trim()) t.name = "Team "+(i+1); });
+  $("setup").hidden = true;
+  $("spiel").hidden = false;
+  baueTafel();
+  zeichneAlles();
+};
+
+/* ---------- Spielfeld ---------- */
+function baueTafel(){
+  const tafel = $("tafel");
+  tafel.innerHTML = "";
+  KATEGORIEN.forEach(k => {
+    const d = document.createElement("div");
+    d.className = "kat"; d.textContent = k;
+    tafel.appendChild(d);
+  });
+  WERTE.forEach((w,r) => {
+    KATEGORIEN.forEach((k,c) => {
+      const b = document.createElement("button");
+      b.className = "feld";
+      b.dataset.c = c; b.dataset.r = r;
+      b.onclick = () => oeffneFrage(c,r);
+      tafel.appendChild(b);
+    });
+  });
+}
+
+function zeichneAlles(){
+  // Felder
+  document.querySelectorAll(".feld").forEach(b => {
+    const c = +b.dataset.c, r = +b.dataset.r;
+    const weg = gespielt.some(g => g.c===c && g.r===r);
+    const ende = anzahl >= MAX_FRAGEN;
+    b.disabled = weg || ende;
+    b.textContent = weg ? "" : WERTE[r]*faktor;
+    b.setAttribute("aria-label", KATEGORIEN[c]+", "+(WERTE[r]*faktor)+" Punkte"+(weg?", bereits gespielt":""));
+  });
+  // Kopf
+  $("fortschritt").textContent = anzahl+" / "+MAX_FRAGEN;
+  $("x2").hidden = faktor === 1;
+  $("undo").disabled = !snapshot;
+  // Teams
+  const leiste = $("teamleiste");
+  leiste.innerHTML = "";
+  teams.forEach((t,i) => {
+    const b = document.createElement("button");
+    b.className = "team"+(i===dran?" dran":"");
+    b.innerHTML = '<span class="name"></span><span class="pkt"></span>';
+    b.querySelector(".name").textContent = t.name;
+    b.querySelector(".pkt").textContent = t.score;
+    b.onclick = () => { dran = i; zeichneAlles(); };
+    leiste.appendChild(b);
+  });
+}
+
+/* ---------- Frage ---------- */
+function oeffneFrage(c,r){
+  offen = {c, r, wert: WERTE[r]*faktor};
+  $("frageKat").textContent = KATEGORIEN[c];
+  $("frageWert").textContent = offen.wert;
+  const v = $("vergabe");
+  v.innerHTML = "";
+  teams.forEach((t,i) => {
+    const zeile = document.createElement("div");
+    zeile.className = "zeile";
+    const name = document.createElement("span");
+    name.className = "name"; name.textContent = t.name;
+    const minus = document.createElement("button");
+    minus.className = "btn schlecht"; minus.textContent = "−"+offen.wert;
+    minus.onclick = () => { sichern(); teams[i].score -= offen.wert; punkteAnzeigen(); };
+    const plus = document.createElement("button");
+    plus.className = "btn gut"; plus.textContent = "+"+offen.wert;
+    plus.onclick = () => { sichern(); teams[i].score += offen.wert; dran = i; abschliessen(); };
+    zeile.append(name, minus, plus);
+    v.appendChild(zeile);
+  });
+  $("frageLayer").hidden = false;
+  $("niemand").focus();
+}
+
+function punkteAnzeigen(){
+  zeichneAlles();
+  $("frageHinweis").textContent = "Punkte abgezogen. Nächstes Team darf antworten.";
+}
+
+$("niemand").onclick = () => { sichern(); abschliessen(); };
+$("zurueck").onclick = () => { schliesseFrage(); zeichneAlles(); };
+document.addEventListener("keydown", e => {
+  if(e.key === "Escape" && !$("frageLayer").hidden) $("zurueck").click();
+});
+
+function sichern(){
+  if(snapshot && snapshot.frage && offen && snapshot.frage.c===offen.c && snapshot.frage.r===offen.r) return;
+  snapshot = {
+    teams: teams.map(t => ({...t})),
+    dran, anzahl, faktor, doppelGefragt,
+    gespielt: gespielt.map(g => ({...g})),
+    frage: offen ? {...offen} : null
+  };
+}
+
+function abschliessen(){
+  gespielt.push({c:offen.c, r:offen.r});
+  anzahl++;
+  schliesseFrage();
+  zeichneAlles();
+  if(anzahl >= MAX_FRAGEN){ zeigeEnde(); return; }
+  if(anzahl === VERDOPPELN_AB && !doppelGefragt){
+    doppelGefragt = true;
+    $("doppelLayer").hidden = false;
+    $("doppelJa").focus();
+  }
+}
+
+function schliesseFrage(){
+  $("frageLayer").hidden = true;
+  $("frageHinweis").textContent = "Frage vorlesen. Danach die Punkte vergeben.";
+  offen = null;
+}
+
+$("doppelJa").onclick = () => { faktor = 2; $("doppelLayer").hidden = true; zeichneAlles(); };
+$("doppelNein").onclick = () => { $("doppelLayer").hidden = true; zeichneAlles(); };
+
+/* ---------- Undo ---------- */
+$("undo").onclick = () => {
+  if(!snapshot) return;
+  teams = snapshot.teams.map(t => ({...t}));
+  dran = snapshot.dran;
+  anzahl = snapshot.anzahl;
+  faktor = snapshot.faktor;
+  doppelGefragt = snapshot.doppelGefragt;
+  gespielt = snapshot.gespielt.map(g => ({...g}));
+  snapshot = null;
+  $("endeLayer").hidden = true;
+  $("doppelLayer").hidden = true;
+  zeichneAlles();
+};
+
+/* ---------- Ende ---------- */
+function zeigeEnde(){
+  const sortiert = teams.map((t,i) => ({...t,i})).sort((a,b) => b.score - a.score);
+  const best = sortiert[0].score;
+  $("rangliste").innerHTML = "";
+  sortiert.forEach((t,pos) => {
+    const d = document.createElement("div");
+    d.className = "rang"+(t.score===best?" sieg":"");
+    d.innerHTML = '<span class="pos"></span><span class="name"></span><span class="pkt"></span>';
+    d.querySelector(".pos").textContent = (pos+1)+".";
+    d.querySelector(".name").textContent = t.name;
+    d.querySelector(".pkt").textContent = t.score;
+    $("rangliste").appendChild(d);
+  });
+  $("endeLayer").hidden = false;
+  $("nochmal").focus();
+}
+
+$("nochmal").onclick = neustart;
+$("neu").onclick = () => { if(confirm("Neues Spiel starten? Der aktuelle Punktestand geht verloren.")) neustart(); };
+
+function neustart(){
+  teams.forEach(t => t.score = 0);
+  gespielt = []; anzahl = 0; faktor = 1; doppelGefragt = false; snapshot = null; offen = null;
+  $("endeLayer").hidden = true;
+  $("doppelLayer").hidden = true;
+  $("frageLayer").hidden = true;
+  $("spiel").hidden = true;
+  $("setup").hidden = false;
+  $("startteam").hidden = true;
+  zeichneTeamfelder();
+}
+
+zeichneTeamfelder();
+</script>
+</body>
+</html>

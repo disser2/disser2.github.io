@@ -1,0 +1,864 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Bayessche Optimierung – Experimente clever planen</title>
+<style>
+:root{
+  --paper:#f4f5f2;
+  --panel:#ffffff;
+  --ink:#171b21;
+  --ink-2:#5b6470;
+  --line:#dcdfd9;
+  --model:#1d6f6a;      /* Modell / GP */
+  --model-soft:#1d6f6a26;
+  --signal:#c9721a;     /* Suchstrategie */
+  --next:#b0243b;       /* nächstes Experiment */
+  --truth:#9aa3ae;      /* wahre Kurve */
+  --alt:#7d6bb0;        /* Vergleichslinien */
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{
+  background:var(--paper);
+  color:var(--ink);
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Inter,Roboto,Helvetica,Arial,sans-serif;
+  font-size:14px;line-height:1.45;
+}
+.mono{font-family:ui-monospace,"SF Mono",Menlo,Consolas,monospace}
+
+/* ---------- Kopf ---------- */
+header{
+  display:flex;align-items:baseline;gap:14px;flex-wrap:wrap;
+  padding:10px 20px 8px;border-bottom:1px solid var(--line);
+}
+header h1{font-size:16px;margin:0;font-weight:650;letter-spacing:-.01em}
+header p{margin:0;color:var(--ink-2);font-size:12.5px}
+
+/* ---------- Kontrollleiste ---------- */
+.bar{
+  position:sticky;top:0;z-index:20;background:var(--panel);
+  border-bottom:1px solid var(--line);
+  padding:10px 20px 11px;
+  display:flex;gap:22px;flex-wrap:wrap;align-items:flex-end;
+  box-shadow:0 1px 0 rgba(0,0,0,.03), 0 8px 18px -18px rgba(0,0,0,.5);
+}
+.ctrl{display:flex;flex-direction:column;gap:5px}
+.ctrl > span{
+  font-size:9.5px;letter-spacing:.13em;text-transform:uppercase;
+  color:var(--ink-2);font-weight:600;
+  font-family:ui-monospace,"SF Mono",Menlo,Consolas,monospace;
+}
+.seg{display:flex;border:1px solid var(--line);border-radius:7px;overflow:hidden;background:#fbfbf9}
+.seg button{
+  appearance:none;border:0;background:transparent;cursor:pointer;
+  padding:6px 10px;font-size:12.5px;color:var(--ink-2);
+  border-right:1px solid var(--line);white-space:nowrap;font-family:inherit;
+}
+.seg button:last-child{border-right:0}
+.seg button:hover{background:#eff0ec;color:var(--ink)}
+.seg button[aria-pressed="true"]{background:var(--ink);color:#fff}
+.seg button:focus-visible{outline:2px solid var(--signal);outline-offset:-2px}
+
+.actions{display:flex;gap:7px;margin-left:auto;align-items:flex-end}
+.btn{
+  appearance:none;cursor:pointer;font-family:inherit;font-size:12.5px;
+  padding:7px 13px;border-radius:7px;border:1px solid var(--line);
+  background:#fbfbf9;color:var(--ink);
+}
+.btn:hover{background:#eff0ec}
+.btn.primary{background:var(--ink);border-color:var(--ink);color:#fff;font-weight:550}
+.btn.primary:hover{background:#2b323c}
+.btn[aria-pressed="true"]{background:var(--signal);border-color:var(--signal);color:#fff}
+.btn:focus-visible{outline:2px solid var(--signal);outline-offset:2px}
+
+/* ---------- Layout ---------- */
+main{
+  padding:14px 20px 26px;
+  display:grid;grid-template-columns:minmax(0,1fr) 320px;gap:14px;align-items:start;
+}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:10px 12px 8px}
+.card h2{
+  margin:0 0 6px;font-size:9.5px;letter-spacing:.13em;text-transform:uppercase;
+  color:var(--ink-2);font-weight:600;
+  font-family:ui-monospace,"SF Mono",Menlo,Consolas,monospace;
+}
+svg{display:block;width:100%;height:auto;overflow:visible}
+.plot-stack{display:flex;flex-direction:column;gap:10px}
+
+/* Kennzahlen */
+.kpis{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px}
+.kpi{background:#fbfbf9;border:1px solid var(--line);border-radius:8px;padding:7px 9px}
+.kpi .lab{font-size:9.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-2);
+  font-family:ui-monospace,"SF Mono",Menlo,Consolas,monospace}
+.kpi .val{font-size:21px;font-weight:600;letter-spacing:-.02em;
+  font-family:ui-monospace,"SF Mono",Menlo,Consolas,monospace}
+.kpi .val small{font-size:12px;color:var(--ink-2);font-weight:500}
+
+.badge{
+  display:inline-flex;align-items:center;gap:7px;
+  border-radius:999px;padding:5px 11px;font-size:12.5px;font-weight:550;
+  background:#fbfbf9;border:1px solid var(--line);
+}
+.dot{width:8px;height:8px;border-radius:50%;background:var(--signal)}
+
+.legend{display:flex;flex-wrap:wrap;gap:4px 14px;margin-top:7px;font-size:11.5px;color:var(--ink-2)}
+.legend i{display:inline-block;width:16px;height:0;border-top-width:2.5px;border-top-style:solid;
+  vertical-align:middle;margin-right:5px}
+
+.note{font-size:12.5px;color:var(--ink-2);margin:7px 2px 0}
+details{margin-top:10px;border-top:1px solid var(--line);padding-top:8px}
+summary{cursor:pointer;font-size:12.5px;color:var(--ink-2);font-weight:550}
+details ul{margin:8px 0 0;padding-left:18px;font-size:12.5px;color:var(--ink-2)}
+details li{margin-bottom:5px}
+
+.hitbox{cursor:crosshair}
+
+/* ---------- 2D-Abschnitt ---------- */
+section.two{padding:6px 20px 34px}
+.sec-head{display:flex;align-items:baseline;gap:12px;flex-wrap:wrap;
+  border-top:1px solid var(--line);padding-top:16px;margin-bottom:12px}
+.sec-head h2{margin:0;font-size:15px;font-weight:650;letter-spacing:-.01em}
+.sec-head p{margin:0;font-size:12.5px;color:var(--ink-2)}
+.bar2{
+  background:var(--panel);border:1px solid var(--line);border-radius:10px;
+  padding:10px 12px 11px;margin-bottom:12px;
+  display:flex;gap:20px;flex-wrap:wrap;align-items:flex-end;
+}
+.fields{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}
+.field{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:9px 10px 10px}
+.field .cap{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:6px}
+.field .cap b{font-size:12.5px;font-weight:600}
+.field .cap span{font-size:10.5px;color:var(--ink-2);
+  font-family:ui-monospace,"SF Mono",Menlo,Consolas,monospace}
+.field canvas{display:block;width:100%;height:auto;border-radius:6px;background:#f7f8f5}
+.field.muted{opacity:.45}
+.scale{display:flex;align-items:center;gap:6px;margin-top:6px;font-size:9.5px;color:var(--ink-2);
+  font-family:ui-monospace,"SF Mono",Menlo,Consolas,monospace}
+.scale .ramp{flex:1;height:6px;border-radius:3px}
+.stats2{display:flex;gap:10px;flex-wrap:wrap;margin-top:12px;align-items:center}
+@media (max-width:1100px){ .fields{grid-template-columns:repeat(2,minmax(0,1fr))} }
+@media (max-width:560px){ .fields{grid-template-columns:1fr} }
+@media (max-width:980px){
+  main{grid-template-columns:1fr}
+  .actions{margin-left:0;width:100%}
+}
+@media (prefers-reduced-motion:no-preference){
+  .anim{transition:d .25s ease, cx .25s ease, cy .25s ease, x1 .25s ease, x2 .25s ease}
+}
+</style>
+</head>
+<body>
+
+<header>
+  <h1>Bayessche Optimierung</h1>
+  <p>Jeder Messpunkt kostet Zeit und Geld. Wo sollte das nächste Experiment liegen?</p>
+</header>
+
+<div class="bar" id="bar"></div>
+
+<main>
+  <div class="plot-stack">
+    <div class="card">
+      <h2>Modell der Zielgröße</h2>
+      <svg id="svgMain" viewBox="0 0 760 292" class="hitbox"></svg>
+      <p class="note" id="noteMain"></p>
+    </div>
+    <div class="card">
+      <h2>Bewertung der Kandidaten</h2>
+      <svg id="svgAcq" viewBox="0 0 760 112"></svg>
+    </div>
+  </div>
+
+  <div>
+    <div class="card">
+      <h2>Stand</h2>
+      <div class="kpis">
+        <div class="kpi"><div class="lab">Experimente</div><div class="val" id="kExp">0</div></div>
+        <div class="kpi"><div class="lab">Bester Wert</div><div class="val" id="kBest">–</div></div>
+      </div>
+      <div class="badge"><span class="dot" id="modeDot"></span><span id="modeText">Bereit</span></div>
+      <p class="note" id="hint"></p>
+    </div>
+
+    <div class="card" style="margin-top:14px">
+      <h2>Vergleich der Versuchspläne</h2>
+      <svg id="svgConv" viewBox="0 0 320 176"></svg>
+      <div class="legend">
+        <span><i style="border-color:var(--model)"></i>Bayessch</span>
+        <span><i style="border-color:var(--alt);border-top-style:dashed"></i>Zufällig</span>
+        <span><i style="border-color:var(--truth);border-top-style:dotted"></i>Gleichmäßiges Raster</span>
+      </div>
+      <details>
+        <summary>Was passiert hier?</summary>
+        <ul>
+          <li><b>Grüne Linie</b>: die aktuelle Vermutung des Modells. Das <b>grüne Band</b> zeigt, wie unsicher es sich ist.</li>
+          <li>Aus Vermutung und Unsicherheit entsteht die <b>orange Bewertung</b> unten. Ihr Maximum bestimmt das nächste Experiment.</li>
+          <li>Unsicherheit ist dort groß, wo lange nicht gemessen wurde – das führt automatisch zu Erkundung.</li>
+          <li>Sie können auch selbst in die obere Grafik klicken, um ein Experiment zu setzen.</li>
+        </ul>
+      </details>
+    </div>
+  </div>
+</main>
+
+<section class="two">
+  <div class="sec-head">
+    <h2>Zwei Parameter gleichzeitig</h2>
+    <p>Realistischer Fall: Temperatur <i>und</i> Konzentration. Das Raster wächst quadratisch – das Modell nicht.</p>
+  </div>
+
+  <div class="bar2" id="bar2"></div>
+
+  <div class="fields">
+    <div class="field" id="fTruth">
+      <div class="cap"><b>Wahre Landschaft</b><span>unbekannt</span></div>
+      <canvas id="cvTruth" width="420" height="420"></canvas>
+      <div class="scale"><span>tief</span><div class="ramp" id="rampVal"></div><span>hoch</span></div>
+    </div>
+    <div class="field">
+      <div class="cap"><b>Vermutung des Modells</b><span>Mittelwert</span></div>
+      <canvas id="cvMean" width="420" height="420"></canvas>
+      <div class="scale"><span>tief</span><div class="ramp" id="rampVal2"></div><span>hoch</span></div>
+    </div>
+    <div class="field">
+      <div class="cap"><b>Unsicherheit</b><span>Streuung</span></div>
+      <canvas id="cvSd" width="420" height="420"></canvas>
+      <div class="scale"><span>klein</span><div class="ramp" id="rampSd"></div><span>groß</span></div>
+    </div>
+    <div class="field">
+      <div class="cap"><b>Bewertung</b><span>Kandidaten</span></div>
+      <canvas id="cvAcq" width="420" height="420"></canvas>
+      <div class="scale"><span>gering</span><div class="ramp" id="rampAcq"></div><span>hoch</span></div>
+    </div>
+  </div>
+
+  <div class="stats2">
+    <div class="badge"><span class="dot" style="background:var(--ink)"></span><span id="s2Exp">0 Experimente</span></div>
+    <div class="badge"><span class="dot" style="background:var(--model)"></span><span id="s2Best">Bester Wert –</span></div>
+    <div class="badge"><span class="dot" style="background:var(--alt)"></span><span id="s2Rand">Zufallssuche –</span></div>
+    <div class="badge"><span class="dot" style="background:var(--next)"></span><span id="s2Next">Nächster Versuch –</span></div>
+  </div>
+  <p class="note" id="note2" style="max-width:900px"></p>
+</section>
+
+<script>
+/* =========================================================
+   Zustand
+   ========================================================= */
+const S = {
+  fn:'zwei', acq:'ei', explore:'mid', ls:'m', noise:'0', nStart:'2',
+  truth:'an',
+  X:[], Y:[], rand:[], playing:false, timer:null
+};
+
+/* =========================================================
+   Zielfunktionen (auf [0,1] normiert)
+   ========================================================= */
+const G = (x,m,s)=>Math.exp(-((x-m)*(x-m))/(2*s*s));
+const RAW = {
+  einfach: x => G(x,0.63,0.15) + 0.18*x,
+  zwei:    x => 0.86*G(x,0.24,0.095) + 1.0*G(x,0.73,0.105),
+  zackig:  x => -(Math.pow(6*x-2,2)*Math.sin(12*x-4)),
+  nadel:   x => 0.42*G(x,0.32,0.20) + 1.0*G(x,0.83,0.032)
+};
+const GRID = Array.from({length:301},(_,i)=>i/300);
+const NORM = {};
+for(const k in RAW){
+  let lo=Infinity, hi=-Infinity;
+  for(const x of GRID){const v=RAW[k](x); if(v<lo)lo=v; if(v>hi)hi=v;}
+  NORM[k]=[lo,hi];
+}
+const f = x => { const [lo,hi]=NORM[S.fn]; return (RAW[S.fn](x)-lo)/(hi-lo); };
+
+/* =========================================================
+   Einstellungen -> Zahlen
+   ========================================================= */
+const LS    = {s:0.055, m:0.12, l:0.26};
+const NOISE = {'0':0, '1':0.05, '2':0.14};
+const XI    = {low:0.001, mid:0.025, high:0.11};
+const KAPPA = {low:0.6,   mid:2.0,   high:4.2};
+
+/* =========================================================
+   Zufall (reproduzierbar)
+   ========================================================= */
+let seed = 20260821;
+function rnd(){ seed = (seed*1664525 + 1013904223) % 4294967296; return seed/4294967296; }
+function randn(){ let u=0,v=0; while(!u)u=rnd(); while(!v)v=rnd();
+  return Math.sqrt(-2*Math.log(u))*Math.cos(2*Math.PI*v); }
+
+/* =========================================================
+   Gauß-Prozess
+   ========================================================= */
+function chol(A){
+  const n=A.length, L=Array.from({length:n},()=>new Float64Array(n));
+  for(let i=0;i<n;i++) for(let j=0;j<=i;j++){
+    let s=A[i][j]; for(let k=0;k<j;k++) s-=L[i][k]*L[j][k];
+    if(i===j) L[i][i]=Math.sqrt(Math.max(s,1e-10)); else L[i][j]=s/L[j][j];
+  }
+  return L;
+}
+const fwd=(L,b)=>{const n=L.length,y=new Float64Array(n);
+  for(let i=0;i<n;i++){let s=b[i];for(let k=0;k<i;k++)s-=L[i][k]*y[k];y[i]=s/L[i][i];}return y;};
+const bwd=(L,y)=>{const n=L.length,x=new Float64Array(n);
+  for(let i=n-1;i>=0;i--){let s=y[i];for(let k=i+1;k<n;k++)s-=L[k][i]*x[k];x[i]=s/L[i][i];}return x;};
+
+function fitGP(){
+  const n=S.X.length, ell=LS[S.ls];
+  const mY = S.Y.reduce((a,b)=>a+b,0)/Math.max(n,1);
+  let sd = Math.sqrt(S.Y.reduce((a,b)=>a+(b-mY)*(b-mY),0)/Math.max(n,1));
+  sd = Math.max(sd,0.28);
+  const nv = Math.pow(NOISE[S.noise]/sd,2) + 1e-6;
+  const k=(a,b)=>Math.exp(-((a-b)*(a-b))/(2*ell*ell));
+
+  const A=Array.from({length:n},(_,i)=>Array.from({length:n},(_,j)=>k(S.X[i],S.X[j])+(i===j?nv:0)));
+  const L=chol(A);
+  const yn=S.Y.map(v=>(v-mY)/sd);
+  const alpha=bwd(L,fwd(L,yn));
+
+  const mu=[], sg=[];
+  for(const x of GRID){
+    const ks=S.X.map(xi=>k(x,xi));
+    let m=0; for(let i=0;i<n;i++) m+=ks[i]*alpha[i];
+    const v=fwd(L,ks);
+    let s2=1; for(let i=0;i<n;i++) s2-=v[i]*v[i];
+    mu.push(m*sd+mY);
+    sg.push(Math.sqrt(Math.max(s2,1e-8))*sd);
+  }
+  return {mu,sg};
+}
+
+/* =========================================================
+   Bewertungsfunktion (Acquisition)
+   ========================================================= */
+function erf(x){const s=Math.sign(x);x=Math.abs(x);
+  const t=1/(1+0.3275911*x);
+  const y=1-((((1.061405429*t-1.453152027)*t+1.421413741)*t-0.284496736)*t+0.254829592)*t*Math.exp(-x*x);
+  return s*y;}
+const Phi=z=>0.5*(1+erf(z/Math.SQRT2));
+const pdf=z=>Math.exp(-0.5*z*z)/Math.sqrt(2*Math.PI);
+
+function acquisition(mu,sg){
+  const best = Math.max(...S.Y);
+  const xi=XI[S.explore], kp=KAPPA[S.explore];
+  return GRID.map((x,i)=>{
+    const m=mu[i], s=Math.max(sg[i],1e-8);
+    if(S.acq==='ucb') return m + kp*s;
+    const z=(m-best-xi)/s;
+    if(S.acq==='pi') return Phi(z);
+    return (m-best-xi)*Phi(z) + s*pdf(z);   // EI
+  });
+}
+
+function pickNext(a){
+  let bi=-1, bv=-Infinity;
+  for(let i=0;i<GRID.length;i++){
+    let tooClose=false;
+    for(const x of S.X) if(Math.abs(GRID[i]-x)<0.009){tooClose=true;break;}
+    if(tooClose) continue;
+    if(a[i]>bv){bv=a[i];bi=i;}
+  }
+  return bi<0 ? 0 : bi;
+}
+
+/* =========================================================
+   Steuerung
+   ========================================================= */
+const STARTS = {'1':[0.5], '2':[0.18,0.82], '3':[0.12,0.5,0.88]};
+
+function observe(x){ return f(x) + NOISE[S.noise]*randn(); }
+
+function reset(){
+  stop();
+  seed = 20260821;
+  S.X = STARTS[S.nStart].slice();
+  S.Y = S.X.map(observe);
+  S.rand = Array.from({length:60},()=>rnd());
+  render();
+}
+function step(){
+  if(S.X.length>=30){stop();return;}
+  const {mu,sg}=fitGP();
+  const i=pickNext(acquisition(mu,sg));
+  S.X.push(GRID[i]); S.Y.push(observe(GRID[i]));
+  render();
+}
+function stop(){ S.playing=false; if(S.timer){clearInterval(S.timer);S.timer=null;} }
+function togglePlay(){
+  if(S.playing){stop();render();return;}
+  S.playing=true;
+  S.timer=setInterval(()=>{ step(); if(S.X.length>=25){stop();render();} },750);
+  render();
+}
+
+/* =========================================================
+   Kontrollleiste
+   ========================================================= */
+const CONTROLS=[
+  {k:'fn', l:'Zielgröße', o:[['einfach','Ein Optimum'],['zwei','Zwei Optima'],['zackig','Zerklüftet'],['nadel','Schmales Optimum']], reset:true},
+  {k:'acq',l:'Suchstrategie', o:[['ei','Erwarteter Gewinn'],['ucb','Optimistisch'],['pi','Trefferchance']]},
+  {k:'explore',l:'Neugier', o:[['low','Vorsichtig'],['mid','Ausgewogen'],['high','Neugierig']]},
+  {k:'ls', l:'Erwartete Glätte', o:[['s','Wellig'],['m','Mittel'],['l','Glatt']]},
+  {k:'noise', l:'Messrauschen', o:[['0','Keins'],['1','Wenig'],['2','Viel']], reset:true},
+  {k:'nStart', l:'Startpunkte', o:[['1','1'],['2','2'],['3','3']], reset:true},
+  {k:'truth', l:'Wahre Kurve', o:[['an','Zeigen'],['aus','Verbergen']]}
+];
+
+function buildBar(){
+  const bar=document.getElementById('bar');
+  bar.innerHTML='';
+  for(const c of CONTROLS){
+    const d=document.createElement('div'); d.className='ctrl';
+    d.innerHTML='<span>'+c.l+'</span>';
+    const seg=document.createElement('div'); seg.className='seg';
+    for(const [val,lab] of c.o){
+      const b=document.createElement('button');
+      b.textContent=lab; b.setAttribute('aria-pressed', S[c.k]===val);
+      b.onclick=()=>{ S[c.k]=val; if(c.reset) reset(); else { stop(); render(); } updateBar(); };
+      seg.appendChild(b);
+    }
+    d.appendChild(seg); bar.appendChild(d);
+  }
+  const act=document.createElement('div'); act.className='actions';
+  const b1=document.createElement('button'); b1.className='btn primary'; b1.textContent='Nächstes Experiment';
+  b1.onclick=()=>{stop();step();};
+  const b2=document.createElement('button'); b2.className='btn'; b2.textContent='5 Schritte';
+  b2.onclick=()=>{stop(); for(let i=0;i<5;i++) step();};
+  const b3=document.createElement('button'); b3.className='btn'; b3.id='btnPlay'; b3.textContent='Automatisch';
+  b3.onclick=togglePlay;
+  const b4=document.createElement('button'); b4.className='btn'; b4.textContent='Zurücksetzen';
+  b4.onclick=reset;
+  act.append(b1,b2,b3,b4); bar.appendChild(act);
+}
+function updateBar(){
+  const segs=document.querySelectorAll('.bar .ctrl');
+  CONTROLS.forEach((c,i)=>{
+    segs[i].querySelectorAll('button').forEach((b,j)=>
+      b.setAttribute('aria-pressed', S[c.k]===c.o[j][0]));
+  });
+  const p=document.getElementById('btnPlay');
+  if(p){ p.textContent = S.playing?'Pause':'Automatisch'; p.setAttribute('aria-pressed',S.playing); }
+}
+
+/* =========================================================
+   Zeichnen
+   ========================================================= */
+const esc = s => String(s);
+function path(pts){ return pts.map((p,i)=>(i?'L':'M')+p[0].toFixed(1)+' '+p[1].toFixed(1)).join(' '); }
+
+function drawMain(mu,sg,nextI){
+  const W=760,H=292,pl=42,pr=14,pt=12,pb=26;
+  const x2p = x => pl + x*(W-pl-pr);
+  const lo=-0.38, hi=1.34;
+  const y2p = y => pt + (hi-y)/(hi-lo)*(H-pt-pb);
+  let s='';
+
+  // Gitter + Achse
+  for(let t=0;t<=1.0001;t+=0.25){
+    s+=`<line x1="${pl}" x2="${W-pr}" y1="${y2p(t)}" y2="${y2p(t)}" stroke="#e9ebe6" stroke-width="1"/>`;
+    s+=`<text x="${pl-8}" y="${y2p(t)+3.5}" text-anchor="end" font-size="10" fill="#9aa3ae" font-family="ui-monospace,monospace">${Math.round(t*100)}</text>`;
+  }
+  s+=`<line x1="${pl}" x2="${W-pr}" y1="${y2p(lo)}" y2="${y2p(lo)}" stroke="#c9cdc6" stroke-width="1"/>`;
+  for(let t=0;t<=1.0001;t+=0.2){
+    s+=`<text x="${x2p(t)}" y="${H-8}" text-anchor="middle" font-size="10" fill="#9aa3ae" font-family="ui-monospace,monospace">${t.toFixed(1)}</text>`;
+  }
+  s+=`<text x="${pl-8}" y="${pt+2}" text-anchor="end" font-size="9.5" fill="#9aa3ae" font-family="ui-monospace,monospace">Güte</text>`;
+  s+=`<text x="${W-pr}" y="${H-8}" text-anchor="end" font-size="9.5" fill="#9aa3ae" font-family="ui-monospace,monospace">Einstellparameter</text>`;
+
+  const cl=`<clipPath id="cp"><rect x="${pl}" y="${pt-4}" width="${W-pl-pr}" height="${H-pt-pb+4}"/></clipPath>`;
+  let g='';
+
+  // Unsicherheitsband
+  const up=GRID.map((x,i)=>[x2p(x),y2p(mu[i]+2*sg[i])]);
+  const dn=GRID.map((x,i)=>[x2p(x),y2p(mu[i]-2*sg[i])]).reverse();
+  g+=`<path d="${path(up)} ${path(dn).replace('M','L')} Z" fill="var(--model-soft)"/>`;
+
+  // wahre Kurve
+  if(S.truth==='an'){
+    g+=`<path d="${path(GRID.map(x=>[x2p(x),y2p(f(x))]))}" fill="none" stroke="var(--truth)" stroke-width="1.6" stroke-dasharray="5 4"/>`;
+  }
+  // Modellmittelwert
+  g+=`<path d="${path(GRID.map((x,i)=>[x2p(x),y2p(mu[i])]))}" fill="none" stroke="var(--model)" stroke-width="2.4"/>`;
+
+  // Messpunkte
+  const best=Math.max(...S.Y);
+  S.X.forEach((x,i)=>{
+    const isBest = S.Y[i]===best;
+    g+=`<circle cx="${x2p(x)}" cy="${y2p(S.Y[i])}" r="${isBest?6:4.6}" fill="${isBest?'var(--ink)':'#ffffff'}" stroke="var(--ink)" stroke-width="1.8"/>`;
+    g+=`<text x="${x2p(x)}" y="${y2p(S.Y[i])-11}" text-anchor="middle" font-size="9" fill="#5b6470" font-family="ui-monospace,monospace">${i+1}</text>`;
+  });
+
+  // nächster Kandidat
+  if(nextI!=null){
+    const xn=x2p(GRID[nextI]);
+    g+=`<line x1="${xn}" x2="${xn}" y1="${pt-4}" y2="${y2p(lo)}" stroke="var(--next)" stroke-width="1.6" stroke-dasharray="4 4"/>`;
+    g+=`<circle cx="${xn}" cy="${y2p(mu[nextI])}" r="5" fill="none" stroke="var(--next)" stroke-width="2"/>`;
+  }
+  document.getElementById('svgMain').innerHTML = cl + s + `<g clip-path="url(#cp)">${g}</g>`;
+}
+
+function drawAcq(a,nextI){
+  const W=760,H=112,pl=42,pr=14,pt=10,pb=18;
+  const x2p = x => pl + x*(W-pl-pr);
+  let lo=Math.min(...a), hi=Math.max(...a);
+  if(hi-lo<1e-9) hi=lo+1;
+  const y2p = v => pt + (hi-v)/(hi-lo)*(H-pt-pb);
+
+  let s=`<line x1="${pl}" x2="${W-pr}" y1="${H-pb}" y2="${H-pb}" stroke="#c9cdc6" stroke-width="1"/>`;
+  const pts=GRID.map((x,i)=>[x2p(x),y2p(a[i])]);
+  s+=`<path d="${path(pts)} L ${x2p(1).toFixed(1)} ${H-pb} L ${x2p(0).toFixed(1)} ${H-pb} Z" fill="#c9721a1f"/>`;
+  s+=`<path d="${path(pts)}" fill="none" stroke="var(--signal)" stroke-width="2.2"/>`;
+  if(nextI!=null){
+    const xn=x2p(GRID[nextI]);
+    s+=`<line x1="${xn}" x2="${xn}" y1="${pt-2}" y2="${H-pb}" stroke="var(--next)" stroke-width="1.6" stroke-dasharray="4 4"/>`;
+    s+=`<circle cx="${xn}" cy="${y2p(a[nextI])}" r="5" fill="var(--next)"/>`;
+    s+=`<text x="${xn}" y="${H-5}" text-anchor="middle" font-size="10" fill="var(--next)" font-family="ui-monospace,monospace" font-weight="600">nächstes Experiment</text>`;
+  }
+  s+=`<text x="${pl-8}" y="${pt+4}" text-anchor="end" font-size="9.5" fill="#9aa3ae" font-family="ui-monospace,monospace">hoch</text>`;
+  s+=`<text x="${pl-8}" y="${H-pb}" text-anchor="end" font-size="9.5" fill="#9aa3ae" font-family="ui-monospace,monospace">tief</text>`;
+  document.getElementById('svgAcq').innerHTML=s;
+}
+
+function drawConv(){
+  const W=320,H=176,pl=32,pr=10,pt=10,pb=24;
+  const n=Math.max(S.X.length, 12);
+  const x2p = i => pl + (i-1)/Math.max(n-1,1)*(W-pl-pr);
+  const y2p = v => pt + (1-v)*(H-pt-pb);
+
+  const cum=arr=>{let m=-Infinity;return arr.map(v=>(m=Math.max(m,v)));};
+  const bo = cum(S.X.map(f));
+  const rd = cum(S.rand.slice(0,n).map(f));
+  const gr = Array.from({length:n},(_,k)=>{
+    const m=k+1; let b=-Infinity;
+    for(let i=0;i<m;i++) b=Math.max(b,f((i+0.5)/m));
+    return b;
+  });
+
+  let s='';
+  for(let t=0;t<=1.0001;t+=0.25){
+    s+=`<line x1="${pl}" x2="${W-pr}" y1="${y2p(t)}" y2="${y2p(t)}" stroke="#eceee9"/>`;
+    s+=`<text x="${pl-6}" y="${y2p(t)+3.5}" text-anchor="end" font-size="9" fill="#9aa3ae" font-family="ui-monospace,monospace">${Math.round(t*100)}</text>`;
+  }
+  const line=(arr,color,dash,w)=>arr.length>1
+    ? `<path d="${path(arr.map((v,i)=>[x2p(i+1),y2p(v)]))}" fill="none" stroke="${color}" stroke-width="${w}" ${dash?`stroke-dasharray="${dash}"`:''}/>` : '';
+  s+=line(gr,'#9aa3ae','2 3',1.6);
+  s+=line(rd,'#7d6bb0','5 4',1.6);
+  s+=line(bo,'#1d6f6a','',2.6);
+  if(bo.length) s+=`<circle cx="${x2p(bo.length)}" cy="${y2p(bo[bo.length-1])}" r="3.5" fill="#1d6f6a"/>`;
+  s+=`<text x="${W-pr}" y="${H-6}" text-anchor="end" font-size="9" fill="#9aa3ae" font-family="ui-monospace,monospace">Anzahl Experimente</text>`;
+  s+=`<text x="${pl}" y="${H-6}" text-anchor="start" font-size="9" fill="#9aa3ae" font-family="ui-monospace,monospace">1</text>`;
+  document.getElementById('svgConv').innerHTML=s;
+}
+
+/* =========================================================
+   Render
+   ========================================================= */
+function render(){
+  const {mu,sg}=fitGP();
+  const a=acquisition(mu,sg);
+  const ni=pickNext(a);
+  drawMain(mu,sg,ni);
+  drawAcq(a,ni);
+  drawConv();
+
+  document.getElementById('kExp').textContent = S.X.length;
+  const best=Math.max(...S.X.map(f));
+  document.getElementById('kBest').innerHTML = Math.round(best*100)+'<small> / 100</small>';
+
+  // Erkunden vs. Ausnutzen
+  const med=[...sg].sort((x,y)=>x-y)[Math.floor(sg.length/2)];
+  const bestObs=Math.max(...S.Y);
+  let mode, hint, col;
+  if(sg[ni] > 1.25*med){
+    mode='Erkunden'; col='var(--signal)';
+    hint='Dort ist das Modell noch unsicher – ein Experiment bringt dort viel neues Wissen.';
+  } else if(mu[ni] > bestObs-0.06){
+    mode='Ausnutzen'; col='var(--model)';
+    hint='Nahe am bisher besten Punkt: hier wird das Optimum feiner eingegrenzt.';
+  } else {
+    mode='Abwägen'; col='var(--ink)';
+    hint='Ein Kompromiss aus vielversprechendem Wert und verbleibender Unsicherheit.';
+  }
+  document.getElementById('modeText').textContent = mode + ' · Parameter ≈ ' + GRID[ni].toFixed(2);
+  document.getElementById('modeDot').style.background = col;
+  document.getElementById('hint').textContent = hint;
+
+  const gap = Math.round((f(GRID[ni])*100));
+  document.getElementById('noteMain').textContent =
+    S.truth==='an'
+      ? 'Grau gestrichelt: die wahre Zielgröße – in echten Versuchen unbekannt. Grün: was das Modell aus den Messungen ableitet.'
+      : 'Die wahre Zielgröße ist verborgen – genau wie im echten Versuch. Sichtbar ist nur, was gemessen wurde.';
+  updateBar();
+}
+
+/* Klick = eigenes Experiment setzen */
+document.getElementById('svgMain').addEventListener('click', e=>{
+  const svg=e.currentTarget, r=svg.getBoundingClientRect();
+  const vx = (e.clientX-r.left)/r.width*760;
+  const x = Math.min(1,Math.max(0,(vx-42)/(760-42-14)));
+  if(S.X.some(p=>Math.abs(p-x)<0.006)) return;
+  stop(); S.X.push(x); S.Y.push(observe(x)); render();
+});
+
+buildBar();
+reset();
+</script>
+
+<script>
+/* =========================================================
+   ZWEI PARAMETER
+   ========================================================= */
+const T = { fn2:'zwei', acq2:'ei', exp2:'mid', n02:'5', tr2:'an',
+            X:[], Y:[], rand:[], playing:false, timer:null };
+
+const R2 = 56, ELL2 = 0.17;
+const P2 = [];
+for(let j=0;j<R2;j++) for(let i=0;i<R2;i++) P2.push([i/(R2-1), 1-j/(R2-1)]);
+
+const g2=(x,y,mx,my,sx,sy)=>Math.exp(-((x-mx)*(x-mx)/(2*sx*sx)+(y-my)*(y-my)/(2*sy*sy)));
+const RAW2={
+  einfach:(x,y)=> g2(x,y,0.66,0.38,0.23,0.25),
+  zwei:   (x,y)=> 0.82*g2(x,y,0.24,0.73,0.14,0.16) + 1.0*g2(x,y,0.74,0.28,0.16,0.14),
+  tal:    (x,y)=>{ const a=-1.5+3*x, b=-0.5+3.5*y;
+                   return -Math.log(1+Math.pow(1-a,2)+60*Math.pow(b-a*a,2)); },
+  zackig: (x,y)=> 0.60*g2(x,y,0.5,0.52,0.36,0.36) + 0.30*Math.sin(9.5*x)*Math.sin(8.5*y) + 0.10*Math.cos(6*x+4*y)
+};
+const NORM2={};
+for(const k in RAW2){
+  let lo=Infinity,hi=-Infinity;
+  for(const [x,y] of P2){const v=RAW2[k](x,y); if(v<lo)lo=v; if(v>hi)hi=v;}
+  NORM2[k]=[lo,hi];
+}
+const f2=(x,y)=>{const [lo,hi]=NORM2[T.fn2]; return (RAW2[T.fn2](x,y)-lo)/(hi-lo);};
+
+let seed2=987654321;
+const rnd2=()=>{seed2=(seed2*1664525+1013904223)%4294967296; return seed2/4294967296;};
+
+/* ---- GP in 2D ---- */
+function fitGP2(){
+  const n=T.X.length;
+  const mY=T.Y.reduce((a,b)=>a+b,0)/n;
+  let sd=Math.sqrt(T.Y.reduce((a,b)=>a+(b-mY)*(b-mY),0)/n); sd=Math.max(sd,0.28);
+  const k=(p,q)=>Math.exp(-(((p[0]-q[0])**2+(p[1]-q[1])**2)/(2*ELL2*ELL2)));
+  const A=Array.from({length:n},(_,i)=>Array.from({length:n},(_,j)=>k(T.X[i],T.X[j])+(i===j?1e-6:0)));
+  const L=chol(A);
+  const alpha=bwd(L,fwd(L,T.Y.map(v=>(v-mY)/sd)));
+  const mu=new Float64Array(P2.length), sg=new Float64Array(P2.length);
+  const ks=new Float64Array(n);
+  for(let g=0;g<P2.length;g++){
+    const p=P2[g];
+    let m=0;
+    for(let i=0;i<n;i++){ ks[i]=k(p,T.X[i]); m+=ks[i]*alpha[i]; }
+    const v=fwd(L,ks);
+    let s2=1; for(let i=0;i<n;i++) s2-=v[i]*v[i];
+    mu[g]=m*sd+mY; sg[g]=Math.sqrt(Math.max(s2,1e-8))*sd;
+  }
+  return {mu,sg};
+}
+function acq2(mu,sg){
+  const best=Math.max(...T.Y), xi=XI[T.exp2], kp=KAPPA[T.exp2];
+  const a=new Float64Array(mu.length);
+  for(let i=0;i<mu.length;i++){
+    const m=mu[i], s=Math.max(sg[i],1e-8);
+    if(T.acq2==='ucb'){ a[i]=m+kp*s; continue; }
+    const z=(m-best-xi)/s;
+    a[i]=(m-best-xi)*Phi(z)+s*pdf(z);
+  }
+  return a;
+}
+function pickNext2(a){
+  let bi=0,bv=-Infinity;
+  for(let i=0;i<a.length;i++){
+    const p=P2[i];
+    let close=false;
+    for(const q of T.X){ if((p[0]-q[0])**2+(p[1]-q[1])**2 < 0.0009){close=true;break;} }
+    if(close) continue;
+    if(a[i]>bv){bv=a[i];bi=i;}
+  }
+  return bi;
+}
+
+/* ---- Farbverläufe ---- */
+function mkRamp(stops){
+  return t=>{
+    t=Math.max(0,Math.min(1,t));
+    const s=t*(stops.length-1), i=Math.min(Math.floor(s),stops.length-2), u=s-i;
+    const a=stops[i], b=stops[i+1];
+    return [a[0]+(b[0]-a[0])*u, a[1]+(b[1]-a[1])*u, a[2]+(b[2]-a[2])*u];
+  };
+}
+const RVAL=mkRamp([[248,249,246],[176,208,199],[93,158,148],[18,81,77]]);
+const RSD =mkRamp([[248,249,246],[205,199,229],[125,107,176],[62,50,103]]);
+const RACQ=mkRamp([[248,249,246],[242,214,172],[224,160,80],[168,86,15]]);
+function cssRamp(r){
+  return 'linear-gradient(90deg,'+[0,.25,.5,.75,1].map(t=>{
+    const c=r(t); return `rgb(${c[0]|0},${c[1]|0},${c[2]|0})`; }).join(',')+')';
+}
+
+/* ---- Zeichnen einer Fläche ---- */
+const PAD2=7, IMG=406, CV=IMG+2*PAD2;
+const off=document.createElement('canvas'); off.width=R2; off.height=R2;
+const offCtx=off.getContext('2d');
+
+function drawField(id, arr, ramp, opts={}){
+  const cv=document.getElementById(id);
+  cv.width=CV; cv.height=CV;
+  const ctx=cv.getContext('2d');
+  ctx.clearRect(0,0,CV,CV);
+
+  if(arr){
+    let lo=Infinity,hi=-Infinity;
+    for(const v of arr){ if(v<lo)lo=v; if(v>hi)hi=v; }
+    if(hi-lo<1e-12) hi=lo+1;
+    const img=offCtx.createImageData(R2,R2);
+    for(let i=0;i<arr.length;i++){
+      const c=ramp((arr[i]-lo)/(hi-lo));
+      img.data[i*4]=c[0]; img.data[i*4+1]=c[1]; img.data[i*4+2]=c[2]; img.data[i*4+3]=255;
+    }
+    offCtx.putImageData(img,0,0);
+    ctx.imageSmoothingEnabled=true; ctx.imageSmoothingQuality='high';
+    ctx.drawImage(off, PAD2, PAD2, IMG, IMG);
+  } else {
+    ctx.fillStyle='#ecEEE9'; ctx.fillRect(PAD2,PAD2,IMG,IMG);
+    ctx.fillStyle='#9aa3ae'; ctx.font='500 15px ui-monospace,monospace'; ctx.textAlign='center';
+    ctx.fillText('verborgen', CV/2, CV/2);
+  }
+  ctx.strokeStyle='#dcdfd9'; ctx.lineWidth=1;
+  ctx.strokeRect(PAD2+.5,PAD2+.5,IMG-1,IMG-1);
+
+  const px=x=>PAD2+x*IMG, py=y=>PAD2+(1-y)*IMG;
+  const best=T.Y.length?Math.max(...T.Y):0;
+  T.X.forEach((p,i)=>{
+    ctx.beginPath(); ctx.arc(px(p[0]),py(p[1]), T.Y[i]===best?8:6, 0, 7);
+    ctx.fillStyle = T.Y[i]===best ? '#171b21' : 'rgba(255,255,255,.92)';
+    ctx.fill(); ctx.lineWidth=2.4; ctx.strokeStyle='#171b21'; ctx.stroke();
+  });
+  if(opts.next!=null){
+    const p=P2[opts.next];
+    ctx.beginPath(); ctx.arc(px(p[0]),py(p[1]),10,0,7);
+    ctx.lineWidth=3; ctx.strokeStyle='#b0243b'; ctx.stroke();
+    ctx.beginPath();
+    ctx.moveTo(px(p[0]),PAD2); ctx.lineTo(px(p[0]),PAD2+IMG);
+    ctx.moveTo(PAD2,py(p[1])); ctx.lineTo(PAD2+IMG,py(p[1]));
+    ctx.lineWidth=1.2; ctx.setLineDash([4,4]); ctx.strokeStyle='rgba(176,36,59,.65)'; ctx.stroke();
+    ctx.setLineDash([]);
+  }
+}
+
+/* ---- Steuerung ---- */
+const STARTS2={
+  '3':[[0.2,0.22],[0.8,0.35],[0.45,0.82]],
+  '5':[[0.18,0.2],[0.82,0.3],[0.5,0.55],[0.25,0.8],[0.85,0.85]],
+  '8':[[0.12,0.15],[0.5,0.12],[0.88,0.22],[0.28,0.45],[0.72,0.5],[0.12,0.78],[0.55,0.85],[0.9,0.8]]
+};
+function reset2(){
+  stop2(); seed2=987654321;
+  T.X=STARTS2[T.n02].map(p=>p.slice());
+  T.Y=T.X.map(p=>f2(p[0],p[1]));
+  T.rand=Array.from({length:60},()=>[rnd2(),rnd2()]);
+  render2();
+}
+function step2(){
+  if(T.X.length>=45){stop2();return;}
+  const {mu,sg}=fitGP2();
+  const i=pickNext2(acq2(mu,sg));
+  T.X.push(P2[i].slice()); T.Y.push(f2(P2[i][0],P2[i][1]));
+  render2();
+}
+function stop2(){ T.playing=false; if(T.timer){clearInterval(T.timer);T.timer=null;} }
+function togglePlay2(){
+  if(T.playing){stop2();render2();return;}
+  T.playing=true;
+  T.timer=setInterval(()=>{ step2(); if(T.X.length>=35){stop2();render2();} },700);
+  render2();
+}
+
+const CTRL2=[
+  {k:'fn2',l:'Zielgröße',o:[['einfach','Ein Optimum'],['zwei','Zwei Optima'],['tal','Gekrümmter Grat'],['zackig','Zerklüftet']],reset:true},
+  {k:'acq2',l:'Suchstrategie',o:[['ei','Erwarteter Gewinn'],['ucb','Optimistisch']]},
+  {k:'exp2',l:'Neugier',o:[['low','Vorsichtig'],['mid','Ausgewogen'],['high','Neugierig']]},
+  {k:'n02',l:'Startpunkte',o:[['3','3'],['5','5'],['8','8']],reset:true},
+  {k:'tr2',l:'Wahre Landschaft',o:[['an','Zeigen'],['aus','Verbergen']]}
+];
+function buildBar2(){
+  const bar=document.getElementById('bar2'); bar.innerHTML='';
+  for(const c of CTRL2){
+    const d=document.createElement('div'); d.className='ctrl';
+    d.innerHTML='<span>'+c.l+'</span>';
+    const seg=document.createElement('div'); seg.className='seg';
+    for(const [val,lab] of c.o){
+      const b=document.createElement('button'); b.textContent=lab;
+      b.onclick=()=>{ T[c.k]=val; if(c.reset) reset2(); else {stop2(); render2();} };
+      seg.appendChild(b);
+    }
+    d.appendChild(seg); bar.appendChild(d);
+  }
+  const act=document.createElement('div'); act.className='actions';
+  const mk=(t,cls,fn,id)=>{const b=document.createElement('button');b.className='btn'+(cls?' '+cls:'');
+    b.textContent=t;b.onclick=fn;if(id)b.id=id;return b;};
+  act.append(
+    mk('Nächstes Experiment','primary',()=>{stop2();step2();}),
+    mk('5 Schritte','',()=>{stop2();for(let i=0;i<5;i++)step2();}),
+    mk('Automatisch','',togglePlay2,'btnPlay2'),
+    mk('Zurücksetzen','',reset2)
+  );
+  bar.appendChild(act);
+  document.getElementById('rampVal').style.background=cssRamp(RVAL);
+  document.getElementById('rampVal2').style.background=cssRamp(RVAL);
+  document.getElementById('rampSd').style.background=cssRamp(RSD);
+  document.getElementById('rampAcq').style.background=cssRamp(RACQ);
+}
+function updateBar2(){
+  const segs=document.querySelectorAll('#bar2 .ctrl');
+  CTRL2.forEach((c,i)=>segs[i].querySelectorAll('button').forEach((b,j)=>
+    b.setAttribute('aria-pressed', T[c.k]===c.o[j][0])));
+  const p=document.getElementById('btnPlay2');
+  if(p){p.textContent=T.playing?'Pause':'Automatisch'; p.setAttribute('aria-pressed',T.playing);}
+}
+
+function render2(){
+  const {mu,sg}=fitGP2();
+  const a=acq2(mu,sg);
+  const ni=pickNext2(a);
+
+  drawField('cvTruth', T.tr2==='an' ? P2.map(p=>f2(p[0],p[1])) : null, RVAL);
+  drawField('cvMean', mu, RVAL, {next:ni});
+  drawField('cvSd',   sg, RSD);
+  drawField('cvAcq',  a,  RACQ, {next:ni});
+
+  const n=T.X.length;
+  const best=Math.max(...T.Y);
+  const bi=T.Y.indexOf(best);
+  let rb=-Infinity; for(let i=0;i<n;i++) rb=Math.max(rb, f2(T.rand[i][0],T.rand[i][1]));
+  document.getElementById('s2Exp').textContent = n+' Experimente';
+  document.getElementById('s2Best').textContent =
+    'Bester Wert '+Math.round(best*100)+' bei ('+T.X[bi][0].toFixed(2)+' | '+T.X[bi][1].toFixed(2)+')';
+  document.getElementById('s2Rand').textContent = 'Zufallssuche käme auf '+Math.round(rb*100);
+  document.getElementById('s2Next').textContent =
+    'Nächster Versuch ('+P2[ni][0].toFixed(2)+' | '+P2[ni][1].toFixed(2)+')';
+
+  const raster=Math.ceil(Math.sqrt(n));
+  document.getElementById('note2').textContent =
+    'Ein gleichmäßiges Raster mit derselben Anzahl Versuche hätte nur '+raster+'×'+raster+
+    ' Stufen je Parameter. Klicken Sie in eine Fläche, um selbst ein Experiment zu setzen.';
+  updateBar2();
+}
+
+['cvTruth','cvMean','cvSd','cvAcq'].forEach(id=>{
+  const cv=document.getElementById(id);
+  cv.style.cursor='crosshair';
+  cv.addEventListener('click',e=>{
+    const r=cv.getBoundingClientRect();
+    const x=((e.clientX-r.left)/r.width*CV-PAD2)/IMG;
+    const y=1-((e.clientY-r.top)/r.height*CV-PAD2)/IMG;
+    if(x<0||x>1||y<0||y>1) return;
+    stop2(); T.X.push([x,y]); T.Y.push(f2(x,y)); render2();
+  });
+});
+
+buildBar2();
+reset2();
+</script>
+</body>
+</html>

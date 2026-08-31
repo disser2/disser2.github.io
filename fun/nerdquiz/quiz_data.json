@@ -1,0 +1,162 @@
+{
+  "quiz": {
+    "title": "Wissensquiz",
+    "categories": [
+      {
+        "id": 1,
+        "name": "Test",
+        "questions": [
+          {
+            "points": 100,
+            "question": "Was ist die Hauptstadt von Australien?",
+            "answer": "Canberra"
+          },
+          {
+            "points": 200,
+            "question": "Welcher ist der längste Fluss der Welt?",
+            "answer": "Nil"
+          },
+          {
+            "points": 300,
+            "question": "In welchem Land liegt der Mount Everest?",
+            "answer": "Nepal/Tibet"
+          },
+          {
+            "points": 600,
+            "question": "Welches ist das kleinste Land der Welt?",
+            "answer": "Vatikanstadt"
+          },
+          {
+            "points": 1000,
+            "question": "Wie viele Zeitzonen hat Russland?",
+            "answer": "11"
+          }
+        ]
+      },
+      {
+        "id": 2,
+        "name": "Wissenschaft",
+        "questions": [
+          {
+            "points": 100,
+            "question": "Was ist das chemische Symbol für Gold?",
+            "answer": "Au"
+          },
+          {
+            "points": 200,
+            "question": "Wie viele Knochen hat ein erwachsener Mensch?",
+            "answer": "206"
+          },
+          {
+            "points": 300,
+            "question": "Was ist die Einheit der elektrischen Stromstärke?",
+            "answer": "Ampere"
+          },
+          {
+            "points": 600,
+            "question": "Welches Element hat die Ordnungszahl 1?",
+            "answer": "Wasserstoff"
+          },
+          {
+            "points": 1000,
+            "question": "Wie schnell ist Licht im Vakuum (in km/s)?",
+            "answer": "299.792"
+          }
+        ]
+      },
+      {
+        "id": 3,
+        "name": "Geschichte",
+        "questions": [
+          {
+            "points": 100,
+            "question": "In welchem Jahr fiel die Berliner Mauer?",
+            "answer": "1989"
+          },
+          {
+            "points": 200,
+            "question": "Wer war der erste deutsche Bundeskanzler?",
+            "answer": "Konrad Adenauer"
+          },
+          {
+            "points": 300,
+            "question": "Wann endete der Zweite Weltkrieg in Europa?",
+            "answer": "1945"
+          },
+          {
+            "points": 600,
+            "question": "Welches Reich regierte Kleopatra?",
+            "answer": "Ägypten"
+          },
+          {
+            "points": 1000,
+            "question": "Wann wurde die EU gegründet?",
+            "answer": "1992"
+          }
+        ]
+      },
+      {
+        "id": 4,
+        "name": "Kunst & Kultur",
+        "questions": [
+          {
+            "points": 100,
+            "question": "Wer malte die Mona Lisa?",
+            "answer": "Leonardo da Vinci"
+          },
+          {
+            "points": 200,
+            "question": "Wer schrieb 'Faust'?",
+            "answer": "Goethe"
+          },
+          {
+            "points": 300,
+            "question": "Welcher Komponist wurde taub?",
+            "answer": "Beethoven"
+          },
+          {
+            "points": 600,
+            "question": "In welcher Stadt steht das Kolosseum?",
+            "answer": "Rom"
+          },
+          {
+            "points": 1000,
+            "question": "Wer schrieb 'Die Verwandlung'?",
+            "answer": "Franz Kafka"
+          }
+        ]
+      },
+      {
+        "id": 5,
+        "name": "Sport",
+        "questions": [
+          {
+            "points": 100,
+            "question": "Wie oft hat Deutschland die Fußball-WM gewonnen?",
+            "answer": "4"
+          },
+          {
+            "points": 200,
+            "question": "Wie viele Spieler hat eine Basketball-Mannschaft auf dem Feld?",
+            "answer": "5"
+          },
+          {
+            "points": 300,
+            "question": "Wie lang ist ein Marathon in km?",
+            "answer": "42,195"
+          },
+          {
+            "points": 600,
+            "question": "In welcher Sportart gibt es einen 'Slam Dunk'?",
+            "answer": "Basketball"
+          },
+          {
+            "points": 1000,
+            "question": "Wo fanden die ersten modernen Olympischen Spiele statt?",
+            "answer": "Athen"
+          }
+        ]
+      }
+    ]
+  }
+}

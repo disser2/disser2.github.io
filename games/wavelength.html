@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Wellenlänge — Das Spektrum-Spiel</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@500;700&family=Space+Grotesk:wght@400;500;600&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#07161b;
+    --device:#155059;
+    --device-dark:#0e3a41;
+    --device-edge:#1e6b76;
+    --dial-face:#f5ecd7;
+    --dial-shade:#e6d9bc;
+    --needle:#d9442e;
+    --band-5:#1e4fd8;
+    --band-3:#f0c33c;
+    --band-1:#d9442e;
+    --text-light:#eef4f2;
+    --text-dim:#8fb3ae;
+    --brass:#c9a24b;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{height:100%}
+  body{
+    background:
+      radial-gradient(1200px 600px at 50% -10%, #12333b 0%, transparent 60%),
+      var(--ink);
+    color:var(--text-light);
+    font-family:'Space Grotesk',sans-serif;
+    display:flex;flex-direction:column;align-items:center;
+    min-height:100vh;padding:24px 16px 48px;
+  }
+  header{text-align:center;margin-bottom:20px}
+  .eyebrow{
+    font-family:'Space Mono',monospace;font-size:11px;letter-spacing:.35em;
+    text-transform:uppercase;color:var(--text-dim);margin-bottom:6px;
+  }
+  h1{
+    font-family:'Unbounded',sans-serif;font-weight:700;
+    font-size:clamp(26px,5vw,40px);letter-spacing:.04em;
+    background:linear-gradient(90deg,var(--band-1),var(--band-3),var(--band-5));
+    -webkit-background-clip:text;background-clip:text;color:transparent;
+  }
+  .scoreboard{
+    display:flex;gap:28px;justify-content:center;margin:14px 0 22px;
+    font-family:'Space Mono',monospace;font-size:13px;
+  }
+  .scoreboard .stat{text-align:center}
+  .scoreboard .label{color:var(--text-dim);font-size:10px;letter-spacing:.2em;text-transform:uppercase}
+  .scoreboard .value{font-size:22px;font-weight:700}
+
+  .device{
+    background:linear-gradient(180deg,var(--device-edge),var(--device) 12%,var(--device-dark));
+    border-radius:28px;
+    padding:26px 26px 22px;
+    box-shadow:0 24px 60px rgba(0,0,0,.55), inset 0 1px 0 rgba(255,255,255,.15);
+    max-width:640px;width:100%;
+  }
+  .concepts{
+    display:flex;justify-content:space-between;gap:12px;margin-bottom:10px;
+  }
+  .concept{
+    font-family:'Unbounded',sans-serif;font-weight:500;
+    font-size:clamp(13px,2.6vw,17px);
+    background:var(--device-dark);
+    border:1px solid rgba(255,255,255,.12);
+    padding:10px 16px;border-radius:12px;
+    max-width:46%;text-align:center;
+  }
+  .concept.left{border-left:4px solid var(--band-1)}
+  .concept.right{border-right:4px solid var(--band-5)}
+
+  .dial-wrap{position:relative;user-select:none;touch-action:none}
+  svg{display:block;width:100%;height:auto}
+  .needle-grab{cursor:grab}
+  .dragging .needle-grab{cursor:grabbing}
+
+  .controls{margin-top:18px;display:flex;flex-direction:column;align-items:center;gap:14px}
+  .instruction{
+    font-size:15px;color:var(--text-light);text-align:center;min-height:44px;
+    display:flex;align-items:center;justify-content:center;max-width:480px;
+  }
+  .result{
+    font-family:'Unbounded',sans-serif;font-size:22px;font-weight:700;
+  }
+  .buttons{display:flex;gap:12px;flex-wrap:wrap;justify-content:center}
+  button{
+    font-family:'Space Grotesk',sans-serif;font-weight:600;font-size:15px;
+    padding:12px 24px;border-radius:999px;border:none;cursor:pointer;
+    background:var(--brass);color:#241a05;
+    box-shadow:0 4px 0 #8a6c2a;
+    transition:transform .08s, box-shadow .08s;
+  }
+  button:active{transform:translateY(3px);box-shadow:0 1px 0 #8a6c2a}
+  button.secondary{
+    background:transparent;color:var(--text-light);
+    border:1px solid rgba(255,255,255,.35);box-shadow:none;
+  }
+  button:focus-visible{outline:3px solid var(--band-3);outline-offset:2px}
+
+  footer{margin-top:26px;font-size:12px;color:var(--text-dim);max-width:520px;text-align:center;line-height:1.6}
+  .legend{display:flex;gap:16px;justify-content:center;margin-top:8px;font-family:'Space Mono',monospace;font-size:11px}
+  .legend span::before{content:"";display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:5px;vertical-align:-1px}
+  .legend .l5::before{background:var(--band-5)}
+  .legend .l3::before{background:var(--band-3)}
+  .legend .l1::before{background:var(--band-1)}
+
+  @media (prefers-reduced-motion: reduce){
+    *{transition:none !important}
+  }
+</style>
+</head>
+<body>
+<header>
+  <div class="eyebrow">Auf welcher Frequenz denkt ihr?</div>
+  <h1>WELLENLÄNGE</h1>
+</header>
+
+<div class="scoreboard">
+  <div class="stat"><div class="label">Runde</div><div class="value" id="roundNum">1</div></div>
+  <div class="stat"><div class="label">Punkte gesamt</div><div class="value" id="totalScore">0</div></div>
+  <div class="stat"><div class="label">Letzte Runde</div><div class="value" id="lastScore">–</div></div>
+</div>
+
+<div class="device">
+  <div class="concepts">
+    <div class="concept left" id="conceptLeft">Heiß</div>
+    <div class="concept right" id="conceptRight">Kalt</div>
+  </div>
+
+  <div class="dial-wrap" id="dialWrap">
+    <svg id="dial" viewBox="0 0 600 330" role="img" aria-label="Wählscheibe">
+      <defs>
+        <clipPath id="upperClip"><rect x="0" y="0" width="600" height="302"/></clipPath>
+        <radialGradient id="faceGrad" cx="50%" cy="100%" r="100%">
+          <stop offset="0%" stop-color="#faf3e3"/>
+          <stop offset="80%" stop-color="var(--dial-face)"/>
+          <stop offset="100%" stop-color="var(--dial-shade)"/>
+        </radialGradient>
+      </defs>
+
+      <!-- Zifferblatt -->
+      <path d="M 30 300 A 270 270 0 0 1 570 300 Z" fill="url(#faceGrad)" stroke="#c7b78f" stroke-width="2"/>
+      <g id="ticks" stroke="#b9a87c" stroke-width="2"></g>
+
+      <!-- Ziel-Segmente -->
+      <g id="targetBands" clip-path="url(#upperClip)"></g>
+
+      <!-- Abdeckung (rotiert weg beim Aufdecken) -->
+      <g clip-path="url(#upperClip)">
+        <path id="cover" d="M 30 300 A 270 270 0 0 1 570 300 Z"
+              fill="var(--device-dark)" stroke="#1e6b76" stroke-width="2"
+              style="transform-origin:300px 300px; transition:transform .7s cubic-bezier(.5,0,.3,1)"/>
+      </g>
+
+      <!-- Nadel -->
+      <g id="needleGroup" style="transform-origin:300px 300px; transition:transform .05s linear">
+        <line x1="300" y1="300" x2="300" y2="52" stroke="var(--needle)" stroke-width="6" stroke-linecap="round"/>
+        <circle cx="300" cy="52" r="12" fill="var(--needle)" class="needle-grab"/>
+      </g>
+      <circle cx="300" cy="300" r="20" fill="#2a2a2a" stroke="var(--brass)" stroke-width="4"/>
+
+      <!-- Sockel -->
+      <rect x="0" y="300" width="600" height="30" fill="var(--device-dark)"/>
+    </svg>
+  </div>
+
+  <div class="controls">
+    <div class="instruction" id="instruction"></div>
+    <div class="buttons" id="buttons"></div>
+  </div>
+</div>
+
+<footer>
+  <div class="legend">
+    <span class="l5">5 Punkte</span><span class="l3">3 Punkte</span><span class="l1">1 Punkt</span>
+  </div>
+  <p style="margin-top:10px">Der Hellseher sieht das Ziel und gibt einen Hinweis auf dem Spektrum zwischen den beiden Begriffen. Das Team dreht die Nadel dorthin, wo es das Ziel vermutet.</p>
+</footer>
+
+<script>
+(function(){
+  const PAIRS = [
+    ["Heiß","Kalt"],["Gut","Böse"],["Unterbewertet","Überbewertet"],
+    ["Gefährlich","Harmlos"],["Süß","Salzig"],["Altmodisch","Futuristisch"],
+    ["Leise","Laut"],["Billig","Teuer"],["Notwendig","Überflüssig"],
+    ["Traurig","Fröhlich"],["Weich","Hart"],["Berühmt","Unbekannt"],
+    ["Gesund","Ungesund"],["Langweilig","Aufregend"],["Klein","Riesig"],
+    ["Alltäglich","Exotisch"],["Nützlich","Nutzlos"],["Hässlich","Schön"],
+    ["Introvertiert","Extrovertiert"],["Trocken","Nass"],["Peinlich","Cool"],
+    ["Schlechter Film","Guter Film"],["Frühstück","Abendessen"],
+    ["Handwerk","Kunst"],["Pflicht","Vergnügen"],["Chaos","Ordnung"],
+    ["Naturwissenschaft","Geisteswissenschaft"],["Snack","Mahlzeit"],
+    ["Schlechte Superkraft","Gute Superkraft"],["Verboten","Erlaubt"],
+    ["Gerade noch pünktlich","Viel zu früh"],["Katzen-Mensch","Hunde-Mensch"],
+    ["Unterschätzter Beruf","Überschätzter Beruf"],["Kindheit","Erwachsensein"],
+    ["Analog","Digital"],["Regional","Global"]
+  ];
+
+  const CX=300, CY=300, R=270;
+  const svg = document.getElementById('dial');
+  const bandsG = document.getElementById('targetBands');
+  const cover = document.getElementById('cover');
+  const needleGroup = document.getElementById('needleGroup');
+  const dialWrap = document.getElementById('dialWrap');
+  const instruction = document.getElementById('instruction');
+  const buttonsBox = document.getElementById('buttons');
+
+  let target = 90;       // Zielwinkel 0..180 (0 = links)
+  let guess = 90;        // Nadelposition
+  let phase = 'psychic'; // psychic -> guess -> reveal
+  let total = 0, round = 1, dragging = false;
+  let lastPair = -1;
+
+  // Skalenstriche
+  const ticks = document.getElementById('ticks');
+  for(let a=0;a<=180;a+=10){
+    const inner = polar(a, R-14), outer = polar(a, R-2);
+    const l = document.createElementNS('http://www.w3.org/2000/svg','line');
+    l.setAttribute('x1',inner.x); l.setAttribute('y1',inner.y);
+    l.setAttribute('x2',outer.x); l.setAttribute('y2',outer.y);
+    if(a%30===0) l.setAttribute('stroke-width','3');
+    ticks.appendChild(l);
+  }
+
+  function polar(a, r){
+    const th = (180 - a) * Math.PI/180;
+    return { x: CX + r*Math.cos(th), y: CY - r*Math.sin(th) };
+  }
+
+  function wedgePath(a1, a2, r){
+    const p1 = polar(a1, r), p2 = polar(a2, r);
+    return `M ${CX} ${CY} L ${p1.x} ${p1.y} A ${r} ${r} 0 0 ${a2>a1?1:0} ${p2.x} ${p2.y} Z`;
+  }
+
+  function drawBands(){
+    bandsG.innerHTML = '';
+    const segs = [
+      [target-25, target-15, 'var(--band-1)'],
+      [target-15, target-5,  'var(--band-3)'],
+      [target-5,  target+5,  'var(--band-5)'],
+      [target+5,  target+15, 'var(--band-3)'],
+      [target+15, target+25, 'var(--band-1)']
+    ];
+    for(const [a1,a2,fill] of segs){
+      const p = document.createElementNS('http://www.w3.org/2000/svg','path');
+      p.setAttribute('d', wedgePath(Math.max(0,a1), Math.min(180,a2), R-16));
+      p.setAttribute('fill', fill);
+      p.setAttribute('opacity','0.92');
+      bandsG.appendChild(p);
+    }
+  }
+
+  function setNeedle(a){
+    guess = Math.max(0, Math.min(180, a));
+    needleGroup.style.transform = `rotate(${guess-90}deg)`;
+  }
+
+  function setCover(open){
+    cover.style.transform = open ? 'rotate(180deg)' : 'rotate(0deg)';
+  }
+
+  function pickPair(){
+    let i;
+    do { i = Math.floor(Math.random()*PAIRS.length); } while(i===lastPair && PAIRS.length>1);
+    lastPair = i;
+    document.getElementById('conceptLeft').textContent = PAIRS[i][0];
+    document.getElementById('conceptRight').textContent = PAIRS[i][1];
+  }
+
+  function scoreFor(diff){
+    if(diff<=5) return 5;
+    if(diff<=15) return 3;
+    if(diff<=25) return 1;
+    return 0;
+  }
+
+  function render(){
+    document.getElementById('roundNum').textContent = round;
+    document.getElementById('totalScore').textContent = total;
+    buttonsBox.innerHTML = '';
+
+    if(phase==='psychic'){
+      instruction.innerHTML = 'Nur der <strong>Hellseher</strong> schaut auf die Scheibe und überlegt sich einen Hinweis. Alle anderen: Augen zu!';
+      addBtn('Ziel verdecken', ()=>{ phase='guess'; setCover(false); render(); });
+    }
+    else if(phase==='guess'){
+      instruction.innerHTML = 'Der Hellseher nennt seinen Hinweis. Team: diskutiert und <strong>zieht die Nadel</strong> an die vermutete Stelle.';
+      addBtn('Ziel aufdecken', ()=>{
+        phase='reveal';
+        setCover(true);
+        const pts = scoreFor(Math.abs(guess-target));
+        total += pts;
+        document.getElementById('lastScore').textContent = pts;
+        render(pts);
+      });
+    }
+    else if(phase==='reveal'){
+      const pts = arguments[0] ?? 0;
+      const msg = pts===5 ? 'Volltreffer! Ihr seid auf einer Wellenlänge.' :
+                  pts===3 ? 'Knapp daneben — stark!' :
+                  pts===1 ? 'In der Nähe.' : 'Leider vorbei.';
+      instruction.innerHTML = `<span class="result">${pts} ${pts===1?'Punkt':'Punkte'}</span>&nbsp;·&nbsp;${msg}`;
+      addBtn('Nächste Runde', ()=>{ round++; newRound(); });
+      addBtn('Neues Spiel', ()=>{ total=0; round=1; document.getElementById('lastScore').textContent='–'; newRound(); }, true);
+    }
+  }
+
+  function addBtn(label, fn, secondary){
+    const b = document.createElement('button');
+    b.textContent = label;
+    if(secondary) b.className = 'secondary';
+    b.addEventListener('click', fn);
+    buttonsBox.appendChild(b);
+  }
+
+  function newRound(){
+    target = 25 + Math.random()*130;
+    drawBands();
+    setNeedle(90);
+    setCover(true);   // Ziel sichtbar? Nein: Cover offen = Ziel sichtbar für Hellseher
+    pickPair();
+    phase = 'psychic';
+    render();
+  }
+
+  // Drag-Interaktion
+  function angleFromEvent(e){
+    const rect = svg.getBoundingClientRect();
+    const scale = 600/rect.width;
+    const x = (e.clientX-rect.left)*scale, y = (e.clientY-rect.top)*(330/rect.height);
+    const dx = x-CX, dy = CY-y;
+    let th = Math.atan2(dy,dx)*180/Math.PI; // 0=rechts, 180=links
+    if(th<0) th = dx<0 ? 180 : 0;           // unterhalb der Skala: zur nächsten Seite schnappen
+    return 180-th;
+  }
+  svg.addEventListener('pointerdown', e=>{
+    if(phase!=='guess') return;
+    dragging=true; dialWrap.classList.add('dragging');
+    svg.setPointerCapture(e.pointerId);
+    setNeedle(angleFromEvent(e));
+  });
+  svg.addEventListener('pointermove', e=>{ if(dragging) setNeedle(angleFromEvent(e)); });
+  svg.addEventListener('pointerup', ()=>{ dragging=false; dialWrap.classList.remove('dragging'); });
+
+  // Tastatur-Bedienung
+  document.addEventListener('keydown', e=>{
+    if(phase!=='guess') return;
+    if(e.key==='ArrowLeft') setNeedle(guess-2);
+    if(e.key==='ArrowRight') setNeedle(guess+2);
+  });
+
+  newRound();
+})();
+</script>
+</body>
+</html>
