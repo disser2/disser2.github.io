@@ -13,16 +13,19 @@ Kennzeichen-Sammel-App (siehe `kennzeichen/`).
 | `app.js` | Logik: Suche, Filter, Sortierung, Detail-/Statistik-Sheets, localStorage |
 | `data.js` | 269 Taufnamen mit Taufdatum, Taufort, Baureihe, Triebzug, Wappen-URL und Namensträger-Historie |
 | `tools/` | Python-Skripte, mit denen `data.js` aus Wikipedia generiert wurde |
+| `standalone.html` | Einzeldatei-Variante (Wappen als Data-URIs), erzeugt von `tools/build_standalone.py` |
 
 ## Features
 
 - 269 Taufnamen (232 Städte/Gemeinden, 37 Regionen), Stand 08/2026
 - Wappen von Wikimedia Commons (243 Einträge; Regionen ohne Wappen bekommen einen Platzhalter-Schild)
-- Gesehen-Toggle mit Datum (nachträglich änderbar), Speicherung in `localStorage`
+- Gesehen-Toggle mit Datum (nachträglich änderbar), Speicherung in `localStorage`;
+  das Entfernen einer Sichtung muss bestätigt werden
 - Suche über Taufname, Triebzugnummer, Taufort und Baureihe
 - Filter: Gesehen/Fehlt, Städte/Regionen, aktuell vergebene Namen, Zugtyp
 - Sortierung: Name, Taufdatum, letzte Sichtung
 - Detail-Sheet mit kompletter Namensträger-Historie (z. B. Nürnberg: ICE-TD 5504 → ICE 1 111 → ICE 1 175)
+- Tipp aufs Wappen im Detail-Sheet öffnet es in der Großansicht (Lightbox)
 - Statistik-Sheet: Fortschrittsring, Auswertung nach Zugtyp und Kategorie, Sichtungen der letzten 12 Monate
 - Export/Import der Sammlung (JSON, via Teilen/Zwischenablage)
 
@@ -67,3 +70,13 @@ python fetch_wappen2.py   # zweiter Durchlauf über Artikel-Bildlisten
 python fetch_wappen3.py   # kuratierte Spezialfälle (Berlin, Wien, ...)
 python build_data.py      # -> ../data.js
 ```
+
+### Einzeldatei bauen
+
+```bash
+python tools/build_standalone.py
+```
+
+Fasst `index.html`, `style.css` und `app.js` zu `standalone.html` zusammen; die
+eingebetteten Wappen (Data-URIs) werden aus der vorhandenen `standalone.html`
+übernommen.

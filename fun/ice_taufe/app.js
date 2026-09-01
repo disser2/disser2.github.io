@@ -77,6 +77,91 @@
     return placeholderShield(e.name);
   }
 
+  // Wikimedia-Thumbnails: fuer die Grossansicht eine hoehere Aufloesung anfordern
+  function bigWappenSrc(url) {
+    if (!url || url.indexOf("data:") === 0) return url;
+    return url.replace(/\/\d+px-/, "/500px-");
+  }
+
+  // ---------- Wappen-Lightbox ----------
+  function openLightbox(id) {
+    var e = TRAINS.find(function (t) { return t.id === id; });
+    if (!e) return;
+    var box = $("lbImg");
+    box.innerHTML = "";
+    if (e.wappen) {
+      var img = document.createElement("img");
+      img.alt = "Wappen " + e.name;
+      img.addEventListener("load", function () {
+        // Kleine Vorlagen (z. B. eingebettete 120-px-Wappen) vergroessern, aber
+        // hoechstens 2,6-fach, damit sie nicht zu unscharf werden.
+        var f = Math.min(2.6,
+          Math.min(window.innerWidth * 0.8, 420) / this.naturalWidth,
+          window.innerHeight * 0.58 / this.naturalHeight);
+        if (f > 1) this.style.width = Math.round(this.naturalWidth * f) + "px";
+      });
+      img.addEventListener("error", function () {
+        if (this.src !== e.wappen) { this.src = e.wappen; }        // 500px nicht verfuegbar
+        else { box.innerHTML = placeholderShield(e.name); }
+      });
+      img.src = bigWappenSrc(e.wappen);
+      box.appendChild(img);
+    } else {
+      box.innerHTML = placeholderShield(e.name);
+    }
+    $("lbCap").innerHTML = '<div class="lb-name">' + esc(e.name) + '</div>' +
+      '<div class="lb-sub">' + (e.kat === "stadt" ? "Stadt / Gemeinde" : "Region / Landschaft") +
+      (e.wappen ? " · Wappen: Wikimedia Commons" : " · kein Wappen hinterlegt") + '</div>';
+    var lb = $("lightbox");
+    lb.hidden = false;
+    requestAnimationFrame(function () {
+      requestAnimationFrame(function () { lb.classList.add("show"); });
+    });
+  }
+  function closeLightbox() {
+    var lb = $("lightbox");
+    if (lb.hidden) return;
+    lb.classList.remove("show");
+    setTimeout(function () { lb.hidden = true; $("lbImg").innerHTML = ""; }, 250);
+  }
+
+  // ---------- Bestaetigungs-Dialog ----------
+  function confirmDialog(opts, onOk) {
+    // evtl. noch ausblendenden Dialog sofort entfernen, damit kein unsichtbarer Layer stehen bleibt
+    var stale = document.querySelectorAll(".alert-backdrop");
+    for (var i = 0; i < stale.length; i++) stale[i].parentNode.removeChild(stale[i]);
+    openAlert = null;
+
+    var wrap = document.createElement("div");
+    wrap.className = "alert-backdrop";
+    wrap.innerHTML = '<div class="alert" role="alertdialog" aria-modal="true">' +
+      '<div class="alert-title">' + esc(opts.title) + '</div>' +
+      (opts.text ? '<div class="alert-text">' + esc(opts.text) + '</div>' : "") +
+      '<div class="alert-actions">' +
+        '<button class="alert-btn" data-act="cancel">' + esc(opts.cancel || "Abbrechen") + '</button>' +
+        '<button class="alert-btn ' + (opts.destructive ? "destructive" : "primary") + '" data-act="ok">' +
+          esc(opts.ok || "OK") + '</button>' +
+      '</div></div>';
+    document.body.appendChild(wrap);
+    requestAnimationFrame(function () {
+      requestAnimationFrame(function () { wrap.classList.add("show"); });
+    });
+    function close(ok) {
+      if (!wrap.parentNode) return;
+      wrap.classList.remove("show");
+      setTimeout(function () { if (wrap.parentNode) wrap.parentNode.removeChild(wrap); }, 200);
+      openAlert = null;
+      if (ok) onOk();
+    }
+    wrap.addEventListener("click", function (ev) {
+      var b = ev.target.closest("[data-act]");
+      if (b) close(b.dataset.act === "ok");
+      else if (ev.target === wrap) close(false);
+    });
+    openAlert = function () { close(false); };
+  }
+  var openAlert = null; // Schliesser des offenen Dialogs (fuer Escape)
+
   // ---------- Filter + Sortierung ----------
   function filtered() {
     var q = state.q.toLowerCase();
@@ -138,11 +223,24 @@
   }
 
   // ---------- Gesehen-Toggle ----------
+  // Beim Entfernen einer Sichtung wird nachgefragt; done() laeuft nur bei Aenderung.
   function toggleSeen(id) {
-    if (seen[id]) { delete seen[id]; }
-    else { seen[id] = { d: todayISO() }; }
-    saveSeen();
-    renderList();
+    function apply(fn) {
+      fn(); saveSeen(); renderList();
+      if (currentDetail === id && !$("detailSheet").hidden) openDetail(id); // offenes Sheet aktualisieren
+    }
+    if (seen[id]) {
+      var e = TRAINS.find(function (t) { return t.id === id; });
+      confirmDialog({
+        title: "Sichtung entfernen?",
+        text: "„" + (e ? e.name : id) + "“ gilt dann wieder als nicht gesehen. " +
+              "Das Sichtungsdatum " + fmtDate(seen[id].d) + " geht verloren.",
+        ok: "Entfernen",
+        destructive: true
+      }, function () { apply(function () { delete seen[id]; }); });
+      return;
+    }
+    apply(function () { seen[id] = { d: todayISO() }; });
   }
 
   // ---------- Detail-Sheet ----------
@@ -155,7 +253,12 @@
     var kat = e.kat === "stadt" ? "Stadt / Gemeinde" : "Region / Landschaft";
     var html =
       '<div class="detail-top">' +
-        '<div class="wappen" data-ph="' + esc(placeholderShield(e.name).replace(/"/g, "'")) + '">' + wappenHTML(e) + '</div>' +
+        '<button class="wappen-zoom" id="detailWappen" aria-label="Wappen von ' + esc(e.name) + ' vergrößern">' +
+          '<div class="wappen" data-ph="' + esc(placeholderShield(e.name).replace(/"/g, "'")) + '">' + wappenHTML(e) + '</div>' +
+          '<span class="zoom-badge"><svg viewBox="0 0 24 24" width="13" height="13"><path fill="currentColor" ' +
+            'd="M15.5 14h-.79l-.28-.27a6.5 6.5 0 1 0-.7.7l.27.28v.79l5 4.99L20.49 19zm-6 0A4.5 4.5 0 1 1 14 9.5 4.5 4.5 0 0 1 9.5 14z' +
+            'M10 7h-1v2H7v1h2v2h1v-2h2V9h-2z"/></svg></span>' +
+        '</button>' +
         '<div><div class="detail-name">' + esc(e.name) + '</div>' +
         '<div class="detail-kat">' + kat + (e.nr ? " · Namensgebung Nr. " + e.nr : "") + '</div></div>' +
       '</div>' +
@@ -184,10 +287,8 @@
       html += '</div>';
     }
     $("detailContent").innerHTML = html;
-    $("detailSeenBtn").addEventListener("click", function () {
-      toggleSeen(id);
-      openDetail(id); // neu rendern
-    });
+    $("detailWappen").addEventListener("click", function () { openLightbox(id); });
+    $("detailSeenBtn").addEventListener("click", function () { toggleSeen(id); });
     var dateInput = $("detailSeenDate");
     if (dateInput) {
       dateInput.addEventListener("change", function () {
@@ -314,9 +415,12 @@
     } catch (e) { alert("Konnte die Daten nicht lesen."); }
   }
   function doReset() {
-    if (confirm("Wirklich die gesamte Sammlung löschen?")) {
-      seen = {}; saveSeen(); renderList(); renderStats();
-    }
+    confirmDialog({
+      title: "Sammlung zurücksetzen?",
+      text: "Alle " + Object.keys(seen).length + " Sichtungen werden gelöscht. Das lässt sich nicht rückgängig machen.",
+      ok: "Löschen",
+      destructive: true
+    }, function () { seen = {}; saveSeen(); renderList(); renderStats(); });
   }
 
   // ---------- Sheets ----------
@@ -395,6 +499,17 @@
   $("statsClose").addEventListener("click", function () { hideSheet("statsSheet", "statsBackdrop"); });
   $("statsBackdrop").addEventListener("click", function () { hideSheet("statsSheet", "statsBackdrop"); });
   $("detailBackdrop").addEventListener("click", function () { hideSheet("detailSheet", "detailBackdrop"); });
+  $("lbClose").addEventListener("click", closeLightbox);
+  $("lightbox").addEventListener("click", function (ev) {
+    if (!ev.target.closest(".lb-img img")) closeLightbox();
+  });
+  document.addEventListener("keydown", function (ev) {
+    if (ev.key !== "Escape") return;
+    if (openAlert) { openAlert(); return; }
+    if (!$("lightbox").hidden) { closeLightbox(); return; }
+    if (!$("detailSheet").hidden) { hideSheet("detailSheet", "detailBackdrop"); return; }
+    if (!$("statsSheet").hidden) { hideSheet("statsSheet", "statsBackdrop"); }
+  });
 
   // Swipe-down zum Schließen der Sheets
   ["detailSheet", "statsSheet"].forEach(function (id) {
