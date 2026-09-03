@@ -77,6 +77,15 @@ input[type=datetime-local]{
 .notein{width:100%;height:40px;border:0;border-radius:14px;background:var(--fill);padding:0 14px;font:400 15px/1 inherit}
 .notein::placeholder{color:var(--text2)}
 
+/* ---------- Gericht-Dropdown ---------- */
+.selwrap{position:relative}
+.dishselect{
+  width:100%;height:42px;border:0;border-radius:21px;background:var(--card);box-shadow:var(--shadow);
+  padding:0 34px 0 14px;font:500 15px/1 inherit;color:var(--text);
+  appearance:none;-webkit-appearance:none;
+}
+.selarrow{position:absolute;right:14px;top:50%;transform:translateY(-55%);font-size:13px;color:var(--text2);pointer-events:none}
+
 /* ---------- Schnellwahl ---------- */
 .quick{display:flex;gap:7px;overflow-x:auto;padding:3px 16px;margin:10px -16px 0;scrollbar-width:none}
 .quick::-webkit-scrollbar{display:none}
@@ -94,6 +103,7 @@ input[type=datetime-local]{
 }
 .save:disabled{background:var(--fill);color:var(--text3);box-shadow:none}
 .save:active:not(:disabled){transform:scale(.985)}
+.save span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:92%}
 
 /* ---------- Tabbar ---------- */
 .tabbar{
@@ -118,6 +128,7 @@ input[type=datetime-local]{
 .meal .h{display:flex;align-items:baseline;gap:8px}
 .meal .h .type{font:600 16px/1.2 inherit}
 .meal .h .time{font:500 13px/1.2 inherit;color:var(--text2);margin-left:auto}
+.meal .dish{font:600 14.5px/1.3 inherit;color:var(--text);margin-top:6px}
 .meal .tags{display:flex;flex-wrap:wrap;gap:5px;margin-top:8px}
 .tag{font:500 13px/1 inherit;padding:6px 9px;border-radius:9px;background:var(--fill);color:var(--text)}
 .tag.p{background:var(--blue-soft);color:var(--blue)}
@@ -142,6 +153,7 @@ input[type=datetime-local]{
 .xlabels span{flex:1;text-align:center;font:400 10px/1 inherit;color:var(--text2);overflow:hidden;white-space:nowrap}
 .rank{display:flex;align-items:center;gap:9px;padding:6px 2px}
 .rank .n{font:400 15px/1 inherit;width:110px;flex:none;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.rank.wide .n{width:170px}
 .rank .track{flex:1;height:10px;border-radius:5px;background:var(--fill);overflow:hidden}
 .rank .fill{height:100%;border-radius:5px;background:var(--blue)}
 .rank .c{font:600 14px/1 inherit;color:var(--text2);width:26px;text-align:right;flex:none}

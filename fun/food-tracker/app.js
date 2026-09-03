@@ -24,6 +24,20 @@ const CATS = [
   ]}
 ];
 
+const DISHES = [
+  'Chili con carne (mit Hackfleisch)',
+  'Hähnchen-Curry mit Gemüse und Reis',
+  'Japanisches Curry',
+  'Linsensuppe mit Kartoffeln',
+  'Maultaschen',
+  'Nudelauflauf',
+  'Pelmeni',
+  'Pizza',
+  'Ramen',
+  'Sauerkrautsuppe mit Mettenden und Kartoffeln',
+  'Shakshuka'
+];
+
 const MEAL_TYPES = ['Frühstück', 'Mittag', 'Abend', 'Snack'];
 const STORE_KEY = 'mahlzeiten.v1';
 const WD = ['So','Mo','Di','Mi','Do','Fr','Sa'];
@@ -40,7 +54,7 @@ const emptySel = () => ({ protein: [], carbs: [], veggies: [], sides: [] });
 let store = {
   v: 1,
   meals: [],                                     // {id, ts, type, sel:{...}, note}
-  custom: { protein: [], carbs: [], veggies: [], sides: [] },
+  custom: { protein: [], carbs: [], veggies: [], sides: [], dishes: [] },
   settings: { autoCopy: true }
 };
 
@@ -51,7 +65,10 @@ function load() {
     const d = JSON.parse(raw);
     if (d && Array.isArray(d.meals)) {
       store.meals = d.meals.filter(m => m && m.ts).map(normalizeMeal);
-      if (d.custom) CATS.forEach(c => { if (Array.isArray(d.custom[c.key])) store.custom[c.key] = d.custom[c.key].slice(); });
+      if (d.custom) {
+        CATS.forEach(c => { if (Array.isArray(d.custom[c.key])) store.custom[c.key] = d.custom[c.key].slice(); });
+        if (Array.isArray(d.custom.dishes)) store.custom.dishes = d.custom.dishes.slice();
+      }
       if (d.settings && typeof d.settings.autoCopy === 'boolean') store.settings.autoCopy = d.settings.autoCopy;
     }
   } catch (e) { console.warn('Laden fehlgeschlagen', e); }
@@ -73,8 +90,13 @@ function normalizeMeal(m) {
     ts: m.ts,
     type: MEAL_TYPES.indexOf(m.type) >= 0 ? m.type : guessType(new Date(m.ts)),
     sel: sel,
+    dish: typeof m.dish === 'string' ? m.dish : '',
     note: typeof m.note === 'string' ? m.note : ''
   };
+}
+
+function allDishes() {
+  return DISHES.concat(store.custom.dishes).slice().sort((a, b) => a.localeCompare(b, 'de'));
 }
 
 const uid = () => Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
@@ -115,6 +137,7 @@ function relDay(d) {
 function mealString(m) {
   const d = new Date(m.ts);
   const parts = [dateKey(d) + ' ' + timeStr(d), m.type];
+  if (m.dish) parts.push('Gericht: ' + m.dish);
   CATS.forEach(c => {
     if (m.sel[c.key] && m.sel[c.key].length) parts.push(c.short + ': ' + m.sel[c.key].join(', '));
   });
@@ -286,10 +309,10 @@ function addCustomItem(cat, done) {
    Screen: Erfassen
    ============================================================ */
 
-const draft = { ts: null, type: null, typeManual: false, sel: emptySel(), note: '' };
+const draft = { ts: null, type: null, typeManual: false, sel: emptySel(), dish: '', note: '' };
 
 function draftDate() { return draft.ts ? new Date(draft.ts) : new Date(); }
-function draftHasItems() { return CATS.some(c => draft.sel[c.key].length > 0); }
+function draftHasItems() { return !!draft.dish || CATS.some(c => draft.sel[c.key].length > 0); }
 
 function renderTime() {
   const d = draftDate();
@@ -321,8 +344,8 @@ function renderQuick() {
   const seen = new Map();
   recent.forEach(m => {
     const items = selSummary(m);
-    if (!items.length) return;
-    const sig = CATS.map(c => (m.sel[c.key] || []).slice().sort().join(',')).join('|');
+    if (!items.length && !m.dish) return;
+    const sig = (m.dish || '') + '|' + CATS.map(c => (m.sel[c.key] || []).slice().sort().join(',')).join('|');
     if (!seen.has(sig)) seen.set(sig, { m: m, n: 0 });
     seen.get(sig).n++;
   });
@@ -333,10 +356,14 @@ function renderQuick() {
   top.forEach(entry => {
     const b = el('button', 'qcard');
     b.appendChild(el('span', 't', entry.n > 1 ? entry.n + '×' : '↺'));
-    b.appendChild(el('span', 'l', selSummary(entry.m).join(' · ')));
+    const items = selSummary(entry.m);
+    const label = entry.m.dish ? (entry.m.dish + (items.length ? ' · ' + items.join(' · ') : '')) : items.join(' · ');
+    b.appendChild(el('span', 'l', label));
     b.onclick = () => {
+      draft.dish = entry.m.dish || '';
       CATS.forEach(c => { draft.sel[c.key] = (entry.m.sel[c.key] || []).slice(); });
       renderCats($('#cats'), draft.sel, updateSaveBtn);
+      populateDishSelect();
       updateSaveBtn();
       haptic(12);
     };
@@ -346,17 +373,23 @@ function renderQuick() {
 
 function updateSaveBtn() {
   const n = CATS.reduce((s, c) => s + draft.sel[c.key].length, 0);
+  const hasDish = !!draft.dish;
   const btn = $('#btn-save');
-  btn.disabled = n === 0;
-  btn.textContent = n === 0 ? 'Auswählen zum Speichern' : 'Speichern · ' + n + ' Zutat' + (n === 1 ? '' : 'en');
+  const label = $('#save-label');
+  btn.disabled = n === 0 && !hasDish;
+  if (n === 0 && !hasDish) label.textContent = 'Auswählen zum Speichern';
+  else if (hasDish && n === 0) label.textContent = 'Speichern · ' + draft.dish;
+  else if (hasDish) label.textContent = 'Speichern · ' + draft.dish + ' +' + n;
+  else label.textContent = 'Speichern · ' + n + ' Zutat' + (n === 1 ? '' : 'en');
 }
 
 function resetDraft() {
-  draft.ts = null; draft.type = null; draft.typeManual = false; draft.sel = emptySel(); draft.note = '';
+  draft.ts = null; draft.type = null; draft.typeManual = false; draft.sel = emptySel(); draft.dish = ''; draft.note = '';
   $('#note').value = '';
   $('#note').classList.add('hide');
   $('#note-toggle').classList.remove('hide');
   $('#time-editor').classList.add('hide');
+  populateDishSelect();
   renderTime(); renderMealTypes();
   renderCats($('#cats'), draft.sel, updateSaveBtn);
   updateSaveBtn();
@@ -370,6 +403,7 @@ function saveDraft() {
     ts: d.toISOString(),
     type: draft.type || guessType(d),
     sel: JSON.parse(JSON.stringify(draft.sel)),
+    dish: draft.dish || '',
     note: $('#note').value.trim()
   };
   store.meals.push(meal);
@@ -394,6 +428,58 @@ function saveDraft() {
   renderLog();
   renderStats();
 }
+
+/* Gericht-Dropdown */
+function populateDishSelect() {
+  const sel = $('#dish-select');
+  sel.innerHTML = '';
+  sel.appendChild(new Option('Kein Gericht · Zutaten wählen', ''));
+  allDishes().forEach(name => sel.appendChild(new Option(name, name)));
+  sel.appendChild(new Option('＋ Eigenes Gericht…', '__custom__'));
+  sel.value = draft.dish && allDishes().indexOf(draft.dish) >= 0 ? draft.dish : '';
+}
+
+function addCustomDish(done) {
+  openSheet('Eigenes Gericht', body => {
+    const inp = el('input', 'txtin');
+    inp.type = 'text';
+    inp.placeholder = 'z. B. Gulasch';
+    inp.autocapitalize = 'sentences';
+    body.appendChild(inp);
+    const row = el('div', 'btnrow');
+    const cancel = el('button', '', 'Abbrechen');
+    const ok = el('button', 'pri', 'Hinzufügen');
+    cancel.onclick = closeSheet;
+    ok.onclick = () => {
+      const v = inp.value.trim();
+      if (!v) return;
+      const exists = DISHES.some(n => n.toLowerCase() === v.toLowerCase())
+        || store.custom.dishes.some(n => n.toLowerCase() === v.toLowerCase());
+      if (!exists) { store.custom.dishes.push(v); save(); }
+      closeSheet();
+      done(v);
+    };
+    row.appendChild(cancel); row.appendChild(ok);
+    body.appendChild(row);
+    setTimeout(() => inp.focus(), 260);
+  });
+}
+
+$('#dish-select').onchange = () => {
+  const v = $('#dish-select').value;
+  if (v === '__custom__') {
+    $('#dish-select').value = draft.dish || '';
+    addCustomDish(name => {
+      draft.dish = name;
+      populateDishSelect();
+      updateSaveBtn();
+    });
+    return;
+  }
+  draft.dish = v;
+  updateSaveBtn();
+  haptic();
+};
 
 /* Ereignisse Erfassen-Screen */
 $('#btn-save').onclick = saveDraft;
@@ -461,6 +547,8 @@ function renderLog() {
     h.appendChild(el('span', 'time', timeStr(d) + ' Uhr'));
     card.appendChild(h);
 
+    if (m.dish) card.appendChild(el('div', 'dish', '🍽️ ' + m.dish));
+
     const tags = el('div', 'tags');
     CATS.forEach(c => (m.sel[c.key] || []).forEach(i => tags.appendChild(el('span', 'tag' + (c.key === 'protein' ? ' p' : ''), i))));
     card.appendChild(tags);
@@ -472,7 +560,7 @@ function renderLog() {
 }
 
 function openMealSheet(meal) {
-  const work = { sel: JSON.parse(JSON.stringify(meal.sel)), ts: meal.ts, type: meal.type, note: meal.note };
+  const work = { sel: JSON.parse(JSON.stringify(meal.sel)), ts: meal.ts, type: meal.type, dish: meal.dish || '', note: meal.note };
   openSheet('Mahlzeit bearbeiten', body => {
     const dt = el('input');
     dt.type = 'datetime-local';
@@ -493,6 +581,29 @@ function openMealSheet(meal) {
     drawSeg();
     body.appendChild(seg);
 
+    const selWrap = el('div', 'selwrap');
+    selWrap.style.marginTop = '10px';
+    const dishSel = el('select', 'dishselect');
+    const fillDishSel = () => {
+      dishSel.innerHTML = '';
+      dishSel.appendChild(new Option('Kein Gericht', ''));
+      allDishes().forEach(name => dishSel.appendChild(new Option(name, name)));
+      dishSel.appendChild(new Option('＋ Eigenes Gericht…', '__custom__'));
+      dishSel.value = work.dish || '';
+    };
+    fillDishSel();
+    dishSel.onchange = () => {
+      if (dishSel.value === '__custom__') {
+        dishSel.value = work.dish || '';
+        addCustomDish(name => { work.dish = name; fillDishSel(); });
+        return;
+      }
+      work.dish = dishSel.value;
+    };
+    selWrap.appendChild(dishSel);
+    selWrap.appendChild(el('span', 'selarrow', '⌄'));
+    body.appendChild(selWrap);
+
     const cats = el('div');
     body.appendChild(cats);
     renderCats(cats, work.sel, null);
@@ -508,9 +619,9 @@ function openMealSheet(meal) {
     bCopy.onclick = () => copy(mealString(meal)).then(ok => toast(ok ? 'Kopiert' : 'Kopieren nicht möglich', mealString(meal), []));
     const bSave = el('button', 'pri', 'Sichern');
     bSave.onclick = () => {
-      const has = CATS.some(c => work.sel[c.key].length);
-      if (!has) { toast('Mindestens eine Zutat wählen', '', []); return; }
-      meal.sel = work.sel; meal.ts = work.ts; meal.type = work.type; meal.note = (work.note || '').trim();
+      const has = work.dish || CATS.some(c => work.sel[c.key].length);
+      if (!has) { toast('Gericht oder Zutat wählen', '', []); return; }
+      meal.sel = work.sel; meal.ts = work.ts; meal.type = work.type; meal.dish = work.dish || ''; meal.note = (work.note || '').trim();
       save(); closeSheet(); renderAll();
       toast('Aktualisiert', '', []);
     };
@@ -561,6 +672,7 @@ function renderStats() {
   const bs = buckets(statsRange);
   const index = new Map(bs.map((b, i) => [b.key, i]));
   const counts = { protein: {}, carbs: {}, veggies: {}, sides: {} };
+  const dishCounts = {};
   let total = 0;
 
   store.meals.forEach(m => {
@@ -569,6 +681,7 @@ function renderStats() {
     if (!index.has(key)) return;
     bs[index.get(key)].n++;
     total++;
+    if (m.dish) dishCounts[m.dish] = (dishCounts[m.dish] || 0) + 1;
     CATS.forEach(c => (m.sel[c.key] || []).forEach(i => { counts[c.key][i] = (counts[c.key][i] || 0) + 1; }));
   });
 
@@ -648,6 +761,26 @@ function renderStats() {
   }
   host.appendChild(barCard);
 
+  /* Rangliste Gerichte */
+  const dishList = Object.entries(dishCounts).sort((a, b) => b[1] - a[1]);
+  if (dishList.length) {
+    host.appendChild(el('div', 'sectitle', 'Gerichte'));
+    const card = el('div', 'card');
+    const mx = dishList[0][1];
+    dishList.slice(0, 8).forEach(([name, n]) => {
+      const r = el('div', 'rank wide');
+      r.appendChild(el('div', 'n', name));
+      const track = el('div', 'track');
+      const fill = el('div', 'fill');
+      fill.style.width = Math.max(6, Math.round(n / mx * 100)) + '%';
+      track.appendChild(fill);
+      r.appendChild(track);
+      r.appendChild(el('div', 'c', String(n)));
+      card.appendChild(r);
+    });
+    host.appendChild(card);
+  }
+
   /* Ranglisten je Kategorie */
   CATS.forEach(cat => {
     const list = Object.entries(counts[cat.key]).sort((a, b) => b[1] - a[1]);
@@ -701,8 +834,8 @@ function renderData() {
   const n = store.meals.length;
   $('#data-sub').textContent = n + ' Mahlzeit' + (n === 1 ? '' : 'en') + ' · lokal gespeichert';
   $('#d-clipauto-state').textContent = store.settings.autoCopy ? 'An' : 'Aus';
-  const cn = CATS.reduce((s, c) => s + store.custom[c.key].length, 0);
-  $('#d-custom-sub').textContent = cn + ' eigene ' + (cn === 1 ? 'Zutat' : 'Zutaten');
+  const cn = CATS.reduce((s, c) => s + store.custom[c.key].length, 0) + store.custom.dishes.length;
+  $('#d-custom-sub').textContent = cn + (cn === 1 ? ' eigener Eintrag' : ' eigene Einträge');
   const sample = store.meals.length
     ? mealString(store.meals[store.meals.length - 1])
     : '2026-09-03 18:45 | Abend | Protein: Lachs | KH: Reis | Gemüse: Brokkoli, Zucchini | Beilagen: Salat';
@@ -790,7 +923,10 @@ function doImport(text, replace) {
 
   if (replace) {
     store.meals = clean;
-    if (data.custom) CATS.forEach(c => { if (Array.isArray(data.custom[c.key])) store.custom[c.key] = data.custom[c.key].slice(); });
+    if (data.custom) {
+      CATS.forEach(c => { if (Array.isArray(data.custom[c.key])) store.custom[c.key] = data.custom[c.key].slice(); });
+      if (Array.isArray(data.custom.dishes)) store.custom.dishes = data.custom.dishes.slice();
+    }
   } else {
     const known = new Set(store.meals.map(m => m.id));
     const sig = new Set(store.meals.map(m => m.ts + '|' + selSummary(m).join(',')));
@@ -799,13 +935,20 @@ function doImport(text, replace) {
       if (sig.has(m.ts + '|' + selSummary(m).join(','))) return;
       store.meals.push(m);
     });
-    if (data.custom) CATS.forEach(c => {
-      (data.custom[c.key] || []).forEach(n => {
-        const dup = store.custom[c.key].some(x => x.toLowerCase() === n.toLowerCase())
-          || c.items.some(i => i[0].toLowerCase() === String(n).toLowerCase());
-        if (!dup) store.custom[c.key].push(n);
+    if (data.custom) {
+      CATS.forEach(c => {
+        (data.custom[c.key] || []).forEach(n => {
+          const dup = store.custom[c.key].some(x => x.toLowerCase() === n.toLowerCase())
+            || c.items.some(i => i[0].toLowerCase() === String(n).toLowerCase());
+          if (!dup) store.custom[c.key].push(n);
+        });
       });
-    });
+      (data.custom.dishes || []).forEach(n => {
+        const dup = DISHES.some(x => x.toLowerCase() === String(n).toLowerCase())
+          || store.custom.dishes.some(x => x.toLowerCase() === String(n).toLowerCase());
+        if (!dup) store.custom.dishes.push(n);
+      });
+    }
   }
 
   save(); closeSheet(); renderAll();
@@ -822,7 +965,7 @@ $('#d-clipauto').onclick = () => {
 };
 
 $('#d-custom').onclick = () => {
-  openSheet('Eigene Zutaten', body => {
+  openSheet('Eigene Einträge', body => {
     let any = false;
     CATS.forEach(cat => {
       const list = store.custom[cat.key];
@@ -846,10 +989,30 @@ $('#d-custom').onclick = () => {
       });
       body.appendChild(rows);
     });
+    if (store.custom.dishes.length) {
+      any = true;
+      body.appendChild(el('div', 'sectitle', 'Gerichte'));
+      const rows = el('div', 'rows');
+      store.custom.dishes.slice().forEach(name => {
+        const r = el('button', 'row');
+        r.appendChild(el('span', 'ico', '🍽️'));
+        r.appendChild(el('span', null, name));
+        const del = el('span', 'chev', 'Löschen');
+        del.style.color = 'var(--red)';
+        r.appendChild(del);
+        r.onclick = () => {
+          store.custom.dishes = store.custom.dishes.filter(x => x !== name);
+          save(); closeSheet(); renderAll();
+          toast('Entfernt', name, []);
+        };
+        rows.appendChild(r);
+      });
+      body.appendChild(rows);
+    }
     if (!any) {
       const e = el('div', 'empty');
       e.appendChild(el('span', 'big', '🏷️'));
-      e.appendChild(el('div', null, 'Noch keine eigenen Zutaten.\nÜber „+“ beim Erfassen anlegen.'));
+      e.appendChild(el('div', null, 'Noch keine eigenen Einträge.\nÜber „+“ beim Erfassen anlegen.'));
       body.appendChild(e);
     }
   });
@@ -865,7 +1028,7 @@ $('#d-wipe').onclick = () => {
     const c = el('button', '', 'Abbrechen'); c.onclick = closeSheet;
     const d = el('button', 'danger', 'Endgültig löschen');
     d.onclick = () => {
-      store.meals = []; store.custom = { protein: [], carbs: [], veggies: [], sides: [] };
+      store.meals = []; store.custom = { protein: [], carbs: [], veggies: [], sides: [], dishes: [] };
       save(); closeSheet(); renderAll();
       toast('Alle Daten gelöscht', '', []);
     };
@@ -896,7 +1059,7 @@ $$('.tab').forEach(t => {
    ============================================================ */
 
 function renderAll() {
-  renderTime(); renderMealTypes(); renderQuick();
+  renderTime(); renderMealTypes(); renderQuick(); populateDishSelect();
   renderCats($('#cats'), draft.sel, updateSaveBtn);
   updateSaveBtn(); renderLog(); renderStats(); renderData();
 }

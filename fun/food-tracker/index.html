@@ -42,6 +42,11 @@
       </div>
     </div>
 
+    <div class="selwrap" style="margin-top:8px">
+      <select id="dish-select" class="dishselect"></select>
+      <span class="selarrow">⌄</span>
+    </div>
+
     <div id="quickwrap" class="hide">
       <div class="quick" id="quick"></div>
     </div>
@@ -53,7 +58,7 @@
     <div style="height:74px"></div>
 
     <div class="savebar">
-      <button class="save" id="btn-save" disabled>Speichern</button>
+      <button class="save" id="btn-save" disabled><span id="save-label">Speichern</span></button>
     </div>
   </section>
 
@@ -94,7 +99,7 @@
     <div class="sectitle">Einstellungen</div>
     <div class="rows">
       <button class="row" id="d-clipauto"><span class="ico">✨</span><span>Automatisch kopieren<span class="sub">Text beim Speichern in die Zwischenablage</span></span><span class="chev" id="d-clipauto-state">An</span></button>
-      <button class="row" id="d-custom"><span class="ico">🏷️</span><span>Eigene Zutaten verwalten<span class="sub" id="d-custom-sub">0 eigene Einträge</span></span><span class="chev">›</span></button>
+      <button class="row" id="d-custom"><span class="ico">🏷️</span><span>Eigene Zutaten &amp; Gerichte<span class="sub" id="d-custom-sub">0 eigene Einträge</span></span><span class="chev">›</span></button>
     </div>
 
     <div class="sectitle">Gefahrenzone</div>

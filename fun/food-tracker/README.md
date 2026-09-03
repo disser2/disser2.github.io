@@ -24,6 +24,13 @@ Komplett offline, ohne Server, ohne Konto. Alles auf Deutsch.
   Die Mahlzeitenart wird sonst automatisch aus der Uhrzeit abgeleitet.
 * **Häufig-Leiste:** die meistgegessenen Kombinationen der letzten
   Einträge – ein Tap übernimmt die komplette Auswahl.
+* **Gericht-Dropdown:** feste Rezepte (Nudelauflauf, Chili con carne,
+  Shakshuka, Japanisches Curry, Ramen, Maultaschen, Pelmeni,
+  Linsensuppe mit Kartoffeln, Sauerkrautsuppe mit Mettenden und
+  Kartoffeln, Hähnchen-Curry mit Gemüse und Reis, Pizza) lassen sich
+  direkt auswählen, ohne die Zutaten einzeln anzutippen. Zutaten-Chips
+  lassen sich zusätzlich wählen (z. B. „Pizza“ + „Salat“). Über
+  „＋ Eigenes Gericht…“ am Ende der Liste eigene Rezepte anlegen.
 * **Eigene Zutaten:** „+“ rechts neben der Kategorie-Überschrift.
 * **Notiz:** optional über „+ Notiz hinzufügen“.
 
@@ -31,7 +38,7 @@ Komplett offline, ohne Server, ohne Konto. Alles auf Deutsch.
 Text kopieren oder löschen (mit Rückgängig).
 
 **Statistik** – Woche/Monat/Jahr: Anteil erfasster Tage, Anzahl
-Mahlzeiten, Verlaufsbalken und Ranglisten je Kategorie.
+Mahlzeiten, Verlaufsbalken und Ranglisten je Kategorie sowie je Gericht.
 
 **Daten** – Export/Import und Einstellungen.
 
@@ -66,12 +73,13 @@ Format:
   "v": 1,
   "exportedAt": "2026-09-03T17:14:49.131Z",
   "settings": { "autoCopy": true },
-  "custom": { "protein": [], "carbs": [], "veggies": [], "sides": [] },
+  "custom": { "protein": [], "carbs": [], "veggies": [], "sides": [], "dishes": ["Gulaschsuppe"] },
   "meals": [
     {
       "id": "mtlsc9m3n19f11",
       "ts": "2026-09-03T17:14:49.131Z",
       "type": "Abend",
+      "dish": "",
       "sel": {
         "protein": ["Hähnchen"], "carbs": ["Reis"],
         "veggies": ["Brokkoli"], "sides": ["Salat"]
@@ -91,5 +99,6 @@ Format:
 | `app.js` | Logik: Erfassen, Verlauf, Statistik, Import/Export |
 | `manifest.json`, `sw.js`, `icon*.png` | Home-Bildschirm & Offline-Cache |
 
-Zutatenlisten stehen oben in `app.js` in der Konstante `CATS` – dort
-lassen sich Kategorien, Namen und Emojis dauerhaft anpassen.
+Zutatenlisten stehen oben in `app.js` in der Konstante `CATS`, die
+Gerichte-Liste für das Dropdown in der Konstante `DISHES` – dort
+lassen sich Kategorien, Namen, Emojis und Rezepte dauerhaft anpassen.
