@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=1, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="Mahlzeiten">
+<meta name="theme-color" content="#F2F2F7" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#000000" media="(prefers-color-scheme: dark)">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="icon.png">
+<link rel="stylesheet" href="styles.css">
+<title>Mahlzeiten</title>
+</head>
+<body>
+
+<div id="app">
+
+  <!-- ============ ERFASSEN ============ -->
+  <section class="screen on" id="scr-new">
+    <div class="topbar">
+      <h1>Mahlzeit</h1>
+      <button class="iconbtn" id="btn-reset" aria-label="Auswahl zurücksetzen">⟲</button>
+    </div>
+
+    <div class="timerow">
+      <button class="timepill" id="time-pill">
+        <span>🕒</span>
+        <span id="time-label" class="now">Jetzt</span>
+        <span class="type" id="time-type">Abend</span>
+      </button>
+      <button class="iconbtn" id="btn-time-edit" aria-label="Zeit ändern">✎</button>
+    </div>
+    <div id="time-editor" class="hide" style="margin-top:8px">
+      <input type="datetime-local" id="time-input">
+      <div class="seg" id="mealtype" style="margin-top:8px"></div>
+      <div class="btnrow">
+        <button id="time-now">Jetzt</button>
+        <button class="pri" id="time-ok">Übernehmen</button>
+      </div>
+    </div>
+
+    <div id="quickwrap" class="hide">
+      <div class="quick" id="quick"></div>
+    </div>
+
+    <div id="cats"></div>
+
+    <button class="notetoggle" id="note-toggle">＋ Notiz hinzufügen</button>
+    <input class="notein hide" id="note" placeholder="Notiz (optional)" style="margin-top:10px" autocomplete="off">
+    <div style="height:74px"></div>
+
+    <div class="savebar">
+      <button class="save" id="btn-save" disabled>Speichern</button>
+    </div>
+  </section>
+
+  <!-- ============ VERLAUF ============ -->
+  <section class="screen" id="scr-log">
+    <div class="topbar">
+      <h1>Verlauf<span class="sub" id="log-sub">&nbsp;</span></h1>
+    </div>
+    <div id="log-list"></div>
+  </section>
+
+  <!-- ============ STATISTIK ============ -->
+  <section class="screen" id="scr-stats">
+    <div class="topbar">
+      <h1>Statistik<span class="sub" id="stats-sub">&nbsp;</span></h1>
+    </div>
+    <div class="seg" id="stats-range">
+      <button data-r="week" class="on">Woche</button>
+      <button data-r="month">Monat</button>
+      <button data-r="year">Jahr</button>
+    </div>
+    <div id="stats-body"></div>
+  </section>
+
+  <!-- ============ DATEN ============ -->
+  <section class="screen" id="scr-data">
+    <div class="topbar">
+      <h1>Daten<span class="sub" id="data-sub">&nbsp;</span></h1>
+    </div>
+
+    <div class="sectitle">Sichern &amp; Übertragen</div>
+    <div class="rows">
+      <button class="row" id="d-export"><span class="ico">⬇️</span><span>JSON exportieren<span class="sub">Datei sichern</span></span><span class="chev">›</span></button>
+      <button class="row" id="d-export-clip"><span class="ico">📋</span><span>JSON in Zwischenablage<span class="sub">Zum Einfügen in Notizen</span></span><span class="chev">›</span></button>
+      <button class="row" id="d-import"><span class="ico">⬆️</span><span>JSON importieren<span class="sub">Datei oder Text einfügen</span></span><span class="chev">›</span></button>
+    </div>
+
+    <div class="sectitle">Einstellungen</div>
+    <div class="rows">
+      <button class="row" id="d-clipauto"><span class="ico">✨</span><span>Automatisch kopieren<span class="sub">Text beim Speichern in die Zwischenablage</span></span><span class="chev" id="d-clipauto-state">An</span></button>
+      <button class="row" id="d-custom"><span class="ico">🏷️</span><span>Eigene Zutaten verwalten<span class="sub" id="d-custom-sub">0 eigene Einträge</span></span><span class="chev">›</span></button>
+    </div>
+
+    <div class="sectitle">Gefahrenzone</div>
+    <div class="rows">
+      <button class="row danger" id="d-wipe"><span class="ico">🗑️</span><span>Alle Daten löschen</span></button>
+    </div>
+
+    <div class="sectitle">Format des Notiz-Texts</div>
+    <div class="card"><div class="muted" style="font-size:13px;line-height:1.4" id="fmt-sample"></div></div>
+
+    <div style="height:20px"></div>
+    <input type="file" id="file-input" accept="application/json,.json" class="hide">
+  </section>
+
+  <!-- ============ TABBAR ============ -->
+  <nav class="tabbar">
+    <button class="tab on" data-scr="new"><span class="i">＋</span><span class="n">Erfassen</span></button>
+    <button class="tab" data-scr="log"><span class="i">≡</span><span class="n">Verlauf</span></button>
+    <button class="tab" data-scr="stats"><span class="i">▦</span><span class="n">Statistik</span></button>
+    <button class="tab" data-scr="data"><span class="i">⚙</span><span class="n">Daten</span></button>
+  </nav>
+</div>
+
+<!-- ============ SHEET ============ -->
+<div class="backdrop" id="backdrop"></div>
+<div class="sheet" id="sheet">
+  <div class="grabber"></div>
+  <div class="sheethead"><h3 id="sheet-title">Titel</h3><button class="xbtn" id="sheet-close">✕</button></div>
+  <div id="sheet-body"></div>
+</div>
+
+<!-- ============ TOAST ============ -->
+<div class="toast" id="toast">
+  <div class="t"><span class="ok">✓</span><span id="toast-title">Gespeichert</span></div>
+  <div class="s" id="toast-text"></div>
+  <div class="acts" id="toast-acts"></div>
+</div>
+
+<script src="app.js"></script>
+</body>
+</html>
