@@ -174,11 +174,11 @@ footer{border-top:1px solid var(--line);padding-top:16px;color:var(--dim);font-s
 <section>
   <div class="shead">
     <h2>Matching Nights</h2>
-    <span class="hint">Alle 11 Frauen setzen, dann die Lichter eintragen.</span>
+    <span class="hint">Eine Frau bleibt pro Nacht ohne Platz – die einfach auf „–“ stehen lassen.</span>
   </div>
   <div class="panel" style="margin-bottom:14px">
     <div class="prefill">
-      <span>Sitzordnung vorbelegen:</span>
+      <span>Sitzordnung vorbelegen (danach die aussetzende Frau auf „–“ stellen):</span>
       <span id="prefillbtns"></span>
       <button class="mini ghost" id="clearseats">leeren</button>
     </div>
@@ -247,7 +247,7 @@ footer{border-top:1px solid var(--line);padding-top:16px;color:var(--dim);font-s
     <button id="export">Daten exportieren</button>
     <button id="importbtn">Daten importieren</button>
     <input type="file" id="importfile" accept="application/json" hidden>
-    <button class="danger" id="reset">Alles zurücksetzen</button>
+    <button class="danger" id="reset">Auf Stand nach Nacht 1 zurücksetzen</button>
     <span id="savenote" style="color:var(--dim)"></span>
   </div>
 </footer>
@@ -321,8 +321,11 @@ function buildSolver(nW, nM, state) {
     const usc = new Int16Array(nN * nM);   // offene Damen je (Nacht, Herr)
     const reach = new Int16Array(nN);
     for (let i = 0; i < nN; i++) {
-      reach[i] = nW;
-      for (let w = 0; w < nW; w++) usc[i * nM + nights[i].seat[w]]++;
+      // Frauen ohne Platz (seat = -1) koennen in dieser Nacht nie ein Licht geben
+      for (let w = 0; w < nW; w++) {
+        const s0 = nights[i].seat[w];
+        if (s0 >= 0) { usc[i * nM + s0]++; reach[i]++; }
+      }
     }
     let nodes = 0;
     let count = 0;
@@ -408,6 +411,7 @@ function buildSolver(nW, nM, state) {
         assign[w] = m;
         for (let i = 0; i < nN; i++) {
           const s2 = nights[i].seat[w];
+          if (s2 < 0) continue;
           usc[i * nM + s2]--;
           if (load[s2] < 2) reach[i]--;
           if (s2 === m) hits[i]++;
@@ -426,6 +430,7 @@ function buildSolver(nW, nM, state) {
         if (load[m] === 0) zeroMen++; else if (!wasZero) doubleUsed = false;
         for (let i = 0; i < nN; i++) {
           const s2 = nights[i].seat[w];
+          if (s2 < 0) continue;
           if (s2 === m) hits[i]--;
           if (load[s2] < 2) reach[i]++;
           usc[i * nM + s2]++;
@@ -472,9 +477,28 @@ const PEOPLE = [
 ];
 PEOPLE.forEach(p => { p.vec = WOMEN.map(w => mi(p.raw[w])); });
 
+/* ===================== Bisheriger Stand der Staffel ===================== */
+const SEED = {
+  nights: [{
+    seat: {Alexandra:"Raul", Christin:"Brian", Emma:"Germain", Francesca:"Bennett", Janice:"Fabian",
+           Jenny:"Robin", Joena:"Robin", Julia:"Damian", Marta:"Johannes", Michelle:"Marvin", Zoe:"Cansin"},
+    lights: 3
+  }],
+  boxes: [
+    {w:"Christin", m:"Marvin", result:"no"},
+    {w:"Marta",    m:"Robin",  result:"no"}
+  ]
+};
+function seedData(){
+  return {
+    nights: SEED.nights.map(n => ({ seat: WOMEN.map(w => n.seat[w] === undefined ? -1 : mi(n.seat[w])), lights: n.lights })),
+    boxes: SEED.boxes.map(b => ({ w: wi(b.w), m: mi(b.m), result: b.result }))
+  };
+}
+
 /* ===================== Zustand ===================== */
 const KEY = "ayto-vip-tracker-v1";
-let data = { nights: [], boxes: [] };   // nights:{seat:[..],lights:n}  boxes:{w,m,result}
+let data = seedData();                 // nights:{seat:[..],lights:n}  boxes:{w,m,result}
 let editIdx = -1;
 
 let backend = null, memBlob = null;
@@ -523,13 +547,16 @@ function recompute(){
     confirmed.push(idx.length === 1 ? idx[0] : -1);
   }
 
-  const scores = PEOPLE.map(p => {
-    if (!feasible) return {max:0, min:0, dead:true};
-    const mx = solver.maxOverlap(p.vec), mn = solver.minOverlap(p.vec);
+  R = { feasible, poss, confirmed, scores: null, count: 0, exact: false, counted: false, tally: null };
+}
+
+// Bestwerte je Prediction – exakte Branch-and-Bound-Suche, läuft nach dem ersten Rendern.
+function recomputeScores(){
+  R.scores = PEOPLE.map(p => {
+    if (!R.feasible) return {max:0, min:0, dead:true};
+    const mx = solverRef.maxOverlap(p.vec), mn = solverRef.minOverlap(p.vec);
     return { max: mx.best, min: mn.best, approx: mx.aborted || mn.aborted, dead:false };
   });
-
-  R = { feasible, poss, confirmed, scores, count: 0, exact: false, counted: false, tally: null };
 }
 
 // Zählung der verbleibenden Auflösungen – teurer, läuft nach dem ersten Rendern.
@@ -554,7 +581,11 @@ function renderStatus(){
 
 function renderBoard(){
   $('board').innerHTML = PEOPLE.map((p,i) => {
-    const s = R.scores[i];
+    const s = R.scores ? R.scores[i] : null;
+    if (!s) return `<div class="row" style="--pc:${p.color}">
+      <div class="who">${p.name}<small>wird berechnet …</small></div>
+      <div class="pips">${'<i class="pip"></i>'.repeat(nW)}</div>
+      <div class="score"><div class="num">–</div><div class="lbl">von 11 maximal</div></div></div>`;
     const pips = Array.from({length:nW}, (_,k) =>
       `<i class="pip ${k < s.min ? 'sure' : (k < s.max ? 'maybe' : '')}"></i>`).join('');
     return `<div class="row ${s.dead?'dead':''}" style="--pc:${p.color}">
@@ -579,9 +610,11 @@ function renderNights(){
       const cls = v === n.lights ? 'ok' : 'bad';
       return `<td class="tnum impl ${cls}">${v}</td>`;
     }).join('');
-    const pairs = n.seat.map((m,w)=>`<em>${WOMEN[w]}</em> – ${MEN[m]}`).join(' · ');
+    const pairs = n.seat.map((m,w)=> m >= 0 ? `<em>${WOMEN[w]}</em> – ${MEN[m]}` : null).filter(Boolean).join(' · ');
+    const outw = WOMEN.filter((_,w)=> n.seat[w] < 0);
+    const outTxt = outw.length ? `<div class="nightpairs" style="color:var(--dim)">ohne Platz: ${outw.join(', ')}</div>` : '';
     return `<tr>
-      <td><b>Nacht ${idx+1}</b><div class="nightpairs">${pairs}</div></td>
+      <td><b>Nacht ${idx+1}</b><div class="nightpairs">${pairs}</div>${outTxt}</td>
       <td><span class="lightbadge"><i class="dotL"></i>${n.lights}</span></td>
       ${impl}
       <td class="tnum"><div class="btnrow" style="justify-content:flex-end">
@@ -640,14 +673,18 @@ function renderPredictions(){
       const cls = R.confirmed[wIdx] === m ? 'yes' : (R.poss[wIdx][m] ? '' : 'no');
       return `<li class="${cls}"><span>${w}</span><span class="pr">${MEN[m]}</span></li>`;
     }).join('');
-    return `<div class="pcol" style="--pc:${p.color}"><h3>${p.name} · max. ${R.scores[i].max}</h3><ul>${items}</ul></div>`;
+    const cap = R.scores ? ('max. ' + R.scores[i].max) : 'rechnet …';
+    return `<div class="pcol" style="--pc:${p.color}"><h3>${p.name} · ${cap}</h3><ul>${items}</ul></div>`;
   }).join('');
 }
 
 function renderAll(){
   recompute();
   renderStatus(); renderBoard(); renderNights(); renderBoxes(); renderMatrix(); renderPredictions();
-  setTimeout(() => { recomputeCount(12e6, 50000); renderStatus(); renderMatrix(); }, 30);
+  setTimeout(() => {
+    recomputeScores(); renderBoard(); renderPredictions();
+    setTimeout(() => { recomputeCount(12e6, 50000); renderStatus(); renderMatrix(); }, 30);
+  }, 30);
 }
 
 /* ===================== Eingaben ===================== */
@@ -691,8 +728,9 @@ function initInputs(){
 
   $('savenight').addEventListener('click', async () => {
     const seat = readSeats();
-    if (seat.some(v => v < 0)) { $('nightwarn').innerHTML = '<span class="warn">Bitte für jede Frau einen Mann setzen.</span>'; return; }
-    const lights = Math.max(0, Math.min(nW, parseInt($('lights').value,10) || 0));
+    const seated = seat.filter(v => v >= 0).length;
+    if (seated === 0) { $('nightwarn').innerHTML = '<span class="warn">Mindestens ein Paar setzen.</span>'; return; }
+    const lights = Math.max(0, Math.min(seated, parseInt($('lights').value,10) || 0));
     const night = { seat, lights };
     if (editIdx >= 0) data.nights[editIdx] = night; else data.nights.push(night);
     resetNightForm();
@@ -717,7 +755,12 @@ function initInputs(){
     }, 30);
   });
 
-  $('seatgrid').addEventListener('change', checkNight);
+  $('seatgrid').addEventListener('change', () => {
+    checkNight();
+    const seated = readSeats().filter(v => v >= 0).length;
+    $('lights').max = seated;
+    if (+$('lights').value > seated) $('lights').value = seated;
+  });
 
   $('export').addEventListener('click', () => {
     const blob = new Blob([JSON.stringify(data,null,2)], {type:'application/json'});
@@ -736,8 +779,8 @@ function initInputs(){
     e.target.value = '';
   });
   $('reset').addEventListener('click', async () => {
-    if (!confirm('Alle Nächte und Matchboxen löschen?')) return;
-    data = { nights: [], boxes: [] }; resetNightForm(); await persist();
+    if (!confirm('Alles Selbsteingetragene löschen und zurück auf den Stand nach Nacht 1?')) return;
+    data = seedData(); resetNightForm(); await persist();
   });
 }
 
@@ -749,12 +792,19 @@ function resetNightForm(){
 
 function checkNight(){
   const seat = readSeats();
-  if (seat.some(v => v < 0)) { $('nightwarn').textContent = ''; return; }
-  const load = new Array(nM).fill(0); seat.forEach(m => load[m]++);
-  const empty = load.filter(l=>l===0).length, dbl = load.filter(l=>l===2).length, more = load.filter(l=>l>2).length;
-  $('nightwarn').innerHTML = (empty === 0 && dbl === 1 && more === 0)
-    ? '<span style="color:var(--match)">Sitzordnung vollständig: 10 Männer, ein Doppelplatz.</span>'
-    : `<span class="warn">Ungewöhnliche Sitzordnung: ${empty} Mann/Männer sitzen nicht, ${dbl+more} doppelt belegt. Speichern geht trotzdem.</span>`;
+  const out = WOMEN.filter((_,i) => seat[i] < 0);
+  const load = new Array(nM).fill(0);
+  seat.forEach(m => { if (m >= 0) load[m]++; });
+  const unused = load.filter(l => l === 0).length, twice = load.filter(l => l > 1).length;
+  const notes = [];
+  if (out.length === 1) notes.push('ohne Platz: ' + out[0]);
+  else if (out.length > 1) notes.push(out.length + ' Frauen ohne Platz: ' + out.join(', '));
+  if (twice) notes.push(twice + ' Mann/Männer doppelt gesetzt');
+  if (unused) notes.push(unused + ' Mann/Männer nicht gesetzt');
+  const clean = out.length === 1 && !twice && !unused;
+  $('nightwarn').innerHTML = clean
+    ? `<span style="color:var(--match)">10 Paare, jeder Mann einmal, ${out[0]} sitzt aus.</span>`
+    : (notes.length ? `<span class="warn">${notes.join(' · ')}. Speichern geht trotzdem.</span>` : '');
 }
 
 async function persist(){
