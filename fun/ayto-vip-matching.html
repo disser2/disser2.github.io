@@ -1,0 +1,775 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>AYTO VIP – Matching-Tracker</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#171029; --panel:#211838; --panel2:#2b2049; --line:#3a2d5e;
+  --ink:#F3EDFF; --mute:#A294C6; --dim:#7A6B9E;
+  --light:#FFC24B; --match:#3ED9A0; --out:#FF5C7A;
+  --p0:#58C7F3; --p1:#FF6FA5; --p2:#A88BFF; --p3:#F2C14E;
+  --r:10px;
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{
+  background:
+    radial-gradient(1100px 520px at 12% -8%, #33235e 0%, rgba(51,35,94,0) 62%),
+    radial-gradient(900px 420px at 92% 4%, #3b1f47 0%, rgba(59,31,71,0) 60%),
+    var(--bg);
+  color:var(--ink);
+  font-family:Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+  font-size:15px; line-height:1.55;
+  -webkit-font-smoothing:antialiased;
+}
+.wrap{max-width:1120px;margin:0 auto;padding:28px 18px 90px}
+h1,h2,.num{font-family:Anton,Impact,"Arial Narrow Bold",sans-serif;font-weight:400;letter-spacing:.01em}
+h1{font-size:clamp(30px,6.4vw,54px);line-height:.98;margin:0 0 10px}
+h2{font-size:20px;margin:0;color:var(--ink)}
+p{margin:0 0 12px}
+a{color:var(--p0)}
+.sub{color:var(--mute);max-width:62ch;margin:0}
+header.top{padding:8px 0 26px;border-bottom:1px solid var(--line);margin-bottom:26px}
+.statusbar{display:flex;flex-wrap:wrap;gap:10px 22px;align-items:baseline;margin-top:16px;font-size:13.5px;color:var(--mute)}
+.statusbar b{color:var(--ink);font-weight:600}
+.warn{color:var(--out);font-weight:600}
+
+section{margin:0 0 34px}
+.shead{display:flex;align-items:baseline;justify-content:space-between;gap:14px;margin-bottom:12px;flex-wrap:wrap}
+.shead .hint{color:var(--dim);font-size:13px;max-width:52ch}
+
+/* ---------- Scoreboard ---------- */
+.board{display:grid;gap:10px}
+.row{
+  display:grid;grid-template-columns:110px 1fr auto;gap:14px;align-items:center;
+  background:var(--panel);border:1px solid var(--line);border-left:4px solid var(--pc);
+  border-radius:var(--r);padding:12px 14px;
+}
+.row .who{font-weight:600;font-size:16px;color:var(--pc)}
+.row .who small{display:block;color:var(--dim);font-weight:500;font-size:11.5px;letter-spacing:.02em}
+.pips{display:flex;gap:5px;flex-wrap:wrap}
+.pip{width:100%;height:16px;border-radius:3px;background:#2f2551;border:1px solid #3d3067;flex:1 1 12px;min-width:10px}
+.pip.sure{background:var(--pc);border-color:var(--pc)}
+.pip.maybe{background:repeating-linear-gradient(135deg,rgba(255,194,75,.5) 0 3px,rgba(255,194,75,.12) 3px 6px);border-color:rgba(255,194,75,.55)}
+.score{text-align:right;min-width:96px}
+.score .num{font-size:34px;line-height:1;color:var(--ink)}
+.score .lbl{font-size:11.5px;color:var(--dim)}
+.score .sureline{font-size:12px;color:var(--match)}
+.dead .score .num{color:var(--out)}
+
+/* ---------- generic panels ---------- */
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:var(--r);padding:16px}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+@media(max-width:820px){.grid2{grid-template-columns:1fr}}
+
+table{width:100%;border-collapse:collapse;font-size:13.5px}
+th{text-align:left;font-weight:600;color:var(--mute);font-size:12px;padding:6px 8px;border-bottom:1px solid var(--line)}
+td{padding:7px 8px;border-bottom:1px solid rgba(58,45,94,.5);vertical-align:top}
+tr:last-child td{border-bottom:none}
+.tnum{text-align:right;font-variant-numeric:tabular-nums}
+
+button{
+  font:inherit;font-weight:600;font-size:13.5px;color:var(--ink);
+  background:var(--panel2);border:1px solid var(--line);border-radius:8px;
+  padding:8px 13px;cursor:pointer;
+}
+button:hover{border-color:#5a479a;background:#33265a}
+button:focus-visible,select:focus-visible,input:focus-visible{outline:2px solid var(--light);outline-offset:2px}
+button.primary{background:var(--light);color:#2a1c05;border-color:var(--light)}
+button.primary:hover{background:#ffd071}
+button.ghost{background:transparent}
+button.mini{padding:4px 9px;font-size:12px;border-radius:6px}
+button.danger:hover{border-color:var(--out);color:var(--out)}
+select,input[type=number],input[type=text]{
+  font:inherit;font-size:13.5px;color:var(--ink);background:#1c1533;
+  border:1px solid var(--line);border-radius:7px;padding:7px 8px;width:100%;
+}
+label.f{display:block;font-size:11.5px;color:var(--mute);margin-bottom:3px}
+.btnrow{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+
+/* ---------- night form ---------- */
+.seatgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px;margin:12px 0}
+.prefill{display:flex;gap:6px;flex-wrap:wrap;align-items:center;font-size:12.5px;color:var(--mute)}
+.nightpairs{color:var(--mute);font-size:12.5px;line-height:1.7}
+.nightpairs em{font-style:normal;color:var(--ink)}
+.lightbadge{display:inline-flex;align-items:center;gap:6px;font-weight:700;color:var(--light)}
+.lightbadge .dotL{width:9px;height:9px;border-radius:50%;background:var(--light);box-shadow:0 0 8px rgba(255,194,75,.8)}
+.impl{font-variant-numeric:tabular-nums}
+.impl.bad{color:var(--out)}
+.impl.ok{color:var(--match)}
+
+/* ---------- matrix ---------- */
+.mscroll{overflow-x:auto;padding-bottom:6px}
+table.matrix{border-collapse:separate;border-spacing:3px;font-size:12px;width:auto}
+table.matrix th{border:none;padding:2px 4px;white-space:nowrap;color:var(--mute);font-size:11.5px}
+table.matrix th.corner{position:sticky;left:0;background:var(--bg);z-index:3}
+table.matrix th.rowh{position:sticky;left:0;background:var(--bg);z-index:2;text-align:right;color:var(--ink);font-weight:600}
+table.matrix td{border:none;padding:0}
+.cell{
+  position:relative;width:64px;height:38px;border-radius:7px;background:#241b3f;
+  border:1px solid #342961;display:flex;align-items:center;justify-content:center;
+  font-variant-numeric:tabular-nums;color:var(--mute);font-weight:600;
+}
+.cell.no{background:#1c1533;border-color:#2a2149;color:#4b3f70}
+.cell.yes{background:rgba(62,217,160,.16);border-color:var(--match);color:var(--match)}
+.cell.hot{border-color:rgba(255,194,75,.75)}
+.dots{position:absolute;top:3px;right:4px;display:flex;gap:2px}
+.dots i{width:5px;height:5px;border-radius:50%;display:block}
+.legend{display:flex;gap:16px;flex-wrap:wrap;font-size:12.5px;color:var(--mute);margin-top:10px}
+.legend span{display:inline-flex;align-items:center;gap:6px}
+.sw{width:12px;height:12px;border-radius:4px;border:1px solid var(--line);display:inline-block}
+
+/* ---------- predictions detail ---------- */
+.pcols{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
+@media(max-width:900px){.pcols{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:540px){.pcols{grid-template-columns:1fr}}
+.pcol{background:var(--panel);border:1px solid var(--line);border-radius:var(--r);overflow:hidden}
+.pcol h3{margin:0;padding:10px 12px;font-size:14px;background:var(--panel2);color:var(--pc);border-bottom:1px solid var(--line)}
+.pcol ul{list-style:none;margin:0;padding:6px 0}
+.pcol li{padding:5px 12px;font-size:12.5px;border-left:3px solid transparent;color:var(--mute);display:flex;justify-content:space-between;gap:8px}
+.pcol li .pr{color:var(--ink)}
+.pcol li.yes{border-left-color:var(--match)}
+.pcol li.yes .pr{color:var(--match)}
+.pcol li.no{border-left-color:var(--out)}
+.pcol li.no .pr{color:#8d7ba9;text-decoration:line-through}
+
+.chip{display:inline-block;padding:2px 8px;border-radius:999px;font-size:11.5px;font-weight:600;border:1px solid var(--line);color:var(--mute)}
+.chip.match{color:var(--match);border-color:rgba(62,217,160,.5)}
+.chip.nomatch{color:var(--out);border-color:rgba(255,92,122,.5)}
+.empty{color:var(--dim);font-size:13px;padding:6px 0}
+footer{border-top:1px solid var(--line);padding-top:16px;color:var(--dim);font-size:12.5px}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+@media(max-width:600px){
+  .row{grid-template-columns:1fr auto;gap:10px}
+  .row .pips{grid-column:1/-1}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header class="top">
+  <h1>Wer kann noch<br>wie viel richtig haben?</h1>
+  <p class="sub">AYTO VIP mit 11 Frauen und 10 Männern – ein Mann hat ein Doppelmatch. Trag Matching Nights und Matchboxen ein, der Rechner prüft alle noch möglichen Auflösungen und sagt dir je Prediction, wie viele Paare bestenfalls noch stimmen können.</p>
+  <div class="statusbar">
+    <span>Mögliche Auflösungen: <b id="solcount">–</b></span>
+    <span>Bestätigte Paare: <b id="confcount">0</b></span>
+    <span id="statusmsg"></span>
+  </div>
+</header>
+
+<section>
+  <div class="shead">
+    <h2>Punktestand</h2>
+    <span class="hint">Gefüllt = in jeder verbleibenden Auflösung richtig. Schraffiert = kann noch richtig werden.</span>
+  </div>
+  <div class="board" id="board"></div>
+</section>
+
+<section>
+  <div class="shead">
+    <h2>Matching Nights</h2>
+    <span class="hint">Alle 11 Frauen setzen, dann die Lichter eintragen.</span>
+  </div>
+  <div class="panel" style="margin-bottom:14px">
+    <div class="prefill">
+      <span>Sitzordnung vorbelegen:</span>
+      <span id="prefillbtns"></span>
+      <button class="mini ghost" id="clearseats">leeren</button>
+    </div>
+    <div class="seatgrid" id="seatgrid"></div>
+    <div class="btnrow">
+      <div style="width:130px">
+        <label class="f" for="lights">Lichter</label>
+        <input type="number" id="lights" min="0" max="11" value="0">
+      </div>
+      <div style="flex:1"></div>
+      <button class="ghost" id="cancelnight" hidden>Abbrechen</button>
+      <button class="primary" id="savenight">Nacht speichern</button>
+    </div>
+    <div id="nightwarn" class="empty"></div>
+  </div>
+  <div class="panel">
+    <table id="nighttable"></table>
+  </div>
+</section>
+
+<section>
+  <div class="shead">
+    <h2>Matchboxen</h2>
+    <span class="hint">Perfect Match fixiert das Paar, No Match schließt es aus.</span>
+  </div>
+  <div class="panel">
+    <div class="btnrow" style="align-items:flex-end">
+      <div style="flex:1 1 160px"><label class="f" for="boxw">Frau</label><select id="boxw"></select></div>
+      <div style="flex:1 1 160px"><label class="f" for="boxm">Mann</label><select id="boxm"></select></div>
+      <div style="flex:1 1 150px"><label class="f" for="boxr">Ergebnis</label>
+        <select id="boxr"><option value="match">Perfect Match</option><option value="no">No Match</option></select></div>
+      <button class="primary" id="savebox">Eintragen</button>
+    </div>
+    <div style="margin-top:12px"><table id="boxtable"></table></div>
+  </div>
+</section>
+
+<section>
+  <div class="shead">
+    <h2>Wer kann noch mit wem</h2>
+    <span class="hint" id="matrixhint"></span>
+    <button class="mini ghost" id="deepcount" hidden>Wahrscheinlichkeiten exakt berechnen</button>
+  </div>
+  <div class="panel mscroll">
+    <table class="matrix" id="matrix"></table>
+    <div class="legend">
+      <span><i class="sw" style="background:rgba(62,217,160,.16);border-color:#3ED9A0"></i> feststehend</span>
+      <span><i class="sw" style="background:#241b3f"></i> noch möglich</span>
+      <span><i class="sw" style="background:#1c1533"></i> ausgeschlossen</span>
+      <span><i class="sw" style="border-color:rgba(255,194,75,.75)"></i> gute Matchbox-Frage</span>
+      <span id="dotlegend"></span>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="shead">
+    <h2>Die vier Predictions</h2>
+    <span class="hint">Durchgestrichen = dieses Paar ist raus.</span>
+  </div>
+  <div class="pcols" id="pcols"></div>
+</section>
+
+<footer>
+  <div class="btnrow">
+    <button id="export">Daten exportieren</button>
+    <button id="importbtn">Daten importieren</button>
+    <input type="file" id="importfile" accept="application/json" hidden>
+    <button class="danger" id="reset">Alles zurücksetzen</button>
+    <span id="savenote" style="color:var(--dim)"></span>
+  </div>
+</footer>
+
+</div>
+
+<script>
+/* ===========================================================
+   AYTO-Solver
+   Damen: W (11), Herren: M (10)
+   Struktur: jede Dame genau 1 Herr, jeder Herr >= 1 Dame,
+             genau ein Herr hat 2 Damen (Doppelmatch).
+   Constraints:
+     - fixed[w] = m        (Perfect Match aus Matchbox)
+     - forbidden Set "w:m" (No Match aus Matchbox)
+     - nights: {seat: [mIdx je Dame], lights: k}
+   =========================================================== */
+
+function buildSolver(nW, nM, state) {
+  const fixed = state.fixed;            // Array(nW) mit mIdx oder -1
+  const banned = state.banned;          // Set "w:m"
+  const nights = state.nights;          // [{seat:[...], lights:n}]
+
+  // Kandidatenlisten je Dame
+  const cand = [];
+  for (let w = 0; w < nW; w++) {
+    if (fixed[w] >= 0) {
+      cand.push(banned.has(w + ':' + fixed[w]) ? [] : [fixed[w]]);
+      continue;
+    }
+    const list = [];
+    for (let m = 0; m < nM; m++) if (!banned.has(w + ':' + m)) list.push(m);
+    cand.push(list);
+  }
+
+  // Damen nach Kandidatenzahl sortieren (most constrained first)
+  const order = Array.from({ length: nW }, (_, i) => i)
+    .sort((a, b) => cand[a].length - cand[b].length);
+
+  const nN = nights.length;
+
+  /* Generische Tiefensuche.
+     mode: 'exist' | 'count' | 'max' | 'min'
+     pref: Array(nW) -> bevorzugter Herr (Prediction) oder null
+     pin:  {w, m} zusätzlich fixierte Paarung oder null
+  */
+  function run(mode, pref, pin, budget) {
+    // Suffix-Zähler: wie viele der ab Tiefe d noch offenen Damen sitzen in
+    // Nacht i genau bei ihrem Prediction-Herrn? Reihenfolge ist statisch,
+    // daher vorab berechenbar. Liefert scharfe Schranken fürs Ziel.
+    let suffA = null;
+    if (pref && nN) {
+      suffA = [];
+      for (let i = 0; i < nN; i++) {
+        const arr = new Int16Array(nW + 1);
+        for (let d = nW - 1; d >= 0; d--) {
+          const w = order[d];
+          arr[d] = arr[d + 1] + (nights[i].seat[w] === pref[w] ? 1 : 0);
+        }
+        suffA.push(arr);
+      }
+    }
+
+    const assign = new Int8Array(nW).fill(-1);
+    const load = new Int8Array(nM);
+    let zeroMen = nM;
+    let doubleUsed = false;
+    const hits = new Int16Array(nN);
+    // Erreichbarkeits-Schranke je Nacht: wie viele der noch offenen Damen
+    // koennten ihren Nacht-Herrn ueberhaupt noch bekommen?
+    const usc = new Int16Array(nN * nM);   // offene Damen je (Nacht, Herr)
+    const reach = new Int16Array(nN);
+    for (let i = 0; i < nN; i++) {
+      reach[i] = nW;
+      for (let w = 0; w < nW; w++) usc[i * nM + nights[i].seat[w]]++;
+    }
+    let nodes = 0;
+    let count = 0;
+    let best = mode === 'max' ? -1 : (mode === 'min' ? 99 : 0);
+    let found = false;
+    let aborted = false;
+    const cap = budget && budget.solutions ? budget.solutions : Infinity;
+    const maxNodes = budget && budget.nodes ? budget.nodes : 4e6;
+    const tally = budget && budget.tally ? budget.tally : null; // Int32Array nW*nM
+
+    function dfs(depth, overlap) {
+      if (aborted) return true;
+      if (++nodes > maxNodes) { aborted = true; return true; }
+
+      if (depth === nW) {
+        if (zeroMen !== 0 || !doubleUsed) return false;
+        for (let i = 0; i < nN; i++) if (hits[i] !== nights[i].lights) return false;
+        found = true;
+        if (mode === 'exist') return true;
+        if (mode === 'count') {
+          count++;
+          if (tally) for (let w = 0; w < nW; w++) tally[w * nM + assign[w]]++;
+          return count >= cap;
+        }
+        if (mode === 'max') { if (overlap > best) best = overlap; return best === nW; }
+        if (mode === 'min') { if (overlap < best) best = overlap; return best === 0; }
+        return false;
+      }
+
+      const remaining = nW - depth;
+
+      // Struktur-Bound: offene Damen müssen alle leeren Herren abdecken
+      if (zeroMen > remaining) return false;
+      if (remaining > zeroMen + (doubleUsed ? 0 : 1)) return false;
+
+      // Nacht-Bounds
+      for (let i = 0; i < nN; i++) {
+        const l = nights[i].lights;
+        if (hits[i] > l || hits[i] + reach[i] < l) return false;
+      }
+
+      // Ziel-Bound
+      if (mode === 'max') {
+        let up = remaining;
+        if (suffA) for (let i = 0; i < nN; i++) {
+          const a = suffA[i][depth];
+          const need = nights[i].lights - hits[i];
+          const b = (remaining - a) + (need < a ? need : a);
+          if (b < up) up = b;
+        }
+        if (overlap + up <= best) return false;
+      }
+      if (mode === 'min') {
+        let lo = 0;
+        if (suffA) for (let i = 0; i < nN; i++) {
+          const a = suffA[i][depth];
+          const need = nights[i].lights - hits[i] - (remaining - a);
+          if (need > lo) lo = need;
+        }
+        if (overlap + lo >= best) return false;
+      }
+
+      const w = order[depth];
+      let list = cand[w];
+      if (pin && pin.w === w) {
+        if (!list.includes(pin.m)) return false;
+        list = [pin.m];
+      } else if (pref) {
+        const p = pref[w];
+        if (list.includes(p)) {
+          list = mode === 'min'
+            ? list.filter(x => x !== p).concat([p])
+            : [p].concat(list.filter(x => x !== p));
+        }
+      }
+
+      for (let k = 0; k < list.length; k++) {
+        const m = list[k];
+        if (load[m] >= 2) continue;
+        if (load[m] === 1 && doubleUsed) continue;
+
+        // anwenden
+        assign[w] = m;
+        for (let i = 0; i < nN; i++) {
+          const s2 = nights[i].seat[w];
+          usc[i * nM + s2]--;
+          if (load[s2] < 2) reach[i]--;
+          if (s2 === m) hits[i]++;
+        }
+        const wasZero = load[m] === 0;
+        load[m]++;
+        if (wasZero) zeroMen--; else doubleUsed = true;
+        if (load[m] === 2) for (let i = 0; i < nN; i++) reach[i] -= usc[i * nM + m];
+        const add = pref && pref[w] === m ? 1 : 0;
+
+        const stop = dfs(depth + 1, overlap + add);
+
+        // zurücknehmen
+        if (load[m] === 2) for (let i = 0; i < nN; i++) reach[i] += usc[i * nM + m];
+        load[m]--;
+        if (load[m] === 0) zeroMen++; else if (!wasZero) doubleUsed = false;
+        for (let i = 0; i < nN; i++) {
+          const s2 = nights[i].seat[w];
+          if (s2 === m) hits[i]--;
+          if (load[s2] < 2) reach[i]++;
+          usc[i * nM + s2]++;
+        }
+        assign[w] = -1;
+
+        if (stop) return true;
+      }
+      return false;
+    }
+
+    dfs(0, 0);
+    return { found, count, best, nodes, aborted };
+  }
+
+  return {
+    feasible: () => run('exist', null, null, { nodes: 3e6 }).found,
+    pairPossible: (w, m) => {
+      if (banned.has(w + ':' + m)) return false;
+      if (fixed[w] >= 0 && fixed[w] !== m) return false;
+      return run('exist', null, { w, m }, { nodes: 3e6 }).found;
+    },
+    countSolutions: (cap, tally, nodes) => {
+      const r = run('count', null, null, { solutions: cap, nodes: nodes || 3e6, tally });
+      r.truncated = r.aborted || r.count >= cap;
+      return r;
+    },
+    maxOverlap: pref => run('max', pref, null, { nodes: 4e6 }),
+    minOverlap: pref => run('min', pref, null, { nodes: 4e6 })
+  };
+}
+
+/* ===================== Daten ===================== */
+const WOMEN = ["Alexandra","Christin","Emma","Francesca","Janice","Jenny","Joena","Julia","Marta","Michelle","Zoe"];
+const MEN   = ["Bennett","Brian","Cansin","Damian","Fabian","Germain","Johannes","Marvin","Raul","Robin"];
+const nW = WOMEN.length, nM = MEN.length;
+const wi = n => WOMEN.indexOf(n), mi = n => MEN.indexOf(n);
+
+const PEOPLE = [
+  {name:"Dario", color:"var(--p0)", raw:{Alexandra:"Raul",Michelle:"Germain",Zoe:"Cansin",Marta:"Johannes",Francesca:"Brian",Christin:"Fabian",Jenny:"Bennett",Julia:"Marvin",Janice:"Robin",Emma:"Damian",Joena:"Fabian"}},
+  {name:"Katja", color:"var(--p1)", raw:{Christin:"Brian",Marta:"Johannes",Janice:"Fabian",Michelle:"Raul",Julia:"Raul",Francesca:"Marvin",Zoe:"Damian",Jenny:"Bennett",Joena:"Cansin",Alexandra:"Germain",Emma:"Robin"}},
+  {name:"David", color:"var(--p2)", raw:{Emma:"Marvin",Marta:"Johannes",Janice:"Damian",Zoe:"Brian",Julia:"Fabian",Joena:"Fabian",Christin:"Robin",Jenny:"Germain",Francesca:"Cansin",Alexandra:"Raul",Michelle:"Bennett"}},
+  {name:"Samanta", color:"var(--p3)", raw:{Marta:"Johannes",Julia:"Raul",Janice:"Damian",Joena:"Germain",Alexandra:"Fabian",Francesca:"Bennett",Zoe:"Cansin",Christin:"Robin",Jenny:"Marvin",Emma:"Brian",Michelle:"Brian"}}
+];
+PEOPLE.forEach(p => { p.vec = WOMEN.map(w => mi(p.raw[w])); });
+
+/* ===================== Zustand ===================== */
+const KEY = "ayto-vip-tracker-v1";
+let data = { nights: [], boxes: [] };   // nights:{seat:[..],lights:n}  boxes:{w,m,result}
+let editIdx = -1;
+
+let backend = null, memBlob = null;
+async function loadState(){
+  if (window.storage) { backend='app';
+    try { const r = await window.storage.get(KEY); if (r && r.value) return JSON.parse(r.value); } catch(e){}
+    return null; }
+  try { const v = localStorage.getItem(KEY); backend='local'; return v ? JSON.parse(v) : null; }
+  catch(e){ backend='mem'; return null; }
+}
+async function saveState(){
+  const s = JSON.stringify(data);
+  if (backend==='app'){ try { await window.storage.set(KEY, s); return true; } catch(e){} }
+  if (backend==='local'){ try { localStorage.setItem(KEY, s); return true; } catch(e){ backend='mem'; } }
+  memBlob = s; return false;
+}
+
+/* ===================== Auswertung ===================== */
+let R = null;        // Ergebnisobjekt
+let solverRef = null;
+
+function currentConstraints(){
+  const fixed = new Array(nW).fill(-1);
+  const banned = new Set();
+  for (const b of data.boxes){
+    if (b.result === 'match') fixed[b.w] = b.m; else banned.add(b.w+':'+b.m);
+  }
+  return { fixed, banned, nights: data.nights };
+}
+
+function recompute(){
+  const st = currentConstraints();
+  const solver = buildSolver(nW, nM, st);
+  solverRef = solver;
+  const feasible = solver.feasible();
+
+  // Paarmatrix
+  const poss = [];
+  for (let w=0; w<nW; w++){
+    poss.push([]);
+    for (let m=0; m<nM; m++) poss[w].push(feasible ? solver.pairPossible(w,m) : false);
+  }
+  const confirmed = [];
+  for (let w=0; w<nW; w++){
+    const idx = poss[w].map((p,i)=>p?i:-1).filter(i=>i>=0);
+    confirmed.push(idx.length === 1 ? idx[0] : -1);
+  }
+
+  const scores = PEOPLE.map(p => {
+    if (!feasible) return {max:0, min:0, dead:true};
+    const mx = solver.maxOverlap(p.vec), mn = solver.minOverlap(p.vec);
+    return { max: mx.best, min: mn.best, approx: mx.aborted || mn.aborted, dead:false };
+  });
+
+  R = { feasible, poss, confirmed, scores, count: 0, exact: false, counted: false, tally: null };
+}
+
+// Zählung der verbleibenden Auflösungen – teurer, läuft nach dem ersten Rendern.
+function recomputeCount(nodeBudget, cap){
+  if (!R.feasible){ R.counted = true; R.count = 0; R.exact = false; return; }
+  const tally = new Int32Array(nW*nM);
+  const c = solverRef.countSolutions(cap, tally, nodeBudget);
+  R.count = c.count; R.exact = !c.truncated && c.count > 0; R.tally = tally; R.counted = true;
+}
+
+/* ===================== Rendern ===================== */
+const $ = id => document.getElementById(id);
+const de = n => n.toLocaleString('de-DE');
+
+function renderStatus(){
+  $('solcount').textContent = !R.counted ? "wird gezählt …"
+    : (!R.feasible ? "0" : (R.exact ? de(R.count) : "über " + de(R.count)));
+  $('confcount').textContent = R.confirmed.filter(m=>m>=0).length;
+  $('statusmsg').innerHTML = R.feasible ? ""
+    : '<span class="warn">Die Angaben widersprechen sich – keine Auflösung passt zu allen Nächten und Matchboxen.</span>';
+}
+
+function renderBoard(){
+  $('board').innerHTML = PEOPLE.map((p,i) => {
+    const s = R.scores[i];
+    const pips = Array.from({length:nW}, (_,k) =>
+      `<i class="pip ${k < s.min ? 'sure' : (k < s.max ? 'maybe' : '')}"></i>`).join('');
+    return `<div class="row ${s.dead?'dead':''}" style="--pc:${p.color}">
+      <div class="who">${p.name}<small>${s.dead ? 'keine gültige Auflösung' : (s.min === s.max ? 'steht fest' : 'noch offen')}</small></div>
+      <div class="pips">${pips}</div>
+      <div class="score">
+        <div class="num">${s.max}</div>
+        <div class="lbl">von 11 maximal</div>
+        <div class="sureline">${s.min} sicher richtig</div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function renderNights(){
+  const t = $('nighttable');
+  if (!data.nights.length){ t.innerHTML = '<tr><td class="empty">Noch keine Matching Night eingetragen.</td></tr>'; return; }
+  const head = `<tr><th>Nacht</th><th>Lichter</th>${PEOPLE.map(p=>`<th class="tnum" style="color:${p.color}">${p.name}</th>`).join('')}<th></th></tr>`;
+  const rows = data.nights.map((n,idx) => {
+    const impl = PEOPLE.map(p => {
+      const v = n.seat.reduce((s,m,w)=> s + (m === p.vec[w] ? 1 : 0), 0);
+      const cls = v === n.lights ? 'ok' : 'bad';
+      return `<td class="tnum impl ${cls}">${v}</td>`;
+    }).join('');
+    const pairs = n.seat.map((m,w)=>`<em>${WOMEN[w]}</em> – ${MEN[m]}`).join(' · ');
+    return `<tr>
+      <td><b>Nacht ${idx+1}</b><div class="nightpairs">${pairs}</div></td>
+      <td><span class="lightbadge"><i class="dotL"></i>${n.lights}</span></td>
+      ${impl}
+      <td class="tnum"><div class="btnrow" style="justify-content:flex-end">
+        <button class="mini ghost" data-editnight="${idx}">bearbeiten</button>
+        <button class="mini ghost danger" data-delnight="${idx}">löschen</button></div></td>
+    </tr>`;
+  }).join('');
+  t.innerHTML = head + rows;
+}
+
+function renderBoxes(){
+  const t = $('boxtable');
+  if (!data.boxes.length){ t.innerHTML = '<tr><td class="empty">Noch keine Matchbox eingetragen.</td></tr>'; return; }
+  t.innerHTML = '<tr><th>Paar</th><th>Ergebnis</th><th></th></tr>' + data.boxes.map((b,idx)=>`
+    <tr><td>${WOMEN[b.w]} – ${MEN[b.m]}</td>
+    <td><span class="chip ${b.result==='match'?'match':'nomatch'}">${b.result==='match'?'Perfect Match':'No Match'}</span></td>
+    <td class="tnum"><button class="mini ghost danger" data-delbox="${idx}">löschen</button></td></tr>`).join('');
+}
+
+function renderMatrix(){
+  const t = $('matrix');
+  let html = '<tr><th class="corner"></th>' + MEN.map(m=>`<th>${m}</th>`).join('') + '</tr>';
+  for (let w=0; w<nW; w++){
+    html += `<tr><th class="rowh">${WOMEN[w]}</th>`;
+    for (let m=0; m<nM; m++){
+      const ok = R.poss[w][m];
+      const fixedHere = R.confirmed[w] === m;
+      let txt = '', cls = ok ? '' : 'no';
+      if (fixedHere) { cls = 'yes'; txt = '✓'; }
+      else if (ok){
+        if (R.exact && R.count > 0 && R.tally){
+          const pct = Math.round(100 * R.tally[w*nM+m] / R.count);
+          txt = pct + '%';
+          if (pct >= 25 && pct <= 70) cls = 'hot';
+        } else txt = '·';
+      }
+      const dots = PEOPLE.map((p,i)=> p.vec[w]===m ? `<i style="background:${p.color}"></i>` : '').join('');
+      html += `<td><div class="cell ${cls}">${txt}<div class="dots">${dots}</div></div></td>`;
+    }
+    html += '</tr>';
+  }
+  t.innerHTML = html;
+  $('matrixhint').textContent = !R.counted
+    ? "Zählt die verbleibenden Auflösungen …"
+    : (R.exact
+      ? "Prozente = Anteil der verbleibenden Auflösungen mit diesem Paar. Werte um 50 % sind die informativsten Matchbox-Fragen."
+      : "Für exakte Wahrscheinlichkeiten sind noch zu viele Auflösungen offen – gezeigt wird, was überhaupt noch möglich ist.");
+  $('deepcount').hidden = !(R.counted && R.feasible && !R.exact);
+  $('dotlegend').innerHTML = 'Punkte = getippt von ' + PEOPLE.map(p=>`<b style="color:${p.color}">${p.name}</b>`).join(', ');
+}
+
+function renderPredictions(){
+  $('pcols').innerHTML = PEOPLE.map((p,i)=>{
+    const items = WOMEN.map((w,wIdx)=>{
+      const m = p.vec[wIdx];
+      const cls = R.confirmed[wIdx] === m ? 'yes' : (R.poss[wIdx][m] ? '' : 'no');
+      return `<li class="${cls}"><span>${w}</span><span class="pr">${MEN[m]}</span></li>`;
+    }).join('');
+    return `<div class="pcol" style="--pc:${p.color}"><h3>${p.name} · max. ${R.scores[i].max}</h3><ul>${items}</ul></div>`;
+  }).join('');
+}
+
+function renderAll(){
+  recompute();
+  renderStatus(); renderBoard(); renderNights(); renderBoxes(); renderMatrix(); renderPredictions();
+  setTimeout(() => { recomputeCount(12e6, 50000); renderStatus(); renderMatrix(); }, 30);
+}
+
+/* ===================== Eingaben ===================== */
+function fillSelect(sel, list){
+  sel.innerHTML = list.map((n,i)=>`<option value="${i}">${n}</option>`).join('');
+}
+function buildSeatGrid(){
+  $('seatgrid').innerHTML = WOMEN.map((w,i)=>`
+    <div><label class="f" for="seat${i}">${w}</label>
+    <select id="seat${i}"><option value="-1">–</option>${MEN.map((m,j)=>`<option value="${j}">${m}</option>`).join('')}</select></div>`).join('');
+}
+function readSeats(){
+  return WOMEN.map((_,i)=> parseInt($('seat'+i).value,10));
+}
+function writeSeats(vec){
+  WOMEN.forEach((_,i)=> $('seat'+i).value = vec ? vec[i] : -1);
+}
+
+function initInputs(){
+  buildSeatGrid();
+  fillSelect($('boxw'), WOMEN);
+  fillSelect($('boxm'), MEN);
+  $('prefillbtns').innerHTML = PEOPLE.map((p,i)=>`<button class="mini ghost" data-prefill="${i}" style="color:${p.color}">${p.name}</button>`).join(' ');
+
+  document.body.addEventListener('click', async ev => {
+    const el = ev.target.closest('button'); if (!el) return;
+    if (el.dataset.prefill !== undefined){ writeSeats(PEOPLE[+el.dataset.prefill].vec); checkNight(); }
+    if (el.id === 'clearseats'){ writeSeats(null); checkNight(); }
+    if (el.dataset.delnight !== undefined){ data.nights.splice(+el.dataset.delnight,1); await persist(); }
+    if (el.dataset.delbox !== undefined){ data.boxes.splice(+el.dataset.delbox,1); await persist(); }
+    if (el.dataset.editnight !== undefined){
+      const idx = +el.dataset.editnight; editIdx = idx;
+      writeSeats(data.nights[idx].seat); $('lights').value = data.nights[idx].lights;
+      $('savenight').textContent = 'Nacht ' + (idx+1) + ' aktualisieren';
+      $('cancelnight').hidden = false; checkNight();
+      $('seatgrid').scrollIntoView({behavior:'smooth', block:'center'});
+    }
+  });
+
+  $('cancelnight').addEventListener('click', resetNightForm);
+
+  $('savenight').addEventListener('click', async () => {
+    const seat = readSeats();
+    if (seat.some(v => v < 0)) { $('nightwarn').innerHTML = '<span class="warn">Bitte für jede Frau einen Mann setzen.</span>'; return; }
+    const lights = Math.max(0, Math.min(nW, parseInt($('lights').value,10) || 0));
+    const night = { seat, lights };
+    if (editIdx >= 0) data.nights[editIdx] = night; else data.nights.push(night);
+    resetNightForm();
+    await persist();
+  });
+
+  $('savebox').addEventListener('click', async () => {
+    const w = +$('boxw').value, m = +$('boxm').value, result = $('boxr').value;
+    data.boxes = data.boxes.filter(b => !(b.w===w && b.m===m));
+    // pro Frau kann es nur ein Perfect Match geben
+    if (result === 'match') data.boxes = data.boxes.filter(b => !(b.w===w && b.result==='match'));
+    data.boxes.push({w,m,result});
+    await persist();
+  });
+
+  $('deepcount').addEventListener('click', () => {
+    const btn = $('deepcount'); btn.textContent = 'rechnet …'; btn.disabled = true;
+    setTimeout(() => {
+      recomputeCount(4e8, 2000000);
+      btn.textContent = 'Wahrscheinlichkeiten exakt berechnen'; btn.disabled = false;
+      renderStatus(); renderMatrix();
+    }, 30);
+  });
+
+  $('seatgrid').addEventListener('change', checkNight);
+
+  $('export').addEventListener('click', () => {
+    const blob = new Blob([JSON.stringify(data,null,2)], {type:'application/json'});
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob); a.download = 'ayto-vip-stand.json'; a.click();
+    URL.revokeObjectURL(a.href);
+  });
+  $('importbtn').addEventListener('click', () => $('importfile').click());
+  $('importfile').addEventListener('change', async e => {
+    const f = e.target.files[0]; if (!f) return;
+    try {
+      const obj = JSON.parse(await f.text());
+      if (!Array.isArray(obj.nights) || !Array.isArray(obj.boxes)) throw new Error('Format');
+      data = obj; await persist();
+    } catch(err){ $('savenote').textContent = 'Datei konnte nicht gelesen werden.'; }
+    e.target.value = '';
+  });
+  $('reset').addEventListener('click', async () => {
+    if (!confirm('Alle Nächte und Matchboxen löschen?')) return;
+    data = { nights: [], boxes: [] }; resetNightForm(); await persist();
+  });
+}
+
+function resetNightForm(){
+  editIdx = -1; writeSeats(null); $('lights').value = 0;
+  $('savenight').textContent = 'Nacht speichern';
+  $('cancelnight').hidden = true; $('nightwarn').textContent = '';
+}
+
+function checkNight(){
+  const seat = readSeats();
+  if (seat.some(v => v < 0)) { $('nightwarn').textContent = ''; return; }
+  const load = new Array(nM).fill(0); seat.forEach(m => load[m]++);
+  const empty = load.filter(l=>l===0).length, dbl = load.filter(l=>l===2).length, more = load.filter(l=>l>2).length;
+  $('nightwarn').innerHTML = (empty === 0 && dbl === 1 && more === 0)
+    ? '<span style="color:var(--match)">Sitzordnung vollständig: 10 Männer, ein Doppelplatz.</span>'
+    : `<span class="warn">Ungewöhnliche Sitzordnung: ${empty} Mann/Männer sitzen nicht, ${dbl+more} doppelt belegt. Speichern geht trotzdem.</span>`;
+}
+
+async function persist(){
+  const ok = await saveState();
+  $('savenote').textContent = ok ? 'Stand gespeichert.' : 'Nur in diesem Tab gespeichert – bitte exportieren.';
+  renderAll();
+}
+
+/* ===================== Start ===================== */
+(async function init(){
+  initInputs();
+  const loaded = await loadState();
+  if (loaded && Array.isArray(loaded.nights) && Array.isArray(loaded.boxes)) data = loaded;
+  renderAll();
+})();
+</script>
+</body>
+</html>
