@@ -1,0 +1,717 @@
+<title>Sozialcheck Deutschland</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@600;700&family=IBM+Plex+Mono:wght@500&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+<style>
+:root{
+  --ground:#ECEEEA;
+  --surface:#FFFFFF;
+  --surface-2:#F5F6F3;
+  --ink:#14181C;
+  --muted:#5A6169;
+  --line:#D2D7CF;
+  --line-strong:#B7BEB3;
+  --accent:#1B3FD8;
+  --accent-deep:#1533A8;
+  --accent-soft:#E3E8FC;
+  --on-accent:#FFFFFF;
+  --good:#0B6E3F;
+  --check:#8A5200;
+  --shadow:0 1px 0 rgba(20,24,28,.05), 0 8px 24px -18px rgba(20,24,28,.5);
+  --r:6px;
+  --f-display:"Archivo","Helvetica Neue",Arial,sans-serif;
+  --f-body:"IBM Plex Sans","Segoe UI",Arial,sans-serif;
+  --f-mono:"IBM Plex Mono","SFMono-Regular",Consolas,monospace;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --ground:#14171A; --surface:#1C2026; --surface-2:#22272E;
+    --ink:#E9ECE7; --muted:#9AA3AA; --line:#333A42; --line-strong:#49525B;
+    --accent:#8FA6FF; --accent-deep:#B3C2FF; --accent-soft:#242C46; --on-accent:#0F1320;
+    --good:#5FCB93; --check:#E4AE5E;
+    --shadow:0 1px 0 rgba(0,0,0,.3), 0 8px 24px -18px #000;
+  }
+}
+:root[data-theme="dark"]{
+  --ground:#14171A; --surface:#1C2026; --surface-2:#22272E;
+  --ink:#E9ECE7; --muted:#9AA3AA; --line:#333A42; --line-strong:#49525B;
+  --accent:#8FA6FF; --accent-deep:#B3C2FF; --accent-soft:#242C46; --on-accent:#0F1320;
+  --good:#5FCB93; --check:#E4AE5E;
+  --shadow:0 1px 0 rgba(0,0,0,.3), 0 8px 24px -18px #000;
+}
+*{box-sizing:border-box}
+body{background:var(--ground);color:var(--ink);font-family:var(--f-body);font-size:16px;line-height:1.5;-webkit-font-smoothing:antialiased}
+h1,h2,h3{font-family:var(--f-display);font-weight:700;margin:0;text-wrap:balance;letter-spacing:-.015em}
+p{margin:0}
+a{color:var(--accent)}
+.wrap{max-width:940px;margin:0 auto;padding:0 20px}
+.eyebrow{font-family:var(--f-mono);font-size:12px;letter-spacing:.09em;text-transform:uppercase;color:var(--muted)}
+
+/* ---------- Kopf ---------- */
+header.top{position:sticky;top:0;z-index:20;background:var(--ground);border-bottom:1px solid var(--line)}
+.topbar{display:flex;align-items:center;gap:16px;justify-content:space-between;padding:14px 20px;max-width:940px;margin:0 auto}
+.brand{display:flex;align-items:center;gap:10px;font-family:var(--f-display);font-weight:700;font-size:17px;letter-spacing:-.02em}
+.brand .mark{width:26px;height:26px;border-radius:3px;background:var(--accent);display:grid;place-items:center;flex:none}
+.brand .mark svg{width:16px;height:16px;stroke:var(--on-accent);fill:none;stroke-width:2.4;stroke-linecap:round;stroke-linejoin:round}
+.rail{display:none;gap:4px;align-items:center}
+@media(min-width:800px){.rail{display:flex}}
+.rail button{font-family:var(--f-mono);font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);background:none;border:0;border-bottom:2px solid transparent;padding:4px 7px 5px;cursor:pointer}
+.rail button[data-state="done"]{color:var(--ink)}
+.rail button[data-state="now"]{color:var(--accent);border-bottom-color:var(--accent)}
+.rail button:disabled{cursor:default;opacity:.45}
+.rail button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.progress{height:3px;background:var(--line)}
+.progress i{display:block;height:100%;background:var(--accent);width:0;transition:width .35s cubic-bezier(.2,.7,.3,1)}
+@media (prefers-reduced-motion:reduce){.progress i{transition:none}}
+
+/* ---------- Frage ---------- */
+main{padding:28px 0 132px}
+.qhead{display:flex;flex-direction:column;gap:8px;margin-bottom:22px}
+.qhead h1{font-size:clamp(26px,5.2vw,38px);line-height:1.1}
+.qhead .sub{color:var(--muted);font-size:15px;max-width:56ch}
+.tiles{display:grid;gap:12px;grid-template-columns:repeat(auto-fit,minmax(160px,1fr))}
+@media(min-width:760px){.tiles{grid-template-columns:repeat(var(--cols,4),1fr)}}
+.tile{position:relative;display:flex;flex-direction:column;gap:9px;align-items:flex-start;text-align:left;
+  min-height:134px;padding:16px 16px 15px;background:var(--surface);color:var(--ink);
+  border:1.5px solid var(--line);border-radius:var(--r);cursor:pointer;font:inherit;
+  transition:border-color .12s,background .12s,transform .12s}
+.tile:hover{border-color:var(--line-strong)}
+.tile:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.tile .ico{width:30px;height:30px;stroke:var(--accent);fill:none;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round;flex:none}
+.tile .num{font-family:var(--f-display);font-size:27px;line-height:1;color:var(--accent);font-weight:700;letter-spacing:-.03em}
+.tile .lab{font-family:var(--f-display);font-weight:600;font-size:16.5px;line-height:1.22;margin-top:auto}
+.tile .hint{font-size:13px;color:var(--muted);line-height:1.35}
+.tile[aria-pressed="true"]{background:var(--accent);border-color:var(--accent);color:var(--on-accent)}
+.tile[aria-pressed="true"] .ico{stroke:var(--on-accent)}
+.tile[aria-pressed="true"] .num{color:var(--on-accent)}
+.tile[aria-pressed="true"] .hint{color:var(--on-accent);opacity:.82}
+.tile .tick{position:absolute;top:13px;right:13px;width:19px;height:19px;opacity:0;stroke:var(--on-accent);fill:none;stroke-width:2.8;stroke-linecap:round;stroke-linejoin:round}
+.tile[aria-pressed="true"] .tick{opacity:1}
+@media (prefers-reduced-motion:no-preference){.tile:active{transform:scale(.985)}}
+
+/* ---------- Aktionsleiste ---------- */
+.actions{position:fixed;left:0;right:0;bottom:0;z-index:20;background:var(--ground);border-top:1px solid var(--line)}
+.actions .inner{max-width:940px;margin:0 auto;padding:14px 20px;display:flex;gap:12px;align-items:center}
+.btn{font:inherit;font-family:var(--f-display);font-weight:600;font-size:17px;border-radius:var(--r);border:1.5px solid transparent;cursor:pointer;padding:16px 26px;transition:background .12s,color .12s}
+.btn-primary{background:var(--accent);color:var(--on-accent);flex:1;min-height:58px}
+.btn-primary:hover{background:var(--accent-deep)}
+.btn-ghost{background:transparent;color:var(--ink);border-color:var(--line-strong);min-height:58px;padding:16px 20px}
+.btn-ghost:hover{background:var(--surface)}
+.btn:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.counter{font-family:var(--f-mono);font-size:12px;color:var(--muted);letter-spacing:.05em;white-space:nowrap}
+
+/* ---------- Ergebnis ---------- */
+.res-head{border-bottom:2px solid var(--ink);padding-bottom:18px;margin-bottom:24px}
+.res-head h1{font-size:clamp(28px,6vw,42px);line-height:1.05;margin-top:6px}
+.score{display:flex;gap:26px;flex-wrap:wrap;margin-top:16px}
+.score div{display:flex;align-items:baseline;gap:8px}
+.score b{font-family:var(--f-display);font-size:30px;line-height:1;letter-spacing:-.03em;font-variant-numeric:tabular-nums}
+.score span{font-size:14px;color:var(--muted)}
+.score .g b{color:var(--good)}
+.score .c b{color:var(--check)}
+.chips{display:flex;flex-wrap:wrap;gap:6px;margin:18px 0 0;align-items:center}
+.chip{font-family:var(--f-mono);font-size:11.5px;letter-spacing:.03em;background:var(--surface-2);border:1px solid var(--line);border-radius:99px;padding:6px 11px;color:var(--muted)}
+button.chip{background:none;border-color:var(--line-strong);color:var(--accent);cursor:pointer;font-family:var(--f-body);font-size:12.5px;font-weight:600;padding:7px 14px}
+button.chip:hover{background:var(--accent-soft)}
+button.chip:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.group{margin-top:34px}
+.group>h2{font-size:20px;display:flex;align-items:center;gap:10px}
+.group>h2 .dot{width:11px;height:11px;border-radius:2px;flex:none}
+.group .glead{color:var(--muted);font-size:14.5px;margin:7px 0 16px;max-width:64ch}
+.cards{display:grid;gap:14px;grid-template-columns:1fr}
+@media(min-width:830px){.cards{grid-template-columns:1fr 1fr}}
+.card{display:flex;background:var(--surface);border:1px solid var(--line);border-radius:var(--r);overflow:hidden;box-shadow:var(--shadow)}
+.card .stripe{width:5px;flex:none;background:var(--line-strong)}
+.card.hoch .stripe{background:var(--good)}
+.card.pruefen .stripe{background:var(--check)}
+.card .body{padding:17px 18px;display:flex;flex-direction:column;gap:9px;flex:1;min-width:0}
+.card h3{font-size:18px;line-height:1.2}
+.card .was{font-size:14.5px}
+.card dl{margin:2px 0 0;display:flex;flex-direction:column;gap:6px;border-top:1px solid var(--line);padding-top:10px}
+.card dl>div{display:flex;gap:9px;font-size:13.5px}
+.card dt{font-family:var(--f-mono);font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);flex:none;width:42px;padding-top:3px}
+.card dd{margin:0;color:var(--muted)}
+.card .go{margin-top:auto;padding-top:12px;display:flex;gap:8px;flex-wrap:wrap}
+.go a{display:inline-flex;align-items:center;gap:7px;font-family:var(--f-display);font-weight:600;font-size:14.5px;text-decoration:none;
+  background:var(--accent-soft);color:var(--accent-deep);border-radius:var(--r);padding:11px 15px;min-height:44px}
+.go a:hover{background:var(--accent);color:var(--on-accent)}
+.go a.sec{background:transparent;border:1.5px solid var(--line-strong);color:var(--ink)}
+.go a.sec:hover{background:var(--surface-2);color:var(--ink)}
+.go a:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.go svg{width:14px;height:14px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;flex:none}
+details.more{margin-top:34px;border-top:1px solid var(--line);padding-top:18px}
+details.more>summary{cursor:pointer;font-family:var(--f-display);font-weight:600;font-size:16px;list-style:none;display:flex;align-items:center;gap:9px}
+details.more>summary::-webkit-details-marker{display:none}
+details.more>summary::before{content:"+";font-family:var(--f-mono);color:var(--accent);font-size:18px}
+details.more[open]>summary::before{content:"\2013"}
+details.more>summary:focus-visible{outline:2px solid var(--accent);outline-offset:3px}
+details.more .cards{margin-top:16px;opacity:.7}
+.note{margin-top:38px;background:var(--surface-2);border:1px solid var(--line);border-radius:var(--r);padding:18px 20px;font-size:14px;color:var(--muted);display:flex;flex-direction:column;gap:9px;max-width:74ch}
+.note b{color:var(--ink);font-family:var(--f-display);font-size:15px}
+footer.foot{border-top:1px solid var(--line);margin-top:28px;padding:20px 0 40px;font-size:12.5px;color:var(--muted);display:flex;gap:16px;flex-wrap:wrap;justify-content:space-between;align-items:center}
+.hidden{display:none!important}
+</style>
+
+<header class="top">
+  <div class="topbar">
+    <div class="brand">
+      <span class="mark" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7"/></svg></span>
+      Sozialcheck
+    </div>
+    <nav class="rail" id="rail" aria-label="Schritte"></nav>
+  </div>
+  <div class="progress"><i id="bar"></i></div>
+</header>
+
+<main>
+  <div class="wrap">
+    <section id="step" aria-live="polite"></section>
+    <section id="result" class="hidden"></section>
+  </div>
+</main>
+
+<div class="actions" id="actions">
+  <div class="inner">
+    <button class="btn btn-ghost" id="back" type="button">Zurück</button>
+    <button class="btn btn-primary" id="next" type="button">Weiter</button>
+    <span class="counter" id="counter"></span>
+  </div>
+</div>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false"><defs>
+<symbol id="i-kinder" viewBox="0 0 24 24"><circle cx="8" cy="6.6" r="3"/><path d="M2.8 20.5v-2.2a5.2 5.2 0 0 1 10.4 0v2.2"/><circle cx="17.6" cy="10.6" r="2.2"/><path d="M14.4 20.5v-1.7a3.3 3.3 0 0 1 6.6 0v1.7"/></symbol>
+<symbol id="i-schwanger" viewBox="0 0 24 24"><circle cx="11.5" cy="4.4" r="2.3"/><path d="M11.5 8.2c-2 0-3.2 1.6-3.2 3.6v9"/><path d="M11.5 9.6a4.3 4.3 0 0 1 0 8.6H8.6"/></symbol>
+<symbol id="i-allein" viewBox="0 0 24 24"><circle cx="9.5" cy="6" r="3.1"/><path d="M4 20.5v-2.4a5.5 5.5 0 0 1 11 0v2.4"/><circle cx="18.6" cy="12.4" r="1.9"/><path d="M18.6 15.2v5.3"/></symbol>
+<symbol id="i-pflege" viewBox="0 0 24 24"><path d="M12 20.4s-7-4.7-7-9.6a3.8 3.8 0 0 1 7-2.1 3.8 3.8 0 0 1 7 2.1c0 4.9-7 9.6-7 9.6z"/></symbol>
+<symbol id="i-behinderung" viewBox="0 0 24 24"><circle cx="12.4" cy="4.2" r="1.9"/><path d="M12.4 7.4v4.9h4.2l2.2 5.4"/><path d="M12.4 12.3H9a4.7 4.7 0 1 0 4 7.2"/></symbol>
+<symbol id="i-nichts" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.4"/><path d="M8.4 12h7.2"/></symbol>
+<symbol id="i-job" viewBox="0 0 24 24"><rect x="2.8" y="7.2" width="18.4" height="12.6" rx="2"/><path d="M8.8 7.2V5.6a2 2 0 0 1 2-2h2.4a2 2 0 0 1 2 2v1.6"/><path d="M2.8 12.6h18.4"/></symbol>
+<symbol id="i-selbst" viewBox="0 0 24 24"><rect x="3.6" y="4.6" width="16.8" height="11.2" rx="2"/><path d="M1.8 19.4h20.4"/></symbol>
+<symbol id="i-suche" viewBox="0 0 24 24"><circle cx="10.4" cy="10.4" r="5.8"/><path d="M14.6 14.6l5.8 5.8"/></symbol>
+<symbol id="i-studium" viewBox="0 0 24 24"><path d="M12 3.6L2.2 8.6 12 13.6l9.8-5L12 3.6z"/><path d="M6.4 11v4.6c0 1.7 2.5 3 5.6 3s5.6-1.3 5.6-3V11"/></symbol>
+<symbol id="i-ausbildung" viewBox="0 0 24 24"><rect x="4.6" y="4.4" width="14.8" height="16.2" rx="2"/><path d="M9.4 4.4h5.2v3H9.4z"/><path d="M8.4 12.4h7.2M8.4 16.2h4.2"/></symbol>
+<symbol id="i-schule" viewBox="0 0 24 24"><path d="M4.4 5.4a2 2 0 0 1 2-2h13.2v15.2H6.4a2 2 0 0 0-2 2V5.4z"/><path d="M19.6 18.6H6.4"/></symbol>
+<symbol id="i-weiter" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.4"/><path d="M12 16.2V8.4"/><path d="M8.6 11.8L12 8.4l3.4 3.4"/></symbol>
+<symbol id="i-krank" viewBox="0 0 24 24"><path d="M2.6 12.4h4.2l2.5-6.6 4.4 13.4 2.4-6.8h5.3"/></symbol>
+<symbol id="i-rente" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2.4v2.2M12 19.4v2.2M2.4 12h2.2M19.4 12h2.2M5.2 5.2l1.6 1.6M17.2 17.2l1.6 1.6M18.8 5.2l-1.6 1.6M6.8 17.2l-1.6 1.6"/></symbol>
+<symbol id="i-pause" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.4"/><path d="M10 9.2v5.6M14 9.2v5.6"/></symbol>
+<symbol id="i-miete" viewBox="0 0 24 24"><rect x="4.8" y="3" width="14.4" height="18" rx="1.6"/><path d="M8.8 7.2h2.2M13 7.2h2.2M8.8 11.4h2.2M13 11.4h2.2M8.8 15.6h2.2M13 15.6h2.2"/></symbol>
+<symbol id="i-eigentum" viewBox="0 0 24 24"><path d="M3.2 10.6L12 3.4l8.8 7.2"/><path d="M5.4 9.4V20.6h13.2V9.4"/><path d="M9.8 20.6v-5.2h4.4v5.2"/></symbol>
+<symbol id="i-eltern" viewBox="0 0 24 24"><path d="M3.2 10.6L12 3.4l8.8 7.2"/><path d="M5.4 9.4V20.6h13.2V9.4"/><path d="M12 17.6s-2.9-1.9-2.9-3.7a1.7 1.7 0 0 1 2.9-1 1.7 1.7 0 0 1 2.9 1c0 1.8-2.9 3.7-2.9 3.7z"/></symbol>
+<symbol id="i-unsicher" viewBox="0 0 24 24"><path d="M12 3.4L1.6 20.6h20.8L12 3.4z"/><path d="M12 10v4.6M12 17.5v.2"/></symbol>
+<symbol id="i-tick" viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7"/></symbol>
+<symbol id="i-ext" viewBox="0 0 24 24"><path d="M14 4h6v6"/><path d="M20 4l-8.6 8.6"/><path d="M18 14v5a1.6 1.6 0 0 1-1.6 1.6H5A1.6 1.6 0 0 1 3.4 19V7.6A1.6 1.6 0 0 1 5 6h5"/></symbol>
+</defs></svg>
+
+<script>
+"use strict";
+
+/* ------------------------------------------------------------ Fragen */
+var STEPS = [
+  { id:"leben", multi:true, kurz:"Leben", cols:3,
+    frage:"Was trifft auf dich zu?",
+    sub:"Mehrere Antworten möglich. Tippe alles an, was passt.",
+    optionen:[
+      {v:"kinder",      ico:"i-kinder",      lab:"Kinder im Haushalt", hint:"Eigene, Stief- oder Pflegekinder"},
+      {v:"schwanger",   ico:"i-schwanger",   lab:"Schwanger oder Kind kommt", hint:"Auch kurz nach der Geburt"},
+      {v:"allein",      ico:"i-allein",      lab:"Alleinerziehend", hint:"Kind lebt hauptsächlich bei dir"},
+      {v:"pflege",      ico:"i-pflege",      lab:"Ich pflege jemanden", hint:"Angehörige zu Hause"},
+      {v:"behinderung", ico:"i-behinderung", lab:"Behinderung oder chronisch krank", hint:"Auch ohne Ausweis"},
+      {v:"keins",       ico:"i-nichts",      lab:"Nichts davon", hint:""}
+    ]},
+  { id:"arbeit", multi:true, kurz:"Arbeit", cols:5,
+    frage:"Wie sieht dein Alltag gerade aus?",
+    sub:"Mehrere Antworten möglich.",
+    optionen:[
+      {v:"job",           ico:"i-job",        lab:"Angestellt", hint:"Voll- oder Teilzeit, Minijob"},
+      {v:"selbst",        ico:"i-selbst",     lab:"Selbstständig", hint:"Freiberuflich oder Gewerbe"},
+      {v:"arbeitslos",    ico:"i-suche",      lab:"Arbeitslos", hint:"Oder kurz davor"},
+      {v:"studium",       ico:"i-studium",    lab:"Studium", hint:"Uni, FH, Fernstudium"},
+      {v:"ausbildung",    ico:"i-ausbildung", lab:"Ausbildung", hint:"Betrieblich oder schulisch"},
+      {v:"schule",        ico:"i-schule",     lab:"Schule", hint:"Allgemeinbildend"},
+      {v:"weiterbildung", ico:"i-weiter",     lab:"Weiterbildung geplant", hint:"Umschulung, Meister, Fachwirt"},
+      {v:"krank",         ico:"i-krank",      lab:"Länger krank", hint:"Arbeitsunfähig oder in Reha"},
+      {v:"rente",         ico:"i-rente",      lab:"Rente", hint:"Altersrente oder Pension"},
+      {v:"pause",         ico:"i-pause",      lab:"Gerade nichts davon", hint:"Erziehungszeit, Pause"}
+    ]},
+  { id:"wohnen", multi:false, kurz:"Wohnen", cols:4,
+    frage:"Wie wohnst du?",
+    sub:"Eine Antwort. Es geht automatisch weiter.",
+    optionen:[
+      {v:"miete",    ico:"i-miete",    lab:"Zur Miete", hint:"Wohnung oder Haus"},
+      {v:"eigentum", ico:"i-eigentum", lab:"Eigenes Zuhause", hint:"Eigentum, oft mit Kredit"},
+      {v:"eltern",   ico:"i-eltern",   lab:"Bei Familie", hint:"Eltern oder Angehörige"},
+      {v:"unsicher", ico:"i-unsicher", lab:"Unsicher oder ohne Wohnung", hint:"Kündigung, Mietschulden, Notunterkunft"}
+    ]},
+  { id:"geld", multi:false, kurz:"Geld", cols:4,
+    frage:"Wie weit reicht euer Geld im Monat?",
+    sub:"Grobe Einschätzung genügt. Zähle alles, was im Haushalt reinkommt.",
+    optionen:[
+      {v:"sehr_gering", num:"1", lab:"Reicht vorne und hinten nicht", hint:"Miete und Essen sind knapp"},
+      {v:"gering",      num:"2", lab:"Reicht gerade so", hint:"Nichts bleibt übrig, keine Rücklagen"},
+      {v:"mittel",      num:"3", lab:"Kommen zurecht", hint:"Etwas Luft, kleine Rücklagen"},
+      {v:"hoch",        num:"4", lab:"Gut versorgt", hint:"Deutlich mehr als nötig"}
+    ]},
+  { id:"alter", multi:false, kurz:"Alter", cols:5,
+    frage:"Wie alt bist du?",
+    sub:"Einige Leistungen hängen am Alter.",
+    optionen:[
+      {v:"u18",   num:"<18", lab:"Unter 18"},
+      {v:"18_24", num:"18",  lab:"18 bis 24"},
+      {v:"25_44", num:"25",  lab:"25 bis 44"},
+      {v:"45_64", num:"45",  lab:"45 bis 64"},
+      {v:"65p",   num:"65+", lab:"65 oder älter"}
+    ]}
+];
+
+/* -------------------------------------------------- Leistungskatalog */
+var AA  = "https://www.arbeitsagentur.de",
+    FP  = "https://familienportal.de/familienportal/familienleistungen",
+    DRV = "https://www.deutsche-rentenversicherung.de/DRV/DE",
+    BGM = "https://www.bundesgesundheitsministerium.de";
+
+var KATALOG = [
+/* Familie und Kinder */
+{n:"Kindergeld",
+ was:"Monatliches Geld für jedes Kind, unabhängig vom Einkommen.",
+ wer:"Für jedes Kind bis 18, in Ausbildung oder Studium bis 25.",
+ wo:"Familienkasse der Agentur für Arbeit",
+ url:AA+"/familie-und-kinder/kindergeld",
+ r:function(f){ return (f.l("kinder")||f.l("schwanger")) ? "hoch" : null; }},
+
+{n:"Kinderzuschlag",
+ was:"Zuschlag oben auf das Kindergeld, wenn das Einkommen für die Familie nicht reicht.",
+ wer:"Eltern mit eigenem Einkommen, das für die Kinder zu knapp ist.",
+ wo:"Familienkasse",
+ url:AA+"/familie-und-kinder/kinderzuschlag", url2:FP+"/kinderzuschlag", lab2:"Erklärung",
+ r:function(f){ if(!f.l("kinder")) return null; if(f.knapp) return "hoch"; return f.geld==="mittel"?"pruefen":null; }},
+
+{n:"Elterngeld und ElterngeldPlus",
+ was:"Ersetzt Einkommen, das nach der Geburt wegfällt.",
+ wer:"Eltern im ersten Lebensjahr des Kindes, ElterngeldPlus auch länger.",
+ wo:"Elterngeldstelle deines Bundeslandes",
+ url:FP+"/elterngeld",
+ r:function(f){ return f.l("schwanger") ? "hoch" : (f.l("kinder") ? "pruefen" : null); }},
+
+{n:"Mutterschaftsgeld und Mutterschutz",
+ was:"Lohnersatz und Kündigungsschutz vor und nach der Geburt.",
+ wer:"Schwangere, die angestellt oder gesetzlich versichert sind.",
+ wo:"Krankenkasse und Arbeitgeber",
+ url:FP+"/mutterschaftsleistungen", url2:FP+"/mutterschutz", lab2:"Mutterschutz",
+ r:function(f){ return f.l("schwanger") ? "hoch" : null; }},
+
+{n:"Elternzeit",
+ was:"Freistellung vom Job mit Rückkehrrecht, bis zu drei Jahre pro Kind.",
+ wer:"Angestellte Eltern. Anmeldung mit Frist beim Arbeitgeber.",
+ wo:"Arbeitgeber",
+ url:FP+"/elternzeit",
+ r:function(f){ if(!f.a("job")) return null; return f.l("schwanger") ? "hoch" : (f.l("kinder") ? "pruefen" : null); }},
+
+{n:"Unterhaltsvorschuss",
+ was:"Der Staat zahlt, wenn der andere Elternteil keinen Unterhalt zahlt.",
+ wer:"Alleinerziehende mit Kind unter 18.",
+ wo:"Jugendamt",
+ url:FP+"/unterhaltsvorschuss", url2:FP+"/unterhalt", lab2:"Thema Unterhalt",
+ r:function(f){ if(!f.l("allein")) return null; return f.l("kinder") ? "hoch" : "pruefen"; }},
+
+{n:"Bildung und Teilhabe",
+ was:"Zahlt Klassenfahrt, Mittagessen, Nachhilfe, Vereinsbeitrag und Schulbedarf.",
+ wer:"Familien mit Bürgergeld, Wohngeld, Kinderzuschlag oder kleinem Einkommen.",
+ wo:"Jobcenter oder Stadt",
+ url:FP+"/bildung-und-teilhabe",
+ r:function(f){ if(!f.l("kinder")) return null; if(f.knapp) return "hoch"; return f.geld==="mittel"?"pruefen":null; }},
+
+{n:"Steuerentlastungen für Familien",
+ was:"Kinderfreibetrag, Entlastungsbetrag für Alleinerziehende, Betreuungskosten absetzen.",
+ wer:"Alle Eltern. Alleinerziehende zusätzlich über Steuerklasse II.",
+ wo:"Finanzamt, mit der Steuererklärung",
+ url:FP+"/steuerentlastungen",
+ r:function(f){ return f.l("allein") ? "hoch" : (f.l("kinder") ? "pruefen" : null); }},
+
+{n:"Weitere Familienleistungen",
+ was:"Kita-Beitrag, Landeserziehungsgeld, Ferienzuschüsse, Familienerholung.",
+ wer:"Je nach Bundesland und Stadt sehr unterschiedlich.",
+ wo:"Jugendamt, Kommune, Land",
+ url:FP+"/weitere-leistungen",
+ r:function(f){ if(!f.l("kinder")) return null; return f.knapp ? "hoch" : "pruefen"; }},
+
+/* Wohnen und Grundsicherung */
+{n:"Wohngeld",
+ was:"Zuschuss zur Miete oder zu den Kosten fürs Eigenheim.",
+ wer:"Kleines bis mittleres Einkommen, kein Bürgergeld. Auch für Rentnerinnen und Rentner.",
+ wo:"Wohngeldstelle deiner Stadt",
+ url:"https://www.bmwsb.bund.de/DE/wohnen/wohngeld/wohngeld_node.html",
+ url2:"https://www.bmwsb.bund.de/DE/wohnen/wohngeld/wohngeldrechner/wohngeldrechner-2025_node.html", lab2:"Wohngeldrechner",
+ r:function(f){ if(f.wohnen==="eltern"||f.wohnen==="unsicher"||f.geld==="hoch") return null; return f.knapp?"hoch":"pruefen"; }},
+
+{n:"Bürgergeld",
+ was:"Grundsicherung für den Lebensunterhalt, dazu Miete und Heizung.",
+ wer:"Wer arbeiten kann, aber zu wenig zum Leben hat. Auch ergänzend zum Job.",
+ wo:"Jobcenter",
+ url:AA+"/grundsicherung",
+ r:function(f){ if(f.alter==="65p") return null; if(f.geld==="sehr_gering") return "hoch"; return f.geld==="gering"?"pruefen":null; }},
+
+{n:"Grundsicherung im Alter und bei Erwerbsminderung",
+ was:"Monatliche Hilfe, wenn Rente oder Einkommen nicht zum Leben reichen.",
+ wer:"Ab der Regelaltersgrenze oder bei dauerhaft voller Erwerbsminderung.",
+ wo:"Sozialamt, Beratung bei der Rentenversicherung",
+ url:DRV+"/Rente/Allgemeine-Informationen/Grundsicherung/grundsicherung.html",
+ r:function(f){ var alt=f.alter==="65p"||f.a("rente");
+   if(alt&&f.knapp) return "hoch";
+   if(alt&&f.geld==="mittel") return "pruefen";
+   return (f.a("krank")&&f.knapp) ? "pruefen" : null; }},
+
+{n:"Sozialhilfe und Hilfe in Notlagen",
+ was:"Lebensunterhalt, Mietschulden, Erstausstattung und Hilfe in besonderen Lagen.",
+ wer:"Wer weder Bürgergeld noch Grundsicherung bekommt und trotzdem nicht klarkommt.",
+ wo:"Sozialamt",
+ url:"https://www.bmas.de/DE/Soziales/Sozialhilfe/sozialhilfe.html",
+ r:function(f){ if(f.wohnen==="unsicher") return "hoch"; return f.geld==="sehr_gering"?"pruefen":null; }},
+
+{n:"Befreiung vom Rundfunkbeitrag",
+ was:"Kein oder ermäßigter Rundfunkbeitrag für die Wohnung.",
+ wer:"Mit Bürgergeld, BAföG, Grundsicherung oder mit Merkzeichen RF im Ausweis.",
+ wo:"Beitragsservice von ARD, ZDF und Deutschlandradio",
+ url:"https://www.rundfunkbeitrag.de/buergerinnen_und_buerger/formulare/befreiung_oder_ermaessigung_beantragen/index_ger.html",
+ r:function(f){ if(f.geld==="sehr_gering"||(f.l("behinderung")&&f.knapp)) return "hoch";
+   return (f.geld==="gering"||f.l("behinderung")||f.a("studium")) ? "pruefen" : null; }},
+
+{n:"Wohnberechtigungsschein",
+ was:"Berechtigt zu günstigen Wohnungen mit Mietpreisbindung.",
+ wer:"Haushalte unter der Einkommensgrenze des Bundeslandes.",
+ wo:"Wohnungsamt deiner Stadt",
+ url:"https://verwaltung.bund.de/portal",
+ r:function(f){ if(f.wohnen==="eigentum") return null; if(f.knapp) return "hoch"; return f.geld==="mittel"?"pruefen":null; }},
+
+/* Arbeit, Bildung, Ausbildung */
+{n:"Arbeitslosengeld",
+ was:"Lohnersatz nach dem Job, meist 60 bis 67 Prozent des letzten Netto.",
+ wer:"Wer zuletzt sozialversichert gearbeitet hat. Sofort arbeitsuchend melden.",
+ wo:"Agentur für Arbeit",
+ url:AA+"/arbeitslos-arbeit-finden/arbeitslosengeld",
+ r:function(f){ return f.a("arbeitslos") ? "hoch" : null; }},
+
+{n:"Kurzarbeitergeld",
+ was:"Ersetzt einen Teil des Lohns, wenn der Betrieb weniger arbeiten lässt.",
+ wer:"Angestellte in Betrieben mit angemeldeter Kurzarbeit.",
+ wo:"Arbeitgeber, dann Agentur für Arbeit",
+ url:AA+"/arbeitslos-arbeit-finden/arbeitslosengeld/finanzielle-hilfen/kurzarbeitergeld-arbeitnehmer",
+ r:function(f){ return f.a("job") ? "pruefen" : null; }},
+
+{n:"BAföG",
+ was:"Monatliche Förderung für Studium oder Schule, zur Hälfte geschenkt.",
+ wer:"Studierende und Schülerinnen und Schüler, deren Eltern die Ausbildung nicht tragen können.",
+ wo:"Amt für Ausbildungsförderung, Antrag online",
+ url:"https://www.xn--bafg-7qa.de/bafoeg/de/home/home_node.html",
+ r:function(f){ if(f.a("studium")) return "hoch"; return f.a("schule")?"pruefen":null; }},
+
+{n:"Berufsausbildungsbeihilfe",
+ was:"Geld zum Lebensunterhalt während der Ausbildung, wenn die Vergütung nicht reicht.",
+ wer:"Azubis, die nicht mehr bei den Eltern wohnen können.",
+ wo:"Agentur für Arbeit",
+ url:AA+"/bildung/ausbildung/berufsausbildungsbeihilfe-bab",
+ r:function(f){ return f.a("ausbildung") ? "hoch" : null; }},
+
+{n:"Aufstiegs-BAföG",
+ was:"Zahlt Lehrgang und Prüfung für Meister, Fachwirt, Techniker oder Erzieher.",
+ wer:"Alle, die sich beruflich hochqualifizieren, unabhängig vom Alter.",
+ wo:"Zuständige Stelle deines Bundeslandes",
+ url:"https://www.aufstiegs-bafoeg.de/aufstiegsbafoeg/de/home/home_node.html",
+ r:function(f){ return f.a("weiterbildung") ? "hoch" : null; }},
+
+{n:"Förderung beruflicher Weiterbildung",
+ was:"Bildungsgutschein: Kurs, Umschulung und Prüfung werden bezahlt.",
+ wer:"Arbeitslose und Beschäftigte, deren Beruf sich stark verändert.",
+ wo:"Agentur für Arbeit oder Jobcenter",
+ url:AA+"/karriere-und-weiterbildung/foerderung-berufliche-weiterbildung",
+ r:function(f){ if(f.a("arbeitslos")||f.a("weiterbildung")) return "hoch"; return f.a("job")?"pruefen":null; }},
+
+{n:"Gründungszuschuss",
+ was:"Startgeld für den Schritt aus der Arbeitslosigkeit in die Selbstständigkeit.",
+ wer:"Wer Arbeitslosengeld bezieht und noch Restanspruch hat.",
+ wo:"Agentur für Arbeit",
+ url:AA+"/arbeitslos-arbeit-finden/arbeitslosengeld/existenzgruendung-gruendungszuschuss",
+ r:function(f){ if(f.a("arbeitslos")&&f.a("selbst")) return "hoch"; return f.a("arbeitslos")?"pruefen":null; }},
+
+/* Gesundheit, Pflege, Behinderung */
+{n:"Pflegegrad und Pflegeleistungen",
+ was:"Pflegegeld, Pflegedienst, Entlastungsbetrag und Zuschüsse für Hilfsmittel und Umbau.",
+ wer:"Wer dauerhaft Hilfe im Alltag braucht. Erst Pflegegrad beantragen, dann folgt der Rest.",
+ wo:"Pflegekasse bei der Krankenkasse",
+ url:BGM+"/themen/pflege/online-ratgeber-pflege.html",
+ r:function(f){ if(f.l("pflege")) return "hoch"; return (f.l("behinderung")||f.alter==="65p")?"pruefen":null; }},
+
+{n:"Verhinderungspflege und Kurzzeitpflege",
+ was:"Bezahlte Vertretung, wenn du als pflegende Person ausfällst oder Urlaub brauchst.",
+ wer:"Pflegende Angehörige ab Pflegegrad 2.",
+ wo:"Pflegekasse",
+ url:"https://www.wege-zur-pflege.de/",
+ r:function(f){ return f.l("pflege") ? "hoch" : null; }},
+
+{n:"Pflegezeit und Pflegeunterstützungsgeld",
+ was:"Freistellung vom Job für die Pflege, bis zu zehn Tage mit Lohnersatz.",
+ wer:"Beschäftigte, die eine nahe angehörige Person pflegen.",
+ wo:"Arbeitgeber und Pflegekasse",
+ url:"https://www.wege-zur-pflege.de/",
+ r:function(f){ if(!f.l("pflege")) return null; return (f.a("job")||f.a("selbst"))?"hoch":"pruefen"; }},
+
+{n:"Schwerbehindertenausweis",
+ was:"Öffnet Nachteilsausgleiche: mehr Urlaub, Kündigungsschutz, Steuerfreibetrag, günstiger Nahverkehr.",
+ wer:"Ab Grad der Behinderung 50, Gleichstellung ab 30.",
+ wo:"Versorgungsamt deines Bundeslandes",
+ url:"https://www.einfach-teilhaben.de/DE/AS/Home/alltagssprache_node.html",
+ r:function(f){ return f.l("behinderung") ? "hoch" : null; }},
+
+{n:"Zuzahlungsbefreiung der Krankenkasse",
+ was:"Ab einer Belastungsgrenze zahlst du im Jahr nichts mehr für Rezepte und Behandlungen.",
+ wer:"Chronisch Kranke und Haushalte mit kleinem Einkommen.",
+ wo:"Deine Krankenkasse",
+ url:BGM+"/themen/krankenversicherung",
+ r:function(f){ if(f.knapp||f.a("krank")) return "hoch"; return f.l("behinderung")?"pruefen":null; }},
+
+{n:"Krankengeld",
+ was:"Zahlung der Krankenkasse, wenn du länger als sechs Wochen krank bist.",
+ wer:"Gesetzlich Versicherte im Job, Selbstständige mit Wahltarif.",
+ wo:"Krankenkasse",
+ url:BGM+"/themen/krankenversicherung",
+ r:function(f){ return f.a("krank") ? "hoch" : null; }},
+
+{n:"Medizinische Rehabilitation",
+ was:"Reha oder Kur, damit du wieder arbeiten und am Leben teilnehmen kannst.",
+ wer:"Wer gesundheitlich stark eingeschränkt ist. Reha geht vor Rente.",
+ wo:"Deutsche Rentenversicherung oder Krankenkasse",
+ url:DRV+"/Reha",
+ r:function(f){ if(f.a("krank")) return "hoch"; return f.l("behinderung")?"pruefen":null; }},
+
+{n:"Erwerbsminderungsrente",
+ was:"Rente, wenn du aus gesundheitlichen Gründen kaum noch arbeiten kannst.",
+ wer:"Mit mindestens fünf Jahren Versicherungszeit, unabhängig vom Alter.",
+ wo:"Deutsche Rentenversicherung",
+ url:DRV+"/Rente/Allgemeine-Informationen/Rentenarten-und-Leistungen/Erwerbsminderungsrente/erwerbsminderungsrente_node.html",
+ r:function(f){ if(f.a("krank")&&f.l("behinderung")) return "hoch"; return (f.a("krank")||f.l("behinderung"))?"pruefen":null; }},
+
+{n:"Teilhabe am Arbeitsleben",
+ was:"Umschulung, Anpassung des Arbeitsplatzes und Begleitung bei Behinderung.",
+ wer:"Wer den bisherigen Beruf aus gesundheitlichen Gründen nicht weitermachen kann.",
+ wo:"Agentur für Arbeit oder Rentenversicherung",
+ url:AA+"/menschen-mit-behinderungen/berufliche-rehabilitation",
+ r:function(f){ if(!f.l("behinderung")) return null;
+   return (f.a("job")||f.a("arbeitslos")||f.a("weiterbildung")||f.a("krank")) ? "hoch" : "pruefen"; }},
+
+/* Kommune */
+{n:"Leistungen deiner Stadt",
+ was:"Sozialticket, ermäßigter Kita-Beitrag, Familienpass, Bibliothek, Schwimmbad, Ferienfreizeit.",
+ wer:"Meist mit Nachweis über Bürgergeld, Wohngeld oder Einkommen. Regeln je Stadt verschieden.",
+ wo:"Bürgeramt oder Sozialamt, Suche im Bundesportal",
+ url:"https://verwaltung.bund.de/portal",
+ r:function(f){ return f.knapp ? "hoch" : "pruefen"; }}
+];
+
+/* ------------------------------------------------------------ Zustand */
+var KEY="sozialcheck.v1";
+var i=0, fertig=false;
+var A={leben:[],arbeit:[],wohnen:null,geld:null,alter:null};
+try{ var gespeichert=localStorage.getItem(KEY);
+  if(gespeichert){ var p=JSON.parse(gespeichert); if(p&&p.A){ for(var k in A){ if(p.A[k]!=null) A[k]=p.A[k]; } } }
+}catch(e){}
+function speichern(){ try{ localStorage.setItem(KEY,JSON.stringify({A:A})); }catch(e){} }
+
+function $(id){ return document.getElementById(id); }
+function el(t,c,x){ var n=document.createElement(t); if(c)n.className=c; if(x!=null)n.textContent=x; return n; }
+function ico(id,c){ return '<svg class="'+c+'" aria-hidden="true"><use href="#'+id+'"></use></svg>'; }
+
+/* ----------------------------------------------------- Schrittansicht */
+function renderRail(){
+  var r=$("rail"); r.innerHTML="";
+  STEPS.forEach(function(s,n){
+    var b=el("button",null,(n+1)+". "+s.kurz);
+    b.type="button";
+    b.dataset.state = fertig ? "done" : (n<i ? "done" : (n===i ? "now" : "todo"));
+    b.disabled = !fertig && n>i;
+    b.onclick=function(){ fertig=false; i=n; renderStep(); };
+    r.appendChild(b);
+  });
+  $("bar").style.width = (fertig ? 100 : (i/STEPS.length)*100)+"%";
+}
+
+function renderStep(){
+  var s=STEPS[i], root=$("step");
+  $("result").classList.add("hidden");
+  root.classList.remove("hidden");
+  $("actions").classList.remove("hidden");
+  root.innerHTML="";
+
+  var head=el("div","qhead");
+  head.appendChild(el("p","eyebrow","Schritt "+(i+1)+" von "+STEPS.length));
+  head.appendChild(el("h1",null,s.frage));
+  head.appendChild(el("p","sub",s.sub));
+  root.appendChild(head);
+
+  var grid=el("div","tiles");
+  grid.style.setProperty("--cols", s.cols||4);
+  s.optionen.forEach(function(o){
+    var b=document.createElement("button");
+    b.type="button"; b.className="tile";
+    var aktiv = s.multi ? A[s.id].indexOf(o.v)>=0 : A[s.id]===o.v;
+    b.setAttribute("aria-pressed", aktiv?"true":"false");
+    b.innerHTML =
+      (o.ico ? ico(o.ico,"ico") : '<span class="num">'+o.num+'</span>') +
+      '<span class="lab">'+o.lab+'</span>' +
+      (o.hint ? '<span class="hint">'+o.hint+'</span>' : '') +
+      ico("i-tick","tick");
+    b.onclick=function(){ waehle(s,o,b); };
+    grid.appendChild(b);
+  });
+  root.appendChild(grid);
+
+  $("back").style.visibility = i===0 ? "hidden" : "visible";
+  $("next").textContent = (i===STEPS.length-1) ? "Ergebnis anzeigen" : "Weiter";
+  $("counter").textContent = s.multi ? (A[s.id].length+" gewählt") : "";
+  renderRail();
+  window.scrollTo(0,0);
+}
+
+function waehle(s,o,b){
+  if(s.multi){
+    var arr=A[s.id];
+    if(o.v==="keins"){
+      A[s.id] = arr.indexOf("keins")>=0 ? [] : ["keins"];
+    } else {
+      var k=arr.indexOf(o.v);
+      if(k>=0) arr.splice(k,1); else arr.push(o.v);
+      var kx=arr.indexOf("keins"); if(kx>=0) arr.splice(kx,1);
+    }
+    speichern(); renderStep();
+  } else {
+    A[s.id]=o.v; speichern();
+    var alle=b.parentElement.querySelectorAll(".tile");
+    for(var x=0;x<alle.length;x++) alle[x].setAttribute("aria-pressed","false");
+    b.setAttribute("aria-pressed","true");
+    var ruhig = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    setTimeout(weiter, ruhig?0:170);
+  }
+}
+function weiter(){ if(i<STEPS.length-1){ i++; renderStep(); } else { fertig=true; renderResult(); } }
+$("next").onclick=weiter;
+$("back").onclick=function(){ if(i>0){ i--; renderStep(); } };
+
+/* --------------------------------------------------------- Auswertung */
+function fakten(){
+  return {
+    l:function(v){ return A.leben.indexOf(v)>=0; },
+    a:function(v){ return A.arbeit.indexOf(v)>=0; },
+    wohnen:A.wohnen, geld:A.geld, alter:A.alter,
+    knapp: A.geld==="sehr_gering"||A.geld==="gering"
+  };
+}
+function auswerten(){
+  var f=fakten(), r={hoch:[],pruefen:[],rest:[]};
+  KATALOG.forEach(function(p){
+    var lvl=null; try{ lvl=p.r(f); }catch(e){ lvl=null; }
+    if(lvl==="hoch") r.hoch.push(p); else if(lvl==="pruefen") r.pruefen.push(p); else r.rest.push(p);
+  });
+  return r;
+}
+
+function karte(p,lvl){
+  var c=el("article","card "+lvl);
+  c.innerHTML =
+    '<div class="stripe"></div><div class="body">'+
+      '<h3>'+p.n+'</h3>'+
+      '<p class="was">'+p.was+'</p>'+
+      '<dl><div><dt>Wer</dt><dd>'+p.wer+'</dd></div><div><dt>Wo</dt><dd>'+p.wo+'</dd></div></dl>'+
+      '<div class="go">'+
+        '<a href="'+p.url+'" target="_blank" rel="noopener noreferrer">Infos und Antrag'+ico("i-ext","")+'</a>'+
+        (p.url2 ? '<a class="sec" href="'+p.url2+'" target="_blank" rel="noopener noreferrer">'+(p.lab2||"Mehr")+ico("i-ext","")+'</a>' : '')+
+      '</div>'+
+    '</div>';
+  return c;
+}
+
+function gruppe(titel,farbe,lead,liste,lvl){
+  var g=el("section","group");
+  var h=el("h2");
+  var d=el("span","dot"); d.style.background=farbe;
+  h.appendChild(d); h.appendChild(document.createTextNode(titel+" ("+liste.length+")"));
+  g.appendChild(h);
+  g.appendChild(el("p","glead",lead));
+  var cards=el("div","cards");
+  liste.forEach(function(p){ cards.appendChild(karte(p,lvl)); });
+  g.appendChild(cards);
+  return g;
+}
+
+function labelVon(stepId,v){
+  var s=null, o=null, x;
+  for(x=0;x<STEPS.length;x++){ if(STEPS[x].id===stepId){ s=STEPS[x]; break; } }
+  if(!s) return v;
+  for(x=0;x<s.optionen.length;x++){ if(s.optionen[x].v===v){ o=s.optionen[x]; break; } }
+  return o ? o.lab : v;
+}
+
+function renderResult(){
+  var r=auswerten(), root=$("result");
+  $("step").classList.add("hidden");
+  root.classList.remove("hidden");
+  $("actions").classList.add("hidden");
+  root.innerHTML="";
+
+  var head=el("div","res-head");
+  head.appendChild(el("p","eyebrow","Dein Ergebnis"));
+  head.appendChild(el("h1",null, r.hoch.length ? "Diese Leistungen passen zu dir" : "Das solltest du prüfen"));
+  var sc=el("div","score");
+  sc.innerHTML='<div class="g"><b>'+r.hoch.length+'</b><span>wahrscheinlich für dich</span></div>'+
+               '<div class="c"><b>'+r.pruefen.length+'</b><span>prüfen lohnt sich</span></div>';
+  head.appendChild(sc);
+
+  var chips=el("div","chips");
+  A.leben.forEach(function(v){ chips.appendChild(el("span","chip",labelVon("leben",v))); });
+  A.arbeit.forEach(function(v){ chips.appendChild(el("span","chip",labelVon("arbeit",v))); });
+  ["wohnen","geld","alter"].forEach(function(k){ if(A[k]) chips.appendChild(el("span","chip",labelVon(k,A[k]))); });
+  var edit=el("button","chip","Angaben ändern");
+  edit.type="button";
+  edit.onclick=function(){ fertig=false; i=0; renderStep(); };
+  chips.appendChild(edit);
+  head.appendChild(chips);
+  root.appendChild(head);
+
+  var cs=getComputedStyle(document.documentElement);
+  if(r.hoch.length){
+    root.appendChild(gruppe("Wahrscheinlich für dich", cs.getPropertyValue("--good"),
+      "Nach deinen Angaben erfüllst du die typischen Voraussetzungen. Ein Antrag lohnt sich, viele Leistungen gibt es auch rückwirkend.",
+      r.hoch,"hoch"));
+  }
+  if(r.pruefen.length){
+    root.appendChild(gruppe("Prüfen lohnt sich", cs.getPropertyValue("--check"),
+      "Hier hängt es an Details wie Einkommensgrenze, Alter des Kindes oder Versicherungszeiten. Ein Anruf bei der zuständigen Stelle klärt das in Minuten.",
+      r.pruefen,"pruefen"));
+  }
+  if(r.rest.length){
+    var d=el("details","more");
+    d.appendChild(el("summary",null,"Alle übrigen Leistungen ansehen ("+r.rest.length+")"));
+    var cards=el("div","cards");
+    r.rest.forEach(function(p){ cards.appendChild(karte(p,"rest")); });
+    d.appendChild(cards);
+    root.appendChild(d);
+  }
+
+  var note=el("div","note");
+  note.innerHTML='<b>Wichtig</b>'+
+    '<p>Dieser Check ist eine Orientierung, keine Rechtsberatung und keine Entscheidung einer Behörde. Verbindlich ist allein der Bescheid der zuständigen Stelle.</p>'+
+    '<p>Kostenlose Hilfe beim Antrag gibt es bei Sozialverbänden wie VdK und SoVD, bei Caritas, Diakonie und AWO, bei der Verbraucherzentrale sowie in Familien- und Pflegestützpunkten.</p>';
+  root.appendChild(note);
+
+  var foot=el("footer","foot");
+  foot.appendChild(el("span",null,"Alle Links führen zu offiziellen Stellen von Bund, Ländern und Sozialversicherung."));
+  var neu=el("button","chip","Check neu starten");
+  neu.type="button";
+  neu.onclick=function(){ A={leben:[],arbeit:[],wohnen:null,geld:null,alter:null}; speichern(); fertig=false; i=0; renderStep(); };
+  foot.appendChild(neu);
+  root.appendChild(foot);
+
+  renderRail();
+  window.scrollTo(0,0);
+}
+
+renderStep();
+</script>
