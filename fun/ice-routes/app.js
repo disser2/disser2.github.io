@@ -47,6 +47,7 @@
     q: "",
     lf: "alle",         // alle | gefahren | offen | voll | sprinter
     ff: "alle",         // alle | p | g | k1 | k2
+    yf: "alle",         // alle | "2024" | ... (Jahr der Fahrt)
     mapSel: null        // auf der Karte hervorgehobene Linie
   };
 
@@ -200,9 +201,16 @@
       return true;
     });
   }
+  // Jahre mit Fahrten, absteigend
+  function tripYears() {
+    var seen = {};
+    trips.forEach(function (t) { if (t.d) seen[t.d.slice(0, 4)] = 1; });
+    return Object.keys(seen).sort().reverse();
+  }
   function filteredTrips() {
     var q = norm(state.q);
     return trips.filter(function (t) {
+      if (state.yf !== "alle" && t.d.slice(0, 4) !== state.yf) return false;
       if (state.ff === "p" || state.ff === "g") { if (t.m !== state.ff) return false; }
       else if (state.ff === "k1" && t.k !== "1") return false;
       else if (state.ff === "k2" && t.k !== "2") return false;
@@ -232,6 +240,16 @@
         html += '<button class="chip' + (state.ff === p[0] ? " active" : "") +
           '" data-ff="' + p[0] + '">' + p[1] + '</button>';
       });
+      var years = tripYears();
+      if (years.length > 1) {
+        html += '<span class="chip-sep"></span>';
+        html += '<button class="chip' + (state.yf === "alle" ? " active" : "") +
+          '" data-yf="alle">Alle&nbsp;Jahre</button>';
+        years.forEach(function (y) {
+          html += '<button class="chip' + (state.yf === y ? " active" : "") +
+            '" data-yf="' + y + '">' + y + '</button>';
+        });
+      }
     }
     $("chips").innerHTML = html;
   }
@@ -255,6 +273,8 @@
       renderMap();
       return;
     }
+    // gelöschte Fahrten können ein Jahr verschwinden lassen
+    if (state.yf !== "alle" && tripYears().indexOf(state.yf) === -1) state.yf = "alle";
     renderChips();
 
     var html = "";
@@ -872,6 +892,7 @@
     if (!c) return;
     if (c.dataset.lf) state.lf = c.dataset.lf;
     if (c.dataset.ff) state.ff = c.dataset.ff;
+    if (c.dataset.yf) state.yf = c.dataset.yf;
     render();
   });
 
