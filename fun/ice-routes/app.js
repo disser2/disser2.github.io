@@ -5,7 +5,8 @@
   var STORE_KEY = "iceRoutes.v1";
 
   // ---------- Persistenz ----------
-  // Intern:     { id, d: "YYYY-MM-DD", z: "ICE 106", l: "43", a: vonIdx, b: nachIdx, m: "p"|"g" }
+  // Intern:     { id, d: "YYYY-MM-DD", z: "ICE 106", l: "43", a: vonIdx, b: nachIdx,
+  //               m: "p"|"g" (privat/geschäftlich), k: "1"|"2" (Wagenklasse) }
   // Gespeichert: a/b als Bahnhofs-ID ("Köln Hbf"), damit ein neu erzeugtes
   //              data.js mit anderer Reihenfolge alte Fahrten nicht verschiebt.
   var IDX_OF = {};
@@ -20,11 +21,11 @@
     var a = toIdx(x.a), b = toIdx(x.b);
     if (a == null || b == null) return null;
     return { id: x.id || newId(), d: x.d, z: x.z || "", l: x.l || "",
-             a: a, b: b, m: x.m === "g" ? "g" : "p" };
+             a: a, b: b, m: x.m === "g" ? "g" : "p", k: x.k === "1" ? "1" : "2" };
   }
   function tripOut(t) {
     return { id: t.id, d: t.d, z: t.z, l: t.l,
-             a: STATIONS[t.a].id, b: STATIONS[t.b].id, m: t.m };
+             a: STATIONS[t.a].id, b: STATIONS[t.b].id, m: t.m, k: t.k };
   }
   function loadTrips() {
     try {
@@ -42,10 +43,11 @@
 
   // ---------- Zustand ----------
   var state = {
-    view: "linien",     // linien | fahrten
+    view: "linien",     // linien | karte | fahrten
     q: "",
     lf: "alle",         // alle | gefahren | offen | voll | sprinter
-    ff: "alle"          // alle | p | g
+    ff: "alle",         // alle | p | g | k1 | k2
+    mapSel: null        // auf der Karte hervorgehobene Linie
   };
 
   // ---------- Netz aufbereiten ----------
@@ -201,7 +203,9 @@
   function filteredTrips() {
     var q = norm(state.q);
     return trips.filter(function (t) {
-      if (state.ff !== "alle" && t.m !== state.ff) return false;
+      if (state.ff === "p" || state.ff === "g") { if (t.m !== state.ff) return false; }
+      else if (state.ff === "k1" && t.k !== "1") return false;
+      else if (state.ff === "k2" && t.k !== "2") return false;
       if (q) {
         var hay = norm((t.z || "") + " " + stName(t.a) + " " + stName(t.b) +
           " ICE " + (t.l || "") + " " + fmtDate(t.d));
@@ -222,7 +226,9 @@
           '" data-lf="' + p[0] + '">' + p[1] + '</button>';
       });
     } else {
-      [["alle", "Alle"], ["p", "Privat"], ["g", "Geschäftlich"]].forEach(function (p) {
+      [["alle", "Alle"], ["p", "Privat"], ["g", "Geschäftlich"], ["sep", ""],
+       ["k1", "1.&nbsp;Klasse"], ["k2", "2.&nbsp;Klasse"]].forEach(function (p) {
+        if (p[0] === "sep") { html += '<span class="chip-sep"></span>'; return; }
         html += '<button class="chip' + (state.ff === p[0] ? " active" : "") +
           '" data-ff="' + p[0] + '">' + p[1] + '</button>';
       });
@@ -232,10 +238,23 @@
 
   function render() {
     var c = coverage();
+    var isMap = state.view === "karte";
     $("headerCount").textContent = c.nLines + "/" + NET.length;
-    $("title").innerHTML = state.view === "linien" ? "ICE&nbsp;Verbindungen" : "Meine&nbsp;Fahrten";
+    $("title").innerHTML = isMap ? "Netzkarte"
+      : (state.view === "linien" ? "ICE&nbsp;Verbindungen" : "Meine&nbsp;Fahrten");
     $("search").placeholder = state.view === "linien"
       ? "Linie, Bahnhof oder Zugnummer" : "Zug, Bahnhof oder Datum";
+    document.querySelector(".searchwrap").hidden = isMap;
+    $("chips").hidden = isMap;
+    $("mapView").hidden = !isMap;
+    $("listMeta").hidden = isMap;
+    $("list").hidden = isMap;
+    document.querySelector(".credits").hidden = isMap;
+    if (isMap) {
+      $("empty").hidden = true;
+      renderMap();
+      return;
+    }
     renderChips();
 
     var html = "";
@@ -271,6 +290,7 @@
             '<div class="card-sub">' +
               '<span class="badge ' + (t.m === "g" ? "dienst" : "privat") + '">' +
                 (t.m === "g" ? "Geschäftlich" : "Privat") + '</span>' +
+              '<span class="badge klasse">' + t.k + '. Kl.</span>' +
               (t.z ? '<span>' + esc(t.z) + '</span>' : "") +
               '<span>· ' + fmtDate(t.d) + '</span>' +
               (!t.l ? '<span class="badge warn">ohne Linie</span>' : "") +
@@ -284,6 +304,38 @@
       $("empty").hidden = tr.length > 0;
     }
     $("list").innerHTML = html;
+  }
+
+  // ---------- Karte ----------
+  var bigMap = null, miniMap = null;
+
+  function renderMap() {
+    var c = coverage();
+    if (!bigMap) {
+      bigMap = ICEMap.create($("mapWrap"), {
+        interactive: true,
+        onSelect: function (nr) {
+          state.mapSel = (nr && nr === state.mapSel) ? null : nr;
+          bigMap.select(state.mapSel);
+          renderMapInfo();
+        }
+      });
+    }
+    bigMap.update({ byLine: c.byLine, stns: c.stns, selected: state.mapSel });
+    bigMap.resize();
+    renderMapInfo();
+  }
+
+  function renderMapInfo() {
+    var box = $("mapInfo");
+    if (!state.mapSel || !netByNr[state.mapSel]) { box.hidden = true; return; }
+    var n = netByNr[state.mapSel], lc = lineCov(n.nr);
+    $("mapInfoBadge").innerHTML = lineBadge(n.nr, true);
+    $("mapInfoName").textContent = "ICE " + n.nr + " · " + n.label;
+    $("mapInfoSub").textContent = lc.trips
+      ? lc.done + " von " + lc.total + " Abschnitten gefahren (" + Math.round(lc.pct) + " %)"
+      : "noch nicht gefahren";
+    box.hidden = false;
   }
 
   // ---------- Linien-Detail ----------
@@ -304,6 +356,7 @@
         kv("Halte besucht", Object.keys(b.stns).length + " von " + n.stns.length) +
         kv("Eigene Fahrten", String(lc.trips)) +
       '</div>' +
+      '<div class="mapwrap map-mini" id="detailMap"></div>' +
       '<button class="big-btn" id="addOnLine">Fahrt auf dieser Linie eintragen</button>';
 
     n.line.v.forEach(function (v, vi) {
@@ -334,7 +387,8 @@
       mine.forEach(function (t) {
         html += '<div class="trip-row" data-trip="' + esc(t.id) + '">' +
           '<div class="tr-main"><div>' + esc(stName(t.a)) + ' → ' + esc(stName(t.b)) + '</div>' +
-          '<div class="tr-sub">' + fmtDate(t.d) + (t.z ? " · " + esc(t.z) : "") + '</div></div>' +
+          '<div class="tr-sub">' + fmtDate(t.d) + (t.z ? " · " + esc(t.z) : "") +
+            " · " + t.k + ". Klasse" + '</div></div>' +
           '<span class="badge ' + (t.m === "g" ? "dienst" : "privat") + '">' +
             (t.m === "g" ? "Geschäftlich" : "Privat") + '</span>' +
         '</div>';
@@ -345,6 +399,9 @@
     $("detailTitle").textContent = "ICE " + nr;
     $("detailContent").innerHTML = html;
     $("detailContent").scrollTop = 0;
+    miniMap = ICEMap.create($("detailMap"), { interactive: false });
+    miniMap.update({ byLine: c.byLine, stns: c.stns, selected: nr });
+    miniMap.fitLine(nr);
     $("addOnLine").addEventListener("click", function () {
       hideSheet("detailSheet", "detailBackdrop");
       openEdit(null, nr);
@@ -357,6 +414,8 @@
 
   // ---------- Fahrt eintragen / bearbeiten ----------
   var form = null;
+  // zuletzt benutzte Klasse als Vorschlag für die nächste Fahrt
+  var lastClass = (trips.length ? trips[trips.length - 1].k : "2") || "2";
 
   function newId() {
     return Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
@@ -374,8 +433,10 @@
 
   function openEdit(tripId, presetLine) {
     var t = tripId ? trips.filter(function (x) { return x.id === tripId; })[0] : null;
-    form = t ? { id: t.id, d: t.d, z: t.z || "", l: t.l || "", a: t.a, b: t.b, m: t.m || "p" }
-             : { id: null, d: todayISO(), z: "", l: presetLine || "", a: null, b: null, m: "p" };
+    form = t ? { id: t.id, d: t.d, z: t.z || "", l: t.l || "", a: t.a, b: t.b,
+                 m: t.m || "p", k: t.k || "2" }
+             : { id: null, d: todayISO(), z: "", l: presetLine || "", a: null, b: null,
+                 m: "p", k: lastClass };
     $("editTitle").textContent = t ? "Fahrt bearbeiten" : "Fahrt eintragen";
     renderEdit();
     showSheet("editSheet", "editBackdrop");
@@ -410,6 +471,12 @@
       '<div class="segmented" id="fMode">' +
         '<button data-m="p"' + (form.m === "p" ? ' class="active"' : "") + '>Privat</button>' +
         '<button data-m="g"' + (form.m === "g" ? ' class="active"' : "") + '>Geschäftlich</button>' +
+      '</div>' +
+
+      '<div class="form-section">Klasse</div>' +
+      '<div class="segmented" id="fClass">' +
+        '<button data-k="1"' + (form.k === "1" ? ' class="active"' : "") + '>1. Klasse</button>' +
+        '<button data-k="2"' + (form.k === "2" ? ' class="active"' : "") + '>2. Klasse</button>' +
       '</div>' +
 
       '<div class="form-section">Linie</div>';
@@ -455,6 +522,12 @@
       form.m = b.dataset.m;
       this.querySelectorAll("button").forEach(function (x) { x.classList.toggle("active", x === b); });
     });
+    $("fClass").addEventListener("click", function (ev) {
+      var b = ev.target.closest("[data-k]");
+      if (!b) return;
+      form.k = b.dataset.k;
+      this.querySelectorAll("button").forEach(function (x) { x.classList.toggle("active", x === b); });
+    });
     $("editContent").querySelectorAll(".lp").forEach(function (btn) {
       btn.addEventListener("click", function () { form.l = this.dataset.line; renderEdit(); });
     });
@@ -466,7 +539,9 @@
     if (form.a == null || form.b == null || form.a === form.b) return;
     var z = form.z.trim();
     if (/^\d+$/.test(z)) z = "ICE " + z;
-    var t = { id: form.id || newId(), d: form.d, z: z, l: form.l, a: form.a, b: form.b, m: form.m };
+    var t = { id: form.id || newId(), d: form.d, z: z, l: form.l,
+              a: form.a, b: form.b, m: form.m, k: form.k };
+    lastClass = form.k;
     var i = -1;
     trips.forEach(function (x, k) { if (x.id === t.id) i = k; });
     if (i >= 0) trips[i] = t; else trips.push(t);
@@ -600,9 +675,13 @@
 
     // Anlass
     var np = trips.filter(function (t) { return t.m !== "g"; }).length;
+    var n1 = trips.filter(function (t) { return t.k === "1"; }).length;
     html += '<div class="stat-section">Nach Anlass</div><div class="statcard">' +
       barRow("Privat", np, trips.length) +
       barRow("Geschäftlich", trips.length - np, trips.length) + '</div>';
+    html += '<div class="stat-section">Nach Klasse</div><div class="statcard">' +
+      barRow("1. Klasse", n1, trips.length) +
+      barRow("2. Klasse", trips.length - n1, trips.length) + '</div>';
 
     // Fahrten je Monat
     var byMonth = {};
@@ -806,13 +885,26 @@
   function switchView(v) {
     state.view = v;
     $("tabLinien").classList.toggle("active", v === "linien");
+    $("tabKarte").classList.toggle("active", v === "karte");
     $("tabFahrten").classList.toggle("active", v === "fahrten");
     render();
     window.scrollTo({ top: 0 });
   }
   $("tabLinien").addEventListener("click", function () { switchView("linien"); });
+  $("tabKarte").addEventListener("click", function () { switchView("karte"); });
   $("tabFahrten").addEventListener("click", function () { switchView("fahrten"); });
   $("tabAdd").addEventListener("click", function () { openEdit(null); });
+
+  $("mapIn").addEventListener("click", function () { bigMap && bigMap.zoom(1 / 1.4); });
+  $("mapOut").addEventListener("click", function () { bigMap && bigMap.zoom(1.4); });
+  $("mapDE").addEventListener("click", function () { bigMap && bigMap.fitDefault(); });
+  $("mapAll").addEventListener("click", function () { bigMap && bigMap.fitAll(); });
+  $("mapInfo").addEventListener("click", function () {
+    if (state.mapSel) openLine(state.mapSel);
+  });
+  window.addEventListener("resize", function () {
+    if (bigMap && state.view === "karte") bigMap.resize();
+  });
 
   $("statsBtn").addEventListener("click", function () {
     renderStats(); showSheet("statsSheet", "statsBackdrop");

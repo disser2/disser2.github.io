@@ -166,7 +166,8 @@ def parse_route(cell):
             if not is_opt:
                 stations[-1]["opt"] = False
             continue
-        stations.append({"id": sid, "name": name, "opt": is_opt})
+        stations.append({"id": sid, "name": name, "opt": is_opt,
+                         "wt": target.split("#")[0].strip()})
     return stations
 
 
@@ -274,7 +275,24 @@ for e in out:
         for st in v:
             if st["id"] not in index:
                 index[st["id"]] = len(stations)
-                stations.append({"id": st["id"], "name": st["name"]})
+                stations.append({"id": st["id"], "name": st["name"], "wt": st["wt"]})
+
+# Bahnhofsliste (mit Wikipedia-Artikelnamen) fuer tools/fetch_coords.py
+json.dump(stations, io.open(os.path.join(BASE, "stations.json"), "w", encoding="utf-8"),
+          ensure_ascii=False, indent=1)
+
+# Koordinaten (falls schon geholt) einmischen: ll = [lat, lon]
+try:
+    coords = json.load(io.open(os.path.join(BASE, "coords.json"), encoding="utf-8"))
+except Exception:
+    coords = {}
+n_coords = 0
+for st in stations:
+    ll = coords.get(st["id"])
+    if ll:
+        st["ll"] = [round(ll[0], 4), round(ll[1], 4)]
+        n_coords += 1
+    del st["wt"]
 
 
 def js(obj):
@@ -292,7 +310,7 @@ for e in out:
 doc = [
     "/* ICE-Liniennetz - erzeugt von tools/parse_lines.py",
     "   Quelle: de.wikipedia.org/wiki/Liste_der_Intercity-Express-Linien (Stand 09/2026)",
-    "   STATIONS: [{id, name}]   LINES: {nr, fz (Fahrzeuge), col (Linienfarbe), sp, v (Varianten)}",
+    "   STATIONS: [{id, name, ll (lat/lon)}]   LINES: {nr, fz (Fahrzeuge), col (Linienfarbe), sp, v (Varianten)}",
     "   Variante = [[Stationsindex, 1 = nur einzelne Zuege], ...] */",
     "var STATIONS = [",
 ]
@@ -304,7 +322,7 @@ doc += ["];", ""]
 with io.open(os.path.join(BASE, "..", "data.js"), "w", encoding="utf-8") as f:
     f.write(chr(10).join(doc))
 
-print("Stationen:", len(stations))
+print("Stationen:", len(stations), "davon mit Koordinaten:", n_coords)
 print("Linien:", len(out), " Varianten:", sum(len(e["verlauf"]) for e in out))
 for e in out:
     for v in e["verlauf"]:

@@ -12,6 +12,10 @@
   --chipbg: #e9e9ee;
   --sheet: #ffffff;
   --shadow: 0 1px 3px rgba(0,0,0,.06);
+  --map-sea: #dde7f0;
+  --map-land: #fbfaf7;
+  --map-border: rgba(60,60,67,.28);
+  --map-lake: #dde7f0;
 }
 @media (prefers-color-scheme: dark) {
   :root {
@@ -26,6 +30,10 @@
     --chipbg: #2c2c2e;
     --sheet: #1c1c1e;
     --shadow: none;
+    --map-sea: #0d1218;
+    --map-land: #1e2126;
+    --map-border: rgba(235,235,245,.22);
+    --map-lake: #0d1218;
   }
 }
 
@@ -83,6 +91,7 @@ body {
   scrollbar-width: none; -webkit-overflow-scrolling: touch;
 }
 .chips::-webkit-scrollbar { display: none; }
+.chips[hidden] { display: none; }
 .chip {
   flex: 0 0 auto; border: none; border-radius: 999px;
   background: var(--chipbg); color: var(--text);
@@ -131,6 +140,7 @@ main { padding: 4px 16px 0; max-width: 640px; margin: 0 auto; }
 .badge.privat { background: #e1efff; color: #0057b8; }
 .badge.dienst { background: #ffe9cf; color: #a85700; }
 .badge.warn   { background: transparent; color: var(--orange); border: 1px dashed var(--orange); }
+.badge.klasse { background: transparent; color: var(--text2); border: 1px solid var(--sep); }
 @media (prefers-color-scheme: dark) {
   .badge.privat { background: #10233a; color: #7ab8ff; }
   .badge.dienst { background: #362410; color: #ffb85c; }
@@ -363,6 +373,101 @@ main { padding: 4px 16px 0; max-width: 640px; margin: 0 auto; }
   font-size: 15px; font-weight: 600; cursor: pointer; font-family: inherit;
 }
 .io-row button.danger { color: #ff3b30; }
+
+/* ---------- Karte ---------- */
+.mapwrap {
+  position: relative; background: var(--map-sea); border-radius: 16px;
+  overflow: hidden; box-shadow: var(--shadow); margin-top: 4px;
+}
+.m-geo .geo-land {
+  fill: var(--map-land); stroke: var(--map-border); stroke-width: .8;
+  stroke-linejoin: round; vector-effect: non-scaling-stroke;
+}
+.m-geo .geo-lake {
+  fill: var(--map-lake); stroke: var(--map-border); stroke-width: .5;
+  stroke-opacity: .6; vector-effect: non-scaling-stroke;
+}
+.mapwrap.full { height: calc(100vh - 250px); min-height: 320px; }
+.map-mini { height: 190px; margin: 12px 0 0; }
+.map-svg { display: block; width: 100%; height: 100%; touch-action: none; }
+.mapwrap.full .map-svg { cursor: grab; }
+.mapwrap.full .map-svg:active { cursor: grabbing; }
+
+.m-base .mp {
+  fill: none; stroke: var(--text2); stroke-opacity: .32; stroke-width: 1.3;
+  stroke-linecap: round; stroke-linejoin: round; vector-effect: non-scaling-stroke;
+}
+.m-cov .mc {
+  fill: none; stroke-width: 2.8; stroke-linecap: round; stroke-linejoin: round;
+  vector-effect: non-scaling-stroke;
+}
+/* Kontur, damit auch helle Linienfarben (z. B. das Gelb der Linie 43) sichtbar bleiben */
+.m-cov .mc-halo, .m-sel .ms-halo {
+  fill: none; stroke: var(--text); stroke-opacity: .3; stroke-linecap: round;
+  stroke-linejoin: round; vector-effect: non-scaling-stroke;
+}
+.m-cov .mc-halo { stroke-width: 5; }
+.m-sel .ms-halo { stroke-width: 7.5; }
+.m-sel .ms {
+  fill: none; stroke-width: 2.2; stroke-opacity: .55; stroke-linecap: round;
+  stroke-linejoin: round; vector-effect: non-scaling-stroke;
+}
+.m-sel .ms.on { stroke-width: 5; stroke-opacity: 1; }
+.m-hit .mh {
+  fill: none; stroke: transparent; stroke-width: 14px;
+  vector-effect: non-scaling-stroke; pointer-events: stroke; cursor: pointer;
+}
+.m-dots .md { fill: var(--text2); fill-opacity: .45; }
+.m-dots .md.vis { fill: var(--green); fill-opacity: 1; }
+.m-lab {
+  fill: var(--text); font-family: inherit; font-weight: 600;
+  paint-order: stroke; stroke: var(--map-land); stroke-width: 3px;
+  vector-effect: non-scaling-stroke; pointer-events: none;
+}
+.m-lab .t2 { fill: var(--text2); font-weight: 500; }
+.map-svg.has-sel .m-base { opacity: .35; }
+.map-svg.has-sel .m-cov { opacity: .3; }
+
+.map-ctrl {
+  position: absolute; right: 10px; bottom: 10px;
+  display: flex; flex-direction: column; gap: 6px;
+}
+.map-ctrl button {
+  width: 34px; height: 34px; border-radius: 9px; border: none;
+  background: color-mix(in srgb, var(--bg) 88%, transparent);
+  -webkit-backdrop-filter: blur(10px); backdrop-filter: blur(10px);
+  color: var(--text); font-size: 15px; font-weight: 700; cursor: pointer;
+  font-family: inherit; box-shadow: var(--shadow);
+}
+.map-ctrl button.wide { width: 34px; font-size: 11px; }
+
+.map-legend {
+  position: absolute; left: 10px; top: 10px;
+  background: color-mix(in srgb, var(--bg) 86%, transparent);
+  -webkit-backdrop-filter: blur(10px); backdrop-filter: blur(10px);
+  border-radius: 10px; padding: 7px 10px; font-size: 11.5px; color: var(--text2);
+  line-height: 1.7; pointer-events: none;
+}
+.map-legend i { display: inline-block; width: 16px; height: 3px; border-radius: 2px;
+  vertical-align: middle; margin-right: 6px; }
+.map-legend i.gray { background: var(--text2); opacity: .45; }
+.map-legend i.col { background: linear-gradient(90deg, #e33, #3b8, #38c); }
+
+.map-info {
+  position: absolute; left: 10px; right: 56px; bottom: 10px;
+  background: color-mix(in srgb, var(--bg) 92%, transparent);
+  -webkit-backdrop-filter: blur(12px); backdrop-filter: blur(12px);
+  border-radius: 12px; padding: 9px 12px; box-shadow: var(--shadow);
+  display: flex; align-items: center; gap: 10px; cursor: pointer;
+}
+.map-info[hidden] { display: none; }
+.map-info .mi-body { flex: 1 1 auto; min-width: 0; }
+.map-info .mi-name { font-size: 14.5px; font-weight: 700;
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.map-info .mi-sub { font-size: 12px; color: var(--text2); margin-top: 1px; }
+.map-info .mi-go { color: var(--accent); font-size: 20px; font-weight: 400; }
+
+.map-hint { color: var(--text2); font-size: 12.5px; text-align: center; padding: 10px 8px 0; }
 
 /* ---------- Bestätigungs-Dialog ---------- */
 .alert-backdrop {

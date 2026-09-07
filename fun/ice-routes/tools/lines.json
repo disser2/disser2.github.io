@@ -6,17 +6,20 @@
     {
      "id": "Hamburg Hbf",
      "name": "Hamburg",
-     "opt": false
+     "opt": false,
+     "wt": "Hamburg Hauptbahnhof"
     },
     {
      "id": "Düsseldorf Hbf",
      "name": "Düsseldorf",
-     "opt": false
+     "opt": false,
+     "wt": "Düsseldorf Hauptbahnhof"
     },
     {
      "id": "Köln Hbf",
      "name": "Köln",
-     "opt": false
+     "opt": false,
+     "wt": "Köln Hauptbahnhof"
     }
    ]
   ],
@@ -31,54 +34,64 @@
     {
      "id": "Berlin Südkreuz",
      "name": "Berlin Südkreuz",
-     "opt": false
+     "opt": false,
+     "wt": "Bahnhof Berlin Südkreuz"
     },
     {
      "id": "Berlin Hbf",
      "name": "Berlin",
-     "opt": false
+     "opt": false,
+     "wt": "Berlin Hauptbahnhof"
     },
     {
      "id": "Frankfurt (Main) Hbf",
      "name": "Frankfurt",
-     "opt": false
+     "opt": false,
+     "wt": "Frankfurt (Main) Hauptbahnhof"
     },
     {
      "id": "Frankfurt Flughafen Fernbahnhof",
      "name": "Frankfurt Flughafen (Fern)",
-     "opt": false
+     "opt": false,
+     "wt": "Frankfurt Flughafen Fernbahnhof"
     },
     {
      "id": "Mannheim Hbf",
      "name": "Mannheim",
-     "opt": true
+     "opt": true,
+     "wt": "Mannheim Hauptbahnhof"
     },
     {
      "id": "Saarbrücken Hbf",
      "name": "Saarbrücken",
-     "opt": true
+     "opt": true,
+     "wt": "Saarbrücken Hauptbahnhof"
     }
    ],
    [
     {
      "id": "Berlin Südkreuz",
      "name": "Berlin Südkreuz",
-     "opt": false
+     "opt": false,
+     "wt": "Bahnhof Berlin Südkreuz"
     },
     {
      "id": "Berlin Hbf",
      "name": "Berlin",
-     "opt": false
+     "opt": false,
+     "wt": "Berlin Hauptbahnhof"
     },
     {
      "id": "Frankfurt (Main) Hbf",
      "name": "Frankfurt",
-     "opt": false
+     "opt": false,
+     "wt": "Frankfurt (Main) Hauptbahnhof"
     },
     {
      "id": "Frankfurt Flughafen Regionalbahnhof",
      "name": "Frankfurt Flughafen (Regio)",
-     "opt": false
+     "opt": false,
+     "wt": "Frankfurt am Main Flughafen Regionalbahnhof"
     }
    ]
   ],
@@ -93,32 +106,38 @@
     {
      "id": "Padborg",
      "name": "Padborg",
-     "opt": true
+     "opt": true,
+     "wt": "Padborg"
     },
     {
      "id": "Flensburg",
      "name": "Flensburg",
-     "opt": true
+     "opt": true,
+     "wt": "Bahnhof Flensburg"
     },
     {
      "id": "Hamburg Hbf",
      "name": "Hamburg",
-     "opt": false
+     "opt": false,
+     "wt": "Hamburg Hauptbahnhof"
     },
     {
      "id": "Hannover Hbf",
      "name": "Hannover",
-     "opt": false
+     "opt": false,
+     "wt": "Hannover Hauptbahnhof"
     },
     {
      "id": "Frankfurt (Main) Hbf",
      "name": "Frankfurt",
-     "opt": false
+     "opt": false,
+     "wt": "Frankfurt (Main) Hauptbahnhof"
     },
     {
      "id": "Frankfurt Flughafen Regionalbahnhof",
      "name": "Frankfurt Flughafen (Regio)",
-     "opt": true
+     "opt": true,
+     "wt": "Frankfurt am Main Flughafen Regionalbahnhof"
     }
    ]
   ],
@@ -133,22 +152,26 @@
     {
      "id": "Berlin Gesundbrunnen",
      "name": "Berlin Gesundbrunnen",
-     "opt": false
+     "opt": false,
+     "wt": "Bahnhof Berlin Gesundbrunnen"
     },
     {
      "id": "Berlin Hbf",
      "name": "Berlin",
-     "opt": false
+     "opt": false,
+     "wt": "Berlin Hauptbahnhof"
     },
     {
      "id": "Nürnberg Hbf",
      "name": "Nürnberg",
-     "opt": false
+     "opt": false,
+     "wt": "Nürnberg Hauptbahnhof"
     },
     {
      "id": "Stuttgart Hbf",
      "name": "Stuttgart",
-     "opt": false
+     "opt": false,
+     "wt": "Stuttgart Hauptbahnhof"
     }
    ]
   ],
@@ -163,32 +186,38 @@
     {
      "id": "Berlin Ostbahnhof",
      "name": "Berlin Ostbahnhof",
-     "opt": false
+     "opt": false,
+     "wt": "Berlin Ostbahnhof"
     },
     {
      "id": "Berlin Südkreuz",
      "name": "Berlin Südkreuz",
-     "opt": false
+     "opt": false,
+     "wt": "Bahnhof Berlin Südkreuz"
     },
     {
      "id": "Berlin Hbf",
      "name": "Berlin",
-     "opt": false
+     "opt": false,
+     "wt": "Berlin Hauptbahnhof"
     },
     {
      "id": "Berlin-Spandau",
      "name": "Berlin-Spandau",
-     "opt": false
+     "opt": false,
+     "wt": "Bahnhof Berlin-Spandau"
     },
     {
      "id": "Köln Hbf",
      "name": "Köln",
-     "opt": false
+     "opt": false,
+     "wt": "Köln Hauptbahnhof"
     },
     {
      "id": "Bonn Hbf",
      "name": "Bonn",
-     "opt": false
+     "opt": false,
+     "wt": "Bonn Hauptbahnhof"
     }
    ]
   ],
@@ -203,144 +232,172 @@
     {
      "id": "Berlin Ostbahnhof",
      "name": "Berlin Ostbahnhof",
-     "opt": false
+     "opt": false,
+     "wt": "Berlin Ostbahnhof"
     },
     {
      "id": "Berlin Hbf",
      "name": "Berlin",
-     "opt": false
+     "opt": false,
+     "wt": "Berlin Hauptbahnhof"
     },
     {
      "id": "Berlin-Spandau",
      "name": "Berlin-Spandau",
-     "opt": false
+     "opt": false,
+     "wt": "Bahnhof Berlin-Spandau"
     },
     {
      "id": "Stendal Hbf",
      "name": "Stendal",
-     "opt": true
+     "opt": true,
+     "wt": "Stendal Hauptbahnhof"
     },
     {
      "id": "Wolfsburg Hbf",
      "name": "Wolfsburg",
-     "opt": false
+     "opt": false,
+     "wt": "Wolfsburg Hauptbahnhof"
     },
     {
      "id": "Hannover Hbf",
      "name": "Hannover",
-     "opt": false
+     "opt": false,
+     "wt": "Hannover Hauptbahnhof"
     },
     {
      "id": "Minden (Westfalen)",
      "name": "Minden",
-     "opt": true
+     "opt": true,
+     "wt": "Bahnhof Minden (Westfalen)"
     },
     {
      "id": "Bielefeld Hbf",
      "name": "Bielefeld",
-     "opt": false
+     "opt": false,
+     "wt": "Bielefeld Hauptbahnhof"
     },
     {
      "id": "Hamm (Westfalen) Hbf",
      "name": "Hamm",
-     "opt": false
+     "opt": false,
+     "wt": "Hamm (Westfalen) Hauptbahnhof"
     },
     {
      "id": "Dortmund Hbf",
      "name": "Dortmund",
-     "opt": false
+     "opt": false,
+     "wt": "Dortmund Hauptbahnhof"
     },
     {
      "id": "Bochum Hbf",
      "name": "Bochum",
-     "opt": false
+     "opt": false,
+     "wt": "Bochum Hauptbahnhof"
     },
     {
      "id": "Essen Hbf",
      "name": "Essen",
-     "opt": false
+     "opt": false,
+     "wt": "Essen Hauptbahnhof"
     },
     {
      "id": "Duisburg Hbf",
      "name": "Duisburg",
-     "opt": false
+     "opt": false,
+     "wt": "Duisburg Hauptbahnhof"
     },
     {
      "id": "Düsseldorf Flughafen",
      "name": "Düsseldorf Flughafen",
-     "opt": false
+     "opt": false,
+     "wt": "Bahnhof Düsseldorf Flughafen"
     },
     {
      "id": "Düsseldorf Hbf",
      "name": "Düsseldorf",
-     "opt": false
+     "opt": false,
+     "wt": "Düsseldorf Hauptbahnhof"
     },
     {
      "id": "Köln Hbf",
      "name": "Köln",
-     "opt": true
+     "opt": true,
+     "wt": "Köln Hauptbahnhof"
     }
    ],
    [
     {
      "id": "Berlin Ostbahnhof",
      "name": "Berlin Ostbahnhof",
-     "opt": false
+     "opt": false,
+     "wt": "Berlin Ostbahnhof"
     },
     {
      "id": "Berlin Hbf",
      "name": "Berlin",
-     "opt": false
+     "opt": false,
+     "wt": "Berlin Hauptbahnhof"
     },
     {
      "id": "Berlin-Spandau",
      "name": "Berlin-Spandau",
-     "opt": false
+     "opt": false,
+     "wt": "Bahnhof Berlin-Spandau"
     },
     {
      "id": "Stendal Hbf",
      "name": "Stendal",
-     "opt": true
+     "opt": true,
+     "wt": "Stendal Hauptbahnhof"
     },
     {
      "id": "Wolfsburg Hbf",
      "name": "Wolfsburg",
-     "opt": false
+     "opt": false,
+     "wt": "Wolfsburg Hauptbahnhof"
     },
     {
      "id": "Hannover Hbf",
      "name": "Hannover",
-     "opt": false
+     "opt": false,
+     "wt": "Hannover Hauptbahnhof"
     },
     {
      "id": "Minden (Westfalen)",
      "name": "Minden",
-     "opt": true
+     "opt": true,
+     "wt": "Bahnhof Minden (Westfalen)"
     },
     {
      "id": "Bielefeld Hbf",
      "name": "Bielefeld",
-     "opt": false
+     "opt": false,
+     "wt": "Bielefeld Hauptbahnhof"
     },
     {
      "id": "Hamm (Westfalen) Hbf",
      "name": "Hamm",
-     "opt": false
+     "opt": false,
+     "wt": "Hamm (Westfalen) Hauptbahnhof"
     },
     {
      "id": "Hagen Hbf",
      "name": "Hagen",
-     "opt": false
+     "opt": false,
+     "wt": "Hagen Hauptbahnhof"
     },
     {
      "id": "Wuppertal Hbf",
      "name": "Wuppertal",
-     "opt": false
+     "opt": false,
+     "wt": "Wuppertal Hauptbahnhof"
     },
     {
      "id": "Köln Hbf",
      "name": "Köln",
-     "opt": false
+     "opt": false,
+     "wt": "Köln Hauptbahnhof"
     }
    ]
   ],
@@ -355,77 +412,92 @@
     {
      "id": "Berlin Gesundbrunnen",
      "name": "Berlin Gesundbrunnen",
-     "opt": false
+     "opt": false,
+     "wt": "Bahnhof Berlin Gesundbrunnen"
     },
     {
      "id": "Berlin Hbf",
      "name": "Berlin Hbf",
-     "opt": false
+     "opt": false,
+     "wt": "Berlin Hauptbahnhof"
     },
     {
      "id": "Berlin Südkreuz",
      "name": "Berlin Südkreuz",
-     "opt": false
+     "opt": false,
+     "wt": "Bahnhof Berlin Südkreuz"
     },
     {
      "id": "Lutherstadt Wittenberg Hbf",
      "name": "Wittenberg",
-     "opt": false
+     "opt": false,
+     "wt": "Lutherstadt Wittenberg Hauptbahnhof"
     },
     {
      "id": "Leipzig Hbf",
      "name": "Leipzig",
-     "opt": false
+     "opt": false,
+     "wt": "Leipzig Hauptbahnhof"
     },
     {
      "id": "Erfurt Hbf",
      "name": "Erfurt",
-     "opt": false
+     "opt": false,
+     "wt": "Erfurt Hauptbahnhof"
     },
     {
      "id": "Eisenach Hbf",
      "name": "Eisenach",
-     "opt": false
+     "opt": false,
+     "wt": "Eisenach Hauptbahnhof"
     },
     {
      "id": "Fulda",
      "name": "Fulda",
-     "opt": false
+     "opt": false,
+     "wt": "Bahnhof Fulda"
     },
     {
      "id": "Frankfurt (Main) Hbf",
      "name": "Frankfurt",
-     "opt": false
+     "opt": false,
+     "wt": "Frankfurt (Main) Hauptbahnhof"
     },
     {
      "id": "Mannheim Hbf",
      "name": "Mannheim",
-     "opt": false
+     "opt": false,
+     "wt": "Mannheim Hauptbahnhof"
     },
     {
      "id": "Stuttgart Hbf",
      "name": "Stuttgart",
-     "opt": false
+     "opt": false,
+     "wt": "Stuttgart Hauptbahnhof"
     },
     {
      "id": "Ulm Hbf",
      "name": "Ulm",
-     "opt": false
+     "opt": false,
+     "wt": "Ulm Hauptbahnhof"
     },
     {
      "id": "Augsburg Hbf",
      "name": "Augsburg",
-     "opt": false
+     "opt": false,
+     "wt": "Augsburg Hauptbahnhof"
     },
     {
      "id": "München-Pasing",
      "name": "München-Pasing",
-     "opt": false
+     "opt": false,
+     "wt": "Bahnhof München-Pasing"
     },
     {
      "id": "München Hbf",
      "name": "München",
-     "opt": false
+     "opt": false,
+     "wt": "München Hauptbahnhof"
     }
    ]
   ],
@@ -440,239 +512,286 @@
     {
      "id": "Berlin Ostbahnhof",
      "name": "Berlin Ostbahnhof",
-     "opt": false
+     "opt": false,
+     "wt": "Berlin Ostbahnhof"
     },
     {
      "id": "Berlin Hbf",
      "name": "Berlin",
-     "opt": false
+     "opt": false,
+     "wt": "Berlin Hauptbahnhof"
     },
     {
      "id": "Berlin-Spandau",
      "name": "Berlin-Spandau",
-     "opt": false
+     "opt": false,
+     "wt": "Bahnhof Berlin-Spandau"
     },
     {
      "id": "Wolfsburg Hbf",
      "name": "Wolfsburg",
-     "opt": false
+     "opt": false,
+     "wt": "Wolfsburg Hauptbahnhof"
     },
     {
      "id": "Braunschweig Hbf",
      "name": "Braunschweig",
-     "opt": false
+     "opt": false,
+     "wt": "Braunschweig Hauptbahnhof"
     },
     {
      "id": "Hildesheim Hbf",
      "name": "Hildesheim",
-     "opt": false
+     "opt": false,
+     "wt": "Hildesheim Hauptbahnhof"
     },
     {
      "id": "Göttingen",
      "name": "Göttingen",
-     "opt": false
+     "opt": false,
+     "wt": "Bahnhof Göttingen"
     },
     {
      "id": "Kassel-Wilhelmshöhe",
      "name": "Kassel-Wilhelmshöhe",
-     "opt": false
+     "opt": false,
+     "wt": "Bahnhof Kassel-Wilhelmshöhe"
     },
     {
      "id": "Fulda",
      "name": "Fulda",
-     "opt": false
+     "opt": false,
+     "wt": "Bahnhof Fulda"
     },
     {
      "id": "Hanau Hbf",
      "name": "Hanau",
-     "opt": false
+     "opt": false,
+     "wt": "Hanau Hauptbahnhof"
     },
     {
      "id": "Frankfurt (Main) Hbf",
      "name": "Frankfurt",
-     "opt": false
+     "opt": false,
+     "wt": "Frankfurt (Main) Hauptbahnhof"
     },
     {
      "id": "Mannheim Hbf",
      "name": "Mannheim",
-     "opt": false
+     "opt": false,
+     "wt": "Mannheim Hauptbahnhof"
     },
     {
      "id": "Karlsruhe Hbf",
      "name": "Karlsruhe",
-     "opt": false
+     "opt": false,
+     "wt": "Karlsruhe Hauptbahnhof"
     },
     {
      "id": "Baden-Baden",
      "name": "Baden-Baden",
-     "opt": true
+     "opt": true,
+     "wt": "Bahnhof Baden-Baden"
     },
     {
      "id": "Offenburg",
      "name": "Offenburg",
-     "opt": false
+     "opt": false,
+     "wt": "Bahnhof Offenburg"
     },
     {
      "id": "Freiburg (Breisgau) Hbf",
      "name": "Freiburg",
-     "opt": false
+     "opt": false,
+     "wt": "Freiburg (Breisgau) Hauptbahnhof"
     },
     {
      "id": "Basel Badischer Bahnhof",
      "name": "Basel Bad",
-     "opt": false
+     "opt": false,
+     "wt": "Basel Badischer Bahnhof"
     },
     {
      "id": "Basel SBB",
      "name": "Basel SBB",
-     "opt": false
+     "opt": false,
+     "wt": "Bahnhof Basel SBB"
     },
     {
      "id": "Liestal",
      "name": "Liestal",
-     "opt": true
+     "opt": true,
+     "wt": "Liestal"
     },
     {
      "id": "Olten",
      "name": "Olten",
-     "opt": true
+     "opt": true,
+     "wt": "Bahnhof Olten"
     },
     {
      "id": "Bern",
      "name": "Bern",
-     "opt": true
+     "opt": true,
+     "wt": "Bahnhof Bern"
     },
     {
      "id": "Thun",
      "name": "Thun",
-     "opt": true
+     "opt": true,
+     "wt": "Bahnhof Thun"
     },
     {
      "id": "Spiez",
      "name": "Spiez",
-     "opt": true
+     "opt": true,
+     "wt": "Bahnhof Spiez"
     },
     {
      "id": "Interlaken West",
      "name": "Interlaken West",
-     "opt": true
+     "opt": true,
+     "wt": "Bahnhof Interlaken West"
     },
     {
      "id": "Interlaken Ost",
      "name": "Interlaken Ost",
-     "opt": true
+     "opt": true,
+     "wt": "Bahnhof Interlaken Ost"
     }
    ],
    [
     {
      "id": "Berlin Ostbahnhof",
      "name": "Berlin Ostbahnhof",
-     "opt": false
+     "opt": false,
+     "wt": "Berlin Ostbahnhof"
     },
     {
      "id": "Berlin Hbf",
      "name": "Berlin",
-     "opt": false
+     "opt": false,
+     "wt": "Berlin Hauptbahnhof"
     },
     {
      "id": "Berlin-Spandau",
      "name": "Berlin-Spandau",
-     "opt": false
+     "opt": false,
+     "wt": "Bahnhof Berlin-Spandau"
     },
     {
      "id": "Wolfsburg Hbf",
      "name": "Wolfsburg",
-     "opt": false
+     "opt": false,
+     "wt": "Wolfsburg Hauptbahnhof"
     },
     {
      "id": "Braunschweig Hbf",
      "name": "Braunschweig",
-     "opt": false
+     "opt": false,
+     "wt": "Braunschweig Hauptbahnhof"
     },
     {
      "id": "Hildesheim Hbf",
      "name": "Hildesheim",
-     "opt": false
+     "opt": false,
+     "wt": "Hildesheim Hauptbahnhof"
     },
     {
      "id": "Göttingen",
      "name": "Göttingen",
-     "opt": false
+     "opt": false,
+     "wt": "Bahnhof Göttingen"
     },
     {
      "id": "Kassel-Wilhelmshöhe",
      "name": "Kassel-Wilhelmshöhe",
-     "opt": false
+     "opt": false,
+     "wt": "Bahnhof Kassel-Wilhelmshöhe"
     },
     {
      "id": "Fulda",
      "name": "Fulda",
-     "opt": false
+     "opt": false,
+     "wt": "Bahnhof Fulda"
     },
     {
      "id": "Hanau Hbf",
      "name": "Hanau",
-     "opt": false
+     "opt": false,
+     "wt": "Hanau Hauptbahnhof"
     },
     {
      "id": "Frankfurt (Main) Hbf",
      "name": "Frankfurt",
-     "opt": false
+     "opt": false,
+     "wt": "Frankfurt (Main) Hauptbahnhof"
     },
     {
      "id": "Mannheim Hbf",
      "name": "Mannheim",
-     "opt": false
+     "opt": false,
+     "wt": "Mannheim Hauptbahnhof"
     },
     {
      "id": "Karlsruhe Hbf",
      "name": "Karlsruhe",
-     "opt": false
+     "opt": false,
+     "wt": "Karlsruhe Hauptbahnhof"
     },
     {
      "id": "Baden-Baden",
      "name": "Baden-Baden",
-     "opt": true
+     "opt": true,
+     "wt": "Bahnhof Baden-Baden"
     },
     {
      "id": "Offenburg",
      "name": "Offenburg",
-     "opt": false
+     "opt": false,
+     "wt": "Bahnhof Offenburg"
     },
     {
      "id": "Freiburg (Breisgau) Hbf",
      "name": "Freiburg",
-     "opt": false
+     "opt": false,
+     "wt": "Freiburg (Breisgau) Hauptbahnhof"
     },
     {
      "id": "Basel Badischer Bahnhof",
      "name": "Basel Bad",
-     "opt": false
+     "opt": false,
+     "wt": "Basel Badischer Bahnhof"
     },
     {
      "id": "Basel SBB",
      "name": "Basel SBB",
-     "opt": false
+     "opt": false,
+     "wt": "Bahnhof Basel SBB"
     },
     {
      "id": "Zürich Hbf",
      "name": "Zürich",
-     "opt": true
+     "opt": true,
+     "wt": "Zürich Hauptbahnhof"
     },
     {
      "id": "Sargans",
      "name": "Sargans",
-     "opt": true
+     "opt": true,
+     "wt": "Bahnhof Sargans"
     },
     {
      "id": "Landquart",
      "name": "Landquart",
-     "opt": true
+     "opt": true,
+     "wt": "Bahnhof Landquart"
     },
     {
      "id": "Chur",
      "name": "Chur",
-     "opt": true
+     "opt": true,
+     "wt": "Bahnhof Chur"
     }
    ]
   ],
@@ -687,231 +806,276 @@
     {
      "id": "Berlin Ostbahnhof",
      "name": "Berlin Ostbahnhof",
-     "opt": false
+     "opt": false,
+     "wt": "Berlin Ostbahnhof"
     },
     {
      "id": "Berlin Südkreuz",
      "name": "Berlin Südkreuz",
-     "opt": false
+     "opt": false,
+     "wt": "Bahnhof Berlin Südkreuz"
     },
     {
      "id": "Berlin Hbf",
      "name": "Berlin",
-     "opt": false
+     "opt": false,
+     "wt": "Berlin Hauptbahnhof"
     },
     {
      "id": "Berlin-Spandau",
      "name": "Berlin-Spandau",
-     "opt": false
+     "opt": false,
+     "wt": "Bahnhof Berlin-Spandau"
     },
     {
      "id": "Stendal Hbf",
      "name": "Stendal",
-     "opt": false
+     "opt": false,
+     "wt": "Stendal Hauptbahnhof"
     },
     {
      "id": "Wolfsburg Hbf",
      "name": "Wolfsburg",
-     "opt": false
+     "opt": false,
+     "wt": "Wolfsburg Hauptbahnhof"
     },
     {
      "id": "Braunschweig Hbf",
      "name": "Braunschweig",
-     "opt": false
+     "opt": false,
+     "wt": "Braunschweig Hauptbahnhof"
     },
     {
      "id": "Hildesheim Hbf",
      "name": "Hildesheim",
-     "opt": false
+     "opt": false,
+     "wt": "Hildesheim Hauptbahnhof"
     },
     {
      "id": "Göttingen",
      "name": "Göttingen",
-     "opt": false
+     "opt": false,
+     "wt": "Bahnhof Göttingen"
     },
     {
      "id": "Kassel-Wilhelmshöhe",
      "name": "Kassel-Wilhelmshöhe",
-     "opt": false
+     "opt": false,
+     "wt": "Bahnhof Kassel-Wilhelmshöhe"
     },
     {
      "id": "Fulda",
      "name": "Fulda",
-     "opt": false
+     "opt": false,
+     "wt": "Bahnhof Fulda"
     },
     {
      "id": "Frankfurt (Main) Süd",
      "name": "Frankfurt Süd",
-     "opt": false
+     "opt": false,
+     "wt": "Bahnhof Frankfurt (Main) Süd"
     },
     {
      "id": "Frankfurt Flughafen Fernbahnhof",
      "name": "Frankfurt Flughafen",
-     "opt": false
+     "opt": false,
+     "wt": "Frankfurt am Main Flughafen Fernbahnhof"
     }
    ],
    [
     {
      "id": "Berlin Ostbahnhof",
      "name": "Berlin Ostbahnhof",
-     "opt": false
+     "opt": false,
+     "wt": "Berlin Ostbahnhof"
     },
     {
      "id": "Berlin Südkreuz",
      "name": "Berlin Südkreuz",
-     "opt": false
+     "opt": false,
+     "wt": "Bahnhof Berlin Südkreuz"
     },
     {
      "id": "Berlin Hbf",
      "name": "Berlin",
-     "opt": false
+     "opt": false,
+     "wt": "Berlin Hauptbahnhof"
     },
     {
      "id": "Berlin-Spandau",
      "name": "Berlin-Spandau",
-     "opt": false
+     "opt": false,
+     "wt": "Bahnhof Berlin-Spandau"
     },
     {
      "id": "Stendal Hbf",
      "name": "Stendal",
-     "opt": false
+     "opt": false,
+     "wt": "Stendal Hauptbahnhof"
     },
     {
      "id": "Wolfsburg Hbf",
      "name": "Wolfsburg",
-     "opt": false
+     "opt": false,
+     "wt": "Wolfsburg Hauptbahnhof"
     },
     {
      "id": "Braunschweig Hbf",
      "name": "Braunschweig",
-     "opt": false
+     "opt": false,
+     "wt": "Braunschweig Hauptbahnhof"
     },
     {
      "id": "Hildesheim Hbf",
      "name": "Hildesheim",
-     "opt": false
+     "opt": false,
+     "wt": "Hildesheim Hauptbahnhof"
     },
     {
      "id": "Göttingen",
      "name": "Göttingen",
-     "opt": false
+     "opt": false,
+     "wt": "Bahnhof Göttingen"
     },
     {
      "id": "Kassel-Wilhelmshöhe",
      "name": "Kassel-Wilhelmshöhe",
-     "opt": false
+     "opt": false,
+     "wt": "Bahnhof Kassel-Wilhelmshöhe"
     },
     {
      "id": "Fulda",
      "name": "Fulda",
-     "opt": false
+     "opt": false,
+     "wt": "Bahnhof Fulda"
     },
     {
      "id": "Frankfurt (Main) Süd",
      "name": "Frankfurt Süd",
-     "opt": false
+     "opt": false,
+     "wt": "Bahnhof Frankfurt (Main) Süd"
     },
     {
      "id": "Darmstadt Hbf",
      "name": "Darmstadt",
-     "opt": false
+     "opt": false,
+     "wt": "Darmstadt Hauptbahnhof"
     },
     {
      "id": "Bensheim",
      "name": "Bensheim",
-     "opt": false
+     "opt": false,
+     "wt": "Bahnhof Bensheim"
     },
     {
      "id": "Weinheim (Bergstraße) Hbf",
      "name": "Weinheim",
-     "opt": false
+     "opt": false,
+     "wt": "Weinheim (Bergstraße) Hauptbahnhof"
     },
     {
      "id": "Heidelberg Hbf",
      "name": "Heidelberg",
-     "opt": false
+     "opt": false,
+     "wt": "Heidelberg Hauptbahnhof"
     },
     {
      "id": "Wiesloch-Walldorf",
      "name": "Wiesloch-Walldorf",
-     "opt": false
+     "opt": false,
+     "wt": "Bahnhof Wiesloch-Walldorf"
     },
     {
      "id": "Bruchsal",
      "name": "Bruchsal",
-     "opt": false
+     "opt": false,
+     "wt": "Bahnhof Bruchsal"
     },
     {
      "id": "Karlsruhe Hbf",
      "name": "Karlsruhe",
-     "opt": false
+     "opt": false,
+     "wt": "Karlsruhe Hauptbahnhof"
     }
    ],
    [
     {
      "id": "Berlin Ostbahnhof",
      "name": "Berlin Ostbahnhof",
-     "opt": false
+     "opt": false,
+     "wt": "Berlin Ostbahnhof"
     },
     {
      "id": "Berlin Südkreuz",
      "name": "Berlin Südkreuz",
-     "opt": false
+     "opt": false,
+     "wt": "Bahnhof Berlin Südkreuz"
     },
     {
      "id": "Berlin Hbf",
      "name": "Berlin",
-     "opt": false
+     "opt": false,
+     "wt": "Berlin Hauptbahnhof"
     },
     {
      "id": "Berlin-Spandau",
      "name": "Berlin-Spandau",
-     "opt": false
+     "opt": false,
+     "wt": "Bahnhof Berlin-Spandau"
     },
     {
      "id": "Stendal Hbf",
      "name": "Stendal",
-     "opt": false
+     "opt": false,
+     "wt": "Stendal Hauptbahnhof"
     },
     {
      "id": "Wolfsburg Hbf",
      "name": "Wolfsburg",
-     "opt": false
+     "opt": false,
+     "wt": "Wolfsburg Hauptbahnhof"
     },
     {
      "id": "Braunschweig Hbf",
      "name": "Braunschweig",
-     "opt": false
+     "opt": false,
+     "wt": "Braunschweig Hauptbahnhof"
     },
     {
      "id": "Hildesheim Hbf",
      "name": "Hildesheim",
-     "opt": false
+     "opt": false,
+     "wt": "Hildesheim Hauptbahnhof"
     },
     {
      "id": "Göttingen",
      "name": "Göttingen",
-     "opt": false
+     "opt": false,
+     "wt": "Bahnhof Göttingen"
     },
     {
      "id": "Kassel-Wilhelmshöhe",
      "name": "Kassel-Wilhelmshöhe",
-     "opt": false
+     "opt": false,
+     "wt": "Bahnhof Kassel-Wilhelmshöhe"
     },
     {
      "id": "Fulda",
      "name": "Fulda",
-     "opt": false
+     "opt": false,
+     "wt": "Bahnhof Fulda"
     },
     {
      "id": "Frankfurt (Main) Süd",
      "name": "Frankfurt Süd",
-     "opt": false
+     "opt": false,
+     "wt": "Bahnhof Frankfurt (Main) Süd"
     },
     {
      "id": "Frankfurt (Main) Hbf",
      "name": "Frankfurt",
-     "opt": true
+     "opt": true,
+     "wt": "Frankfurt (Main) Hauptbahnhof"
     }
    ]
   ],
@@ -926,184 +1090,220 @@
     {
      "id": "Berlin Ostbahnhof",
      "name": "Berlin Ostbahnhof",
-     "opt": false
+     "opt": false,
+     "wt": "Berlin Ostbahnhof"
     },
     {
      "id": "Berlin Hbf",
      "name": "Berlin",
-     "opt": false
+     "opt": false,
+     "wt": "Berlin Hauptbahnhof"
     },
     {
      "id": "Berlin-Spandau",
      "name": "Berlin-Spandau",
-     "opt": false
+     "opt": false,
+     "wt": "Bahnhof Berlin-Spandau"
     },
     {
      "id": "Wolfsburg Hbf",
      "name": "Wolfsburg",
-     "opt": true
+     "opt": true,
+     "wt": "Wolfsburg Hauptbahnhof"
     },
     {
      "id": "Hannover Hbf",
      "name": "Hannover",
-     "opt": false
+     "opt": false,
+     "wt": "Hannover Hauptbahnhof"
     },
     {
      "id": "Herford",
      "name": "Herford",
-     "opt": true
+     "opt": true,
+     "wt": "Bahnhof Herford"
     },
     {
      "id": "Bielefeld Hbf",
      "name": "Bielefeld",
-     "opt": false
+     "opt": false,
+     "wt": "Bielefeld Hauptbahnhof"
     },
     {
      "id": "Gütersloh Hbf",
      "name": "Gütersloh",
-     "opt": false
+     "opt": false,
+     "wt": "Gütersloh Hauptbahnhof"
     },
     {
      "id": "Hamm (Westfalen) Hbf",
      "name": "Hamm",
-     "opt": false
+     "opt": false,
+     "wt": "Hamm (Westfalen) Hauptbahnhof"
     },
     {
      "id": "Dortmund Hbf",
      "name": "Dortmund",
-     "opt": false
+     "opt": false,
+     "wt": "Dortmund Hauptbahnhof"
     },
     {
      "id": "Bochum Hbf",
      "name": "Bochum",
-     "opt": false
+     "opt": false,
+     "wt": "Bochum Hauptbahnhof"
     },
     {
      "id": "Essen Hbf",
      "name": "Essen",
-     "opt": false
+     "opt": false,
+     "wt": "Essen Hauptbahnhof"
     },
     {
      "id": "Duisburg Hbf",
      "name": "Duisburg",
-     "opt": false
+     "opt": false,
+     "wt": "Duisburg Hauptbahnhof"
     },
     {
      "id": "Düsseldorf Hbf",
      "name": "Düsseldorf",
-     "opt": false
+     "opt": false,
+     "wt": "Düsseldorf Hauptbahnhof"
     },
     {
      "id": "Köln Hbf",
      "name": "Köln",
-     "opt": false
+     "opt": false,
+     "wt": "Köln Hauptbahnhof"
     },
     {
      "id": "Düren",
      "name": "Düren",
-     "opt": true
+     "opt": true,
+     "wt": "Bahnhof Düren"
     },
     {
      "id": "Aachen Hbf",
      "name": "Aachen",
-     "opt": true
+     "opt": true,
+     "wt": "Aachen Hauptbahnhof"
     }
    ],
    [
     {
      "id": "Berlin Ostbahnhof",
      "name": "Berlin Ostbahnhof",
-     "opt": false
+     "opt": false,
+     "wt": "Berlin Ostbahnhof"
     },
     {
      "id": "Berlin Hbf",
      "name": "Berlin",
-     "opt": false
+     "opt": false,
+     "wt": "Berlin Hauptbahnhof"
     },
     {
      "id": "Berlin-Spandau",
      "name": "Berlin-Spandau",
-     "opt": false
+     "opt": false,
+     "wt": "Bahnhof Berlin-Spandau"
     },
     {
      "id": "Wolfsburg Hbf",
      "name": "Wolfsburg",
-     "opt": true
+     "opt": true,
+     "wt": "Wolfsburg Hauptbahnhof"
     },
     {
      "id": "Hannover Hbf",
      "name": "Hannover",
-     "opt": false
+     "opt": false,
+     "wt": "Hannover Hauptbahnhof"
     },
     {
      "id": "Osnabrück Hbf",
      "name": "Osnabrück",
-     "opt": false
+     "opt": false,
+     "wt": "Osnabrück Hauptbahnhof"
     },
     {
      "id": "Münster (Westfalen) Hbf",
      "name": "Münster",
-     "opt": false
+     "opt": false,
+     "wt": "Münster (Westfalen) Hauptbahnhof"
     },
     {
      "id": "Recklinghausen Hbf",
      "name": "Recklinghausen",
-     "opt": true
+     "opt": true,
+     "wt": "Recklinghausen Hauptbahnhof"
     },
     {
      "id": "Wanne-Eickel Hbf",
      "name": "Wanne-Eickel",
-     "opt": true
+     "opt": true,
+     "wt": "Wanne-Eickel Hauptbahnhof"
     },
     {
      "id": "Essen Hbf",
      "name": "Essen",
-     "opt": false
+     "opt": false,
+     "wt": "Essen Hauptbahnhof"
     },
     {
      "id": "Duisburg Hbf",
      "name": "Duisburg",
-     "opt": false
+     "opt": false,
+     "wt": "Duisburg Hauptbahnhof"
     },
     {
      "id": "Krefeld Hbf",
      "name": "Krefeld",
-     "opt": false
+     "opt": false,
+     "wt": "Krefeld Hauptbahnhof"
     },
     {
      "id": "Viersen",
      "name": "Viersen",
-     "opt": false
+     "opt": false,
+     "wt": "Bahnhof Viersen"
     },
     {
      "id": "Mönchengladbach Hbf",
      "name": "Mönchengladbach",
-     "opt": false
+     "opt": false,
+     "wt": "Mönchengladbach Hauptbahnhof"
     },
     {
      "id": "Rheydt Hbf",
      "name": "Rheydt",
-     "opt": false
+     "opt": false,
+     "wt": "Rheydt Hauptbahnhof"
     },
     {
      "id": "Erkelenz",
      "name": "Erkelenz",
-     "opt": false
+     "opt": false,
+     "wt": "Bahnhof Erkelenz"
     },
     {
      "id": "Geilenkirchen",
      "name": "Geilenkirchen",
-     "opt": false
+     "opt": false,
+     "wt": "Bahnhof Geilenkirchen"
     },
     {
      "id": "Herzogenrath",
      "name": "Herzogenrath",
-     "opt": false
+     "opt": false,
+     "wt": "Bahnhof Herzogenrath"
     },
     {
      "id": "Aachen Hbf",
      "name": "Aachen",
-     "opt": false
+     "opt": false,
+     "wt": "Aachen Hauptbahnhof"
     }
    ]
   ],
@@ -1118,112 +1318,134 @@
     {
      "id": "Ostseebad Binz",
      "name": "Binz",
-     "opt": true
+     "opt": true,
+     "wt": "Bahnhof Ostseebad Binz"
     },
     {
      "id": "Bergen auf Rügen",
      "name": "Bergen",
-     "opt": true
+     "opt": true,
+     "wt": "Bahnhof Bergen auf Rügen"
     },
     {
      "id": "Stralsund Hbf",
      "name": "Stralsund",
-     "opt": false
+     "opt": false,
+     "wt": "Stralsund Hauptbahnhof"
     },
     {
      "id": "Greifswald",
      "name": "Greifswald",
-     "opt": false
+     "opt": false,
+     "wt": "Bahnhof Greifswald"
     },
     {
      "id": "Züssow",
      "name": "Züssow",
-     "opt": false
+     "opt": false,
+     "wt": "Bahnhof Züssow"
     },
     {
      "id": "Anklam",
      "name": "Anklam",
-     "opt": true
+     "opt": true,
+     "wt": "Bahnhof Anklam"
     },
     {
      "id": "Pasewalk",
      "name": "Pasewalk",
-     "opt": true
+     "opt": true,
+     "wt": "Bahnhof Pasewalk"
     },
     {
      "id": "Prenzlau",
      "name": "Prenzlau",
-     "opt": true
+     "opt": true,
+     "wt": "Bahnhof Prenzlau"
     },
     {
      "id": "Eberswalde Hbf",
      "name": "Eberswalde",
-     "opt": false
+     "opt": false,
+     "wt": "Eberswalde Hauptbahnhof"
     },
     {
      "id": "Berlin Gesundbrunnen",
      "name": "Berlin Gesundbrunnen",
-     "opt": false
+     "opt": false,
+     "wt": "Bahnhof Berlin Gesundbrunnen"
     },
     {
      "id": "Berlin Hbf",
      "name": "Berlin",
-     "opt": false
+     "opt": false,
+     "wt": "Berlin Hauptbahnhof"
     },
     {
      "id": "Berlin Südkreuz",
      "name": "Berlin Südkreuz",
-     "opt": false
+     "opt": false,
+     "wt": "Bahnhof Berlin Südkreuz"
     },
     {
      "id": "Halle (Saale) Hbf",
      "name": "Halle",
-     "opt": false
+     "opt": false,
+     "wt": "Halle (Saale) Hauptbahnhof"
     },
     {
      "id": "Erfurt Hbf",
      "name": "Erfurt",
-     "opt": false
+     "opt": false,
+     "wt": "Erfurt Hauptbahnhof"
     },
     {
      "id": "Frankfurt (Main) Hbf",
      "name": "Frankfurt",
-     "opt": false
+     "opt": false,
+     "wt": "Frankfurt (Main) Hauptbahnhof"
     },
     {
      "id": "Darmstadt Hbf",
      "name": "Darmstadt",
-     "opt": true
+     "opt": true,
+     "wt": "Darmstadt Hauptbahnhof"
     },
     {
      "id": "Bensheim",
      "name": "Bensheim",
-     "opt": true
+     "opt": true,
+     "wt": "Bahnhof Bensheim"
     },
     {
      "id": "Mannheim Hbf",
      "name": "Mannheim",
-     "opt": true
+     "opt": true,
+     "wt": "Mannheim Hauptbahnhof"
     },
     {
      "id": "Neustadt (Weinstraße) Hbf",
      "name": "Neustadt",
-     "opt": true
+     "opt": true,
+     "wt": "Neustadt (Weinstraße) Hauptbahnhof"
     },
     {
      "id": "Kaiserslautern Hbf",
      "name": "Kaiserslautern",
-     "opt": true
+     "opt": true,
+     "wt": "Kaiserslautern Hauptbahnhof"
     },
     {
      "id": "Homburg (Saar) Hbf",
      "name": "Homburg",
-     "opt": true
+     "opt": true,
+     "wt": "Homburg (Saar) Hauptbahnhof"
     },
     {
      "id": "Saarbrücken Hbf",
      "name": "Saarbrücken",
-     "opt": true
+     "opt": true,
+     "wt": "Saarbrücken Hauptbahnhof"
     }
    ]
   ],
@@ -1238,37 +1460,44 @@
     {
      "id": "Berlin Südkreuz",
      "name": "Berlin Südkreuz",
-     "opt": false
+     "opt": false,
+     "wt": "Bahnhof Berlin Südkreuz"
     },
     {
      "id": "Berlin Hbf",
      "name": "Berlin",
-     "opt": false
+     "opt": false,
+     "wt": "Berlin Hauptbahnhof"
     },
     {
      "id": "Berlin-Spandau",
      "name": "Berlin-Spandau",
-     "opt": false
+     "opt": false,
+     "wt": "Bahnhof Berlin-Spandau"
     },
     {
      "id": "Hannover Hbf",
      "name": "Hannover",
-     "opt": false
+     "opt": false,
+     "wt": "Hannover Hauptbahnhof"
     },
     {
      "id": "Bremen Hbf",
      "name": "Bremen",
-     "opt": false
+     "opt": false,
+     "wt": "Bremen Hauptbahnhof"
     },
     {
      "id": "Delmenhorst",
      "name": "Delmenhorst",
-     "opt": true
+     "opt": true,
+     "wt": "Bahnhof Delmenhorst"
     },
     {
      "id": "Oldenburg (Oldenburg) Hbf",
      "name": "Oldenburg (Oldb)",
-     "opt": true
+     "opt": true,
+     "wt": "Oldenburg (Oldenburg) Hauptbahnhof"
     }
    ]
   ],
@@ -1283,87 +1512,104 @@
     {
      "id": "Hamburg-Altona",
      "name": "Hamburg Altona",
-     "opt": false
+     "opt": false,
+     "wt": "Bahnhof Hamburg-Altona"
     },
     {
      "id": "Hamburg Dammtor",
      "name": "Hamburg Dammtor",
-     "opt": false
+     "opt": false,
+     "wt": "Bahnhof Hamburg Dammtor"
     },
     {
      "id": "Hamburg Hbf",
      "name": "Hamburg",
-     "opt": false
+     "opt": false,
+     "wt": "Hamburg Hauptbahnhof"
     },
     {
      "id": "Büchen",
      "name": "Büchen",
-     "opt": false
+     "opt": false,
+     "wt": "Bahnhof Büchen"
     },
     {
      "id": "Ludwigslust",
      "name": "Ludwigslust",
-     "opt": false
+     "opt": false,
+     "wt": "Bahnhof Ludwigslust"
     },
     {
      "id": "Wittenberge",
      "name": "Wittenberge",
-     "opt": false
+     "opt": false,
+     "wt": "Bahnhof Wittenberge"
     },
     {
      "id": "Berlin-Spandau",
      "name": "Berlin Spandau",
-     "opt": false
+     "opt": false,
+     "wt": "Berlin-Spandau"
     },
     {
      "id": "Berlin Hbf",
      "name": "Berlin Hbf",
-     "opt": false
+     "opt": false,
+     "wt": "Berlin Hauptbahnhof"
     },
     {
      "id": "Berlin Südkreuz",
      "name": "Berlin Südkreuz",
-     "opt": false
+     "opt": false,
+     "wt": "Bahnhof Berlin Südkreuz"
     },
     {
      "id": "Bitterfeld",
      "name": "Bitterfeld",
-     "opt": false
+     "opt": false,
+     "wt": "Bahnhof Bitterfeld"
     },
     {
      "id": "Halle (Saale) Hbf",
      "name": "Halle",
-     "opt": false
+     "opt": false,
+     "wt": "Halle (Saale) Hauptbahnhof"
     },
     {
      "id": "Erfurt Hbf",
      "name": "Erfurt",
-     "opt": false
+     "opt": false,
+     "wt": "Erfurt Hauptbahnhof"
     },
     {
      "id": "Bamberg",
      "name": "Bamberg",
-     "opt": false
+     "opt": false,
+     "wt": "Bahnhof Bamberg"
     },
     {
      "id": "Nürnberg Hbf",
      "name": "Nürnberg",
-     "opt": false
+     "opt": false,
+     "wt": "Nürnberg Hauptbahnhof"
     },
     {
      "id": "Donauwörth",
      "name": "Donauwörth",
-     "opt": false
+     "opt": false,
+     "wt": "Bahnhof Donauwörth"
     },
     {
      "id": "Augsburg Hbf",
      "name": "Augsburg",
-     "opt": false
+     "opt": false,
+     "wt": "Augsburg Hauptbahnhof"
     },
     {
      "id": "München-Pasing",
      "name": "München-Pasing",
-     "opt": false
+     "opt": false,
+     "wt": "Bahnhof München-Pasing"
     }
    ]
   ],
@@ -1378,62 +1624,74 @@
     {
      "id": "Berlin Ostbahnhof",
      "name": "Berlin Ostbahnhof",
-     "opt": false
+     "opt": false,
+     "wt": "Berlin Ostbahnhof"
     },
     {
      "id": "Berlin Hbf",
      "name": "Berlin",
-     "opt": false
+     "opt": false,
+     "wt": "Berlin Hauptbahnhof"
     },
     {
      "id": "Berlin-Spandau",
      "name": "Berlin-Spandau",
-     "opt": false
+     "opt": false,
+     "wt": "Bahnhof Berlin-Spandau"
     },
     {
      "id": "Hannover Hbf",
      "name": "Hannover",
-     "opt": false
+     "opt": false,
+     "wt": "Hannover Hauptbahnhof"
     },
     {
      "id": "Bielefeld Hbf",
      "name": "Bielefeld",
-     "opt": false
+     "opt": false,
+     "wt": "Bielefeld Hauptbahnhof"
     },
     {
      "id": "Hagen Hbf",
      "name": "Hagen",
-     "opt": false
+     "opt": false,
+     "wt": "Hagen Hauptbahnhof"
     },
     {
      "id": "Wuppertal Hbf",
      "name": "Wuppertal",
-     "opt": false
+     "opt": false,
+     "wt": "Wuppertal Hauptbahnhof"
     },
     {
      "id": "Köln Hbf",
      "name": "Köln",
-     "opt": false
+     "opt": false,
+     "wt": "Köln Hauptbahnhof"
     },
     {
      "id": "Bonn Hbf",
      "name": "Bonn",
-     "opt": false
+     "opt": false,
+     "wt": "Bonn Hauptbahnhof"
     },
     {
      "id": "Remagen",
      "name": "Remagen",
-     "opt": true
+     "opt": true,
+     "wt": "Bahnhof Remagen"
     },
     {
      "id": "Andernach",
      "name": "Andernach",
-     "opt": true
+     "opt": true,
+     "wt": "Bahnhof Andernach"
     },
     {
      "id": "Koblenz Hbf",
      "name": "Koblenz",
-     "opt": true
+     "opt": true,
+     "wt": "Koblenz Hauptbahnhof"
     }
    ]
   ],
@@ -1448,72 +1706,86 @@
     {
      "id": "Hamburg-Altona",
      "name": "Hamburg-Altona",
-     "opt": false
+     "opt": false,
+     "wt": "Bahnhof Hamburg-Altona"
     },
     {
      "id": "Hamburg Dammtor",
      "name": "Hamburg Dammtor",
-     "opt": false
+     "opt": false,
+     "wt": "Bahnhof Hamburg Dammtor"
     },
     {
      "id": "Hamburg Hbf",
      "name": "Hamburg",
-     "opt": false
+     "opt": false,
+     "wt": "Hamburg Hauptbahnhof"
     },
     {
      "id": "Uelzen",
      "name": "Uelzen",
-     "opt": false
+     "opt": false,
+     "wt": "Bahnhof Uelzen"
     },
     {
      "id": "Hannover Hbf",
      "name": "Hannover",
-     "opt": false
+     "opt": false,
+     "wt": "Hannover Hauptbahnhof"
     },
     {
      "id": "Göttingen",
      "name": "Göttingen",
-     "opt": false
+     "opt": false,
+     "wt": "Bahnhof Göttingen"
     },
     {
      "id": "Kassel-Wilhelmshöhe",
      "name": "Kassel-Wilhelmshöhe",
-     "opt": false
+     "opt": false,
+     "wt": "Bahnhof Kassel-Wilhelmshöhe"
     },
     {
      "id": "Frankfurt (Main) Hbf",
      "name": "Frankfurt",
-     "opt": false
+     "opt": false,
+     "wt": "Frankfurt (Main) Hauptbahnhof"
     },
     {
      "id": "Mannheim Hbf",
      "name": "Mannheim",
-     "opt": false
+     "opt": false,
+     "wt": "Mannheim Hauptbahnhof"
     },
     {
      "id": "Karlsruhe Hbf",
      "name": "Karlsruhe",
-     "opt": false
+     "opt": false,
+     "wt": "Karlsruhe Hauptbahnhof"
     },
     {
      "id": "Offenburg",
      "name": "Offenburg",
-     "opt": false
+     "opt": false,
+     "wt": "Bahnhof Offenburg"
     },
     {
      "id": "Freiburg (Breisgau) Hbf",
      "name": "Freiburg",
-     "opt": false
+     "opt": false,
+     "wt": "Freiburg (Breisgau) Hauptbahnhof"
     },
     {
      "id": "Basel Badischer Bahnhof",
      "name": "Basel Bad",
-     "opt": false
+     "opt": false,
+     "wt": "Basel Badischer Bahnhof"
     },
     {
      "id": "Basel SBB",
      "name": "Basel SBB",
-     "opt": false
+     "opt": false,
+     "wt": "Bahnhof Basel SBB"
     }
    ]
   ],
@@ -1528,72 +1800,86 @@
     {
      "id": "Kiel Hbf",
      "name": "Kiel",
-     "opt": false
+     "opt": false,
+     "wt": "Kiel Hauptbahnhof"
     },
     {
      "id": "Neumünster",
      "name": "Neumünster",
-     "opt": false
+     "opt": false,
+     "wt": "Bahnhof Neumünster"
     },
     {
      "id": "Hamburg Dammtor",
      "name": "Hamburg Dammtor",
-     "opt": false
+     "opt": false,
+     "wt": "Bahnhof Hamburg Dammtor"
     },
     {
      "id": "Hamburg Hbf",
      "name": "Hamburg",
-     "opt": false
+     "opt": false,
+     "wt": "Hamburg Hauptbahnhof"
     },
     {
      "id": "Celle",
      "name": "Celle",
-     "opt": false
+     "opt": false,
+     "wt": "Bahnhof Celle"
     },
     {
      "id": "Hannover Hbf",
      "name": "Hannover",
-     "opt": false
+     "opt": false,
+     "wt": "Hannover Hauptbahnhof"
     },
     {
      "id": "Göttingen",
      "name": "Göttingen",
-     "opt": false
+     "opt": false,
+     "wt": "Bahnhof Göttingen"
     },
     {
      "id": "Kassel-Wilhelmshöhe",
      "name": "Kassel-Wilhelmshöhe",
-     "opt": false
+     "opt": false,
+     "wt": "Bahnhof Kassel-Wilhelmshöhe"
     },
     {
      "id": "Hanau Hbf",
      "name": "Hanau",
-     "opt": true
+     "opt": true,
+     "wt": "Hanau Hauptbahnhof"
     },
     {
      "id": "Frankfurt (Main) Hbf",
      "name": "Frankfurt",
-     "opt": false
+     "opt": false,
+     "wt": "Frankfurt (Main) Hauptbahnhof"
     },
     {
      "id": "Mannheim Hbf",
      "name": "Mannheim",
-     "opt": false
+     "opt": false,
+     "wt": "Mannheim Hauptbahnhof"
     },
     {
      "id": "Heidelberg Hbf",
      "name": "Heidelberg",
-     "opt": true
+     "opt": true,
+     "wt": "Heidelberg Hauptbahnhof"
     },
     {
      "id": "Vaihingen (Enz)",
      "name": "Vaihingen",
-     "opt": true
+     "opt": true,
+     "wt": "Bahnhof Vaihingen (Enz)"
     },
     {
      "id": "Stuttgart Hbf",
      "name": "Stuttgart",
-     "opt": false
+     "opt": false,
+     "wt": "Stuttgart Hauptbahnhof"
     }
    ]
   ],
@@ -1608,182 +1894,218 @@
     {
      "id": "Hamburg-Altona",
      "name": "Hamburg-Altona",
-     "opt": false
+     "opt": false,
+     "wt": "Bahnhof Hamburg-Altona"
     },
     {
      "id": "Hamburg Dammtor",
      "name": "Hamburg Dammtor",
-     "opt": false
+     "opt": false,
+     "wt": "Bahnhof Hamburg Dammtor"
     },
     {
      "id": "Hamburg Hbf",
      "name": "Hamburg",
-     "opt": false
+     "opt": false,
+     "wt": "Hamburg Hauptbahnhof"
     },
     {
      "id": "Hamburg-Harburg",
      "name": "Hamburg-Harburg",
-     "opt": false
+     "opt": false,
+     "wt": "Bahnhof Hamburg-Harburg"
     },
     {
      "id": "Lüneburg",
      "name": "Lüneburg",
-     "opt": false
+     "opt": false,
+     "wt": "Bahnhof Lüneburg"
     },
     {
      "id": "Bad Bevensen",
      "name": "Bad Bevensen",
-     "opt": true
+     "opt": true,
+     "wt": "Bad Bevensen"
     },
     {
      "id": "Uelzen",
      "name": "Uelzen",
-     "opt": false
+     "opt": false,
+     "wt": "Bahnhof Uelzen"
     },
     {
      "id": "Celle",
      "name": "Celle",
-     "opt": false
+     "opt": false,
+     "wt": "Bahnhof Celle"
     },
     {
      "id": "Langenhagen",
      "name": "Langenhagen Mitte",
-     "opt": true
+     "opt": true,
+     "wt": "Langenhagen"
     },
     {
      "id": "Hannover Hbf",
      "name": "Hannover",
-     "opt": false
+     "opt": false,
+     "wt": "Hannover Hauptbahnhof"
     },
     {
      "id": "Göttingen",
      "name": "Göttingen",
-     "opt": false
+     "opt": false,
+     "wt": "Bahnhof Göttingen"
     },
     {
      "id": "Kassel-Wilhelmshöhe",
      "name": "Kassel-Wilhelmshöhe",
-     "opt": false
+     "opt": false,
+     "wt": "Bahnhof Kassel-Wilhelmshöhe"
     },
     {
      "id": "Fulda",
      "name": "Fulda",
-     "opt": false
+     "opt": false,
+     "wt": "Bahnhof Fulda"
     },
     {
      "id": "Würzburg Hbf",
      "name": "Würzburg",
-     "opt": false
+     "opt": false,
+     "wt": "Würzburg Hauptbahnhof"
     },
     {
      "id": "Steinach (bei Rothenburg ob der Tauber)",
      "name": "Steinach",
-     "opt": true
+     "opt": true,
+     "wt": "Bahnhof Steinach (bei Rothenburg ob der Tauber)"
     },
     {
      "id": "Ansbach",
      "name": "Ansbach",
-     "opt": true
+     "opt": true,
+     "wt": "Bahnhof Ansbach"
     },
     {
      "id": "Treuchtlingen",
      "name": "Treuchtlingen",
-     "opt": false
+     "opt": false,
+     "wt": "Bahnhof Treuchtlingen"
     },
     {
      "id": "Donauwörth",
      "name": "Donauwörth",
-     "opt": false
+     "opt": false,
+     "wt": "Bahnhof Donauwörth"
     },
     {
      "id": "Augsburg Hbf",
      "name": "Augsburg",
-     "opt": false
+     "opt": false,
+     "wt": "Augsburg Hauptbahnhof"
     },
     {
      "id": "München-Pasing",
      "name": "München-Pasing",
-     "opt": false
+     "opt": false,
+     "wt": "Bahnhof München-Pasing"
     },
     {
      "id": "München Hbf",
      "name": "München",
-     "opt": false
+     "opt": false,
+     "wt": "München Hauptbahnhof"
     },
     {
      "id": "München Ost",
      "name": "München Ost",
-     "opt": true
+     "opt": true,
+     "wt": "Bahnhof München Ost"
     },
     {
      "id": "Rosenheim",
      "name": "Rosenheim",
-     "opt": false
+     "opt": false,
+     "wt": "Bahnhof Rosenheim"
     },
     {
      "id": "Kufstein",
      "name": "Kufstein",
-     "opt": false
+     "opt": false,
+     "wt": "Bahnhof Kufstein"
     },
     {
      "id": "Wörgl Hbf",
      "name": "Wörgl",
-     "opt": false
+     "opt": false,
+     "wt": "Wörgl Hauptbahnhof"
     },
     {
      "id": "Jenbach",
      "name": "Jenbach",
-     "opt": true
+     "opt": true,
+     "wt": "Bahnhof Jenbach"
     },
     {
      "id": "Innsbruck Hbf",
      "name": "Innsbruck",
-     "opt": true
+     "opt": true,
+     "wt": "Innsbruck Hauptbahnhof"
     },
     {
      "id": "Hopfgarten im Brixental",
      "name": "Hopfgarten",
-     "opt": true
+     "opt": true,
+     "wt": "Hopfgarten im Brixental"
     },
     {
      "id": "Kirchberg in Tirol",
      "name": "Kirchberg",
-     "opt": true
+     "opt": true,
+     "wt": "Kirchberg in Tirol"
     },
     {
      "id": "Kitzbühel",
      "name": "Kitzbühel Hahnenkamm",
-     "opt": true
+     "opt": true,
+     "wt": "Kitzbühel"
     },
     {
      "id": "St. Johann in Tirol",
      "name": "St. Johann",
-     "opt": true
+     "opt": true,
+     "wt": "St. Johann in Tirol"
     },
     {
      "id": "Fieberbrunn",
      "name": "Fieberbrunn",
-     "opt": true
+     "opt": true,
+     "wt": "Fieberbrunn"
     },
     {
      "id": "Hochfilzen",
      "name": "Hochfilzen",
-     "opt": true
+     "opt": true,
+     "wt": "Hochfilzen"
     },
     {
      "id": "Saalfelden am Steinernen Meer",
      "name": "Saalfelden",
-     "opt": true
+     "opt": true,
+     "wt": "Saalfelden am Steinernen Meer"
     },
     {
      "id": "Zell am See",
      "name": "Zell am See",
-     "opt": true
+     "opt": true,
+     "wt": "Zell am See"
     },
     {
      "id": "Schwarzach-St. Veit",
      "name": "Schwarzach-St. Veit",
-     "opt": true
+     "opt": true,
+     "wt": "Bahnhof Schwarzach-St. Veit"
     }
    ]
   ],
@@ -1798,139 +2120,166 @@
     {
      "id": "Hamburg-Altona",
      "name": "Hamburg-Altona",
-     "opt": false
+     "opt": false,
+     "wt": "Bahnhof Hamburg-Altona"
     },
     {
      "id": "Hamburg Dammtor",
      "name": "Hamburg Dammtor",
-     "opt": false
+     "opt": false,
+     "wt": "Bahnhof Hamburg Dammtor"
     },
     {
      "id": "Hamburg Hbf",
      "name": "Hamburg",
-     "opt": false
+     "opt": false,
+     "wt": "Hamburg Hauptbahnhof"
     },
     {
      "id": "Hamburg-Harburg",
      "name": "Hamburg-Harburg",
-     "opt": false
+     "opt": false,
+     "wt": "Bahnhof Hamburg-Harburg"
     },
     {
      "id": "Lüneburg",
      "name": "Lüneburg",
-     "opt": false
+     "opt": false,
+     "wt": "Bahnhof Lüneburg"
     },
     {
      "id": "Hannover Hbf",
      "name": "Hannover",
-     "opt": false
+     "opt": false,
+     "wt": "Hannover Hauptbahnhof"
     },
     {
      "id": "Göttingen",
      "name": "Göttingen",
-     "opt": false
+     "opt": false,
+     "wt": "Bahnhof Göttingen"
     },
     {
      "id": "Kassel-Wilhelmshöhe",
      "name": "Kassel-Wilhelmshöhe",
-     "opt": false
+     "opt": false,
+     "wt": "Bahnhof Kassel-Wilhelmshöhe"
     },
     {
      "id": "Fulda",
      "name": "Fulda",
-     "opt": false
+     "opt": false,
+     "wt": "Bahnhof Fulda"
     },
     {
      "id": "Würzburg Hbf",
      "name": "Würzburg",
-     "opt": false
+     "opt": false,
+     "wt": "Würzburg Hauptbahnhof"
     },
     {
      "id": "Nürnberg Hbf",
      "name": "Nürnberg",
-     "opt": false
+     "opt": false,
+     "wt": "Nürnberg Hauptbahnhof"
     },
     {
      "id": "Ingolstadt Hbf",
      "name": "Ingolstadt",
-     "opt": false
+     "opt": false,
+     "wt": "Ingolstadt Hauptbahnhof"
     },
     {
      "id": "München Hbf",
      "name": "München",
-     "opt": false
+     "opt": false,
+     "wt": "München Hauptbahnhof"
     }
    ],
    [
     {
      "id": "Kiel Hbf",
      "name": "Kiel",
-     "opt": true
+     "opt": true,
+     "wt": "Kiel Hauptbahnhof"
     },
     {
      "id": "Neumünster",
      "name": "Neumünster",
-     "opt": true
+     "opt": true,
+     "wt": "Bahnhof Neumünster"
     },
     {
      "id": "Hamburg Dammtor",
      "name": "Hamburg Dammtor",
-     "opt": false
+     "opt": false,
+     "wt": "Bahnhof Hamburg Dammtor"
     },
     {
      "id": "Hamburg Hbf",
      "name": "Hamburg",
-     "opt": false
+     "opt": false,
+     "wt": "Hamburg Hauptbahnhof"
     },
     {
      "id": "Hamburg-Harburg",
      "name": "Hamburg-Harburg",
-     "opt": false
+     "opt": false,
+     "wt": "Bahnhof Hamburg-Harburg"
     },
     {
      "id": "Lüneburg",
      "name": "Lüneburg",
-     "opt": false
+     "opt": false,
+     "wt": "Bahnhof Lüneburg"
     },
     {
      "id": "Hannover Hbf",
      "name": "Hannover",
-     "opt": false
+     "opt": false,
+     "wt": "Hannover Hauptbahnhof"
     },
     {
      "id": "Göttingen",
      "name": "Göttingen",
-     "opt": false
+     "opt": false,
+     "wt": "Bahnhof Göttingen"
     },
     {
      "id": "Kassel-Wilhelmshöhe",
      "name": "Kassel-Wilhelmshöhe",
-     "opt": false
+     "opt": false,
+     "wt": "Bahnhof Kassel-Wilhelmshöhe"
     },
     {
      "id": "Fulda",
      "name": "Fulda",
-     "opt": false
+     "opt": false,
+     "wt": "Bahnhof Fulda"
     },
     {
      "id": "Würzburg Hbf",
      "name": "Würzburg",
-     "opt": false
+     "opt": false,
+     "wt": "Würzburg Hauptbahnhof"
     },
     {
      "id": "Nürnberg Hbf",
      "name": "Nürnberg",
-     "opt": false
+     "opt": false,
+     "wt": "Nürnberg Hauptbahnhof"
     },
     {
      "id": "Ingolstadt Hbf",
      "name": "Ingolstadt",
-     "opt": false
+     "opt": false,
+     "wt": "Ingolstadt Hauptbahnhof"
     },
     {
      "id": "München Hbf",
      "name": "München",
-     "opt": false
+     "opt": false,
+     "wt": "München Hauptbahnhof"
     }
    ]
   ],
@@ -1945,92 +2294,110 @@
     {
      "id": "Oldenburg (Oldenburg) Hbf",
      "name": "Oldenburg (Oldb)",
-     "opt": true
+     "opt": true,
+     "wt": "Oldenburg (Oldenburg) Hauptbahnhof"
     },
     {
      "id": "Delmenhorst",
      "name": "Delmenhorst",
-     "opt": true
+     "opt": true,
+     "wt": "Bahnhof Delmenhorst"
     },
     {
      "id": "Bremen Hbf",
      "name": "Bremen",
-     "opt": false
+     "opt": false,
+     "wt": "Bremen Hauptbahnhof"
     },
     {
      "id": "Hannover Hbf",
      "name": "Hannover",
-     "opt": false
+     "opt": false,
+     "wt": "Hannover Hauptbahnhof"
     },
     {
      "id": "Göttingen",
      "name": "Göttingen",
-     "opt": false
+     "opt": false,
+     "wt": "Bahnhof Göttingen"
     },
     {
      "id": "Kassel-Wilhelmshöhe",
      "name": "Kassel-Wilhelmshöhe",
-     "opt": false
+     "opt": false,
+     "wt": "Bahnhof Kassel-Wilhelmshöhe"
     },
     {
      "id": "Wabern (Bz Kassel)",
      "name": "Wabern",
-     "opt": false
+     "opt": false,
+     "wt": "Bahnhof Wabern (Bz Kassel)"
     },
     {
      "id": "Treysa",
      "name": "Treysa",
-     "opt": false
+     "opt": false,
+     "wt": "Bahnhof Treysa"
     },
     {
      "id": "Marburg (Lahn)",
      "name": "Marburg",
-     "opt": false
+     "opt": false,
+     "wt": "Bahnhof Marburg (Lahn)"
     },
     {
      "id": "Gießen",
      "name": "Gießen",
-     "opt": false
+     "opt": false,
+     "wt": "Bahnhof Gießen"
     },
     {
      "id": "Frankfurt (Main) Hbf",
      "name": "Frankfurt",
-     "opt": false
+     "opt": false,
+     "wt": "Frankfurt (Main) Hauptbahnhof"
     },
     {
      "id": "Darmstadt Hbf",
      "name": "Darmstadt",
-     "opt": false
+     "opt": false,
+     "wt": "Darmstadt Hauptbahnhof"
     },
     {
      "id": "Bensheim",
      "name": "Bensheim",
-     "opt": false
+     "opt": false,
+     "wt": "Bahnhof Bensheim"
     },
     {
      "id": "Weinheim (Bergstraße) Hbf",
      "name": "Weinheim",
-     "opt": false
+     "opt": false,
+     "wt": "Weinheim (Bergstraße) Hauptbahnhof"
     },
     {
      "id": "Heidelberg Hbf",
      "name": "Heidelberg",
-     "opt": false
+     "opt": false,
+     "wt": "Heidelberg Hauptbahnhof"
     },
     {
      "id": "Wiesloch-Walldorf",
      "name": "Wiesloch-Walldorf",
-     "opt": false
+     "opt": false,
+     "wt": "Bahnhof Wiesloch-Walldorf"
     },
     {
      "id": "Bruchsal",
      "name": "Bruchsal",
-     "opt": false
+     "opt": false,
+     "wt": "Bahnhof Bruchsal"
     },
     {
      "id": "Karlsruhe Hbf",
      "name": "Karlsruhe",
-     "opt": false
+     "opt": false,
+     "wt": "Karlsruhe Hauptbahnhof"
     }
    ]
   ],
@@ -2045,42 +2412,50 @@
     {
      "id": "Hamburg-Altona",
      "name": "Hamburg-Altona",
-     "opt": false
+     "opt": false,
+     "wt": "Bahnhof Hamburg-Altona"
     },
     {
      "id": "Hamburg Dammtor",
      "name": "Hamburg Dammtor",
-     "opt": true
+     "opt": true,
+     "wt": "Bahnhof Hamburg Dammtor"
     },
     {
      "id": "Hamburg Hbf",
      "name": "Hamburg",
-     "opt": false
+     "opt": false,
+     "wt": "Hamburg Hauptbahnhof"
     },
     {
      "id": "Berlin-Spandau",
      "name": "Berlin-Spandau",
-     "opt": false
+     "opt": false,
+     "wt": "Bahnhof Berlin-Spandau"
     },
     {
      "id": "Berlin Hbf",
      "name": "Berlin Hbf",
-     "opt": true
+     "opt": true,
+     "wt": "Berlin Hauptbahnhof"
     },
     {
      "id": "Berlin Gesundbrunnen",
      "name": "Berlin Gesundbrunnen",
-     "opt": true
+     "opt": true,
+     "wt": "Bahnhof Berlin Gesundbrunnen"
     },
     {
      "id": "Dresden-Neustadt",
      "name": "Dresden Neustadt",
-     "opt": true
+     "opt": true,
+     "wt": "Bahnhof Dresden-Neustadt"
     },
     {
      "id": "Dresden Hbf",
      "name": "Dresden",
-     "opt": true
+     "opt": true,
+     "wt": "Dresden Hbf"
     }
    ]
   ],
@@ -2095,144 +2470,172 @@
     {
      "id": "Berlin Hbf",
      "name": "Berlin",
-     "opt": false
+     "opt": false,
+     "wt": "Berlin Hauptbahnhof"
     },
     {
      "id": "Berlin Südkreuz",
      "name": "Berlin Südkreuz",
-     "opt": false
+     "opt": false,
+     "wt": "Bahnhof Berlin Südkreuz"
     },
     {
      "id": "Lutherstadt Wittenberg Hbf",
      "name": "Wittenberg",
-     "opt": false
+     "opt": false,
+     "wt": "Lutherstadt Wittenberg Hauptbahnhof"
     },
     {
      "id": "Leipzig Hbf",
      "name": "Leipzig",
-     "opt": false
+     "opt": false,
+     "wt": "Leipzig Hauptbahnhof"
     },
     {
      "id": "Erfurt Hbf",
      "name": "Erfurt",
-     "opt": false
+     "opt": false,
+     "wt": "Erfurt Hauptbahnhof"
     },
     {
      "id": "Coburg",
      "name": "Coburg",
-     "opt": true
+     "opt": true,
+     "wt": "Bahnhof Coburg"
     },
     {
      "id": "Bamberg",
      "name": "Bamberg",
-     "opt": false
+     "opt": false,
+     "wt": "Bahnhof Bamberg"
     },
     {
      "id": "Erlangen",
      "name": "Erlangen",
-     "opt": false
+     "opt": false,
+     "wt": "Bahnhof Erlangen"
     },
     {
      "id": "Nürnberg Hbf",
      "name": "Nürnberg",
-     "opt": false
+     "opt": false,
+     "wt": "Nürnberg Hauptbahnhof"
     },
     {
      "id": "Ingolstadt Hbf",
      "name": "Ingolstadt",
-     "opt": true
+     "opt": true,
+     "wt": "Ingolstadt Hauptbahnhof"
     },
     {
      "id": "München Hbf",
      "name": "München",
-     "opt": false
+     "opt": false,
+     "wt": "München Hauptbahnhof"
     }
    ],
    [
     {
      "id": "Hamburg-Altona",
      "name": "Hamburg-Altona",
-     "opt": false
+     "opt": false,
+     "wt": "Bahnhof Hamburg-Altona"
     },
     {
      "id": "Hamburg Dammtor",
      "name": "Hamburg Dammtor",
-     "opt": false
+     "opt": false,
+     "wt": "Bahnhof Hamburg Dammtor"
     },
     {
      "id": "Hamburg Hbf",
      "name": "Hamburg",
-     "opt": false
+     "opt": false,
+     "wt": "Hamburg Hauptbahnhof"
     },
     {
      "id": "Ludwigslust",
      "name": "Ludwigslust",
-     "opt": true
+     "opt": true,
+     "wt": "Bahnhof Ludwigslust"
     },
     {
      "id": "Wittenberge",
      "name": "Wittenberge",
-     "opt": true
+     "opt": true,
+     "wt": "Bahnhof Wittenberge"
     },
     {
      "id": "Berlin-Spandau",
      "name": "Berlin-Spandau",
-     "opt": false
+     "opt": false,
+     "wt": "Bahnhof Berlin-Spandau"
     },
     {
      "id": "Berlin Hbf",
      "name": "Berlin",
-     "opt": false
+     "opt": false,
+     "wt": "Berlin Hauptbahnhof"
     },
     {
      "id": "Berlin Südkreuz",
      "name": "Berlin Südkreuz",
-     "opt": false
+     "opt": false,
+     "wt": "Bahnhof Berlin Südkreuz"
     },
     {
      "id": "Lutherstadt Wittenberg Hbf",
      "name": "Wittenberg",
-     "opt": false
+     "opt": false,
+     "wt": "Lutherstadt Wittenberg Hauptbahnhof"
     },
     {
      "id": "Leipzig Hbf",
      "name": "Leipzig",
-     "opt": false
+     "opt": false,
+     "wt": "Leipzig Hauptbahnhof"
     },
     {
      "id": "Erfurt Hbf",
      "name": "Erfurt",
-     "opt": false
+     "opt": false,
+     "wt": "Erfurt Hauptbahnhof"
     },
     {
      "id": "Coburg",
      "name": "Coburg",
-     "opt": true
+     "opt": true,
+     "wt": "Bahnhof Coburg"
     },
     {
      "id": "Bamberg",
      "name": "Bamberg",
-     "opt": false
+     "opt": false,
+     "wt": "Bahnhof Bamberg"
     },
     {
      "id": "Erlangen",
      "name": "Erlangen",
-     "opt": false
+     "opt": false,
+     "wt": "Bahnhof Erlangen"
     },
     {
      "id": "Nürnberg Hbf",
      "name": "Nürnberg",
-     "opt": false
+     "opt": false,
+     "wt": "Nürnberg Hauptbahnhof"
     },
     {
      "id": "Ingolstadt Hbf",
      "name": "Ingolstadt",
-     "opt": true
+     "opt": true,
+     "wt": "Ingolstadt Hauptbahnhof"
     },
     {
      "id": "München Hbf",
      "name": "München",
-     "opt": false
+     "opt": false,
+     "wt": "München Hauptbahnhof"
     }
    ]
   ],
@@ -2247,37 +2650,44 @@
     {
      "id": "Berlin Hbf",
      "name": "Berlin",
-     "opt": false
+     "opt": false,
+     "wt": "Berlin Hauptbahnhof"
     },
     {
      "id": "Berlin Südkreuz",
      "name": "Berlin Südkreuz",
-     "opt": false
+     "opt": false,
+     "wt": "Bahnhof Berlin Südkreuz"
     },
     {
      "id": "Halle (Saale) Hbf",
      "name": "Halle",
-     "opt": false
+     "opt": false,
+     "wt": "Halle (Saale) Hauptbahnhof"
     },
     {
      "id": "Erfurt Hbf",
      "name": "Erfurt",
-     "opt": false
+     "opt": false,
+     "wt": "Erfurt Hauptbahnhof"
     },
     {
      "id": "Nürnberg Hbf",
      "name": "Nürnberg",
-     "opt": false
+     "opt": false,
+     "wt": "Nürnberg Hauptbahnhof"
     },
     {
      "id": "Ingolstadt Hbf",
      "name": "''Ingolstadt ''",
-     "opt": false
+     "opt": false,
+     "wt": "Ingolstadt Hauptbahnhof"
     },
     {
      "id": "München Hbf",
      "name": "München",
-     "opt": false
+     "opt": false,
+     "wt": "München Hauptbahnhof"
     }
    ]
   ],
@@ -2292,246 +2702,294 @@
     {
      "id": "Westerland (Sylt)",
      "name": "Westerland",
-     "opt": false
+     "opt": false,
+     "wt": "Bahnhof Westerland (Sylt)"
     },
     {
      "id": "Niebüll",
      "name": "Niebüll",
-     "opt": false
+     "opt": false,
+     "wt": "Bahnhof Niebüll"
     },
     {
      "id": "Husum",
      "name": "Husum",
-     "opt": false
+     "opt": false,
+     "wt": "Bahnhof Husum"
     },
     {
      "id": "Heide (Holst)",
      "name": "Heide",
-     "opt": false
+     "opt": false,
+     "wt": "Bahnhof Heide (Holst)"
     },
     {
      "id": "Itzehoe",
      "name": "Itzehoe",
-     "opt": false
+     "opt": false,
+     "wt": "Bahnhof Itzehoe"
     },
     {
      "id": "Hamburg-Harburg",
      "name": "Hamburg-Harburg",
-     "opt": false
+     "opt": false,
+     "wt": "Bahnhof Hamburg-Harburg"
     },
     {
      "id": "Bremen Hbf",
      "name": "Bremen",
-     "opt": false
+     "opt": false,
+     "wt": "Bremen Hauptbahnhof"
     },
     {
      "id": "Osnabrück Hbf",
      "name": "Osnabrück",
-     "opt": false
+     "opt": false,
+     "wt": "Osnabrück Hauptbahnhof"
     },
     {
      "id": "Münster (Westfalen) Hbf",
      "name": "Münster",
-     "opt": false
+     "opt": false,
+     "wt": "Münster (Westfalen) Hauptbahnhof"
     },
     {
      "id": "Recklinghausen Hbf",
      "name": "Recklinghausen",
-     "opt": false
+     "opt": false,
+     "wt": "Recklinghausen Hauptbahnhof"
     },
     {
      "id": "Gelsenkirchen Hbf",
      "name": "Gelsenkirchen",
-     "opt": true
+     "opt": true,
+     "wt": "Gelsenkirchen Hauptbahnhof"
     },
     {
      "id": "Essen Hbf",
      "name": "Essen",
-     "opt": false
+     "opt": false,
+     "wt": "Essen Hauptbahnhof"
     },
     {
      "id": "Duisburg Hbf",
      "name": "Duisburg",
-     "opt": false
+     "opt": false,
+     "wt": "Duisburg Hauptbahnhof"
     },
     {
      "id": "Düsseldorf Hbf",
      "name": "Düsseldorf",
-     "opt": false
+     "opt": false,
+     "wt": "Düsseldorf Hauptbahnhof"
     },
     {
      "id": "Köln Hbf",
      "name": "Köln",
-     "opt": false
+     "opt": false,
+     "wt": "Köln Hauptbahnhof"
     }
    ],
    [
     {
      "id": "Ostseebad Binz",
      "name": "Ostseebad Binz",
-     "opt": true
+     "opt": true,
+     "wt": "Bahnhof Ostseebad Binz"
     },
     {
      "id": "Bergen auf Rügen",
      "name": "Bergen",
-     "opt": false
+     "opt": false,
+     "wt": "Bahnhof Bergen auf Rügen"
     },
     {
      "id": "Greifswald",
      "name": "Greifswald",
-     "opt": false
+     "opt": false,
+     "wt": "Bahnhof Greifswald"
     },
     {
      "id": "Stralsund Hbf",
      "name": "Stralsund",
-     "opt": false
+     "opt": false,
+     "wt": "Stralsund Hauptbahnhof"
     },
     {
      "id": "Velgast",
      "name": "Velgast",
-     "opt": false
+     "opt": false,
+     "wt": "Bahnhof Velgast"
     },
     {
      "id": "Ribnitz-Damgarten West",
      "name": "Ribnitz-Damgarten West",
-     "opt": false
+     "opt": false,
+     "wt": "Bahnhof Ribnitz-Damgarten West"
     },
     {
      "id": "Rostock Hbf",
      "name": "Rostock",
-     "opt": false
+     "opt": false,
+     "wt": "Rostock Hauptbahnhof"
     },
     {
      "id": "Bützow",
      "name": "Bützow",
-     "opt": false
+     "opt": false,
+     "wt": "Bahnhof Bützow"
     },
     {
      "id": "Schwerin Hbf",
      "name": "Schwerin",
-     "opt": false
+     "opt": false,
+     "wt": "Schwerin Hauptbahnhof"
     },
     {
      "id": "Hamburg-Bergedorf",
      "name": "Hamburg-Bergedorf",
-     "opt": false
+     "opt": false,
+     "wt": "Bahnhof Hamburg-Bergedorf"
     },
     {
      "id": "Hamburg-Harburg",
      "name": "Hamburg-Harburg",
-     "opt": false
+     "opt": false,
+     "wt": "Bahnhof Hamburg-Harburg"
     },
     {
      "id": "Bremen Hbf",
      "name": "Bremen",
-     "opt": false
+     "opt": false,
+     "wt": "Bremen Hauptbahnhof"
     },
     {
      "id": "Osnabrück Hbf",
      "name": "Osnabrück",
-     "opt": false
+     "opt": false,
+     "wt": "Osnabrück Hauptbahnhof"
     },
     {
      "id": "Münster (Westfalen) Hbf",
      "name": "Münster",
-     "opt": false
+     "opt": false,
+     "wt": "Münster (Westfalen) Hauptbahnhof"
     },
     {
      "id": "Recklinghausen Hbf",
      "name": "Recklinghausen",
-     "opt": false
+     "opt": false,
+     "wt": "Recklinghausen Hauptbahnhof"
     },
     {
      "id": "Gelsenkirchen Hbf",
      "name": "Gelsenkirchen",
-     "opt": true
+     "opt": true,
+     "wt": "Gelsenkirchen Hauptbahnhof"
     },
     {
      "id": "Essen Hbf",
      "name": "Essen",
-     "opt": false
+     "opt": false,
+     "wt": "Essen Hauptbahnhof"
     },
     {
      "id": "Duisburg Hbf",
      "name": "Duisburg",
-     "opt": false
+     "opt": false,
+     "wt": "Duisburg Hauptbahnhof"
     },
     {
      "id": "Düsseldorf Hbf",
      "name": "Düsseldorf",
-     "opt": false
+     "opt": false,
+     "wt": "Düsseldorf Hauptbahnhof"
     },
     {
      "id": "Köln Hbf",
      "name": "Köln",
-     "opt": false
+     "opt": false,
+     "wt": "Köln Hauptbahnhof"
     }
    ],
    [
     {
      "id": "Hamburg-Altona",
      "name": "Hamburg-Altona",
-     "opt": false
+     "opt": false,
+     "wt": "Bahnhof Hamburg-Altona"
     },
     {
      "id": "Hamburg Dammtor",
      "name": "Hamburg Dammtor",
-     "opt": false
+     "opt": false,
+     "wt": "Bahnhof Hamburg Dammtor"
     },
     {
      "id": "Hamburg Hbf",
      "name": "Hamburg",
-     "opt": false
+     "opt": false,
+     "wt": "Hamburg Hauptbahnhof"
     },
     {
      "id": "Hamburg-Harburg",
      "name": "Hamburg-Harburg",
-     "opt": false
+     "opt": false,
+     "wt": "Bahnhof Hamburg-Harburg"
     },
     {
      "id": "Bremen Hbf",
      "name": "Bremen",
-     "opt": false
+     "opt": false,
+     "wt": "Bremen Hauptbahnhof"
     },
     {
      "id": "Osnabrück Hbf",
      "name": "Osnabrück",
-     "opt": false
+     "opt": false,
+     "wt": "Osnabrück Hauptbahnhof"
     },
     {
      "id": "Münster (Westfalen) Hbf",
      "name": "Münster",
-     "opt": false
+     "opt": false,
+     "wt": "Münster (Westfalen) Hauptbahnhof"
     },
     {
      "id": "Recklinghausen Hbf",
      "name": "Recklinghausen",
-     "opt": false
+     "opt": false,
+     "wt": "Recklinghausen Hauptbahnhof"
     },
     {
      "id": "Gelsenkirchen Hbf",
      "name": "Gelsenkirchen",
-     "opt": true
+     "opt": true,
+     "wt": "Gelsenkirchen Hauptbahnhof"
     },
     {
      "id": "Essen Hbf",
      "name": "Essen",
-     "opt": false
+     "opt": false,
+     "wt": "Essen Hauptbahnhof"
     },
     {
      "id": "Duisburg Hbf",
      "name": "Duisburg",
-     "opt": false
+     "opt": false,
+     "wt": "Duisburg Hauptbahnhof"
     },
     {
      "id": "Düsseldorf Hbf",
      "name": "Düsseldorf",
-     "opt": false
+     "opt": false,
+     "wt": "Düsseldorf Hauptbahnhof"
     },
     {
      "id": "Köln Hbf",
      "name": "Köln",
-     "opt": false
+     "opt": false,
+     "wt": "Köln Hauptbahnhof"
     }
    ]
   ],
@@ -2546,92 +3004,110 @@
     {
      "id": "Dortmund Hbf",
      "name": "Dortmund",
-     "opt": true
+     "opt": true,
+     "wt": "Dortmund Hauptbahnhof"
     },
     {
      "id": "Bochum Hbf",
      "name": "Bochum",
-     "opt": true
+     "opt": true,
+     "wt": "Bochum Hauptbahnhof"
     },
     {
      "id": "Essen Hbf",
      "name": "Essen",
-     "opt": false
+     "opt": false,
+     "wt": "Essen Hauptbahnhof"
     },
     {
      "id": "Duisburg Hbf",
      "name": "Duisburg",
-     "opt": false
+     "opt": false,
+     "wt": "Duisburg Hauptbahnhof"
     },
     {
      "id": "Düsseldorf Hbf",
      "name": "Düsseldorf",
-     "opt": false
+     "opt": false,
+     "wt": "Düsseldorf Hauptbahnhof"
     },
     {
      "id": "Köln Messe/Deutz",
      "name": "Köln Messe/Deutz",
-     "opt": false
+     "opt": false,
+     "wt": "Bahnhof Köln Messe/Deutz"
     },
     {
      "id": "Köln/Bonn Flughafen",
      "name": "Köln/Bonn Flughafen",
-     "opt": true
+     "opt": true,
+     "wt": "Bahnhof Köln/Bonn Flughafen"
     },
     {
      "id": "Siegburg/Bonn",
      "name": "Siegburg/Bonn",
-     "opt": false
+     "opt": false,
+     "wt": "Bahnhof Siegburg/Bonn"
     },
     {
      "id": "Montabaur",
      "name": "Montabaur",
-     "opt": true
+     "opt": true,
+     "wt": "Bahnhof Montabaur"
     },
     {
      "id": "Limburg Süd",
      "name": "Limburg Süd",
-     "opt": true
+     "opt": true,
+     "wt": "Bahnhof Limburg Süd"
     },
     {
      "id": "Frankfurt Flughafen Fernbahnhof",
      "name": "Frankfurt Flughafen",
-     "opt": false
+     "opt": false,
+     "wt": "Frankfurt am Main Flughafen Fernbahnhof"
     },
     {
      "id": "Frankfurt (Main) Hbf",
      "name": "Frankfurt",
-     "opt": false
+     "opt": false,
+     "wt": "Frankfurt (Main) Hauptbahnhof"
     },
     {
      "id": "Hanau Hbf",
      "name": "Hanau",
-     "opt": true
+     "opt": true,
+     "wt": "Hanau Hauptbahnhof"
     },
     {
      "id": "Aschaffenburg Hbf",
      "name": "Aschaffenburg",
-     "opt": false
+     "opt": false,
+     "wt": "Aschaffenburg Hauptbahnhof"
     },
     {
      "id": "Würzburg Hbf",
      "name": "Würzburg",
-     "opt": false
+     "opt": false,
+     "wt": "Würzburg Hauptbahnhof"
     },
     {
      "id": "Nürnberg Hbf",
      "name": "Nürnberg",
-     "opt": false
+     "opt": false,
+     "wt": "Nürnberg Hauptbahnhof"
     },
     {
      "id": "Ingolstadt Hbf",
      "name": "Ingolstadt",
-     "opt": true
+     "opt": true,
+     "wt": "Ingolstadt Hauptbahnhof"
     },
     {
      "id": "München Hbf",
      "name": "München",
-     "opt": false
+     "opt": false,
+     "wt": "München Hauptbahnhof"
     }
    ]
   ],
@@ -2646,97 +3122,116 @@
     {
      "id": "Hamburg-Altona",
      "name": "Hamburg-Altona",
-     "opt": false
+     "opt": false,
+     "wt": "Bahnhof Hamburg-Altona"
     },
     {
      "id": "Hamburg Dammtor",
      "name": "Hamburg Dammtor",
-     "opt": false
+     "opt": false,
+     "wt": "Bahnhof Hamburg Dammtor"
     },
     {
      "id": "Hamburg Hbf",
      "name": "Hamburg",
-     "opt": false
+     "opt": false,
+     "wt": "Hamburg Hauptbahnhof"
     },
     {
      "id": "Hamburg-Harburg",
      "name": "Hamburg-Harburg",
-     "opt": false
+     "opt": false,
+     "wt": "Bahnhof Hamburg-Harburg"
     },
     {
      "id": "Bremen Hbf",
      "name": "Bremen",
-     "opt": false
+     "opt": false,
+     "wt": "Bremen Hauptbahnhof"
     },
     {
      "id": "Osnabrück Hbf",
      "name": "Osnabrück",
-     "opt": false
+     "opt": false,
+     "wt": "Osnabrück Hauptbahnhof"
     },
     {
      "id": "Münster (Westfalen) Hbf",
      "name": "Münster",
-     "opt": false
+     "opt": false,
+     "wt": "Münster (Westfalen) Hauptbahnhof"
     },
     {
      "id": "Dortmund Hbf",
      "name": "Dortmund",
-     "opt": false
+     "opt": false,
+     "wt": "Dortmund Hauptbahnhof"
     },
     {
      "id": "Hagen Hbf",
      "name": "Hagen",
-     "opt": false
+     "opt": false,
+     "wt": "Hagen Hauptbahnhof"
     },
     {
      "id": "Wuppertal Hbf",
      "name": "Wuppertal",
-     "opt": false
+     "opt": false,
+     "wt": "Wuppertal Hauptbahnhof"
     },
     {
      "id": "Solingen Hbf",
      "name": "Solingen",
-     "opt": false
+     "opt": false,
+     "wt": "Solingen Hauptbahnhof"
     },
     {
      "id": "Köln Hbf",
      "name": "Köln",
-     "opt": false
+     "opt": false,
+     "wt": "Köln Hauptbahnhof"
     },
     {
      "id": "Frankfurt Flughafen Fernbahnhof",
      "name": "Frankfurt Flughafen",
-     "opt": false
+     "opt": false,
+     "wt": "Frankfurt am Main Flughafen Fernbahnhof"
     },
     {
      "id": "Mannheim Hbf",
      "name": "Mannheim",
-     "opt": false
+     "opt": false,
+     "wt": "Mannheim Hauptbahnhof"
     },
     {
      "id": "Stuttgart Hbf",
      "name": "Stuttgart",
-     "opt": false
+     "opt": false,
+     "wt": "Stuttgart Hauptbahnhof"
     },
     {
      "id": "Ulm Hbf",
      "name": "Ulm",
-     "opt": false
+     "opt": false,
+     "wt": "Ulm Hauptbahnhof"
     },
     {
      "id": "Augsburg Hbf",
      "name": "Augsburg",
-     "opt": false
+     "opt": false,
+     "wt": "Augsburg Hauptbahnhof"
     },
     {
      "id": "München-Pasing",
      "name": "München-Pasing",
-     "opt": false
+     "opt": false,
+     "wt": "Bahnhof München-Pasing"
     },
     {
      "id": "München Hbf",
      "name": "München",
-     "opt": false
+     "opt": false,
+     "wt": "München Hauptbahnhof"
     }
    ]
   ],
@@ -2751,259 +3246,310 @@
     {
      "id": "Hamburg-Altona",
      "name": "Hamburg-Altona",
-     "opt": false
+     "opt": false,
+     "wt": "Bahnhof Hamburg-Altona"
     },
     {
      "id": "Hamburg Dammtor",
      "name": "Hamburg Dammtor",
-     "opt": false
+     "opt": false,
+     "wt": "Bahnhof Hamburg Dammtor"
     },
     {
      "id": "Hamburg Hbf",
      "name": "Hamburg",
-     "opt": false
+     "opt": false,
+     "wt": "Hamburg Hauptbahnhof"
     },
     {
      "id": "Hamburg-Harburg",
      "name": "Hamburg-Harburg",
-     "opt": false
+     "opt": false,
+     "wt": "Bahnhof Hamburg-Harburg"
     },
     {
      "id": "Bremen Hbf",
      "name": "Bremen",
-     "opt": false
+     "opt": false,
+     "wt": "Bremen Hauptbahnhof"
     },
     {
      "id": "Osnabrück Hbf",
      "name": "Osnabrück",
-     "opt": false
+     "opt": false,
+     "wt": "Osnabrück Hauptbahnhof"
     },
     {
      "id": "Münster (Westfalen) Hbf",
      "name": "Münster",
-     "opt": false
+     "opt": false,
+     "wt": "Münster (Westfalen) Hauptbahnhof"
     },
     {
      "id": "Dortmund Hbf",
      "name": "Dortmund",
-     "opt": false
+     "opt": false,
+     "wt": "Dortmund Hauptbahnhof"
     },
     {
      "id": "Bochum Hbf",
      "name": "Bochum",
-     "opt": false
+     "opt": false,
+     "wt": "Bochum Hauptbahnhof"
     },
     {
      "id": "Essen Hbf",
      "name": "Essen",
-     "opt": false
+     "opt": false,
+     "wt": "Essen Hauptbahnhof"
     },
     {
      "id": "Duisburg Hbf",
      "name": "Duisburg",
-     "opt": false
+     "opt": false,
+     "wt": "Duisburg Hauptbahnhof"
     },
     {
      "id": "Düsseldorf Hbf",
      "name": "Düsseldorf",
-     "opt": false
+     "opt": false,
+     "wt": "Düsseldorf Hauptbahnhof"
     },
     {
      "id": "Köln Hbf",
      "name": "Köln",
-     "opt": false
+     "opt": false,
+     "wt": "Köln Hauptbahnhof"
     },
     {
      "id": "Frankfurt Flughafen Fernbahnhof",
      "name": "Frankfurt Flughafen",
-     "opt": false
+     "opt": false,
+     "wt": "Frankfurt am Main Flughafen Fernbahnhof"
     },
     {
      "id": "Mannheim Hbf",
      "name": "Mannheim",
-     "opt": false
+     "opt": false,
+     "wt": "Mannheim Hauptbahnhof"
     },
     {
      "id": "Karlsruhe Hbf",
      "name": "Karlsruhe",
-     "opt": false
+     "opt": false,
+     "wt": "Karlsruhe Hauptbahnhof"
     },
     {
      "id": "Baden-Baden",
      "name": "Baden-Baden",
-     "opt": false
+     "opt": false,
+     "wt": "Bahnhof Baden-Baden"
     },
     {
      "id": "Freiburg (Breisgau) Hbf",
      "name": "Freiburg",
-     "opt": false
+     "opt": false,
+     "wt": "Freiburg (Breisgau) Hauptbahnhof"
     },
     {
      "id": "Basel Badischer Bahnhof",
      "name": "Basel Bad",
-     "opt": false
+     "opt": false,
+     "wt": "Basel Badischer Bahnhof"
     },
     {
      "id": "Basel SBB",
      "name": "Basel SBB",
-     "opt": false
+     "opt": false,
+     "wt": "Bahnhof Basel SBB"
     },
     {
      "id": "Zürich Hbf",
      "name": "Zürich",
-     "opt": false
+     "opt": false,
+     "wt": "Zürich Hauptbahnhof"
     },
     {
      "id": "Sargans",
      "name": "Sargans",
-     "opt": false
+     "opt": false,
+     "wt": "Bahnhof Sargans"
     },
     {
      "id": "Landquart",
      "name": "Landquart",
-     "opt": false
+     "opt": false,
+     "wt": "Bahnhof Landquart"
     },
     {
      "id": "Chur",
      "name": "Chur",
-     "opt": false
+     "opt": false,
+     "wt": "Bahnhof Chur"
     }
    ],
    [
     {
      "id": "Hamburg-Altona",
      "name": "Hamburg-Altona",
-     "opt": false
+     "opt": false,
+     "wt": "Bahnhof Hamburg-Altona"
     },
     {
      "id": "Hamburg Dammtor",
      "name": "Hamburg Dammtor",
-     "opt": false
+     "opt": false,
+     "wt": "Bahnhof Hamburg Dammtor"
     },
     {
      "id": "Hamburg Hbf",
      "name": "Hamburg",
-     "opt": false
+     "opt": false,
+     "wt": "Hamburg Hauptbahnhof"
     },
     {
      "id": "Hamburg-Harburg",
      "name": "Hamburg-Harburg",
-     "opt": false
+     "opt": false,
+     "wt": "Bahnhof Hamburg-Harburg"
     },
     {
      "id": "Bremen Hbf",
      "name": "Bremen",
-     "opt": false
+     "opt": false,
+     "wt": "Bremen Hauptbahnhof"
     },
     {
      "id": "Osnabrück Hbf",
      "name": "Osnabrück",
-     "opt": false
+     "opt": false,
+     "wt": "Osnabrück Hauptbahnhof"
     },
     {
      "id": "Münster (Westfalen) Hbf",
      "name": "Münster",
-     "opt": false
+     "opt": false,
+     "wt": "Münster (Westfalen) Hauptbahnhof"
     },
     {
      "id": "Dortmund Hbf",
      "name": "Dortmund",
-     "opt": false
+     "opt": false,
+     "wt": "Dortmund Hauptbahnhof"
     },
     {
      "id": "Bochum Hbf",
      "name": "Bochum",
-     "opt": false
+     "opt": false,
+     "wt": "Bochum Hauptbahnhof"
     },
     {
      "id": "Essen Hbf",
      "name": "Essen",
-     "opt": false
+     "opt": false,
+     "wt": "Essen Hauptbahnhof"
     },
     {
      "id": "Duisburg Hbf",
      "name": "Duisburg",
-     "opt": false
+     "opt": false,
+     "wt": "Duisburg Hauptbahnhof"
     },
     {
      "id": "Düsseldorf Hbf",
      "name": "Düsseldorf",
-     "opt": false
+     "opt": false,
+     "wt": "Düsseldorf Hauptbahnhof"
     },
     {
      "id": "Köln Hbf",
      "name": "Köln",
-     "opt": false
+     "opt": false,
+     "wt": "Köln Hauptbahnhof"
     },
     {
      "id": "Frankfurt Flughafen Fernbahnhof",
      "name": "Frankfurt Flughafen",
-     "opt": false
+     "opt": false,
+     "wt": "Frankfurt am Main Flughafen Fernbahnhof"
     },
     {
      "id": "Mannheim Hbf",
      "name": "Mannheim",
-     "opt": false
+     "opt": false,
+     "wt": "Mannheim Hauptbahnhof"
     },
     {
      "id": "Karlsruhe Hbf",
      "name": "Karlsruhe",
-     "opt": false
+     "opt": false,
+     "wt": "Karlsruhe Hauptbahnhof"
     },
     {
      "id": "Baden-Baden",
      "name": "Baden-Baden",
-     "opt": false
+     "opt": false,
+     "wt": "Bahnhof Baden-Baden"
     },
     {
      "id": "Freiburg (Breisgau) Hbf",
      "name": "Freiburg",
-     "opt": false
+     "opt": false,
+     "wt": "Freiburg (Breisgau) Hauptbahnhof"
     },
     {
      "id": "Basel Badischer Bahnhof",
      "name": "Basel Bad",
-     "opt": false
+     "opt": false,
+     "wt": "Basel Badischer Bahnhof"
     },
     {
      "id": "Basel SBB",
      "name": "Basel SBB",
-     "opt": false
+     "opt": false,
+     "wt": "Bahnhof Basel SBB"
     },
     {
      "id": "Liestal",
      "name": "Liestal",
-     "opt": false
+     "opt": false,
+     "wt": "Bahnhof Liestal"
     },
     {
      "id": "Olten",
      "name": "Olten",
-     "opt": false
+     "opt": false,
+     "wt": "Bahnhof Olten"
     },
     {
      "id": "Bern",
      "name": "Bern",
-     "opt": false
+     "opt": false,
+     "wt": "Bahnhof Bern"
     },
     {
      "id": "Thun",
      "name": "Thun",
-     "opt": false
+     "opt": false,
+     "wt": "Bahnhof Thun"
     },
     {
      "id": "Spiez",
      "name": "Spiez",
-     "opt": false
+     "opt": false,
+     "wt": "Bahnhof Spiez"
     },
     {
      "id": "Visp",
      "name": "Visp",
-     "opt": false
+     "opt": false,
+     "wt": "Bahnhof Visp"
     },
     {
      "id": "Brig",
      "name": "Brig",
-     "opt": false
+     "opt": false,
+     "wt": "Bahnhof Brig"
     }
    ]
   ],
@@ -3018,57 +3564,68 @@
     {
      "id": "Köln Hbf",
      "name": "Köln",
-     "opt": false
+     "opt": false,
+     "wt": "Köln Hauptbahnhof"
     },
     {
      "id": "Köln/Bonn Flughafen",
      "name": "Köln/Bonn Flughafen",
-     "opt": true
+     "opt": true,
+     "wt": "Bahnhof Köln/Bonn Flughafen"
     },
     {
      "id": "Siegburg/Bonn",
      "name": "Siegburg/Bonn",
-     "opt": false
+     "opt": false,
+     "wt": "Bahnhof Siegburg/Bonn"
     },
     {
      "id": "Montabaur",
      "name": "Montabaur",
-     "opt": false
+     "opt": false,
+     "wt": "Bahnhof Montabaur"
     },
     {
      "id": "Limburg Süd",
      "name": "Limburg Süd",
-     "opt": false
+     "opt": false,
+     "wt": "Bahnhof Limburg Süd"
     },
     {
      "id": "Wiesbaden Hbf",
      "name": "Wiesbaden",
-     "opt": false
+     "opt": false,
+     "wt": "Wiesbaden Hauptbahnhof"
     },
     {
      "id": "Mainz Hbf",
      "name": "Mainz",
-     "opt": false
+     "opt": false,
+     "wt": "Mainz Hauptbahnhof"
     },
     {
      "id": "Mannheim Hbf",
      "name": "Mannheim",
-     "opt": false
+     "opt": false,
+     "wt": "Mannheim Hauptbahnhof"
     },
     {
      "id": "Heidelberg Hbf",
      "name": "Heidelberg",
-     "opt": false
+     "opt": false,
+     "wt": "Heidelberg Hauptbahnhof"
     },
     {
      "id": "Vaihingen (Enz)",
      "name": "Vaihingen",
-     "opt": true
+     "opt": true,
+     "wt": "Bahnhof Vaihingen (Enz)"
     },
     {
      "id": "Stuttgart Hbf",
      "name": "Stuttgart",
-     "opt": false
+     "opt": false,
+     "wt": "Stuttgart Hauptbahnhof"
     }
    ]
   ],
@@ -3083,62 +3640,74 @@
     {
      "id": "Dortmund Hbf",
      "name": "Dortmund",
-     "opt": false
+     "opt": false,
+     "wt": "Dortmund Hauptbahnhof"
     },
     {
      "id": "Bochum Hbf",
      "name": "Bochum",
-     "opt": false
+     "opt": false,
+     "wt": "Bochum Hauptbahnhof"
     },
     {
      "id": "Essen Hbf",
      "name": "Essen",
-     "opt": false
+     "opt": false,
+     "wt": "Essen Hauptbahnhof"
     },
     {
      "id": "Duisburg Hbf",
      "name": "Duisburg",
-     "opt": false
+     "opt": false,
+     "wt": "Duisburg Hauptbahnhof"
     },
     {
      "id": "Düsseldorf Hbf",
      "name": "Düsseldorf",
-     "opt": false
+     "opt": false,
+     "wt": "Düsseldorf Hauptbahnhof"
     },
     {
      "id": "Köln Messe/Deutz",
      "name": "Köln Messe/Deutz",
-     "opt": false
+     "opt": false,
+     "wt": "Bahnhof Köln Messe/Deutz"
     },
     {
      "id": "Frankfurt Flughafen Fernbahnhof",
      "name": "Frankfurt Flughafen",
-     "opt": false
+     "opt": false,
+     "wt": "Frankfurt am Main Flughafen Fernbahnhof"
     },
     {
      "id": "Mannheim Hbf",
      "name": "Mannheim",
-     "opt": false
+     "opt": false,
+     "wt": "Mannheim Hauptbahnhof"
     },
     {
      "id": "Stuttgart Hbf",
      "name": "Stuttgart",
-     "opt": false
+     "opt": false,
+     "wt": "Stuttgart Hauptbahnhof"
     },
     {
      "id": "Ulm Hbf",
      "name": "Ulm",
-     "opt": false
+     "opt": false,
+     "wt": "Ulm Hauptbahnhof"
     },
     {
      "id": "Augsburg Hbf",
      "name": "Augsburg",
-     "opt": false
+     "opt": false,
+     "wt": "Augsburg Hauptbahnhof"
     },
     {
      "id": "München Hbf",
      "name": "München",
-     "opt": false
+     "opt": false,
+     "wt": "München Hauptbahnhof"
     }
    ]
   ],
@@ -3153,37 +3722,44 @@
     {
      "id": "Köln Hbf",
      "name": "Köln",
-     "opt": false
+     "opt": false,
+     "wt": "Köln Hauptbahnhof"
     },
     {
      "id": "Köln/Bonn Flughafen",
      "name": "Köln/Bonn Flughafen",
-     "opt": true
+     "opt": true,
+     "wt": "Bahnhof Köln/Bonn Flughafen"
     },
     {
      "id": "Siegburg/Bonn",
      "name": "Siegburg/Bonn",
-     "opt": false
+     "opt": false,
+     "wt": "Bahnhof Siegburg/Bonn"
     },
     {
      "id": "Montabaur",
      "name": "Montabaur",
-     "opt": false
+     "opt": false,
+     "wt": "Bahnhof Montabaur"
     },
     {
      "id": "Limburg Süd",
      "name": "Limburg Süd",
-     "opt": false
+     "opt": false,
+     "wt": "Bahnhof Limburg Süd"
     },
     {
      "id": "Frankfurt Flughafen Fernbahnhof",
      "name": "Frankfurt Flughafen",
-     "opt": false
+     "opt": false,
+     "wt": "Frankfurt am Main Flughafen Fernbahnhof"
     },
     {
      "id": "Frankfurt (Main) Hbf",
      "name": "Frankfurt",
-     "opt": false
+     "opt": false,
+     "wt": "Frankfurt (Main) Hauptbahnhof"
     }
    ]
   ],
@@ -3198,67 +3774,80 @@
     {
      "id": "Dresden Hbf",
      "name": "Dresden",
-     "opt": false
+     "opt": false,
+     "wt": "Dresden Hauptbahnhof"
     },
     {
      "id": "Dresden-Neustadt",
      "name": "Dresden-Neustadt",
-     "opt": false
+     "opt": false,
+     "wt": "Bahnhof Dresden-Neustadt"
     },
     {
      "id": "Riesa",
      "name": "Riesa",
-     "opt": true
+     "opt": true,
+     "wt": "Bahnhof Riesa"
     },
     {
      "id": "Leipzig Hbf",
      "name": "Leipzig",
-     "opt": false
+     "opt": false,
+     "wt": "Leipzig Hauptbahnhof"
     },
     {
      "id": "Erfurt Hbf",
      "name": "Erfurt",
-     "opt": false
+     "opt": false,
+     "wt": "Erfurt Hauptbahnhof"
     },
     {
      "id": "Gotha",
      "name": "Gotha",
-     "opt": false
+     "opt": false,
+     "wt": "Bahnhof Gotha"
     },
     {
      "id": "Eisenach Hbf",
      "name": "Eisenach",
-     "opt": false
+     "opt": false,
+     "wt": "Eisenach Hauptbahnhof"
     },
     {
      "id": "Bad Hersfeld",
      "name": "Bad Hersfeld",
-     "opt": false
+     "opt": false,
+     "wt": "Bahnhof Bad Hersfeld"
     },
     {
      "id": "Fulda",
      "name": "Fulda",
-     "opt": false
+     "opt": false,
+     "wt": "Bahnhof Fulda"
     },
     {
      "id": "Frankfurt (Main) Hbf",
      "name": "Frankfurt",
-     "opt": false
+     "opt": false,
+     "wt": "Frankfurt (Main) Hauptbahnhof"
     },
     {
      "id": "Frankfurt Flughafen Fernbahnhof",
      "name": "Frankfurt Flughafen",
-     "opt": false
+     "opt": false,
+     "wt": "Frankfurt am Main Flughafen Fernbahnhof"
     },
     {
      "id": "Mainz Hbf",
      "name": "Mainz",
-     "opt": false
+     "opt": false,
+     "wt": "Mainz Hauptbahnhof"
     },
     {
      "id": "Wiesbaden Hbf",
      "name": "Wiesbaden",
-     "opt": false
+     "opt": false,
+     "wt": "Wiesbaden Hauptbahnhof"
     }
    ]
   ],
@@ -3273,77 +3862,92 @@
     {
      "id": "Dresden Hbf",
      "name": "Dresden",
-     "opt": true
+     "opt": true,
+     "wt": "Dresden Hauptbahnhof"
     },
     {
      "id": "Dresden-Neustadt",
      "name": "Dresden-Neustadt",
-     "opt": true
+     "opt": true,
+     "wt": "Bahnhof Dresden-Neustadt"
     },
     {
      "id": "Leipzig Hbf",
      "name": "Leipzig",
-     "opt": false
+     "opt": false,
+     "wt": "Leipzig Hauptbahnhof"
     },
     {
      "id": "Erfurt Hbf",
      "name": "Erfurt",
-     "opt": false
+     "opt": false,
+     "wt": "Erfurt Hauptbahnhof"
     },
     {
      "id": "Kassel-Wilhelmshöhe",
      "name": "Kassel-Wilhelmshöhe",
-     "opt": false
+     "opt": false,
+     "wt": "Kassel-Wilhelmshöhe"
     },
     {
      "id": "Altenbeken",
      "name": "Altenbeken",
-     "opt": false
+     "opt": false,
+     "wt": "Bahnhof Altenbeken"
     },
     {
      "id": "Paderborn Hbf",
      "name": "Paderborn",
-     "opt": false
+     "opt": false,
+     "wt": "Paderborn Hauptbahnhof"
     },
     {
      "id": "Lippstadt",
      "name": "Lippstadt",
-     "opt": false
+     "opt": false,
+     "wt": "Bahnhof Lippstadt"
     },
     {
      "id": "Soest",
      "name": "Soest",
-     "opt": false
+     "opt": false,
+     "wt": "Bahnhof Soest"
     },
     {
      "id": "Dortmund Hbf",
      "name": "Dortmund",
-     "opt": false
+     "opt": false,
+     "wt": "Dortmund Hbf"
     },
     {
      "id": "Bochum Hbf",
      "name": "Bochum",
-     "opt": false
+     "opt": false,
+     "wt": "Bochum Hbf"
     },
     {
      "id": "Essen Hbf",
      "name": "Essen",
-     "opt": false
+     "opt": false,
+     "wt": "Essen Hbf"
     },
     {
      "id": "Duisburg Hbf",
      "name": "Duisburg",
-     "opt": false
+     "opt": false,
+     "wt": "Duisburg Hbf"
     },
     {
      "id": "Düsseldorf Hbf",
      "name": "Düsseldorf",
-     "opt": false
+     "opt": false,
+     "wt": "Düsseldorf Hbf"
     },
     {
      "id": "Köln Hbf",
      "name": "Köln",
-     "opt": false
+     "opt": false,
+     "wt": "Köln Hbf"
     }
    ]
   ],
@@ -3358,87 +3962,104 @@
     {
      "id": "Basel SBB",
      "name": "Basel SBB",
-     "opt": true
+     "opt": true,
+     "wt": "Bahnhof Basel SBB"
     },
     {
      "id": "Basel Badischer Bahnhof",
      "name": "Basel Bad Bf",
-     "opt": true
+     "opt": true,
+     "wt": "Basel Badischer Bahnhof"
     },
     {
      "id": "Weil am Rhein",
      "name": "Weil am Rhein",
-     "opt": true
+     "opt": true,
+     "wt": "Bahnhof Weil am Rhein"
     },
     {
      "id": "Müllheim im Markgräflerland",
      "name": "Müllheim",
-     "opt": true
+     "opt": true,
+     "wt": "Bahnhof Müllheim im Markgräflerland"
     },
     {
      "id": "Freiburg (Breisgau) Hbf",
      "name": "Freiburg",
-     "opt": true
+     "opt": true,
+     "wt": "Freiburg (Breisgau) Hauptbahnhof"
     },
     {
      "id": "Lahr (Schwarzw)",
      "name": "Lahr",
-     "opt": true
+     "opt": true,
+     "wt": "Bahnhof Lahr (Schwarzw)"
     },
     {
      "id": "Offenburg",
      "name": "Offenburg",
-     "opt": true
+     "opt": true,
+     "wt": "Bahnhof Offenburg"
     },
     {
      "id": "Baden-Baden",
      "name": "Baden-Baden",
-     "opt": true
+     "opt": true,
+     "wt": "Bahnhof Baden-Baden"
     },
     {
      "id": "Karlsruhe Hbf",
      "name": "Karlsruhe",
-     "opt": false
+     "opt": false,
+     "wt": "Karlsruhe Hauptbahnhof"
     },
     {
      "id": "Karlsruhe-Durlach",
      "name": "Karlsruhe-Durlach",
-     "opt": true
+     "opt": true,
+     "wt": "Bahnhof Karlsruhe-Durlach"
     },
     {
      "id": "Bruchsal",
      "name": "Bruchsal",
-     "opt": false
+     "opt": false,
+     "wt": "Bahnhof Bruchsal"
     },
     {
      "id": "Stuttgart Hbf",
      "name": "Stuttgart",
-     "opt": false
+     "opt": false,
+     "wt": "Stuttgart Hauptbahnhof"
     },
     {
      "id": "Ulm Hbf",
      "name": "Ulm",
-     "opt": false
+     "opt": false,
+     "wt": "Ulm Hauptbahnhof"
     },
     {
      "id": "Günzburg",
      "name": "Günzburg",
-     "opt": true
+     "opt": true,
+     "wt": "Bahnhof Günzburg"
     },
     {
      "id": "Augsburg Hbf",
      "name": "Augsburg",
-     "opt": false
+     "opt": false,
+     "wt": "Augsburg Hauptbahnhof"
     },
     {
      "id": "München-Pasing",
      "name": "München-Pasing",
-     "opt": false
+     "opt": false,
+     "wt": "Bahnhof München-Pasing"
     },
     {
      "id": "München Hbf",
      "name": "München",
-     "opt": false
+     "opt": false,
+     "wt": "München Hauptbahnhof"
     }
    ]
   ],
@@ -3453,344 +4074,412 @@
     {
      "id": "Frankfurt (Main) Hbf",
      "name": "Frankfurt",
-     "opt": false
+     "opt": false,
+     "wt": "Frankfurt (Main) Hauptbahnhof"
     },
     {
      "id": "Darmstadt Hbf",
      "name": "Darmstadt",
-     "opt": false
+     "opt": false,
+     "wt": "Darmstadt Hauptbahnhof"
     },
     {
      "id": "Bensheim",
      "name": "Bensheim",
-     "opt": false
+     "opt": false,
+     "wt": "Bahnhof Bensheim"
     },
     {
      "id": "Weinheim (Bergstraße) Hbf",
      "name": "Weinheim",
-     "opt": false
+     "opt": false,
+     "wt": "Weinheim (Bergstraße) Hauptbahnhof"
     },
     {
      "id": "Heidelberg Hbf",
      "name": "Heidelberg",
-     "opt": false
+     "opt": false,
+     "wt": "Heidelberg Hauptbahnhof"
     },
     {
      "id": "Stuttgart Hbf",
      "name": "Stuttgart",
-     "opt": false
+     "opt": false,
+     "wt": "Stuttgart Hauptbahnhof"
     },
     {
      "id": "Ulm Hbf",
      "name": "Ulm",
-     "opt": false
+     "opt": false,
+     "wt": "Ulm Hauptbahnhof"
     },
     {
      "id": "Günzburg",
      "name": "Günzburg",
-     "opt": false
+     "opt": false,
+     "wt": "Bahnhof Günzburg"
     },
     {
      "id": "Augsburg Hbf",
      "name": "Augsburg",
-     "opt": false
+     "opt": false,
+     "wt": "Augsburg Hauptbahnhof"
     },
     {
      "id": "München Hbf",
      "name": "München",
-     "opt": false
+     "opt": false,
+     "wt": "München Hauptbahnhof"
     },
     {
      "id": "München Ost",
      "name": "München Ost",
-     "opt": false
+     "opt": false,
+     "wt": "Bahnhof München Ost"
     },
     {
      "id": "Rosenheim",
      "name": "Rosenheim",
-     "opt": false
+     "opt": false,
+     "wt": "Bahnhof Rosenheim"
     },
     {
      "id": "Prien a Chiemsee",
      "name": "Prien",
-     "opt": false
+     "opt": false,
+     "wt": "Bahnhof Prien a Chiemsee"
     },
     {
      "id": "Traunstein",
      "name": "Traunstein",
-     "opt": false
+     "opt": false,
+     "wt": "Bahnhof Traunstein"
     },
     {
      "id": "Freilassing",
      "name": "Freilassing",
-     "opt": false
+     "opt": false,
+     "wt": "Bahnhof Freilassing"
     },
     {
      "id": "Salzburg Hbf",
      "name": "Salzburg",
-     "opt": false
+     "opt": false,
+     "wt": "Salzburg Hauptbahnhof"
     },
     {
      "id": "Golling-Abtenau",
      "name": "Golling-Abtenau",
-     "opt": false
+     "opt": false,
+     "wt": "Bahnhof Golling-Abtenau"
     },
     {
      "id": "Bischofshofen",
      "name": "Bischofshofen",
-     "opt": false
+     "opt": false,
+     "wt": "Bahnhof Bischofshofen"
     },
     {
      "id": "St. Johann im Pongau",
      "name": "St. Johann im Pongau",
-     "opt": false
+     "opt": false,
+     "wt": "Bahnhof St. Johann im Pongau"
     },
     {
      "id": "Schwarzach-St. Veit",
      "name": "Schwarzach-St. Veit",
-     "opt": false
+     "opt": false,
+     "wt": "Bahnhof Schwarzach-St. Veit"
     },
     {
      "id": "Bad Gastein",
      "name": "Bad Gastein",
-     "opt": false
+     "opt": false,
+     "wt": "Bahnhof Bad Gastein"
     },
     {
      "id": "Mallnitz",
      "name": "Mallnitz-Obervellach",
-     "opt": false
+     "opt": false,
+     "wt": "Mallnitz"
     },
     {
      "id": "Spittal-Millstättersee",
      "name": "Spittal-Millstättersee",
-     "opt": false
+     "opt": false,
+     "wt": "Bahnhof Spittal-Millstättersee"
     },
     {
      "id": "Villach Hbf",
      "name": "Villach",
-     "opt": false
+     "opt": false,
+     "wt": "Villach Hauptbahnhof"
     },
     {
      "id": "Velden am Wörther See",
      "name": "Velden",
-     "opt": false
+     "opt": false,
+     "wt": "Velden am Wörther See"
     },
     {
      "id": "Pörtschach am Wörthersee",
      "name": "Pörtschach",
-     "opt": true
+     "opt": true,
+     "wt": "Bahnhof Pörtschach am Wörthersee"
     },
     {
      "id": "Klagenfurt Hbf",
      "name": "Klagenfurt",
-     "opt": false
+     "opt": false,
+     "wt": "Klagenfurt Hauptbahnhof"
     },
     {
      "id": "Kühnsdorf",
      "name": "Kühnsdorf-Klopeiner See",
-     "opt": true
+     "opt": true,
+     "wt": "Kühnsdorf"
     },
     {
      "id": "St. Paul im Lavanttal",
      "name": "St. Paul im Lavanttal",
-     "opt": true
+     "opt": true,
+     "wt": "Bahnhof St. Paul im Lavanttal"
     },
     {
      "id": "Weststeiermark",
      "name": "Weststeiermark",
-     "opt": true
+     "opt": true,
+     "wt": "Bahnhof Weststeiermark"
     },
     {
      "id": "Graz Hbf",
      "name": "Graz",
-     "opt": false
+     "opt": false,
+     "wt": "Graz Hauptbahnhof"
     }
    ],
    [
     {
      "id": "Münster (Westfalen) Hbf",
      "name": "Münster (Westfalen) Hbf",
-     "opt": false
+     "opt": false,
+     "wt": "Münster"
     },
     {
      "id": "Recklinghausen Hbf",
      "name": "Recklinghausen",
-     "opt": false
+     "opt": false,
+     "wt": "Recklinghausen Hauptbahnhof"
     },
     {
      "id": "Gelsenkirchen Hbf",
      "name": "Gelsenkirchen",
-     "opt": false
+     "opt": false,
+     "wt": "Gelsenkirchen Hauptbahnhof"
     },
     {
      "id": "Essen Hbf",
      "name": "Essen",
-     "opt": false
+     "opt": false,
+     "wt": "Essen Hauptbahnhof"
     },
     {
      "id": "Duisburg Hbf",
      "name": "Duisburg",
-     "opt": false
+     "opt": false,
+     "wt": "Duisburg Hauptbahnhof"
     },
     {
      "id": "Düsseldorf Hbf",
      "name": "Düsseldorf",
-     "opt": false
+     "opt": false,
+     "wt": "Düsseldorf Hauptbahnhof"
     },
     {
      "id": "Köln Messe/Deutz",
      "name": "Köln Messe/Deutz",
-     "opt": false
+     "opt": false,
+     "wt": "Bahnhof Köln Messe/Deutz"
     },
     {
      "id": "Siegburg/Bonn",
      "name": "Siegburg/Bonn",
-     "opt": true
+     "opt": true,
+     "wt": "Bahnhof Siegburg/Bonn"
     },
     {
      "id": "Frankfurt Flughafen Fernbahnhof",
      "name": "Frankfurt Flughafen",
-     "opt": false
+     "opt": false,
+     "wt": "Frankfurt am Main Flughafen Fernbahnhof"
     },
     {
      "id": "Mannheim Hbf",
      "name": "Mannheim",
-     "opt": false
+     "opt": false,
+     "wt": "Mannheim Hauptbahnhof"
     },
     {
      "id": "Vaihingen (Enz)",
      "name": "Vaihingen",
-     "opt": false
+     "opt": false,
+     "wt": "Bahnhof Vaihingen (Enz)"
     },
     {
      "id": "Stuttgart Hbf",
      "name": "Stuttgart",
-     "opt": false
+     "opt": false,
+     "wt": "Stuttgart Hauptbahnhof"
     },
     {
      "id": "Ulm Hbf",
      "name": "Ulm",
-     "opt": false
+     "opt": false,
+     "wt": "Ulm Hauptbahnhof"
     },
     {
      "id": "Günzburg",
      "name": "Günzburg",
-     "opt": false
+     "opt": false,
+     "wt": "Bahnhof Günzburg"
     },
     {
      "id": "Augsburg Hbf",
      "name": "Augsburg",
-     "opt": false
+     "opt": false,
+     "wt": "Augsburg Hauptbahnhof"
     },
     {
      "id": "München Hbf",
      "name": "München",
-     "opt": false
+     "opt": false,
+     "wt": "München Hauptbahnhof"
     },
     {
      "id": "München Ost",
      "name": "München Ost",
-     "opt": false
+     "opt": false,
+     "wt": "Bahnhof München Ost"
     },
     {
      "id": "Rosenheim",
      "name": "Rosenheim",
-     "opt": false
+     "opt": false,
+     "wt": "Bahnhof Rosenheim"
     },
     {
      "id": "Prien a Chiemsee",
      "name": "Prien",
-     "opt": false
+     "opt": false,
+     "wt": "Bahnhof Prien a Chiemsee"
     },
     {
      "id": "Traunstein",
      "name": "Traunstein",
-     "opt": false
+     "opt": false,
+     "wt": "Bahnhof Traunstein"
     },
     {
      "id": "Freilassing",
      "name": "Freilassing",
-     "opt": false
+     "opt": false,
+     "wt": "Bahnhof Freilassing"
     },
     {
      "id": "Salzburg Hbf",
      "name": "Salzburg",
-     "opt": false
+     "opt": false,
+     "wt": "Salzburg Hauptbahnhof"
     },
     {
      "id": "Golling-Abtenau",
      "name": "Golling-Abtenau",
-     "opt": false
+     "opt": false,
+     "wt": "Bahnhof Golling-Abtenau"
     },
     {
      "id": "Bischofshofen",
      "name": "Bischofshofen",
-     "opt": false
+     "opt": false,
+     "wt": "Bahnhof Bischofshofen"
     },
     {
      "id": "St. Johann im Pongau",
      "name": "St. Johann im Pongau",
-     "opt": false
+     "opt": false,
+     "wt": "Bahnhof St. Johann im Pongau"
     },
     {
      "id": "Schwarzach-St. Veit",
      "name": "Schwarzach-St. Veit",
-     "opt": false
+     "opt": false,
+     "wt": "Bahnhof Schwarzach-St. Veit"
     },
     {
      "id": "Bad Gastein",
      "name": "Bad Gastein",
-     "opt": false
+     "opt": false,
+     "wt": "Bahnhof Bad Gastein"
     },
     {
      "id": "Mallnitz",
      "name": "Mallnitz-Obervellach",
-     "opt": false
+     "opt": false,
+     "wt": "Mallnitz"
     },
     {
      "id": "Spittal-Millstättersee",
      "name": "Spittal-Millstättersee",
-     "opt": false
+     "opt": false,
+     "wt": "Bahnhof Spittal-Millstättersee"
     },
     {
      "id": "Villach Hbf",
      "name": "Villach",
-     "opt": false
+     "opt": false,
+     "wt": "Villach Hauptbahnhof"
     },
     {
      "id": "Velden am Wörther See",
      "name": "Velden",
-     "opt": false
+     "opt": false,
+     "wt": "Velden am Wörther See"
     },
     {
      "id": "Pörtschach am Wörthersee",
      "name": "Pörtschach",
-     "opt": true
+     "opt": true,
+     "wt": "Bahnhof Pörtschach am Wörthersee"
     },
     {
      "id": "Klagenfurt Hbf",
      "name": "Klagenfurt",
-     "opt": false
+     "opt": false,
+     "wt": "Klagenfurt Hauptbahnhof"
     },
     {
      "id": "Kühnsdorf",
      "name": "Kühnsdorf-Klopeiner See",
-     "opt": true
+     "opt": true,
+     "wt": "Kühnsdorf"
     },
     {
      "id": "St. Paul im Lavanttal",
      "name": "St. Paul im Lavanttal",
-     "opt": true
+     "opt": true,
+     "wt": "Bahnhof St. Paul im Lavanttal"
     },
     {
      "id": "Weststeiermark",
      "name": "Weststeiermark",
-     "opt": true
+     "opt": true,
+     "wt": "Bahnhof Weststeiermark"
     },
     {
      "id": "Graz Hbf",
      "name": "Graz",
-     "opt": false
+     "opt": false,
+     "wt": "Graz Hauptbahnhof"
     }
    ]
   ],
@@ -3805,109 +4494,130 @@
     {
      "id": "Amsterdam Centraal",
      "name": "Amsterdam",
-     "opt": false
+     "opt": false,
+     "wt": "Bahnhof Amsterdam Centraal"
     },
     {
      "id": "Hilversum",
      "name": "Hilversum",
-     "opt": false
+     "opt": false,
+     "wt": "Bahnhof Hilversum"
     },
     {
      "id": "Amersfoort Centraal",
      "name": "Amersfoort",
-     "opt": false
+     "opt": false,
+     "wt": "Bahnhof Amersfoort Centraal"
     },
     {
      "id": "Apeldoorn",
      "name": "Apeldoorn",
-     "opt": false
+     "opt": false,
+     "wt": "Bahnhof Apeldoorn"
     },
     {
      "id": "Deventer",
      "name": "Deventer",
-     "opt": false
+     "opt": false,
+     "wt": "Bahnhof Deventer"
     },
     {
      "id": "Hengelo",
      "name": "Hengelo",
-     "opt": false
+     "opt": false,
+     "wt": "Bahnhof Hengelo"
     },
     {
      "id": "Bad Bentheim",
      "name": "Bad Bentheim",
-     "opt": false
+     "opt": false,
+     "wt": "Bahnhof Bad Bentheim"
     },
     {
      "id": "Rheine",
      "name": "Rheine",
-     "opt": false
+     "opt": false,
+     "wt": "Bahnhof Rheine"
     },
     {
      "id": "Osnabrück Hbf",
      "name": "Osnabrück",
-     "opt": false
+     "opt": false,
+     "wt": "Osnabrück Hauptbahnhof"
     },
     {
      "id": "Bünde (Westfalen)",
      "name": "Bünde",
-     "opt": false
+     "opt": false,
+     "wt": "Bahnhof Bünde (Westfalen)"
     },
     {
      "id": "Hannover Hbf",
      "name": "Hannover",
-     "opt": false
+     "opt": false,
+     "wt": "Hannover Hauptbahnhof"
     },
     {
      "id": "Berlin-Spandau",
      "name": "Berlin-Spandau",
-     "opt": false
+     "opt": false,
+     "wt": "Bahnhof Berlin-Spandau"
     },
     {
      "id": "Berlin Hbf",
      "name": "Berlin",
-     "opt": false
+     "opt": false,
+     "wt": "Berlin Hauptbahnhof"
     },
     {
      "id": "Berlin Ostbahnhof",
      "name": "Berlin Ostbahnhof",
-     "opt": false
+     "opt": false,
+     "wt": "Berlin Ostbahnhof"
     }
    ],
    [
     {
      "id": "Münster (Westfalen) Hbf",
      "name": "Münster (Westfalen) Hbf",
-     "opt": false
+     "opt": false,
+     "wt": "Münster"
     },
     {
      "id": "Osnabrück Hbf",
      "name": "Osnabrück",
-     "opt": false
+     "opt": false,
+     "wt": "Osnabrück Hauptbahnhof"
     },
     {
      "id": "Bünde (Westfalen)",
      "name": "Bünde",
-     "opt": false
+     "opt": false,
+     "wt": "Bahnhof Bünde (Westfalen)"
     },
     {
      "id": "Hannover Hbf",
      "name": "Hannover",
-     "opt": false
+     "opt": false,
+     "wt": "Hannover Hauptbahnhof"
     },
     {
      "id": "Berlin-Spandau",
      "name": "Berlin-Spandau",
-     "opt": false
+     "opt": false,
+     "wt": "Bahnhof Berlin-Spandau"
     },
     {
      "id": "Berlin Hbf",
      "name": "Berlin",
-     "opt": false
+     "opt": false,
+     "wt": "Berlin Hauptbahnhof"
     },
     {
      "id": "Berlin Ostbahnhof",
      "name": "Berlin Ostbahnhof",
-     "opt": false
+     "opt": false,
+     "wt": "Berlin Ostbahnhof"
     }
    ]
   ],
@@ -3922,52 +4632,62 @@
     {
      "id": "Amsterdam Centraal",
      "name": "Amsterdam",
-     "opt": false
+     "opt": false,
+     "wt": "Bahnhof Amsterdam Centraal"
     },
     {
      "id": "Utrecht Centraal",
      "name": "Utrecht",
-     "opt": false
+     "opt": false,
+     "wt": "Bahnhof Utrecht Centraal"
     },
     {
      "id": "Arnhem Centraal",
      "name": "Arnheim",
-     "opt": false
+     "opt": false,
+     "wt": "Bahnhof Arnhem Centraal"
     },
     {
      "id": "Oberhausen Hbf",
      "name": "Oberhausen",
-     "opt": false
+     "opt": false,
+     "wt": "Oberhausen Hauptbahnhof"
     },
     {
      "id": "Duisburg Hbf",
      "name": "Duisburg",
-     "opt": false
+     "opt": false,
+     "wt": "Duisburg Hauptbahnhof"
     },
     {
      "id": "Düsseldorf Hbf",
      "name": "Düsseldorf",
-     "opt": false
+     "opt": false,
+     "wt": "Düsseldorf Hauptbahnhof"
     },
     {
      "id": "Köln Hbf",
      "name": "Köln",
-     "opt": false
+     "opt": false,
+     "wt": "Köln Hauptbahnhof"
     },
     {
      "id": "Siegburg/Bonn",
      "name": "Siegburg/Bonn",
-     "opt": false
+     "opt": false,
+     "wt": "Bahnhof Siegburg/Bonn"
     },
     {
      "id": "Frankfurt Flughafen Fernbahnhof",
      "name": "Frankfurt Flughafen",
-     "opt": false
+     "opt": false,
+     "wt": "Frankfurt am Main Flughafen Fernbahnhof"
     },
     {
      "id": "Frankfurt (Main) Hbf",
      "name": "Frankfurt",
-     "opt": false
+     "opt": false,
+     "wt": "Frankfurt (Main) Hauptbahnhof"
     }
    ]
   ],
@@ -3982,69 +4702,82 @@
     {
      "id": "Brüssel-Süd",
      "name": "Bruxelles-Midi",
-     "opt": false
+     "opt": false,
+     "wt": "Bahnhof Brüssel-Süd"
     },
     {
      "id": "Brüssel Nord",
      "name": "Bruxelles-Nord",
-     "opt": false
+     "opt": false,
+     "wt": "Bahnhof Brüssel Nord"
     },
     {
      "id": "Liège-Guillemins",
      "name": "Liège-Guillemins",
-     "opt": false
+     "opt": false,
+     "wt": "Bahnhof Liège-Guillemins"
     },
     {
      "id": "Aachen Hbf",
      "name": "Aachen",
-     "opt": false
+     "opt": false,
+     "wt": "Aachen Hauptbahnhof"
     },
     {
      "id": "Köln Hbf",
      "name": "Köln",
-     "opt": false
+     "opt": false,
+     "wt": "Köln Hauptbahnhof"
     },
     {
      "id": "Frankfurt Flughafen Fernbahnhof",
      "name": "Frankfurt Flughafen",
-     "opt": false
+     "opt": false,
+     "wt": "Frankfurt am Main Flughafen Fernbahnhof"
     },
     {
      "id": "Frankfurt (Main) Hbf",
      "name": "Frankfurt",
-     "opt": false
+     "opt": false,
+     "wt": "Frankfurt (Main) Hauptbahnhof"
     }
    ],
    [
     {
      "id": "Antwerpen Centraal",
      "name": "Antwerpen Centraal",
-     "opt": false
+     "opt": false,
+     "wt": "Antwerpen Centraal"
     },
     {
      "id": "Flughafen Brüssel-Zaventem",
      "name": "Flughafen Brüssel-Zaventem",
-     "opt": false
+     "opt": false,
+     "wt": "Flughafen Brüssel-Zaventem"
     },
     {
      "id": "Leuven",
      "name": "Löwen",
-     "opt": false
+     "opt": false,
+     "wt": "Bahnhof Leuven"
     },
     {
      "id": "Liège-Guillemins",
      "name": "Liège-Guillemins",
-     "opt": false
+     "opt": false,
+     "wt": "Bahnhof Liège-Guillemins"
     },
     {
      "id": "Aachen Hbf",
      "name": "Aachen",
-     "opt": false
+     "opt": false,
+     "wt": "Aachen Hauptbahnhof"
     },
     {
      "id": "Köln Hbf",
      "name": "Köln",
-     "opt": false
+     "opt": false,
+     "wt": "Köln Hauptbahnhof"
     }
    ]
   ],
@@ -4059,59 +4792,70 @@
     {
      "id": "Frankfurt (Main) Hbf",
      "name": "Frankfurt",
-     "opt": false
+     "opt": false,
+     "wt": "Frankfurt (Main) Hauptbahnhof"
     },
     {
      "id": "Mannheim Hbf",
      "name": "Mannheim",
-     "opt": false
+     "opt": false,
+     "wt": "Mannheim Hauptbahnhof"
     },
     {
      "id": "Kaiserslautern Hbf",
      "name": "Kaiserslautern",
-     "opt": false
+     "opt": false,
+     "wt": "Kaiserslautern Hauptbahnhof"
     },
     {
      "id": "Saarbrücken Hbf",
      "name": "Saarbrücken",
-     "opt": false
+     "opt": false,
+     "wt": "Saarbrücken Hauptbahnhof"
     },
     {
      "id": "Forbach (Moselle)",
      "name": "Forbach",
-     "opt": true
+     "opt": true,
+     "wt": "Forbach (Moselle)"
     },
     {
      "id": "Paris Gare de l’Est",
      "name": "Paris Est",
-     "opt": false
+     "opt": false,
+     "wt": "Paris Gare de l’Est"
     }
    ],
    [
     {
      "id": "Frankfurt (Main) Hbf",
      "name": "Frankfurt",
-     "opt": false
+     "opt": false,
+     "wt": "Frankfurt (Main) Hauptbahnhof"
     },
     {
      "id": "Mannheim Hbf",
      "name": "Mannheim",
-     "opt": false
+     "opt": false,
+     "wt": "Mannheim Hauptbahnhof"
     },
     {
      "id": "Karlsruhe Hbf",
      "name": "Karlsruhe",
-     "opt": false
+     "opt": false,
+     "wt": "Karlsruhe Hauptbahnhof"
     },
     {
      "id": "Strasbourg",
      "name": "Strasbourg",
-     "opt": false
+     "opt": false,
+     "wt": "Bahnhof Strasbourg"
     },
     {
      "id": "Paris Gare de l’Est",
      "name": "Paris Est",
-     "opt": false
+     "opt": false,
+     "wt": "Paris Gare de l’Est"
     }
    ]
   ],
@@ -4126,37 +4870,44 @@
     {
      "id": "München Hbf",
      "name": "München",
-     "opt": true
+     "opt": true,
+     "wt": "München Hauptbahnhof"
     },
     {
      "id": "Augsburg Hbf",
      "name": "Augsburg",
-     "opt": true
+     "opt": true,
+     "wt": "Augsburg Hauptbahnhof"
     },
     {
      "id": "Ulm Hbf",
      "name": "Ulm",
-     "opt": true
+     "opt": true,
+     "wt": "Ulm Hauptbahnhof"
     },
     {
      "id": "Stuttgart Hbf",
      "name": "Stuttgart",
-     "opt": false
+     "opt": false,
+     "wt": "Stuttgart Hauptbahnhof"
     },
     {
      "id": "Karlsruhe Hbf",
      "name": "Karlsruhe",
-     "opt": false
+     "opt": false,
+     "wt": "Karlsruhe Hauptbahnhof"
     },
     {
      "id": "Strasbourg",
      "name": "Strasbourg",
-     "opt": false
+     "opt": false,
+     "wt": "Bahnhof Strasbourg"
     },
     {
      "id": "Paris Gare de l’Est",
      "name": "Paris Est",
-     "opt": false
+     "opt": false,
+     "wt": "Paris Gare de l’Est"
     }
    ]
   ],
@@ -4171,67 +4922,80 @@
     {
      "id": "Frankfurt (Main) Hbf",
      "name": "Frankfurt",
-     "opt": false
+     "opt": false,
+     "wt": "Frankfurt (Main) Hauptbahnhof"
     },
     {
      "id": "Mannheim Hbf",
      "name": "Mannheim",
-     "opt": false
+     "opt": false,
+     "wt": "Mannheim Hauptbahnhof"
     },
     {
      "id": "Karlsruhe Hbf",
      "name": "Karlsruhe",
-     "opt": false
+     "opt": false,
+     "wt": "Karlsruhe Hauptbahnhof"
     },
     {
      "id": "Baden-Baden",
      "name": "Baden-Baden",
-     "opt": false
+     "opt": false,
+     "wt": "Bahnhof Baden-Baden"
     },
     {
      "id": "Strasbourg",
      "name": "Strasbourg",
-     "opt": false
+     "opt": false,
+     "wt": "Bahnhof Strasbourg"
     },
     {
      "id": "Mulhouse-Ville",
      "name": "Mulhouse-Ville",
-     "opt": false
+     "opt": false,
+     "wt": "Bahnhof Mulhouse-Ville"
     },
     {
      "id": "Belfort-Montbéliard TGV",
      "name": "Belfort-Montbéliard",
-     "opt": false
+     "opt": false,
+     "wt": "Bahnhof Belfort-Montbéliard TGV"
     },
     {
      "id": "Besançon Franche-Comté TGV",
      "name": "Besançon",
-     "opt": false
+     "opt": false,
+     "wt": "Bahnhof Besançon Franche-Comté TGV"
     },
     {
      "id": "Chalon-sur-Saône",
      "name": "Chalon-sur-Saône",
-     "opt": false
+     "opt": false,
+     "wt": "Chalon-sur-Saône"
     },
     {
      "id": "Lyon-Part-Dieu",
      "name": "Lyon-Part-Dieu",
-     "opt": false
+     "opt": false,
+     "wt": "Bahnhof Lyon-Part-Dieu"
     },
     {
      "id": "Avignon TGV",
      "name": "Avignon",
-     "opt": false
+     "opt": false,
+     "wt": "Bahnhof Avignon TGV"
     },
     {
      "id": "Aix-en-Provence TGV",
      "name": "Aix-en-Provence",
-     "opt": false
+     "opt": false,
+     "wt": "Bahnhof Aix-en-Provence TGV"
     },
     {
      "id": "Marseille-Saint-Charles",
      "name": "Marseille-Saint-Charles",
-     "opt": false
+     "opt": false,
+     "wt": "Bahnhof Marseille-Saint-Charles"
     }
    ]
   ],
@@ -4246,77 +5010,92 @@
     {
      "id": "Frankfurt (Main) Hbf",
      "name": "Frankfurt",
-     "opt": false
+     "opt": false,
+     "wt": "Frankfurt (Main) Hauptbahnhof"
     },
     {
      "id": "Mannheim Hbf",
      "name": "Mannheim",
-     "opt": false
+     "opt": false,
+     "wt": "Mannheim Hauptbahnhof"
     },
     {
      "id": "Karlsruhe Hbf",
      "name": "Karlsruhe",
-     "opt": false
+     "opt": false,
+     "wt": "Karlsruhe Hauptbahnhof"
     },
     {
      "id": "Ringsheim",
      "name": "Ringsheim",
-     "opt": false
+     "opt": false,
+     "wt": "Ringsheim"
     },
     {
      "id": "Freiburg (Breisgau) Hbf",
      "name": "Freiburg",
-     "opt": false
+     "opt": false,
+     "wt": "Freiburg (Breisgau) Hauptbahnhof"
     },
     {
      "id": "Basel Badischer Bahnhof",
      "name": "Basel Bad",
-     "opt": false
+     "opt": false,
+     "wt": "Basel Badischer Bahnhof"
     },
     {
      "id": "Basel SBB",
      "name": "Basel SBB",
-     "opt": false
+     "opt": false,
+     "wt": "Bahnhof Basel SBB"
     },
     {
      "id": "Zürich Hbf",
      "name": "Zürich",
-     "opt": false
+     "opt": false,
+     "wt": "Zürich Hauptbahnhof"
     },
     {
      "id": "Zug",
      "name": "Zug",
-     "opt": false
+     "opt": false,
+     "wt": "Bahnhof Zug"
     },
     {
      "id": "Arth-Goldau",
      "name": "Arth-Goldau",
-     "opt": false
+     "opt": false,
+     "wt": "Bahnhof Arth-Goldau"
     },
     {
      "id": "Bellinzona",
      "name": "Bellinzona",
-     "opt": false
+     "opt": false,
+     "wt": "Bahnhof Bellinzona"
     },
     {
      "id": "Lugano",
      "name": "Lugano",
-     "opt": false
+     "opt": false,
+     "wt": "Bahnhof Lugano"
     },
     {
      "id": "Chiasso",
      "name": "Chiasso",
-     "opt": false
+     "opt": false,
+     "wt": "Bahnhof Chiasso"
     },
     {
      "id": "Como San Giovanni",
      "name": "Como",
-     "opt": false
+     "opt": false,
+     "wt": "Bahnhof Como San Giovanni"
     },
     {
      "id": "Milano Centrale",
      "name": "Milano",
-     "opt": false
+     "opt": false,
+     "wt": "Bahnhof Milano Centrale"
     }
    ]
   ],
@@ -4331,52 +5110,62 @@
     {
      "id": "München Hbf",
      "name": "München",
-     "opt": false
+     "opt": false,
+     "wt": "München Hauptbahnhof"
     },
     {
      "id": "Buchloe",
      "name": "Buchloe",
-     "opt": false
+     "opt": false,
+     "wt": "Bahnhof Buchloe"
     },
     {
      "id": "Memmingen",
      "name": "Memmingen",
-     "opt": false
+     "opt": false,
+     "wt": "Bahnhof Memmingen"
     },
     {
      "id": "Lindau-Reutin",
      "name": "Lindau-Reutin",
-     "opt": false
+     "opt": false,
+     "wt": "Bahnhof Lindau-Reutin"
     },
     {
      "id": "Bregenz",
      "name": "Bregenz",
-     "opt": false
+     "opt": false,
+     "wt": "Bahnhof Bregenz"
     },
     {
      "id": "St. Margrethen",
      "name": "St. Margrethen",
-     "opt": false
+     "opt": false,
+     "wt": "St. Margrethen"
     },
     {
      "id": "St. Gallen",
      "name": "St. Gallen",
-     "opt": false
+     "opt": false,
+     "wt": "Bahnhof St. Gallen"
     },
     {
      "id": "Winterthur",
      "name": "Winterthur",
-     "opt": false
+     "opt": false,
+     "wt": "Bahnhof Winterthur"
     },
     {
      "id": "Zürich Flughafen",
      "name": "Zürich Flughafen",
-     "opt": false
+     "opt": false,
+     "wt": "Bahnhof Zürich Flughafen"
     },
     {
      "id": "Zürich Hbf",
      "name": "Zürich",
-     "opt": false
+     "opt": false,
+     "wt": "Zürich Hauptbahnhof"
     }
    ]
   ],
@@ -4391,281 +5180,336 @@
     {
      "id": "München Hbf",
      "name": "München",
-     "opt": false
+     "opt": false,
+     "wt": "München Hauptbahnhof"
     },
     {
      "id": "München Ost",
      "name": "München Ost",
-     "opt": false
+     "opt": false,
+     "wt": "Bahnhof München Ost"
     },
     {
      "id": "Rosenheim",
      "name": "Rosenheim",
-     "opt": false
+     "opt": false,
+     "wt": "Bahnhof Rosenheim"
     },
     {
      "id": "Kufstein",
      "name": "Kufstein",
-     "opt": false
+     "opt": false,
+     "wt": "Bahnhof Kufstein"
     },
     {
      "id": "Wörgl Hbf",
      "name": "Wörgl",
-     "opt": false
+     "opt": false,
+     "wt": "Wörgl Hauptbahnhof"
     },
     {
      "id": "Jenbach",
      "name": "Jenbach",
-     "opt": false
+     "opt": false,
+     "wt": "Bahnhof Jenbach"
     },
     {
      "id": "Innsbruck Hbf",
      "name": "Innsbruck",
-     "opt": false
+     "opt": false,
+     "wt": "Innsbruck Hauptbahnhof"
     },
     {
      "id": "Pfaffenhofen (Tirol)",
      "name": "Telfs-Pfaffenhofen",
-     "opt": false
+     "opt": false,
+     "wt": "Pfaffenhofen (Tirol)"
     },
     {
      "id": "Ötztal",
      "name": "Ötztal",
-     "opt": false
+     "opt": false,
+     "wt": "Bahnhof Ötztal"
     },
     {
      "id": "Imst",
      "name": "Imst-Pitztal",
-     "opt": false
+     "opt": false,
+     "wt": "Imst"
     },
     {
      "id": "Landeck-Zams",
      "name": "Landeck-Zams",
-     "opt": false
+     "opt": false,
+     "wt": "Bahnhof Landeck-Zams"
     },
     {
      "id": "St. Anton am Arlberg",
      "name": "St. Anton",
-     "opt": false
+     "opt": false,
+     "wt": "Bahnhof St. Anton am Arlberg"
     },
     {
      "id": "Langen am Arlberg",
      "name": "Langen",
-     "opt": true
+     "opt": true,
+     "wt": "Bahnhof Langen am Arlberg"
     },
     {
      "id": "Bludenz",
      "name": "Bludenz",
-     "opt": true
+     "opt": true,
+     "wt": "Bahnhof Bludenz"
     },
     {
      "id": "Feldkirch",
      "name": "Feldkirch",
-     "opt": true
+     "opt": true,
+     "wt": "Bahnhof Feldkirch"
     }
    ],
    [
     {
      "id": "München Hbf",
      "name": "München",
-     "opt": false
+     "opt": false,
+     "wt": "München Hauptbahnhof"
     },
     {
      "id": "München Ost",
      "name": "München Ost",
-     "opt": false
+     "opt": false,
+     "wt": "Bahnhof München Ost"
     },
     {
      "id": "Rosenheim",
      "name": "Rosenheim",
-     "opt": false
+     "opt": false,
+     "wt": "Bahnhof Rosenheim"
     },
     {
      "id": "Kufstein",
      "name": "Kufstein",
-     "opt": false
+     "opt": false,
+     "wt": "Bahnhof Kufstein"
     },
     {
      "id": "Wörgl Hbf",
      "name": "Wörgl",
-     "opt": false
+     "opt": false,
+     "wt": "Wörgl Hauptbahnhof"
     },
     {
      "id": "Jenbach",
      "name": "Jenbach",
-     "opt": false
+     "opt": false,
+     "wt": "Bahnhof Jenbach"
     },
     {
      "id": "Innsbruck Hbf",
      "name": "Innsbruck",
-     "opt": false
+     "opt": false,
+     "wt": "Innsbruck Hauptbahnhof"
     },
     {
      "id": "Brenner",
      "name": "Brenner",
-     "opt": false
+     "opt": false,
+     "wt": "Bahnhof Brenner"
     },
     {
      "id": "Franzensfeste",
      "name": "Franzensfeste",
-     "opt": true
+     "opt": true,
+     "wt": "Bahnhof Franzensfeste"
     },
     {
      "id": "Brixen",
      "name": "Brixen",
-     "opt": false
+     "opt": false,
+     "wt": "Bahnhof Brixen"
     },
     {
      "id": "Bozen",
      "name": "Bozen",
-     "opt": false
+     "opt": false,
+     "wt": "Bahnhof Bozen"
     },
     {
      "id": "Trient",
      "name": "Trento",
-     "opt": false
+     "opt": false,
+     "wt": "Bahnhof Trient"
     },
     {
      "id": "Rovereto",
      "name": "Rovereto",
-     "opt": false
+     "opt": false,
+     "wt": "Bahnhof Rovereto"
     },
     {
      "id": "Verona Porta Nuova",
      "name": "Verona Porta Nuova",
-     "opt": false
+     "opt": false,
+     "wt": "Bahnhof Verona Porta Nuova"
     },
     {
      "id": "Vicenza",
      "name": "Vicenza",
-     "opt": false
+     "opt": false,
+     "wt": "Vicenza"
     },
     {
      "id": "Padua",
      "name": "Padova",
-     "opt": false
+     "opt": false,
+     "wt": "Padua"
     },
     {
      "id": "Venezia Mestre",
      "name": "Venezia Mestre",
-     "opt": false
+     "opt": false,
+     "wt": "Bahnhof Venezia Mestre"
     },
     {
      "id": "Venezia Santa Lucia",
      "name": "Venezia Santa Lucia",
-     "opt": false
+     "opt": false,
+     "wt": "Bahnhof Venezia Santa Lucia"
     }
    ],
    [
     {
      "id": "München Hbf",
      "name": "München",
-     "opt": false
+     "opt": false,
+     "wt": "München Hauptbahnhof"
     },
     {
      "id": "München Ost",
      "name": "München Ost",
-     "opt": false
+     "opt": false,
+     "wt": "Bahnhof München Ost"
     },
     {
      "id": "Rosenheim",
      "name": "Rosenheim",
-     "opt": false
+     "opt": false,
+     "wt": "Bahnhof Rosenheim"
     },
     {
      "id": "Kufstein",
      "name": "Kufstein",
-     "opt": false
+     "opt": false,
+     "wt": "Bahnhof Kufstein"
     },
     {
      "id": "Wörgl Hbf",
      "name": "Wörgl",
-     "opt": false
+     "opt": false,
+     "wt": "Wörgl Hauptbahnhof"
     },
     {
      "id": "Jenbach",
      "name": "Jenbach",
-     "opt": false
+     "opt": false,
+     "wt": "Bahnhof Jenbach"
     },
     {
      "id": "Innsbruck Hbf",
      "name": "Innsbruck",
-     "opt": false
+     "opt": false,
+     "wt": "Innsbruck Hauptbahnhof"
     },
     {
      "id": "Brenner",
      "name": "Brenner",
-     "opt": false
+     "opt": false,
+     "wt": "Bahnhof Brenner"
     },
     {
      "id": "Franzensfeste",
      "name": "Franzensfeste",
-     "opt": true
+     "opt": true,
+     "wt": "Bahnhof Franzensfeste"
     },
     {
      "id": "Brixen",
      "name": "Brixen",
-     "opt": false
+     "opt": false,
+     "wt": "Bahnhof Brixen"
     },
     {
      "id": "Bozen",
      "name": "Bozen",
-     "opt": false
+     "opt": false,
+     "wt": "Bahnhof Bozen"
     },
     {
      "id": "Trient",
      "name": "Trento",
-     "opt": false
+     "opt": false,
+     "wt": "Bahnhof Trient"
     },
     {
      "id": "Rovereto",
      "name": "Rovereto",
-     "opt": false
+     "opt": false,
+     "wt": "Bahnhof Rovereto"
     },
     {
      "id": "Verona Porta Nuova",
      "name": "Verona Porta Nuova",
-     "opt": false
+     "opt": false,
+     "wt": "Bahnhof Verona Porta Nuova"
     },
     {
      "id": "Bologna Centrale",
      "name": "Bologna",
-     "opt": false
+     "opt": false,
+     "wt": "Bahnhof Bologna Centrale"
     },
     {
      "id": "Cesena",
      "name": "Cesena",
-     "opt": true
+     "opt": true,
+     "wt": "Cesena"
     },
     {
      "id": "Rimini",
      "name": "Rimini",
-     "opt": true
+     "opt": true,
+     "wt": "Bahnhof Rimini"
     },
     {
      "id": "Riccione",
      "name": "Riccione",
-     "opt": true
+     "opt": true,
+     "wt": "Riccione"
     },
     {
      "id": "Cattolica",
      "name": "Cattolica San Giovanni G.",
-     "opt": true
+     "opt": true,
+     "wt": "Cattolica"
     },
     {
      "id": "Pesaro",
      "name": "Pesaro",
-     "opt": true
+     "opt": true,
+     "wt": "Pesaro"
     },
     {
      "id": "Senigallia",
      "name": "Senigallia",
-     "opt": true
+     "opt": true,
+     "wt": "Senigallia"
     },
     {
      "id": "Ancona",
      "name": "Ancona",
-     "opt": true
+     "opt": true,
+     "wt": "Ancona"
     }
    ]
   ],
@@ -4680,62 +5524,74 @@
     {
      "id": "München Hbf",
      "name": "München",
-     "opt": false
+     "opt": false,
+     "wt": "München Hauptbahnhof"
     },
     {
      "id": "Salzburg Hbf",
      "name": "Salzburg",
-     "opt": false
+     "opt": false,
+     "wt": "Salzburg Hauptbahnhof"
     },
     {
      "id": "Linz Hbf",
      "name": "Linz",
-     "opt": false
+     "opt": false,
+     "wt": "Linz Hauptbahnhof"
     },
     {
      "id": "St. Pölten Hbf",
      "name": "St. Pölten",
-     "opt": false
+     "opt": false,
+     "wt": "St. Pölten Hauptbahnhof"
     },
     {
      "id": "Wien Meidling",
      "name": "Wien Meidling",
-     "opt": false
+     "opt": false,
+     "wt": "Bahnhof Wien Meidling"
     },
     {
      "id": "Wien Hbf",
      "name": "Wien",
-     "opt": false
+     "opt": false,
+     "wt": "Wien Hauptbahnhof"
     },
     {
      "id": "Hegyeshalom",
      "name": "Hegyeshalom",
-     "opt": false
+     "opt": false,
+     "wt": "Hegyeshalom"
     },
     {
      "id": "Mosonmagyaróvár",
      "name": "Mosonmagyaróvár",
-     "opt": false
+     "opt": false,
+     "wt": "Mosonmagyaróvár"
     },
     {
      "id": "Györ",
      "name": "Győr",
-     "opt": false
+     "opt": false,
+     "wt": "Györ"
     },
     {
      "id": "Tatabánya",
      "name": "Tatabánya",
-     "opt": false
+     "opt": false,
+     "wt": "Tatabánya"
     },
     {
      "id": "Kelenföld",
      "name": "Kelenföld",
-     "opt": false
+     "opt": false,
+     "wt": "Bahnhof Kelenföld"
     },
     {
      "id": "Budapest Keleti pályaudvar",
      "name": "Budapest Keleti",
-     "opt": false
+     "opt": false,
+     "wt": "Budapest Keleti pályaudvar"
     }
    ]
   ],
@@ -4750,366 +5606,438 @@
     {
      "id": "Dortmund Hbf",
      "name": "Dortmund",
-     "opt": true
+     "opt": true,
+     "wt": "Dortmund Hauptbahnhof"
     },
     {
      "id": "Bochum Hbf",
      "name": "Bochum",
-     "opt": true
+     "opt": true,
+     "wt": "Bochum Hauptbahnhof"
     },
     {
      "id": "Essen Hbf",
      "name": "Essen",
-     "opt": true
+     "opt": true,
+     "wt": "Essen Hauptbahnhof"
     },
     {
      "id": "Duisburg Hbf",
      "name": "Duisburg",
-     "opt": true
+     "opt": true,
+     "wt": "Duisburg Hauptbahnhof"
     },
     {
      "id": "Düsseldorf Hbf",
      "name": "Düsseldorf",
-     "opt": true
+     "opt": true,
+     "wt": "Düsseldorf Hauptbahnhof"
     },
     {
      "id": "Köln Hbf",
      "name": "Köln",
-     "opt": true
+     "opt": true,
+     "wt": "Köln Hauptbahnhof"
     },
     {
      "id": "Bonn Hbf",
      "name": "Bonn",
-     "opt": true
+     "opt": true,
+     "wt": "Bonn Hauptbahnhof"
     },
     {
      "id": "Koblenz Hbf",
      "name": "Koblenz",
-     "opt": true
+     "opt": true,
+     "wt": "Koblenz Hauptbahnhof"
     },
     {
      "id": "Mainz Hbf",
      "name": "Mainz",
-     "opt": true
+     "opt": true,
+     "wt": "Mainz Hauptbahnhof"
     },
     {
      "id": "Frankfurt Flughafen Fernbahnhof",
      "name": "Frankfurt Flughafen",
-     "opt": true
+     "opt": true,
+     "wt": "Frankfurt am Main Flughafen Fernbahnhof"
     },
     {
      "id": "Frankfurt (Main) Hbf",
      "name": "Frankfurt",
-     "opt": false
+     "opt": false,
+     "wt": "Frankfurt (Main) Hauptbahnhof"
     },
     {
      "id": "Hanau Hbf",
      "name": "Hanau",
-     "opt": false
+     "opt": false,
+     "wt": "Hanau Hauptbahnhof"
     },
     {
      "id": "Aschaffenburg Hbf",
      "name": "Aschaffenburg",
-     "opt": true
+     "opt": true,
+     "wt": "Aschaffenburg Hauptbahnhof"
     },
     {
      "id": "Würzburg Hbf",
      "name": "Würzburg",
-     "opt": false
+     "opt": false,
+     "wt": "Würzburg Hauptbahnhof"
     },
     {
      "id": "Nürnberg Hbf",
      "name": "Nürnberg",
-     "opt": false
+     "opt": false,
+     "wt": "Nürnberg Hauptbahnhof"
     },
     {
      "id": "Regensburg Hbf",
      "name": "Regensburg",
-     "opt": false
+     "opt": false,
+     "wt": "Regensburg Hauptbahnhof"
     },
     {
      "id": "Plattling",
      "name": "Plattling",
-     "opt": false
+     "opt": false,
+     "wt": "Bahnhof Plattling"
     },
     {
      "id": "Passau Hbf",
      "name": "Passau",
-     "opt": false
+     "opt": false,
+     "wt": "Passau Hauptbahnhof"
     },
     {
      "id": "Schärding",
      "name": "Schärding",
-     "opt": true
+     "opt": true,
+     "wt": "Schärding"
     },
     {
      "id": "Wels Hbf",
      "name": "Wels",
-     "opt": true
+     "opt": true,
+     "wt": "Wels Hauptbahnhof"
     },
     {
      "id": "Linz Hbf",
      "name": "Linz",
-     "opt": false
+     "opt": false,
+     "wt": "Linz Hauptbahnhof"
     },
     {
      "id": "Amstetten",
      "name": "Amstetten",
-     "opt": true
+     "opt": true,
+     "wt": "Bahnhof Amstetten"
     },
     {
      "id": "St. Pölten Hbf",
      "name": "St. Pölten",
-     "opt": false
+     "opt": false,
+     "wt": "St. Pölten Hauptbahnhof"
     },
     {
      "id": "Tullnerfeld",
      "name": "Tullnerfeld",
-     "opt": true
+     "opt": true,
+     "wt": "Bahnhof Tullnerfeld"
     },
     {
      "id": "Wien Meidling",
      "name": "Wien Meidling",
-     "opt": false
+     "opt": false,
+     "wt": "Bahnhof Wien Meidling"
     },
     {
      "id": "Wien Hbf",
      "name": "Wien",
-     "opt": false
+     "opt": false,
+     "wt": "Wien Hauptbahnhof"
     }
    ],
    [
     {
      "id": "Dortmund Hbf",
      "name": "Dortmund",
-     "opt": true
+     "opt": true,
+     "wt": "Dortmund Hauptbahnhof"
     },
     {
      "id": "Hagen Hbf",
      "name": "Hagen",
-     "opt": true
+     "opt": true,
+     "wt": "Hagen Hauptbahnhof"
     },
     {
      "id": "Wuppertal Hbf",
      "name": "Wuppertal",
-     "opt": true
+     "opt": true,
+     "wt": "Wuppertal Hauptbahnhof"
     },
     {
      "id": "Solingen Hbf",
      "name": "Solingen",
-     "opt": true
+     "opt": true,
+     "wt": "Solingen Hauptbahnhof"
     },
     {
      "id": "Köln Hbf",
      "name": "Köln",
-     "opt": true
+     "opt": true,
+     "wt": "Köln Hauptbahnhof"
     },
     {
      "id": "Bonn Hbf",
      "name": "Bonn",
-     "opt": true
+     "opt": true,
+     "wt": "Bonn Hauptbahnhof"
     },
     {
      "id": "Koblenz Hbf",
      "name": "Koblenz",
-     "opt": true
+     "opt": true,
+     "wt": "Koblenz Hauptbahnhof"
     },
     {
      "id": "Mainz Hbf",
      "name": "Mainz",
-     "opt": true
+     "opt": true,
+     "wt": "Mainz Hauptbahnhof"
     },
     {
      "id": "Frankfurt Flughafen Fernbahnhof",
      "name": "Frankfurt Flughafen",
-     "opt": true
+     "opt": true,
+     "wt": "Frankfurt am Main Flughafen Fernbahnhof"
     },
     {
      "id": "Frankfurt (Main) Hbf",
      "name": "Frankfurt",
-     "opt": false
+     "opt": false,
+     "wt": "Frankfurt (Main) Hauptbahnhof"
     },
     {
      "id": "Hanau Hbf",
      "name": "Hanau",
-     "opt": false
+     "opt": false,
+     "wt": "Hanau Hauptbahnhof"
     },
     {
      "id": "Aschaffenburg Hbf",
      "name": "Aschaffenburg",
-     "opt": true
+     "opt": true,
+     "wt": "Aschaffenburg Hauptbahnhof"
     },
     {
      "id": "Würzburg Hbf",
      "name": "Würzburg",
-     "opt": false
+     "opt": false,
+     "wt": "Würzburg Hauptbahnhof"
     },
     {
      "id": "Nürnberg Hbf",
      "name": "Nürnberg",
-     "opt": false
+     "opt": false,
+     "wt": "Nürnberg Hauptbahnhof"
     },
     {
      "id": "Regensburg Hbf",
      "name": "Regensburg",
-     "opt": false
+     "opt": false,
+     "wt": "Regensburg Hauptbahnhof"
     },
     {
      "id": "Plattling",
      "name": "Plattling",
-     "opt": false
+     "opt": false,
+     "wt": "Bahnhof Plattling"
     },
     {
      "id": "Passau Hbf",
      "name": "Passau",
-     "opt": false
+     "opt": false,
+     "wt": "Passau Hauptbahnhof"
     },
     {
      "id": "Schärding",
      "name": "Schärding",
-     "opt": true
+     "opt": true,
+     "wt": "Schärding"
     },
     {
      "id": "Wels Hbf",
      "name": "Wels",
-     "opt": true
+     "opt": true,
+     "wt": "Wels Hauptbahnhof"
     },
     {
      "id": "Linz Hbf",
      "name": "Linz",
-     "opt": false
+     "opt": false,
+     "wt": "Linz Hauptbahnhof"
     },
     {
      "id": "Amstetten",
      "name": "Amstetten",
-     "opt": true
+     "opt": true,
+     "wt": "Bahnhof Amstetten"
     },
     {
      "id": "St. Pölten Hbf",
      "name": "St. Pölten",
-     "opt": false
+     "opt": false,
+     "wt": "St. Pölten Hauptbahnhof"
     },
     {
      "id": "Tullnerfeld",
      "name": "Tullnerfeld",
-     "opt": true
+     "opt": true,
+     "wt": "Bahnhof Tullnerfeld"
     },
     {
      "id": "Wien Meidling",
      "name": "Wien Meidling",
-     "opt": false
+     "opt": false,
+     "wt": "Bahnhof Wien Meidling"
     },
     {
      "id": "Wien Hbf",
      "name": "Wien",
-     "opt": false
+     "opt": false,
+     "wt": "Wien Hauptbahnhof"
     }
    ],
    [
     {
      "id": "Hamburg-Altona",
      "name": "Hamburg-Altona",
-     "opt": true
+     "opt": true,
+     "wt": "Bahnhof Hamburg-Altona"
     },
     {
      "id": "Hamburg Dammtor",
      "name": "Hamburg Dammtor",
-     "opt": true
+     "opt": true,
+     "wt": "Bahnhof Hamburg Dammtor"
     },
     {
      "id": "Hamburg Hbf",
      "name": "Hamburg",
-     "opt": true
+     "opt": true,
+     "wt": "Hamburg Hauptbahnhof"
     },
     {
      "id": "Hamburg-Harburg",
      "name": "Hamburg-Harburg",
-     "opt": true
+     "opt": true,
+     "wt": "Bahnhof Hamburg-Harburg"
     },
     {
      "id": "Hannover Hbf",
      "name": "Hannover",
-     "opt": true
+     "opt": true,
+     "wt": "Hannover Hauptbahnhof"
     },
     {
      "id": "Göttingen",
      "name": "Göttingen",
-     "opt": true
+     "opt": true,
+     "wt": "Bahnhof Göttingen"
     },
     {
      "id": "Kassel-Wilhelmshöhe",
      "name": "Kassel-Wilhelmshöhe",
-     "opt": true
+     "opt": true,
+     "wt": "Bahnhof Kassel-Wilhelmshöhe"
     },
     {
      "id": "Fulda",
      "name": "Fulda",
-     "opt": true
+     "opt": true,
+     "wt": "Bahnhof Fulda"
     },
     {
      "id": "Würzburg Hbf",
      "name": "Würzburg",
-     "opt": false
+     "opt": false,
+     "wt": "Würzburg Hauptbahnhof"
     },
     {
      "id": "Nürnberg Hbf",
      "name": "Nürnberg",
-     "opt": false
+     "opt": false,
+     "wt": "Nürnberg Hauptbahnhof"
     },
     {
      "id": "Regensburg Hbf",
      "name": "Regensburg",
-     "opt": false
+     "opt": false,
+     "wt": "Regensburg Hauptbahnhof"
     },
     {
      "id": "Plattling",
      "name": "Plattling",
-     "opt": false
+     "opt": false,
+     "wt": "Bahnhof Plattling"
     },
     {
      "id": "Passau Hbf",
      "name": "Passau",
-     "opt": false
+     "opt": false,
+     "wt": "Passau Hauptbahnhof"
     },
     {
      "id": "Schärding",
      "name": "Schärding",
-     "opt": true
+     "opt": true,
+     "wt": "Schärding"
     },
     {
      "id": "Wels Hbf",
      "name": "Wels",
-     "opt": true
+     "opt": true,
+     "wt": "Wels Hauptbahnhof"
     },
     {
      "id": "Linz Hbf",
      "name": "Linz",
-     "opt": false
+     "opt": false,
+     "wt": "Linz Hauptbahnhof"
     },
     {
      "id": "Amstetten",
      "name": "Amstetten",
-     "opt": true
+     "opt": true,
+     "wt": "Bahnhof Amstetten"
     },
     {
      "id": "St. Pölten Hbf",
      "name": "St. Pölten",
-     "opt": false
+     "opt": false,
+     "wt": "St. Pölten Hauptbahnhof"
     },
     {
      "id": "Tullnerfeld",
      "name": "Tullnerfeld",
-     "opt": true
+     "opt": true,
+     "wt": "Bahnhof Tullnerfeld"
     },
     {
      "id": "Wien Meidling",
      "name": "Wien Meidling",
-     "opt": false
+     "opt": false,
+     "wt": "Bahnhof Wien Meidling"
     },
     {
      "id": "Wien Hbf",
      "name": "Wien",
-     "opt": false
+     "opt": false,
+     "wt": "Wien Hauptbahnhof"
     }
    ]
   ],

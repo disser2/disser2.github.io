@@ -1,0 +1,1452 @@
+[
+ {
+  "id": "Hamburg Hbf",
+  "name": "Hamburg",
+  "wt": "Hamburg Hauptbahnhof"
+ },
+ {
+  "id": "Düsseldorf Hbf",
+  "name": "Düsseldorf",
+  "wt": "Düsseldorf Hauptbahnhof"
+ },
+ {
+  "id": "Köln Hbf",
+  "name": "Köln",
+  "wt": "Köln Hauptbahnhof"
+ },
+ {
+  "id": "Berlin Südkreuz",
+  "name": "Berlin Südkreuz",
+  "wt": "Bahnhof Berlin Südkreuz"
+ },
+ {
+  "id": "Berlin Hbf",
+  "name": "Berlin",
+  "wt": "Berlin Hauptbahnhof"
+ },
+ {
+  "id": "Frankfurt (Main) Hbf",
+  "name": "Frankfurt",
+  "wt": "Frankfurt (Main) Hauptbahnhof"
+ },
+ {
+  "id": "Frankfurt Flughafen Fernbahnhof",
+  "name": "Frankfurt Flughafen (Fern)",
+  "wt": "Frankfurt Flughafen Fernbahnhof"
+ },
+ {
+  "id": "Mannheim Hbf",
+  "name": "Mannheim",
+  "wt": "Mannheim Hauptbahnhof"
+ },
+ {
+  "id": "Saarbrücken Hbf",
+  "name": "Saarbrücken",
+  "wt": "Saarbrücken Hauptbahnhof"
+ },
+ {
+  "id": "Frankfurt Flughafen Regionalbahnhof",
+  "name": "Frankfurt Flughafen (Regio)",
+  "wt": "Frankfurt am Main Flughafen Regionalbahnhof"
+ },
+ {
+  "id": "Padborg",
+  "name": "Padborg",
+  "wt": "Padborg"
+ },
+ {
+  "id": "Flensburg",
+  "name": "Flensburg",
+  "wt": "Bahnhof Flensburg"
+ },
+ {
+  "id": "Hannover Hbf",
+  "name": "Hannover",
+  "wt": "Hannover Hauptbahnhof"
+ },
+ {
+  "id": "Berlin Gesundbrunnen",
+  "name": "Berlin Gesundbrunnen",
+  "wt": "Bahnhof Berlin Gesundbrunnen"
+ },
+ {
+  "id": "Nürnberg Hbf",
+  "name": "Nürnberg",
+  "wt": "Nürnberg Hauptbahnhof"
+ },
+ {
+  "id": "Stuttgart Hbf",
+  "name": "Stuttgart",
+  "wt": "Stuttgart Hauptbahnhof"
+ },
+ {
+  "id": "Berlin Ostbahnhof",
+  "name": "Berlin Ostbahnhof",
+  "wt": "Berlin Ostbahnhof"
+ },
+ {
+  "id": "Berlin-Spandau",
+  "name": "Berlin-Spandau",
+  "wt": "Bahnhof Berlin-Spandau"
+ },
+ {
+  "id": "Bonn Hbf",
+  "name": "Bonn",
+  "wt": "Bonn Hauptbahnhof"
+ },
+ {
+  "id": "Stendal Hbf",
+  "name": "Stendal",
+  "wt": "Stendal Hauptbahnhof"
+ },
+ {
+  "id": "Wolfsburg Hbf",
+  "name": "Wolfsburg",
+  "wt": "Wolfsburg Hauptbahnhof"
+ },
+ {
+  "id": "Minden (Westfalen)",
+  "name": "Minden",
+  "wt": "Bahnhof Minden (Westfalen)"
+ },
+ {
+  "id": "Bielefeld Hbf",
+  "name": "Bielefeld",
+  "wt": "Bielefeld Hauptbahnhof"
+ },
+ {
+  "id": "Hamm (Westfalen) Hbf",
+  "name": "Hamm",
+  "wt": "Hamm (Westfalen) Hauptbahnhof"
+ },
+ {
+  "id": "Dortmund Hbf",
+  "name": "Dortmund",
+  "wt": "Dortmund Hauptbahnhof"
+ },
+ {
+  "id": "Bochum Hbf",
+  "name": "Bochum",
+  "wt": "Bochum Hauptbahnhof"
+ },
+ {
+  "id": "Essen Hbf",
+  "name": "Essen",
+  "wt": "Essen Hauptbahnhof"
+ },
+ {
+  "id": "Duisburg Hbf",
+  "name": "Duisburg",
+  "wt": "Duisburg Hauptbahnhof"
+ },
+ {
+  "id": "Düsseldorf Flughafen",
+  "name": "Düsseldorf Flughafen",
+  "wt": "Bahnhof Düsseldorf Flughafen"
+ },
+ {
+  "id": "Hagen Hbf",
+  "name": "Hagen",
+  "wt": "Hagen Hauptbahnhof"
+ },
+ {
+  "id": "Wuppertal Hbf",
+  "name": "Wuppertal",
+  "wt": "Wuppertal Hauptbahnhof"
+ },
+ {
+  "id": "Lutherstadt Wittenberg Hbf",
+  "name": "Wittenberg",
+  "wt": "Lutherstadt Wittenberg Hauptbahnhof"
+ },
+ {
+  "id": "Leipzig Hbf",
+  "name": "Leipzig",
+  "wt": "Leipzig Hauptbahnhof"
+ },
+ {
+  "id": "Erfurt Hbf",
+  "name": "Erfurt",
+  "wt": "Erfurt Hauptbahnhof"
+ },
+ {
+  "id": "Eisenach Hbf",
+  "name": "Eisenach",
+  "wt": "Eisenach Hauptbahnhof"
+ },
+ {
+  "id": "Fulda",
+  "name": "Fulda",
+  "wt": "Bahnhof Fulda"
+ },
+ {
+  "id": "Ulm Hbf",
+  "name": "Ulm",
+  "wt": "Ulm Hauptbahnhof"
+ },
+ {
+  "id": "Augsburg Hbf",
+  "name": "Augsburg",
+  "wt": "Augsburg Hauptbahnhof"
+ },
+ {
+  "id": "München-Pasing",
+  "name": "München-Pasing",
+  "wt": "Bahnhof München-Pasing"
+ },
+ {
+  "id": "München Hbf",
+  "name": "München",
+  "wt": "München Hauptbahnhof"
+ },
+ {
+  "id": "Braunschweig Hbf",
+  "name": "Braunschweig",
+  "wt": "Braunschweig Hauptbahnhof"
+ },
+ {
+  "id": "Hildesheim Hbf",
+  "name": "Hildesheim",
+  "wt": "Hildesheim Hauptbahnhof"
+ },
+ {
+  "id": "Göttingen",
+  "name": "Göttingen",
+  "wt": "Bahnhof Göttingen"
+ },
+ {
+  "id": "Kassel-Wilhelmshöhe",
+  "name": "Kassel-Wilhelmshöhe",
+  "wt": "Bahnhof Kassel-Wilhelmshöhe"
+ },
+ {
+  "id": "Hanau Hbf",
+  "name": "Hanau",
+  "wt": "Hanau Hauptbahnhof"
+ },
+ {
+  "id": "Karlsruhe Hbf",
+  "name": "Karlsruhe",
+  "wt": "Karlsruhe Hauptbahnhof"
+ },
+ {
+  "id": "Baden-Baden",
+  "name": "Baden-Baden",
+  "wt": "Bahnhof Baden-Baden"
+ },
+ {
+  "id": "Offenburg",
+  "name": "Offenburg",
+  "wt": "Bahnhof Offenburg"
+ },
+ {
+  "id": "Freiburg (Breisgau) Hbf",
+  "name": "Freiburg",
+  "wt": "Freiburg (Breisgau) Hauptbahnhof"
+ },
+ {
+  "id": "Basel Badischer Bahnhof",
+  "name": "Basel Bad",
+  "wt": "Basel Badischer Bahnhof"
+ },
+ {
+  "id": "Basel SBB",
+  "name": "Basel SBB",
+  "wt": "Bahnhof Basel SBB"
+ },
+ {
+  "id": "Liestal",
+  "name": "Liestal",
+  "wt": "Liestal"
+ },
+ {
+  "id": "Olten",
+  "name": "Olten",
+  "wt": "Bahnhof Olten"
+ },
+ {
+  "id": "Bern",
+  "name": "Bern",
+  "wt": "Bahnhof Bern"
+ },
+ {
+  "id": "Thun",
+  "name": "Thun",
+  "wt": "Bahnhof Thun"
+ },
+ {
+  "id": "Spiez",
+  "name": "Spiez",
+  "wt": "Bahnhof Spiez"
+ },
+ {
+  "id": "Interlaken West",
+  "name": "Interlaken West",
+  "wt": "Bahnhof Interlaken West"
+ },
+ {
+  "id": "Interlaken Ost",
+  "name": "Interlaken Ost",
+  "wt": "Bahnhof Interlaken Ost"
+ },
+ {
+  "id": "Zürich Hbf",
+  "name": "Zürich",
+  "wt": "Zürich Hauptbahnhof"
+ },
+ {
+  "id": "Sargans",
+  "name": "Sargans",
+  "wt": "Bahnhof Sargans"
+ },
+ {
+  "id": "Landquart",
+  "name": "Landquart",
+  "wt": "Bahnhof Landquart"
+ },
+ {
+  "id": "Chur",
+  "name": "Chur",
+  "wt": "Bahnhof Chur"
+ },
+ {
+  "id": "Frankfurt (Main) Süd",
+  "name": "Frankfurt Süd",
+  "wt": "Bahnhof Frankfurt (Main) Süd"
+ },
+ {
+  "id": "Darmstadt Hbf",
+  "name": "Darmstadt",
+  "wt": "Darmstadt Hauptbahnhof"
+ },
+ {
+  "id": "Bensheim",
+  "name": "Bensheim",
+  "wt": "Bahnhof Bensheim"
+ },
+ {
+  "id": "Weinheim (Bergstraße) Hbf",
+  "name": "Weinheim",
+  "wt": "Weinheim (Bergstraße) Hauptbahnhof"
+ },
+ {
+  "id": "Heidelberg Hbf",
+  "name": "Heidelberg",
+  "wt": "Heidelberg Hauptbahnhof"
+ },
+ {
+  "id": "Wiesloch-Walldorf",
+  "name": "Wiesloch-Walldorf",
+  "wt": "Bahnhof Wiesloch-Walldorf"
+ },
+ {
+  "id": "Bruchsal",
+  "name": "Bruchsal",
+  "wt": "Bahnhof Bruchsal"
+ },
+ {
+  "id": "Herford",
+  "name": "Herford",
+  "wt": "Bahnhof Herford"
+ },
+ {
+  "id": "Gütersloh Hbf",
+  "name": "Gütersloh",
+  "wt": "Gütersloh Hauptbahnhof"
+ },
+ {
+  "id": "Düren",
+  "name": "Düren",
+  "wt": "Bahnhof Düren"
+ },
+ {
+  "id": "Aachen Hbf",
+  "name": "Aachen",
+  "wt": "Aachen Hauptbahnhof"
+ },
+ {
+  "id": "Osnabrück Hbf",
+  "name": "Osnabrück",
+  "wt": "Osnabrück Hauptbahnhof"
+ },
+ {
+  "id": "Münster (Westfalen) Hbf",
+  "name": "Münster",
+  "wt": "Münster (Westfalen) Hauptbahnhof"
+ },
+ {
+  "id": "Recklinghausen Hbf",
+  "name": "Recklinghausen",
+  "wt": "Recklinghausen Hauptbahnhof"
+ },
+ {
+  "id": "Wanne-Eickel Hbf",
+  "name": "Wanne-Eickel",
+  "wt": "Wanne-Eickel Hauptbahnhof"
+ },
+ {
+  "id": "Krefeld Hbf",
+  "name": "Krefeld",
+  "wt": "Krefeld Hauptbahnhof"
+ },
+ {
+  "id": "Viersen",
+  "name": "Viersen",
+  "wt": "Bahnhof Viersen"
+ },
+ {
+  "id": "Mönchengladbach Hbf",
+  "name": "Mönchengladbach",
+  "wt": "Mönchengladbach Hauptbahnhof"
+ },
+ {
+  "id": "Rheydt Hbf",
+  "name": "Rheydt",
+  "wt": "Rheydt Hauptbahnhof"
+ },
+ {
+  "id": "Erkelenz",
+  "name": "Erkelenz",
+  "wt": "Bahnhof Erkelenz"
+ },
+ {
+  "id": "Geilenkirchen",
+  "name": "Geilenkirchen",
+  "wt": "Bahnhof Geilenkirchen"
+ },
+ {
+  "id": "Herzogenrath",
+  "name": "Herzogenrath",
+  "wt": "Bahnhof Herzogenrath"
+ },
+ {
+  "id": "Ostseebad Binz",
+  "name": "Binz",
+  "wt": "Bahnhof Ostseebad Binz"
+ },
+ {
+  "id": "Bergen auf Rügen",
+  "name": "Bergen",
+  "wt": "Bahnhof Bergen auf Rügen"
+ },
+ {
+  "id": "Stralsund Hbf",
+  "name": "Stralsund",
+  "wt": "Stralsund Hauptbahnhof"
+ },
+ {
+  "id": "Greifswald",
+  "name": "Greifswald",
+  "wt": "Bahnhof Greifswald"
+ },
+ {
+  "id": "Züssow",
+  "name": "Züssow",
+  "wt": "Bahnhof Züssow"
+ },
+ {
+  "id": "Anklam",
+  "name": "Anklam",
+  "wt": "Bahnhof Anklam"
+ },
+ {
+  "id": "Pasewalk",
+  "name": "Pasewalk",
+  "wt": "Bahnhof Pasewalk"
+ },
+ {
+  "id": "Prenzlau",
+  "name": "Prenzlau",
+  "wt": "Bahnhof Prenzlau"
+ },
+ {
+  "id": "Eberswalde Hbf",
+  "name": "Eberswalde",
+  "wt": "Eberswalde Hauptbahnhof"
+ },
+ {
+  "id": "Halle (Saale) Hbf",
+  "name": "Halle",
+  "wt": "Halle (Saale) Hauptbahnhof"
+ },
+ {
+  "id": "Neustadt (Weinstraße) Hbf",
+  "name": "Neustadt",
+  "wt": "Neustadt (Weinstraße) Hauptbahnhof"
+ },
+ {
+  "id": "Kaiserslautern Hbf",
+  "name": "Kaiserslautern",
+  "wt": "Kaiserslautern Hauptbahnhof"
+ },
+ {
+  "id": "Homburg (Saar) Hbf",
+  "name": "Homburg",
+  "wt": "Homburg (Saar) Hauptbahnhof"
+ },
+ {
+  "id": "Bremen Hbf",
+  "name": "Bremen",
+  "wt": "Bremen Hauptbahnhof"
+ },
+ {
+  "id": "Delmenhorst",
+  "name": "Delmenhorst",
+  "wt": "Bahnhof Delmenhorst"
+ },
+ {
+  "id": "Oldenburg (Oldenburg) Hbf",
+  "name": "Oldenburg (Oldb)",
+  "wt": "Oldenburg (Oldenburg) Hauptbahnhof"
+ },
+ {
+  "id": "Hamburg-Altona",
+  "name": "Hamburg Altona",
+  "wt": "Bahnhof Hamburg-Altona"
+ },
+ {
+  "id": "Hamburg Dammtor",
+  "name": "Hamburg Dammtor",
+  "wt": "Bahnhof Hamburg Dammtor"
+ },
+ {
+  "id": "Büchen",
+  "name": "Büchen",
+  "wt": "Bahnhof Büchen"
+ },
+ {
+  "id": "Ludwigslust",
+  "name": "Ludwigslust",
+  "wt": "Bahnhof Ludwigslust"
+ },
+ {
+  "id": "Wittenberge",
+  "name": "Wittenberge",
+  "wt": "Bahnhof Wittenberge"
+ },
+ {
+  "id": "Bitterfeld",
+  "name": "Bitterfeld",
+  "wt": "Bahnhof Bitterfeld"
+ },
+ {
+  "id": "Bamberg",
+  "name": "Bamberg",
+  "wt": "Bahnhof Bamberg"
+ },
+ {
+  "id": "Donauwörth",
+  "name": "Donauwörth",
+  "wt": "Bahnhof Donauwörth"
+ },
+ {
+  "id": "Remagen",
+  "name": "Remagen",
+  "wt": "Bahnhof Remagen"
+ },
+ {
+  "id": "Andernach",
+  "name": "Andernach",
+  "wt": "Bahnhof Andernach"
+ },
+ {
+  "id": "Koblenz Hbf",
+  "name": "Koblenz",
+  "wt": "Koblenz Hauptbahnhof"
+ },
+ {
+  "id": "Uelzen",
+  "name": "Uelzen",
+  "wt": "Bahnhof Uelzen"
+ },
+ {
+  "id": "Kiel Hbf",
+  "name": "Kiel",
+  "wt": "Kiel Hauptbahnhof"
+ },
+ {
+  "id": "Neumünster",
+  "name": "Neumünster",
+  "wt": "Bahnhof Neumünster"
+ },
+ {
+  "id": "Celle",
+  "name": "Celle",
+  "wt": "Bahnhof Celle"
+ },
+ {
+  "id": "Vaihingen (Enz)",
+  "name": "Vaihingen",
+  "wt": "Bahnhof Vaihingen (Enz)"
+ },
+ {
+  "id": "Hamburg-Harburg",
+  "name": "Hamburg-Harburg",
+  "wt": "Bahnhof Hamburg-Harburg"
+ },
+ {
+  "id": "Lüneburg",
+  "name": "Lüneburg",
+  "wt": "Bahnhof Lüneburg"
+ },
+ {
+  "id": "Bad Bevensen",
+  "name": "Bad Bevensen",
+  "wt": "Bad Bevensen"
+ },
+ {
+  "id": "Langenhagen",
+  "name": "Langenhagen Mitte",
+  "wt": "Langenhagen"
+ },
+ {
+  "id": "Würzburg Hbf",
+  "name": "Würzburg",
+  "wt": "Würzburg Hauptbahnhof"
+ },
+ {
+  "id": "Steinach (bei Rothenburg ob der Tauber)",
+  "name": "Steinach",
+  "wt": "Bahnhof Steinach (bei Rothenburg ob der Tauber)"
+ },
+ {
+  "id": "Ansbach",
+  "name": "Ansbach",
+  "wt": "Bahnhof Ansbach"
+ },
+ {
+  "id": "Treuchtlingen",
+  "name": "Treuchtlingen",
+  "wt": "Bahnhof Treuchtlingen"
+ },
+ {
+  "id": "München Ost",
+  "name": "München Ost",
+  "wt": "Bahnhof München Ost"
+ },
+ {
+  "id": "Rosenheim",
+  "name": "Rosenheim",
+  "wt": "Bahnhof Rosenheim"
+ },
+ {
+  "id": "Kufstein",
+  "name": "Kufstein",
+  "wt": "Bahnhof Kufstein"
+ },
+ {
+  "id": "Wörgl Hbf",
+  "name": "Wörgl",
+  "wt": "Wörgl Hauptbahnhof"
+ },
+ {
+  "id": "Jenbach",
+  "name": "Jenbach",
+  "wt": "Bahnhof Jenbach"
+ },
+ {
+  "id": "Innsbruck Hbf",
+  "name": "Innsbruck",
+  "wt": "Innsbruck Hauptbahnhof"
+ },
+ {
+  "id": "Hopfgarten im Brixental",
+  "name": "Hopfgarten",
+  "wt": "Hopfgarten im Brixental"
+ },
+ {
+  "id": "Kirchberg in Tirol",
+  "name": "Kirchberg",
+  "wt": "Kirchberg in Tirol"
+ },
+ {
+  "id": "Kitzbühel",
+  "name": "Kitzbühel Hahnenkamm",
+  "wt": "Kitzbühel"
+ },
+ {
+  "id": "St. Johann in Tirol",
+  "name": "St. Johann",
+  "wt": "St. Johann in Tirol"
+ },
+ {
+  "id": "Fieberbrunn",
+  "name": "Fieberbrunn",
+  "wt": "Fieberbrunn"
+ },
+ {
+  "id": "Hochfilzen",
+  "name": "Hochfilzen",
+  "wt": "Hochfilzen"
+ },
+ {
+  "id": "Saalfelden am Steinernen Meer",
+  "name": "Saalfelden",
+  "wt": "Saalfelden am Steinernen Meer"
+ },
+ {
+  "id": "Zell am See",
+  "name": "Zell am See",
+  "wt": "Zell am See"
+ },
+ {
+  "id": "Schwarzach-St. Veit",
+  "name": "Schwarzach-St. Veit",
+  "wt": "Bahnhof Schwarzach-St. Veit"
+ },
+ {
+  "id": "Ingolstadt Hbf",
+  "name": "Ingolstadt",
+  "wt": "Ingolstadt Hauptbahnhof"
+ },
+ {
+  "id": "Wabern (Bz Kassel)",
+  "name": "Wabern",
+  "wt": "Bahnhof Wabern (Bz Kassel)"
+ },
+ {
+  "id": "Treysa",
+  "name": "Treysa",
+  "wt": "Bahnhof Treysa"
+ },
+ {
+  "id": "Marburg (Lahn)",
+  "name": "Marburg",
+  "wt": "Bahnhof Marburg (Lahn)"
+ },
+ {
+  "id": "Gießen",
+  "name": "Gießen",
+  "wt": "Bahnhof Gießen"
+ },
+ {
+  "id": "Dresden-Neustadt",
+  "name": "Dresden Neustadt",
+  "wt": "Bahnhof Dresden-Neustadt"
+ },
+ {
+  "id": "Dresden Hbf",
+  "name": "Dresden",
+  "wt": "Dresden Hbf"
+ },
+ {
+  "id": "Coburg",
+  "name": "Coburg",
+  "wt": "Bahnhof Coburg"
+ },
+ {
+  "id": "Erlangen",
+  "name": "Erlangen",
+  "wt": "Bahnhof Erlangen"
+ },
+ {
+  "id": "Westerland (Sylt)",
+  "name": "Westerland",
+  "wt": "Bahnhof Westerland (Sylt)"
+ },
+ {
+  "id": "Niebüll",
+  "name": "Niebüll",
+  "wt": "Bahnhof Niebüll"
+ },
+ {
+  "id": "Husum",
+  "name": "Husum",
+  "wt": "Bahnhof Husum"
+ },
+ {
+  "id": "Heide (Holst)",
+  "name": "Heide",
+  "wt": "Bahnhof Heide (Holst)"
+ },
+ {
+  "id": "Itzehoe",
+  "name": "Itzehoe",
+  "wt": "Bahnhof Itzehoe"
+ },
+ {
+  "id": "Gelsenkirchen Hbf",
+  "name": "Gelsenkirchen",
+  "wt": "Gelsenkirchen Hauptbahnhof"
+ },
+ {
+  "id": "Velgast",
+  "name": "Velgast",
+  "wt": "Bahnhof Velgast"
+ },
+ {
+  "id": "Ribnitz-Damgarten West",
+  "name": "Ribnitz-Damgarten West",
+  "wt": "Bahnhof Ribnitz-Damgarten West"
+ },
+ {
+  "id": "Rostock Hbf",
+  "name": "Rostock",
+  "wt": "Rostock Hauptbahnhof"
+ },
+ {
+  "id": "Bützow",
+  "name": "Bützow",
+  "wt": "Bahnhof Bützow"
+ },
+ {
+  "id": "Schwerin Hbf",
+  "name": "Schwerin",
+  "wt": "Schwerin Hauptbahnhof"
+ },
+ {
+  "id": "Hamburg-Bergedorf",
+  "name": "Hamburg-Bergedorf",
+  "wt": "Bahnhof Hamburg-Bergedorf"
+ },
+ {
+  "id": "Köln Messe/Deutz",
+  "name": "Köln Messe/Deutz",
+  "wt": "Bahnhof Köln Messe/Deutz"
+ },
+ {
+  "id": "Köln/Bonn Flughafen",
+  "name": "Köln/Bonn Flughafen",
+  "wt": "Bahnhof Köln/Bonn Flughafen"
+ },
+ {
+  "id": "Siegburg/Bonn",
+  "name": "Siegburg/Bonn",
+  "wt": "Bahnhof Siegburg/Bonn"
+ },
+ {
+  "id": "Montabaur",
+  "name": "Montabaur",
+  "wt": "Bahnhof Montabaur"
+ },
+ {
+  "id": "Limburg Süd",
+  "name": "Limburg Süd",
+  "wt": "Bahnhof Limburg Süd"
+ },
+ {
+  "id": "Aschaffenburg Hbf",
+  "name": "Aschaffenburg",
+  "wt": "Aschaffenburg Hauptbahnhof"
+ },
+ {
+  "id": "Solingen Hbf",
+  "name": "Solingen",
+  "wt": "Solingen Hauptbahnhof"
+ },
+ {
+  "id": "Visp",
+  "name": "Visp",
+  "wt": "Bahnhof Visp"
+ },
+ {
+  "id": "Brig",
+  "name": "Brig",
+  "wt": "Bahnhof Brig"
+ },
+ {
+  "id": "Wiesbaden Hbf",
+  "name": "Wiesbaden",
+  "wt": "Wiesbaden Hauptbahnhof"
+ },
+ {
+  "id": "Mainz Hbf",
+  "name": "Mainz",
+  "wt": "Mainz Hauptbahnhof"
+ },
+ {
+  "id": "Riesa",
+  "name": "Riesa",
+  "wt": "Bahnhof Riesa"
+ },
+ {
+  "id": "Gotha",
+  "name": "Gotha",
+  "wt": "Bahnhof Gotha"
+ },
+ {
+  "id": "Bad Hersfeld",
+  "name": "Bad Hersfeld",
+  "wt": "Bahnhof Bad Hersfeld"
+ },
+ {
+  "id": "Altenbeken",
+  "name": "Altenbeken",
+  "wt": "Bahnhof Altenbeken"
+ },
+ {
+  "id": "Paderborn Hbf",
+  "name": "Paderborn",
+  "wt": "Paderborn Hauptbahnhof"
+ },
+ {
+  "id": "Lippstadt",
+  "name": "Lippstadt",
+  "wt": "Bahnhof Lippstadt"
+ },
+ {
+  "id": "Soest",
+  "name": "Soest",
+  "wt": "Bahnhof Soest"
+ },
+ {
+  "id": "Weil am Rhein",
+  "name": "Weil am Rhein",
+  "wt": "Bahnhof Weil am Rhein"
+ },
+ {
+  "id": "Müllheim im Markgräflerland",
+  "name": "Müllheim",
+  "wt": "Bahnhof Müllheim im Markgräflerland"
+ },
+ {
+  "id": "Lahr (Schwarzw)",
+  "name": "Lahr",
+  "wt": "Bahnhof Lahr (Schwarzw)"
+ },
+ {
+  "id": "Karlsruhe-Durlach",
+  "name": "Karlsruhe-Durlach",
+  "wt": "Bahnhof Karlsruhe-Durlach"
+ },
+ {
+  "id": "Günzburg",
+  "name": "Günzburg",
+  "wt": "Bahnhof Günzburg"
+ },
+ {
+  "id": "Prien a Chiemsee",
+  "name": "Prien",
+  "wt": "Bahnhof Prien a Chiemsee"
+ },
+ {
+  "id": "Traunstein",
+  "name": "Traunstein",
+  "wt": "Bahnhof Traunstein"
+ },
+ {
+  "id": "Freilassing",
+  "name": "Freilassing",
+  "wt": "Bahnhof Freilassing"
+ },
+ {
+  "id": "Salzburg Hbf",
+  "name": "Salzburg",
+  "wt": "Salzburg Hauptbahnhof"
+ },
+ {
+  "id": "Golling-Abtenau",
+  "name": "Golling-Abtenau",
+  "wt": "Bahnhof Golling-Abtenau"
+ },
+ {
+  "id": "Bischofshofen",
+  "name": "Bischofshofen",
+  "wt": "Bahnhof Bischofshofen"
+ },
+ {
+  "id": "St. Johann im Pongau",
+  "name": "St. Johann im Pongau",
+  "wt": "Bahnhof St. Johann im Pongau"
+ },
+ {
+  "id": "Bad Gastein",
+  "name": "Bad Gastein",
+  "wt": "Bahnhof Bad Gastein"
+ },
+ {
+  "id": "Mallnitz",
+  "name": "Mallnitz-Obervellach",
+  "wt": "Mallnitz"
+ },
+ {
+  "id": "Spittal-Millstättersee",
+  "name": "Spittal-Millstättersee",
+  "wt": "Bahnhof Spittal-Millstättersee"
+ },
+ {
+  "id": "Villach Hbf",
+  "name": "Villach",
+  "wt": "Villach Hauptbahnhof"
+ },
+ {
+  "id": "Velden am Wörther See",
+  "name": "Velden",
+  "wt": "Velden am Wörther See"
+ },
+ {
+  "id": "Pörtschach am Wörthersee",
+  "name": "Pörtschach",
+  "wt": "Bahnhof Pörtschach am Wörthersee"
+ },
+ {
+  "id": "Klagenfurt Hbf",
+  "name": "Klagenfurt",
+  "wt": "Klagenfurt Hauptbahnhof"
+ },
+ {
+  "id": "Kühnsdorf",
+  "name": "Kühnsdorf-Klopeiner See",
+  "wt": "Kühnsdorf"
+ },
+ {
+  "id": "St. Paul im Lavanttal",
+  "name": "St. Paul im Lavanttal",
+  "wt": "Bahnhof St. Paul im Lavanttal"
+ },
+ {
+  "id": "Weststeiermark",
+  "name": "Weststeiermark",
+  "wt": "Bahnhof Weststeiermark"
+ },
+ {
+  "id": "Graz Hbf",
+  "name": "Graz",
+  "wt": "Graz Hauptbahnhof"
+ },
+ {
+  "id": "Amsterdam Centraal",
+  "name": "Amsterdam",
+  "wt": "Bahnhof Amsterdam Centraal"
+ },
+ {
+  "id": "Hilversum",
+  "name": "Hilversum",
+  "wt": "Bahnhof Hilversum"
+ },
+ {
+  "id": "Amersfoort Centraal",
+  "name": "Amersfoort",
+  "wt": "Bahnhof Amersfoort Centraal"
+ },
+ {
+  "id": "Apeldoorn",
+  "name": "Apeldoorn",
+  "wt": "Bahnhof Apeldoorn"
+ },
+ {
+  "id": "Deventer",
+  "name": "Deventer",
+  "wt": "Bahnhof Deventer"
+ },
+ {
+  "id": "Hengelo",
+  "name": "Hengelo",
+  "wt": "Bahnhof Hengelo"
+ },
+ {
+  "id": "Bad Bentheim",
+  "name": "Bad Bentheim",
+  "wt": "Bahnhof Bad Bentheim"
+ },
+ {
+  "id": "Rheine",
+  "name": "Rheine",
+  "wt": "Bahnhof Rheine"
+ },
+ {
+  "id": "Bünde (Westfalen)",
+  "name": "Bünde",
+  "wt": "Bahnhof Bünde (Westfalen)"
+ },
+ {
+  "id": "Utrecht Centraal",
+  "name": "Utrecht",
+  "wt": "Bahnhof Utrecht Centraal"
+ },
+ {
+  "id": "Arnhem Centraal",
+  "name": "Arnheim",
+  "wt": "Bahnhof Arnhem Centraal"
+ },
+ {
+  "id": "Oberhausen Hbf",
+  "name": "Oberhausen",
+  "wt": "Oberhausen Hauptbahnhof"
+ },
+ {
+  "id": "Brüssel-Süd",
+  "name": "Bruxelles-Midi",
+  "wt": "Bahnhof Brüssel-Süd"
+ },
+ {
+  "id": "Brüssel Nord",
+  "name": "Bruxelles-Nord",
+  "wt": "Bahnhof Brüssel Nord"
+ },
+ {
+  "id": "Liège-Guillemins",
+  "name": "Liège-Guillemins",
+  "wt": "Bahnhof Liège-Guillemins"
+ },
+ {
+  "id": "Antwerpen Centraal",
+  "name": "Antwerpen Centraal",
+  "wt": "Antwerpen Centraal"
+ },
+ {
+  "id": "Flughafen Brüssel-Zaventem",
+  "name": "Flughafen Brüssel-Zaventem",
+  "wt": "Flughafen Brüssel-Zaventem"
+ },
+ {
+  "id": "Leuven",
+  "name": "Löwen",
+  "wt": "Bahnhof Leuven"
+ },
+ {
+  "id": "Forbach (Moselle)",
+  "name": "Forbach",
+  "wt": "Forbach (Moselle)"
+ },
+ {
+  "id": "Paris Gare de l’Est",
+  "name": "Paris Est",
+  "wt": "Paris Gare de l’Est"
+ },
+ {
+  "id": "Strasbourg",
+  "name": "Strasbourg",
+  "wt": "Bahnhof Strasbourg"
+ },
+ {
+  "id": "Mulhouse-Ville",
+  "name": "Mulhouse-Ville",
+  "wt": "Bahnhof Mulhouse-Ville"
+ },
+ {
+  "id": "Belfort-Montbéliard TGV",
+  "name": "Belfort-Montbéliard",
+  "wt": "Bahnhof Belfort-Montbéliard TGV"
+ },
+ {
+  "id": "Besançon Franche-Comté TGV",
+  "name": "Besançon",
+  "wt": "Bahnhof Besançon Franche-Comté TGV"
+ },
+ {
+  "id": "Chalon-sur-Saône",
+  "name": "Chalon-sur-Saône",
+  "wt": "Chalon-sur-Saône"
+ },
+ {
+  "id": "Lyon-Part-Dieu",
+  "name": "Lyon-Part-Dieu",
+  "wt": "Bahnhof Lyon-Part-Dieu"
+ },
+ {
+  "id": "Avignon TGV",
+  "name": "Avignon",
+  "wt": "Bahnhof Avignon TGV"
+ },
+ {
+  "id": "Aix-en-Provence TGV",
+  "name": "Aix-en-Provence",
+  "wt": "Bahnhof Aix-en-Provence TGV"
+ },
+ {
+  "id": "Marseille-Saint-Charles",
+  "name": "Marseille-Saint-Charles",
+  "wt": "Bahnhof Marseille-Saint-Charles"
+ },
+ {
+  "id": "Ringsheim",
+  "name": "Ringsheim",
+  "wt": "Ringsheim"
+ },
+ {
+  "id": "Zug",
+  "name": "Zug",
+  "wt": "Bahnhof Zug"
+ },
+ {
+  "id": "Arth-Goldau",
+  "name": "Arth-Goldau",
+  "wt": "Bahnhof Arth-Goldau"
+ },
+ {
+  "id": "Bellinzona",
+  "name": "Bellinzona",
+  "wt": "Bahnhof Bellinzona"
+ },
+ {
+  "id": "Lugano",
+  "name": "Lugano",
+  "wt": "Bahnhof Lugano"
+ },
+ {
+  "id": "Chiasso",
+  "name": "Chiasso",
+  "wt": "Bahnhof Chiasso"
+ },
+ {
+  "id": "Como San Giovanni",
+  "name": "Como",
+  "wt": "Bahnhof Como San Giovanni"
+ },
+ {
+  "id": "Milano Centrale",
+  "name": "Milano",
+  "wt": "Bahnhof Milano Centrale"
+ },
+ {
+  "id": "Buchloe",
+  "name": "Buchloe",
+  "wt": "Bahnhof Buchloe"
+ },
+ {
+  "id": "Memmingen",
+  "name": "Memmingen",
+  "wt": "Bahnhof Memmingen"
+ },
+ {
+  "id": "Lindau-Reutin",
+  "name": "Lindau-Reutin",
+  "wt": "Bahnhof Lindau-Reutin"
+ },
+ {
+  "id": "Bregenz",
+  "name": "Bregenz",
+  "wt": "Bahnhof Bregenz"
+ },
+ {
+  "id": "St. Margrethen",
+  "name": "St. Margrethen",
+  "wt": "St. Margrethen"
+ },
+ {
+  "id": "St. Gallen",
+  "name": "St. Gallen",
+  "wt": "Bahnhof St. Gallen"
+ },
+ {
+  "id": "Winterthur",
+  "name": "Winterthur",
+  "wt": "Bahnhof Winterthur"
+ },
+ {
+  "id": "Zürich Flughafen",
+  "name": "Zürich Flughafen",
+  "wt": "Bahnhof Zürich Flughafen"
+ },
+ {
+  "id": "Pfaffenhofen (Tirol)",
+  "name": "Telfs-Pfaffenhofen",
+  "wt": "Pfaffenhofen (Tirol)"
+ },
+ {
+  "id": "Ötztal",
+  "name": "Ötztal",
+  "wt": "Bahnhof Ötztal"
+ },
+ {
+  "id": "Imst",
+  "name": "Imst-Pitztal",
+  "wt": "Imst"
+ },
+ {
+  "id": "Landeck-Zams",
+  "name": "Landeck-Zams",
+  "wt": "Bahnhof Landeck-Zams"
+ },
+ {
+  "id": "St. Anton am Arlberg",
+  "name": "St. Anton",
+  "wt": "Bahnhof St. Anton am Arlberg"
+ },
+ {
+  "id": "Langen am Arlberg",
+  "name": "Langen",
+  "wt": "Bahnhof Langen am Arlberg"
+ },
+ {
+  "id": "Bludenz",
+  "name": "Bludenz",
+  "wt": "Bahnhof Bludenz"
+ },
+ {
+  "id": "Feldkirch",
+  "name": "Feldkirch",
+  "wt": "Bahnhof Feldkirch"
+ },
+ {
+  "id": "Brenner",
+  "name": "Brenner",
+  "wt": "Bahnhof Brenner"
+ },
+ {
+  "id": "Franzensfeste",
+  "name": "Franzensfeste",
+  "wt": "Bahnhof Franzensfeste"
+ },
+ {
+  "id": "Brixen",
+  "name": "Brixen",
+  "wt": "Bahnhof Brixen"
+ },
+ {
+  "id": "Bozen",
+  "name": "Bozen",
+  "wt": "Bahnhof Bozen"
+ },
+ {
+  "id": "Trient",
+  "name": "Trento",
+  "wt": "Bahnhof Trient"
+ },
+ {
+  "id": "Rovereto",
+  "name": "Rovereto",
+  "wt": "Bahnhof Rovereto"
+ },
+ {
+  "id": "Verona Porta Nuova",
+  "name": "Verona Porta Nuova",
+  "wt": "Bahnhof Verona Porta Nuova"
+ },
+ {
+  "id": "Vicenza",
+  "name": "Vicenza",
+  "wt": "Vicenza"
+ },
+ {
+  "id": "Padua",
+  "name": "Padova",
+  "wt": "Padua"
+ },
+ {
+  "id": "Venezia Mestre",
+  "name": "Venezia Mestre",
+  "wt": "Bahnhof Venezia Mestre"
+ },
+ {
+  "id": "Venezia Santa Lucia",
+  "name": "Venezia Santa Lucia",
+  "wt": "Bahnhof Venezia Santa Lucia"
+ },
+ {
+  "id": "Bologna Centrale",
+  "name": "Bologna",
+  "wt": "Bahnhof Bologna Centrale"
+ },
+ {
+  "id": "Cesena",
+  "name": "Cesena",
+  "wt": "Cesena"
+ },
+ {
+  "id": "Rimini",
+  "name": "Rimini",
+  "wt": "Bahnhof Rimini"
+ },
+ {
+  "id": "Riccione",
+  "name": "Riccione",
+  "wt": "Riccione"
+ },
+ {
+  "id": "Cattolica",
+  "name": "Cattolica San Giovanni G.",
+  "wt": "Cattolica"
+ },
+ {
+  "id": "Pesaro",
+  "name": "Pesaro",
+  "wt": "Pesaro"
+ },
+ {
+  "id": "Senigallia",
+  "name": "Senigallia",
+  "wt": "Senigallia"
+ },
+ {
+  "id": "Ancona",
+  "name": "Ancona",
+  "wt": "Ancona"
+ },
+ {
+  "id": "Linz Hbf",
+  "name": "Linz",
+  "wt": "Linz Hauptbahnhof"
+ },
+ {
+  "id": "St. Pölten Hbf",
+  "name": "St. Pölten",
+  "wt": "St. Pölten Hauptbahnhof"
+ },
+ {
+  "id": "Wien Meidling",
+  "name": "Wien Meidling",
+  "wt": "Bahnhof Wien Meidling"
+ },
+ {
+  "id": "Wien Hbf",
+  "name": "Wien",
+  "wt": "Wien Hauptbahnhof"
+ },
+ {
+  "id": "Hegyeshalom",
+  "name": "Hegyeshalom",
+  "wt": "Hegyeshalom"
+ },
+ {
+  "id": "Mosonmagyaróvár",
+  "name": "Mosonmagyaróvár",
+  "wt": "Mosonmagyaróvár"
+ },
+ {
+  "id": "Györ",
+  "name": "Győr",
+  "wt": "Györ"
+ },
+ {
+  "id": "Tatabánya",
+  "name": "Tatabánya",
+  "wt": "Tatabánya"
+ },
+ {
+  "id": "Kelenföld",
+  "name": "Kelenföld",
+  "wt": "Bahnhof Kelenföld"
+ },
+ {
+  "id": "Budapest Keleti pályaudvar",
+  "name": "Budapest Keleti",
+  "wt": "Budapest Keleti pályaudvar"
+ },
+ {
+  "id": "Regensburg Hbf",
+  "name": "Regensburg",
+  "wt": "Regensburg Hauptbahnhof"
+ },
+ {
+  "id": "Plattling",
+  "name": "Plattling",
+  "wt": "Bahnhof Plattling"
+ },
+ {
+  "id": "Passau Hbf",
+  "name": "Passau",
+  "wt": "Passau Hauptbahnhof"
+ },
+ {
+  "id": "Schärding",
+  "name": "Schärding",
+  "wt": "Schärding"
+ },
+ {
+  "id": "Wels Hbf",
+  "name": "Wels",
+  "wt": "Wels Hauptbahnhof"
+ },
+ {
+  "id": "Amstetten",
+  "name": "Amstetten",
+  "wt": "Bahnhof Amstetten"
+ },
+ {
+  "id": "Tullnerfeld",
+  "name": "Tullnerfeld",
+  "wt": "Bahnhof Tullnerfeld"
+ }
+]
