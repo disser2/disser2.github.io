@@ -12,7 +12,8 @@ Kennzeichen-Sammel-App (siehe `kennzeichen/`).
 | `style.css` | iOS-inspiriertes Design, Light/Dark Mode |
 | `app.js` | Logik: Suche, Filter, Sortierung, Detail-/Statistik-Sheets, localStorage |
 | `data.js` | 269 Taufnamen mit Taufdatum, Taufort, Baureihe, Triebzug, Wappen-URL und Namensträger-Historie |
-| `tools/` | Python-Skripte, mit denen `data.js` aus Wikipedia generiert wurde |
+| `icons/` | Home-Bildschirm-Icons (152/167/180 px) für iOS/iPadOS |
+| `tools/` | Python-Skripte, mit denen `data.js` und die Icons generiert wurden |
 | `standalone.html` | Einzeldatei-Variante (Wappen als Data-URIs), erzeugt von `tools/build_standalone.py` |
 
 ## Features
@@ -40,10 +41,13 @@ Doppelklick funktioniert auch, nur die Wappen brauchen eine Internetverbindung.)
 
 ## Aufs iPhone bringen
 
-Die App ist statisch (4 Dateien) – am einfachsten über GitHub Pages:
+Die App ist statisch (4 Dateien + `icons/`) – am einfachsten über GitHub Pages:
 
 1. Repo anlegen, Dateien pushen, in den Repo-Einstellungen *Pages* aktivieren.
 2. URL in Safari öffnen → Teilen → **„Zum Home-Bildschirm"**.
+
+Auf dem Home-Bildschirm erscheint das rote ICE-Icon aus `icons/`
+(`apple-touch-icon`, 152 px iPad / 167 px iPad Pro / 180 px iPhone).
 
 Die App läuft dann im Vollbild wie eine native App; die Sammlung bleibt im
 localStorage des Geräts erhalten. (Tipp: gelegentlich über „Exportieren" ein
@@ -70,6 +74,15 @@ python fetch_wappen2.py   # zweiter Durchlauf über Artikel-Bildlisten
 python fetch_wappen3.py   # kuratierte Spezialfälle (Berlin, Wien, ...)
 python build_data.py      # -> ../data.js
 ```
+
+### Icons neu erzeugen
+
+```bash
+python tools/make_icons.py
+```
+
+Schreibt `icons/icon-152.png`, `icons/icon-167.png` und `icons/icon-180.png`
+(Pillow nötig; die verwendete Schrift steht in `FONTS` im Skript).
 
 ### Einzeldatei bauen
 
