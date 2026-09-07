@@ -1,0 +1,5120 @@
+[
+ {
+  "nr": "1",
+  "verlauf": [
+   [
+    {
+     "id": "Hamburg Hbf",
+     "name": "Hamburg",
+     "opt": false
+    },
+    {
+     "id": "Düsseldorf Hbf",
+     "name": "Düsseldorf",
+     "opt": false
+    },
+    {
+     "id": "Köln Hbf",
+     "name": "Köln",
+     "opt": false
+    }
+   ]
+  ],
+  "fahrzeuge": "ICE 1, ICE T",
+  "farbe": "",
+  "sprinter": true
+ },
+ {
+  "nr": "3",
+  "verlauf": [
+   [
+    {
+     "id": "Berlin Südkreuz",
+     "name": "Berlin Südkreuz",
+     "opt": false
+    },
+    {
+     "id": "Berlin Hbf",
+     "name": "Berlin",
+     "opt": false
+    },
+    {
+     "id": "Frankfurt (Main) Hbf",
+     "name": "Frankfurt",
+     "opt": false
+    },
+    {
+     "id": "Frankfurt Flughafen Fernbahnhof",
+     "name": "Frankfurt Flughafen (Fern)",
+     "opt": false
+    },
+    {
+     "id": "Mannheim Hbf",
+     "name": "Mannheim",
+     "opt": true
+    },
+    {
+     "id": "Saarbrücken Hbf",
+     "name": "Saarbrücken",
+     "opt": true
+    }
+   ],
+   [
+    {
+     "id": "Berlin Südkreuz",
+     "name": "Berlin Südkreuz",
+     "opt": false
+    },
+    {
+     "id": "Berlin Hbf",
+     "name": "Berlin",
+     "opt": false
+    },
+    {
+     "id": "Frankfurt (Main) Hbf",
+     "name": "Frankfurt",
+     "opt": false
+    },
+    {
+     "id": "Frankfurt Flughafen Regionalbahnhof",
+     "name": "Frankfurt Flughafen (Regio)",
+     "opt": false
+    }
+   ]
+  ],
+  "fahrzeuge": "ICE 1, ICE 2",
+  "farbe": "",
+  "sprinter": true
+ },
+ {
+  "nr": "4",
+  "verlauf": [
+   [
+    {
+     "id": "Padborg",
+     "name": "Padborg",
+     "opt": true
+    },
+    {
+     "id": "Flensburg",
+     "name": "Flensburg",
+     "opt": true
+    },
+    {
+     "id": "Hamburg Hbf",
+     "name": "Hamburg",
+     "opt": false
+    },
+    {
+     "id": "Hannover Hbf",
+     "name": "Hannover",
+     "opt": false
+    },
+    {
+     "id": "Frankfurt (Main) Hbf",
+     "name": "Frankfurt",
+     "opt": false
+    },
+    {
+     "id": "Frankfurt Flughafen Regionalbahnhof",
+     "name": "Frankfurt Flughafen (Regio)",
+     "opt": true
+    }
+   ]
+  ],
+  "fahrzeuge": "ICE 1, ICE 4, ICE T",
+  "farbe": "",
+  "sprinter": true
+ },
+ {
+  "nr": "6",
+  "verlauf": [
+   [
+    {
+     "id": "Berlin Gesundbrunnen",
+     "name": "Berlin Gesundbrunnen",
+     "opt": false
+    },
+    {
+     "id": "Berlin Hbf",
+     "name": "Berlin",
+     "opt": false
+    },
+    {
+     "id": "Nürnberg Hbf",
+     "name": "Nürnberg",
+     "opt": false
+    },
+    {
+     "id": "Stuttgart Hbf",
+     "name": "Stuttgart",
+     "opt": false
+    }
+   ]
+  ],
+  "fahrzeuge": "ICE 3",
+  "farbe": "",
+  "sprinter": true
+ },
+ {
+  "nr": "9",
+  "verlauf": [
+   [
+    {
+     "id": "Berlin Ostbahnhof",
+     "name": "Berlin Ostbahnhof",
+     "opt": false
+    },
+    {
+     "id": "Berlin Südkreuz",
+     "name": "Berlin Südkreuz",
+     "opt": false
+    },
+    {
+     "id": "Berlin Hbf",
+     "name": "Berlin",
+     "opt": false
+    },
+    {
+     "id": "Berlin-Spandau",
+     "name": "Berlin-Spandau",
+     "opt": false
+    },
+    {
+     "id": "Köln Hbf",
+     "name": "Köln",
+     "opt": false
+    },
+    {
+     "id": "Bonn Hbf",
+     "name": "Bonn",
+     "opt": false
+    }
+   ]
+  ],
+  "fahrzeuge": "ICE 1, ICE 2, ICE 4",
+  "farbe": "",
+  "sprinter": true
+ },
+ {
+  "nr": "10",
+  "verlauf": [
+   [
+    {
+     "id": "Berlin Ostbahnhof",
+     "name": "Berlin Ostbahnhof",
+     "opt": false
+    },
+    {
+     "id": "Berlin Hbf",
+     "name": "Berlin",
+     "opt": false
+    },
+    {
+     "id": "Berlin-Spandau",
+     "name": "Berlin-Spandau",
+     "opt": false
+    },
+    {
+     "id": "Stendal Hbf",
+     "name": "Stendal",
+     "opt": true
+    },
+    {
+     "id": "Wolfsburg Hbf",
+     "name": "Wolfsburg",
+     "opt": false
+    },
+    {
+     "id": "Hannover Hbf",
+     "name": "Hannover",
+     "opt": false
+    },
+    {
+     "id": "Minden (Westfalen)",
+     "name": "Minden",
+     "opt": true
+    },
+    {
+     "id": "Bielefeld Hbf",
+     "name": "Bielefeld",
+     "opt": false
+    },
+    {
+     "id": "Hamm (Westfalen) Hbf",
+     "name": "Hamm",
+     "opt": false
+    },
+    {
+     "id": "Dortmund Hbf",
+     "name": "Dortmund",
+     "opt": false
+    },
+    {
+     "id": "Bochum Hbf",
+     "name": "Bochum",
+     "opt": false
+    },
+    {
+     "id": "Essen Hbf",
+     "name": "Essen",
+     "opt": false
+    },
+    {
+     "id": "Duisburg Hbf",
+     "name": "Duisburg",
+     "opt": false
+    },
+    {
+     "id": "Düsseldorf Flughafen",
+     "name": "Düsseldorf Flughafen",
+     "opt": false
+    },
+    {
+     "id": "Düsseldorf Hbf",
+     "name": "Düsseldorf",
+     "opt": false
+    },
+    {
+     "id": "Köln Hbf",
+     "name": "Köln",
+     "opt": true
+    }
+   ],
+   [
+    {
+     "id": "Berlin Ostbahnhof",
+     "name": "Berlin Ostbahnhof",
+     "opt": false
+    },
+    {
+     "id": "Berlin Hbf",
+     "name": "Berlin",
+     "opt": false
+    },
+    {
+     "id": "Berlin-Spandau",
+     "name": "Berlin-Spandau",
+     "opt": false
+    },
+    {
+     "id": "Stendal Hbf",
+     "name": "Stendal",
+     "opt": true
+    },
+    {
+     "id": "Wolfsburg Hbf",
+     "name": "Wolfsburg",
+     "opt": false
+    },
+    {
+     "id": "Hannover Hbf",
+     "name": "Hannover",
+     "opt": false
+    },
+    {
+     "id": "Minden (Westfalen)",
+     "name": "Minden",
+     "opt": true
+    },
+    {
+     "id": "Bielefeld Hbf",
+     "name": "Bielefeld",
+     "opt": false
+    },
+    {
+     "id": "Hamm (Westfalen) Hbf",
+     "name": "Hamm",
+     "opt": false
+    },
+    {
+     "id": "Hagen Hbf",
+     "name": "Hagen",
+     "opt": false
+    },
+    {
+     "id": "Wuppertal Hbf",
+     "name": "Wuppertal",
+     "opt": false
+    },
+    {
+     "id": "Köln Hbf",
+     "name": "Köln",
+     "opt": false
+    }
+   ]
+  ],
+  "fahrzeuge": "ICE 2, ICE 4",
+  "farbe": "#1464A6",
+  "sprinter": false
+ },
+ {
+  "nr": "11",
+  "verlauf": [
+   [
+    {
+     "id": "Berlin Gesundbrunnen",
+     "name": "Berlin Gesundbrunnen",
+     "opt": false
+    },
+    {
+     "id": "Berlin Hbf",
+     "name": "Berlin Hbf",
+     "opt": false
+    },
+    {
+     "id": "Berlin Südkreuz",
+     "name": "Berlin Südkreuz",
+     "opt": false
+    },
+    {
+     "id": "Lutherstadt Wittenberg Hbf",
+     "name": "Wittenberg",
+     "opt": false
+    },
+    {
+     "id": "Leipzig Hbf",
+     "name": "Leipzig",
+     "opt": false
+    },
+    {
+     "id": "Erfurt Hbf",
+     "name": "Erfurt",
+     "opt": false
+    },
+    {
+     "id": "Eisenach Hbf",
+     "name": "Eisenach",
+     "opt": false
+    },
+    {
+     "id": "Fulda",
+     "name": "Fulda",
+     "opt": false
+    },
+    {
+     "id": "Frankfurt (Main) Hbf",
+     "name": "Frankfurt",
+     "opt": false
+    },
+    {
+     "id": "Mannheim Hbf",
+     "name": "Mannheim",
+     "opt": false
+    },
+    {
+     "id": "Stuttgart Hbf",
+     "name": "Stuttgart",
+     "opt": false
+    },
+    {
+     "id": "Ulm Hbf",
+     "name": "Ulm",
+     "opt": false
+    },
+    {
+     "id": "Augsburg Hbf",
+     "name": "Augsburg",
+     "opt": false
+    },
+    {
+     "id": "München-Pasing",
+     "name": "München-Pasing",
+     "opt": false
+    },
+    {
+     "id": "München Hbf",
+     "name": "München",
+     "opt": false
+    }
+   ]
+  ],
+  "fahrzeuge": "ICE 4",
+  "farbe": "#63E0B0",
+  "sprinter": false
+ },
+ {
+  "nr": "12",
+  "verlauf": [
+   [
+    {
+     "id": "Berlin Ostbahnhof",
+     "name": "Berlin Ostbahnhof",
+     "opt": false
+    },
+    {
+     "id": "Berlin Hbf",
+     "name": "Berlin",
+     "opt": false
+    },
+    {
+     "id": "Berlin-Spandau",
+     "name": "Berlin-Spandau",
+     "opt": false
+    },
+    {
+     "id": "Wolfsburg Hbf",
+     "name": "Wolfsburg",
+     "opt": false
+    },
+    {
+     "id": "Braunschweig Hbf",
+     "name": "Braunschweig",
+     "opt": false
+    },
+    {
+     "id": "Hildesheim Hbf",
+     "name": "Hildesheim",
+     "opt": false
+    },
+    {
+     "id": "Göttingen",
+     "name": "Göttingen",
+     "opt": false
+    },
+    {
+     "id": "Kassel-Wilhelmshöhe",
+     "name": "Kassel-Wilhelmshöhe",
+     "opt": false
+    },
+    {
+     "id": "Fulda",
+     "name": "Fulda",
+     "opt": false
+    },
+    {
+     "id": "Hanau Hbf",
+     "name": "Hanau",
+     "opt": false
+    },
+    {
+     "id": "Frankfurt (Main) Hbf",
+     "name": "Frankfurt",
+     "opt": false
+    },
+    {
+     "id": "Mannheim Hbf",
+     "name": "Mannheim",
+     "opt": false
+    },
+    {
+     "id": "Karlsruhe Hbf",
+     "name": "Karlsruhe",
+     "opt": false
+    },
+    {
+     "id": "Baden-Baden",
+     "name": "Baden-Baden",
+     "opt": true
+    },
+    {
+     "id": "Offenburg",
+     "name": "Offenburg",
+     "opt": false
+    },
+    {
+     "id": "Freiburg (Breisgau) Hbf",
+     "name": "Freiburg",
+     "opt": false
+    },
+    {
+     "id": "Basel Badischer Bahnhof",
+     "name": "Basel Bad",
+     "opt": false
+    },
+    {
+     "id": "Basel SBB",
+     "name": "Basel SBB",
+     "opt": false
+    },
+    {
+     "id": "Liestal",
+     "name": "Liestal",
+     "opt": true
+    },
+    {
+     "id": "Olten",
+     "name": "Olten",
+     "opt": true
+    },
+    {
+     "id": "Bern",
+     "name": "Bern",
+     "opt": true
+    },
+    {
+     "id": "Thun",
+     "name": "Thun",
+     "opt": true
+    },
+    {
+     "id": "Spiez",
+     "name": "Spiez",
+     "opt": true
+    },
+    {
+     "id": "Interlaken West",
+     "name": "Interlaken West",
+     "opt": true
+    },
+    {
+     "id": "Interlaken Ost",
+     "name": "Interlaken Ost",
+     "opt": true
+    }
+   ],
+   [
+    {
+     "id": "Berlin Ostbahnhof",
+     "name": "Berlin Ostbahnhof",
+     "opt": false
+    },
+    {
+     "id": "Berlin Hbf",
+     "name": "Berlin",
+     "opt": false
+    },
+    {
+     "id": "Berlin-Spandau",
+     "name": "Berlin-Spandau",
+     "opt": false
+    },
+    {
+     "id": "Wolfsburg Hbf",
+     "name": "Wolfsburg",
+     "opt": false
+    },
+    {
+     "id": "Braunschweig Hbf",
+     "name": "Braunschweig",
+     "opt": false
+    },
+    {
+     "id": "Hildesheim Hbf",
+     "name": "Hildesheim",
+     "opt": false
+    },
+    {
+     "id": "Göttingen",
+     "name": "Göttingen",
+     "opt": false
+    },
+    {
+     "id": "Kassel-Wilhelmshöhe",
+     "name": "Kassel-Wilhelmshöhe",
+     "opt": false
+    },
+    {
+     "id": "Fulda",
+     "name": "Fulda",
+     "opt": false
+    },
+    {
+     "id": "Hanau Hbf",
+     "name": "Hanau",
+     "opt": false
+    },
+    {
+     "id": "Frankfurt (Main) Hbf",
+     "name": "Frankfurt",
+     "opt": false
+    },
+    {
+     "id": "Mannheim Hbf",
+     "name": "Mannheim",
+     "opt": false
+    },
+    {
+     "id": "Karlsruhe Hbf",
+     "name": "Karlsruhe",
+     "opt": false
+    },
+    {
+     "id": "Baden-Baden",
+     "name": "Baden-Baden",
+     "opt": true
+    },
+    {
+     "id": "Offenburg",
+     "name": "Offenburg",
+     "opt": false
+    },
+    {
+     "id": "Freiburg (Breisgau) Hbf",
+     "name": "Freiburg",
+     "opt": false
+    },
+    {
+     "id": "Basel Badischer Bahnhof",
+     "name": "Basel Bad",
+     "opt": false
+    },
+    {
+     "id": "Basel SBB",
+     "name": "Basel SBB",
+     "opt": false
+    },
+    {
+     "id": "Zürich Hbf",
+     "name": "Zürich",
+     "opt": true
+    },
+    {
+     "id": "Sargans",
+     "name": "Sargans",
+     "opt": true
+    },
+    {
+     "id": "Landquart",
+     "name": "Landquart",
+     "opt": true
+    },
+    {
+     "id": "Chur",
+     "name": "Chur",
+     "opt": true
+    }
+   ]
+  ],
+  "fahrzeuge": "ICE 4",
+  "farbe": "#8A5E3E",
+  "sprinter": false
+ },
+ {
+  "nr": "13",
+  "verlauf": [
+   [
+    {
+     "id": "Berlin Ostbahnhof",
+     "name": "Berlin Ostbahnhof",
+     "opt": false
+    },
+    {
+     "id": "Berlin Südkreuz",
+     "name": "Berlin Südkreuz",
+     "opt": false
+    },
+    {
+     "id": "Berlin Hbf",
+     "name": "Berlin",
+     "opt": false
+    },
+    {
+     "id": "Berlin-Spandau",
+     "name": "Berlin-Spandau",
+     "opt": false
+    },
+    {
+     "id": "Stendal Hbf",
+     "name": "Stendal",
+     "opt": false
+    },
+    {
+     "id": "Wolfsburg Hbf",
+     "name": "Wolfsburg",
+     "opt": false
+    },
+    {
+     "id": "Braunschweig Hbf",
+     "name": "Braunschweig",
+     "opt": false
+    },
+    {
+     "id": "Hildesheim Hbf",
+     "name": "Hildesheim",
+     "opt": false
+    },
+    {
+     "id": "Göttingen",
+     "name": "Göttingen",
+     "opt": false
+    },
+    {
+     "id": "Kassel-Wilhelmshöhe",
+     "name": "Kassel-Wilhelmshöhe",
+     "opt": false
+    },
+    {
+     "id": "Fulda",
+     "name": "Fulda",
+     "opt": false
+    },
+    {
+     "id": "Frankfurt (Main) Süd",
+     "name": "Frankfurt Süd",
+     "opt": false
+    },
+    {
+     "id": "Frankfurt Flughafen Fernbahnhof",
+     "name": "Frankfurt Flughafen",
+     "opt": false
+    }
+   ],
+   [
+    {
+     "id": "Berlin Ostbahnhof",
+     "name": "Berlin Ostbahnhof",
+     "opt": false
+    },
+    {
+     "id": "Berlin Südkreuz",
+     "name": "Berlin Südkreuz",
+     "opt": false
+    },
+    {
+     "id": "Berlin Hbf",
+     "name": "Berlin",
+     "opt": false
+    },
+    {
+     "id": "Berlin-Spandau",
+     "name": "Berlin-Spandau",
+     "opt": false
+    },
+    {
+     "id": "Stendal Hbf",
+     "name": "Stendal",
+     "opt": false
+    },
+    {
+     "id": "Wolfsburg Hbf",
+     "name": "Wolfsburg",
+     "opt": false
+    },
+    {
+     "id": "Braunschweig Hbf",
+     "name": "Braunschweig",
+     "opt": false
+    },
+    {
+     "id": "Hildesheim Hbf",
+     "name": "Hildesheim",
+     "opt": false
+    },
+    {
+     "id": "Göttingen",
+     "name": "Göttingen",
+     "opt": false
+    },
+    {
+     "id": "Kassel-Wilhelmshöhe",
+     "name": "Kassel-Wilhelmshöhe",
+     "opt": false
+    },
+    {
+     "id": "Fulda",
+     "name": "Fulda",
+     "opt": false
+    },
+    {
+     "id": "Frankfurt (Main) Süd",
+     "name": "Frankfurt Süd",
+     "opt": false
+    },
+    {
+     "id": "Darmstadt Hbf",
+     "name": "Darmstadt",
+     "opt": false
+    },
+    {
+     "id": "Bensheim",
+     "name": "Bensheim",
+     "opt": false
+    },
+    {
+     "id": "Weinheim (Bergstraße) Hbf",
+     "name": "Weinheim",
+     "opt": false
+    },
+    {
+     "id": "Heidelberg Hbf",
+     "name": "Heidelberg",
+     "opt": false
+    },
+    {
+     "id": "Wiesloch-Walldorf",
+     "name": "Wiesloch-Walldorf",
+     "opt": false
+    },
+    {
+     "id": "Bruchsal",
+     "name": "Bruchsal",
+     "opt": false
+    },
+    {
+     "id": "Karlsruhe Hbf",
+     "name": "Karlsruhe",
+     "opt": false
+    }
+   ],
+   [
+    {
+     "id": "Berlin Ostbahnhof",
+     "name": "Berlin Ostbahnhof",
+     "opt": false
+    },
+    {
+     "id": "Berlin Südkreuz",
+     "name": "Berlin Südkreuz",
+     "opt": false
+    },
+    {
+     "id": "Berlin Hbf",
+     "name": "Berlin",
+     "opt": false
+    },
+    {
+     "id": "Berlin-Spandau",
+     "name": "Berlin-Spandau",
+     "opt": false
+    },
+    {
+     "id": "Stendal Hbf",
+     "name": "Stendal",
+     "opt": false
+    },
+    {
+     "id": "Wolfsburg Hbf",
+     "name": "Wolfsburg",
+     "opt": false
+    },
+    {
+     "id": "Braunschweig Hbf",
+     "name": "Braunschweig",
+     "opt": false
+    },
+    {
+     "id": "Hildesheim Hbf",
+     "name": "Hildesheim",
+     "opt": false
+    },
+    {
+     "id": "Göttingen",
+     "name": "Göttingen",
+     "opt": false
+    },
+    {
+     "id": "Kassel-Wilhelmshöhe",
+     "name": "Kassel-Wilhelmshöhe",
+     "opt": false
+    },
+    {
+     "id": "Fulda",
+     "name": "Fulda",
+     "opt": false
+    },
+    {
+     "id": "Frankfurt (Main) Süd",
+     "name": "Frankfurt Süd",
+     "opt": false
+    },
+    {
+     "id": "Frankfurt (Main) Hbf",
+     "name": "Frankfurt",
+     "opt": true
+    }
+   ]
+  ],
+  "fahrzeuge": "ICE 1",
+  "farbe": "#A67DA8",
+  "sprinter": false
+ },
+ {
+  "nr": "14",
+  "verlauf": [
+   [
+    {
+     "id": "Berlin Ostbahnhof",
+     "name": "Berlin Ostbahnhof",
+     "opt": false
+    },
+    {
+     "id": "Berlin Hbf",
+     "name": "Berlin",
+     "opt": false
+    },
+    {
+     "id": "Berlin-Spandau",
+     "name": "Berlin-Spandau",
+     "opt": false
+    },
+    {
+     "id": "Wolfsburg Hbf",
+     "name": "Wolfsburg",
+     "opt": true
+    },
+    {
+     "id": "Hannover Hbf",
+     "name": "Hannover",
+     "opt": false
+    },
+    {
+     "id": "Herford",
+     "name": "Herford",
+     "opt": true
+    },
+    {
+     "id": "Bielefeld Hbf",
+     "name": "Bielefeld",
+     "opt": false
+    },
+    {
+     "id": "Gütersloh Hbf",
+     "name": "Gütersloh",
+     "opt": false
+    },
+    {
+     "id": "Hamm (Westfalen) Hbf",
+     "name": "Hamm",
+     "opt": false
+    },
+    {
+     "id": "Dortmund Hbf",
+     "name": "Dortmund",
+     "opt": false
+    },
+    {
+     "id": "Bochum Hbf",
+     "name": "Bochum",
+     "opt": false
+    },
+    {
+     "id": "Essen Hbf",
+     "name": "Essen",
+     "opt": false
+    },
+    {
+     "id": "Duisburg Hbf",
+     "name": "Duisburg",
+     "opt": false
+    },
+    {
+     "id": "Düsseldorf Hbf",
+     "name": "Düsseldorf",
+     "opt": false
+    },
+    {
+     "id": "Köln Hbf",
+     "name": "Köln",
+     "opt": false
+    },
+    {
+     "id": "Düren",
+     "name": "Düren",
+     "opt": true
+    },
+    {
+     "id": "Aachen Hbf",
+     "name": "Aachen",
+     "opt": true
+    }
+   ],
+   [
+    {
+     "id": "Berlin Ostbahnhof",
+     "name": "Berlin Ostbahnhof",
+     "opt": false
+    },
+    {
+     "id": "Berlin Hbf",
+     "name": "Berlin",
+     "opt": false
+    },
+    {
+     "id": "Berlin-Spandau",
+     "name": "Berlin-Spandau",
+     "opt": false
+    },
+    {
+     "id": "Wolfsburg Hbf",
+     "name": "Wolfsburg",
+     "opt": true
+    },
+    {
+     "id": "Hannover Hbf",
+     "name": "Hannover",
+     "opt": false
+    },
+    {
+     "id": "Osnabrück Hbf",
+     "name": "Osnabrück",
+     "opt": false
+    },
+    {
+     "id": "Münster (Westfalen) Hbf",
+     "name": "Münster",
+     "opt": false
+    },
+    {
+     "id": "Recklinghausen Hbf",
+     "name": "Recklinghausen",
+     "opt": true
+    },
+    {
+     "id": "Wanne-Eickel Hbf",
+     "name": "Wanne-Eickel",
+     "opt": true
+    },
+    {
+     "id": "Essen Hbf",
+     "name": "Essen",
+     "opt": false
+    },
+    {
+     "id": "Duisburg Hbf",
+     "name": "Duisburg",
+     "opt": false
+    },
+    {
+     "id": "Krefeld Hbf",
+     "name": "Krefeld",
+     "opt": false
+    },
+    {
+     "id": "Viersen",
+     "name": "Viersen",
+     "opt": false
+    },
+    {
+     "id": "Mönchengladbach Hbf",
+     "name": "Mönchengladbach",
+     "opt": false
+    },
+    {
+     "id": "Rheydt Hbf",
+     "name": "Rheydt",
+     "opt": false
+    },
+    {
+     "id": "Erkelenz",
+     "name": "Erkelenz",
+     "opt": false
+    },
+    {
+     "id": "Geilenkirchen",
+     "name": "Geilenkirchen",
+     "opt": false
+    },
+    {
+     "id": "Herzogenrath",
+     "name": "Herzogenrath",
+     "opt": false
+    },
+    {
+     "id": "Aachen Hbf",
+     "name": "Aachen",
+     "opt": false
+    }
+   ]
+  ],
+  "fahrzeuge": "ICE T, ICE L",
+  "farbe": "#C128C9",
+  "sprinter": false
+ },
+ {
+  "nr": "15",
+  "verlauf": [
+   [
+    {
+     "id": "Ostseebad Binz",
+     "name": "Binz",
+     "opt": true
+    },
+    {
+     "id": "Bergen auf Rügen",
+     "name": "Bergen",
+     "opt": true
+    },
+    {
+     "id": "Stralsund Hbf",
+     "name": "Stralsund",
+     "opt": false
+    },
+    {
+     "id": "Greifswald",
+     "name": "Greifswald",
+     "opt": false
+    },
+    {
+     "id": "Züssow",
+     "name": "Züssow",
+     "opt": false
+    },
+    {
+     "id": "Anklam",
+     "name": "Anklam",
+     "opt": true
+    },
+    {
+     "id": "Pasewalk",
+     "name": "Pasewalk",
+     "opt": true
+    },
+    {
+     "id": "Prenzlau",
+     "name": "Prenzlau",
+     "opt": true
+    },
+    {
+     "id": "Eberswalde Hbf",
+     "name": "Eberswalde",
+     "opt": false
+    },
+    {
+     "id": "Berlin Gesundbrunnen",
+     "name": "Berlin Gesundbrunnen",
+     "opt": false
+    },
+    {
+     "id": "Berlin Hbf",
+     "name": "Berlin",
+     "opt": false
+    },
+    {
+     "id": "Berlin Südkreuz",
+     "name": "Berlin Südkreuz",
+     "opt": false
+    },
+    {
+     "id": "Halle (Saale) Hbf",
+     "name": "Halle",
+     "opt": false
+    },
+    {
+     "id": "Erfurt Hbf",
+     "name": "Erfurt",
+     "opt": false
+    },
+    {
+     "id": "Frankfurt (Main) Hbf",
+     "name": "Frankfurt",
+     "opt": false
+    },
+    {
+     "id": "Darmstadt Hbf",
+     "name": "Darmstadt",
+     "opt": true
+    },
+    {
+     "id": "Bensheim",
+     "name": "Bensheim",
+     "opt": true
+    },
+    {
+     "id": "Mannheim Hbf",
+     "name": "Mannheim",
+     "opt": true
+    },
+    {
+     "id": "Neustadt (Weinstraße) Hbf",
+     "name": "Neustadt",
+     "opt": true
+    },
+    {
+     "id": "Kaiserslautern Hbf",
+     "name": "Kaiserslautern",
+     "opt": true
+    },
+    {
+     "id": "Homburg (Saar) Hbf",
+     "name": "Homburg",
+     "opt": true
+    },
+    {
+     "id": "Saarbrücken Hbf",
+     "name": "Saarbrücken",
+     "opt": true
+    }
+   ]
+  ],
+  "fahrzeuge": "ICE 1",
+  "farbe": "#7A7979",
+  "sprinter": false
+ },
+ {
+  "nr": "16",
+  "verlauf": [
+   [
+    {
+     "id": "Berlin Südkreuz",
+     "name": "Berlin Südkreuz",
+     "opt": false
+    },
+    {
+     "id": "Berlin Hbf",
+     "name": "Berlin",
+     "opt": false
+    },
+    {
+     "id": "Berlin-Spandau",
+     "name": "Berlin-Spandau",
+     "opt": false
+    },
+    {
+     "id": "Hannover Hbf",
+     "name": "Hannover",
+     "opt": false
+    },
+    {
+     "id": "Bremen Hbf",
+     "name": "Bremen",
+     "opt": false
+    },
+    {
+     "id": "Delmenhorst",
+     "name": "Delmenhorst",
+     "opt": true
+    },
+    {
+     "id": "Oldenburg (Oldenburg) Hbf",
+     "name": "Oldenburg (Oldb)",
+     "opt": true
+    }
+   ]
+  ],
+  "fahrzeuge": "ICE 1, ICE T",
+  "farbe": "#8CCC16",
+  "sprinter": false
+ },
+ {
+  "nr": "18",
+  "verlauf": [
+   [
+    {
+     "id": "Hamburg-Altona",
+     "name": "Hamburg Altona",
+     "opt": false
+    },
+    {
+     "id": "Hamburg Dammtor",
+     "name": "Hamburg Dammtor",
+     "opt": false
+    },
+    {
+     "id": "Hamburg Hbf",
+     "name": "Hamburg",
+     "opt": false
+    },
+    {
+     "id": "Büchen",
+     "name": "Büchen",
+     "opt": false
+    },
+    {
+     "id": "Ludwigslust",
+     "name": "Ludwigslust",
+     "opt": false
+    },
+    {
+     "id": "Wittenberge",
+     "name": "Wittenberge",
+     "opt": false
+    },
+    {
+     "id": "Berlin-Spandau",
+     "name": "Berlin Spandau",
+     "opt": false
+    },
+    {
+     "id": "Berlin Hbf",
+     "name": "Berlin Hbf",
+     "opt": false
+    },
+    {
+     "id": "Berlin Südkreuz",
+     "name": "Berlin Südkreuz",
+     "opt": false
+    },
+    {
+     "id": "Bitterfeld",
+     "name": "Bitterfeld",
+     "opt": false
+    },
+    {
+     "id": "Halle (Saale) Hbf",
+     "name": "Halle",
+     "opt": false
+    },
+    {
+     "id": "Erfurt Hbf",
+     "name": "Erfurt",
+     "opt": false
+    },
+    {
+     "id": "Bamberg",
+     "name": "Bamberg",
+     "opt": false
+    },
+    {
+     "id": "Nürnberg Hbf",
+     "name": "Nürnberg",
+     "opt": false
+    },
+    {
+     "id": "Donauwörth",
+     "name": "Donauwörth",
+     "opt": false
+    },
+    {
+     "id": "Augsburg Hbf",
+     "name": "Augsburg",
+     "opt": false
+    },
+    {
+     "id": "München-Pasing",
+     "name": "München-Pasing",
+     "opt": false
+    }
+   ]
+  ],
+  "fahrzeuge": "ICE 1",
+  "farbe": "#FFF203",
+  "sprinter": false
+ },
+ {
+  "nr": "19",
+  "verlauf": [
+   [
+    {
+     "id": "Berlin Ostbahnhof",
+     "name": "Berlin Ostbahnhof",
+     "opt": false
+    },
+    {
+     "id": "Berlin Hbf",
+     "name": "Berlin",
+     "opt": false
+    },
+    {
+     "id": "Berlin-Spandau",
+     "name": "Berlin-Spandau",
+     "opt": false
+    },
+    {
+     "id": "Hannover Hbf",
+     "name": "Hannover",
+     "opt": false
+    },
+    {
+     "id": "Bielefeld Hbf",
+     "name": "Bielefeld",
+     "opt": false
+    },
+    {
+     "id": "Hagen Hbf",
+     "name": "Hagen",
+     "opt": false
+    },
+    {
+     "id": "Wuppertal Hbf",
+     "name": "Wuppertal",
+     "opt": false
+    },
+    {
+     "id": "Köln Hbf",
+     "name": "Köln",
+     "opt": false
+    },
+    {
+     "id": "Bonn Hbf",
+     "name": "Bonn",
+     "opt": false
+    },
+    {
+     "id": "Remagen",
+     "name": "Remagen",
+     "opt": true
+    },
+    {
+     "id": "Andernach",
+     "name": "Andernach",
+     "opt": true
+    },
+    {
+     "id": "Koblenz Hbf",
+     "name": "Koblenz",
+     "opt": true
+    }
+   ]
+  ],
+  "fahrzeuge": "ICE 1, ICE 2, ICE 4",
+  "farbe": "#E6C5C5",
+  "sprinter": false
+ },
+ {
+  "nr": "20",
+  "verlauf": [
+   [
+    {
+     "id": "Hamburg-Altona",
+     "name": "Hamburg-Altona",
+     "opt": false
+    },
+    {
+     "id": "Hamburg Dammtor",
+     "name": "Hamburg Dammtor",
+     "opt": false
+    },
+    {
+     "id": "Hamburg Hbf",
+     "name": "Hamburg",
+     "opt": false
+    },
+    {
+     "id": "Uelzen",
+     "name": "Uelzen",
+     "opt": false
+    },
+    {
+     "id": "Hannover Hbf",
+     "name": "Hannover",
+     "opt": false
+    },
+    {
+     "id": "Göttingen",
+     "name": "Göttingen",
+     "opt": false
+    },
+    {
+     "id": "Kassel-Wilhelmshöhe",
+     "name": "Kassel-Wilhelmshöhe",
+     "opt": false
+    },
+    {
+     "id": "Frankfurt (Main) Hbf",
+     "name": "Frankfurt",
+     "opt": false
+    },
+    {
+     "id": "Mannheim Hbf",
+     "name": "Mannheim",
+     "opt": false
+    },
+    {
+     "id": "Karlsruhe Hbf",
+     "name": "Karlsruhe",
+     "opt": false
+    },
+    {
+     "id": "Offenburg",
+     "name": "Offenburg",
+     "opt": false
+    },
+    {
+     "id": "Freiburg (Breisgau) Hbf",
+     "name": "Freiburg",
+     "opt": false
+    },
+    {
+     "id": "Basel Badischer Bahnhof",
+     "name": "Basel Bad",
+     "opt": false
+    },
+    {
+     "id": "Basel SBB",
+     "name": "Basel SBB",
+     "opt": false
+    }
+   ]
+  ],
+  "fahrzeuge": "ICE 4",
+  "farbe": "",
+  "sprinter": false
+ },
+ {
+  "nr": "22",
+  "verlauf": [
+   [
+    {
+     "id": "Kiel Hbf",
+     "name": "Kiel",
+     "opt": false
+    },
+    {
+     "id": "Neumünster",
+     "name": "Neumünster",
+     "opt": false
+    },
+    {
+     "id": "Hamburg Dammtor",
+     "name": "Hamburg Dammtor",
+     "opt": false
+    },
+    {
+     "id": "Hamburg Hbf",
+     "name": "Hamburg",
+     "opt": false
+    },
+    {
+     "id": "Celle",
+     "name": "Celle",
+     "opt": false
+    },
+    {
+     "id": "Hannover Hbf",
+     "name": "Hannover",
+     "opt": false
+    },
+    {
+     "id": "Göttingen",
+     "name": "Göttingen",
+     "opt": false
+    },
+    {
+     "id": "Kassel-Wilhelmshöhe",
+     "name": "Kassel-Wilhelmshöhe",
+     "opt": false
+    },
+    {
+     "id": "Hanau Hbf",
+     "name": "Hanau",
+     "opt": true
+    },
+    {
+     "id": "Frankfurt (Main) Hbf",
+     "name": "Frankfurt",
+     "opt": false
+    },
+    {
+     "id": "Mannheim Hbf",
+     "name": "Mannheim",
+     "opt": false
+    },
+    {
+     "id": "Heidelberg Hbf",
+     "name": "Heidelberg",
+     "opt": true
+    },
+    {
+     "id": "Vaihingen (Enz)",
+     "name": "Vaihingen",
+     "opt": true
+    },
+    {
+     "id": "Stuttgart Hbf",
+     "name": "Stuttgart",
+     "opt": false
+    }
+   ]
+  ],
+  "fahrzeuge": "ICE 1, ICE 4",
+  "farbe": "#D48E8E",
+  "sprinter": false
+ },
+ {
+  "nr": "24",
+  "verlauf": [
+   [
+    {
+     "id": "Hamburg-Altona",
+     "name": "Hamburg-Altona",
+     "opt": false
+    },
+    {
+     "id": "Hamburg Dammtor",
+     "name": "Hamburg Dammtor",
+     "opt": false
+    },
+    {
+     "id": "Hamburg Hbf",
+     "name": "Hamburg",
+     "opt": false
+    },
+    {
+     "id": "Hamburg-Harburg",
+     "name": "Hamburg-Harburg",
+     "opt": false
+    },
+    {
+     "id": "Lüneburg",
+     "name": "Lüneburg",
+     "opt": false
+    },
+    {
+     "id": "Bad Bevensen",
+     "name": "Bad Bevensen",
+     "opt": true
+    },
+    {
+     "id": "Uelzen",
+     "name": "Uelzen",
+     "opt": false
+    },
+    {
+     "id": "Celle",
+     "name": "Celle",
+     "opt": false
+    },
+    {
+     "id": "Langenhagen",
+     "name": "Langenhagen Mitte",
+     "opt": true
+    },
+    {
+     "id": "Hannover Hbf",
+     "name": "Hannover",
+     "opt": false
+    },
+    {
+     "id": "Göttingen",
+     "name": "Göttingen",
+     "opt": false
+    },
+    {
+     "id": "Kassel-Wilhelmshöhe",
+     "name": "Kassel-Wilhelmshöhe",
+     "opt": false
+    },
+    {
+     "id": "Fulda",
+     "name": "Fulda",
+     "opt": false
+    },
+    {
+     "id": "Würzburg Hbf",
+     "name": "Würzburg",
+     "opt": false
+    },
+    {
+     "id": "Steinach (bei Rothenburg ob der Tauber)",
+     "name": "Steinach",
+     "opt": true
+    },
+    {
+     "id": "Ansbach",
+     "name": "Ansbach",
+     "opt": true
+    },
+    {
+     "id": "Treuchtlingen",
+     "name": "Treuchtlingen",
+     "opt": false
+    },
+    {
+     "id": "Donauwörth",
+     "name": "Donauwörth",
+     "opt": false
+    },
+    {
+     "id": "Augsburg Hbf",
+     "name": "Augsburg",
+     "opt": false
+    },
+    {
+     "id": "München-Pasing",
+     "name": "München-Pasing",
+     "opt": false
+    },
+    {
+     "id": "München Hbf",
+     "name": "München",
+     "opt": false
+    },
+    {
+     "id": "München Ost",
+     "name": "München Ost",
+     "opt": true
+    },
+    {
+     "id": "Rosenheim",
+     "name": "Rosenheim",
+     "opt": false
+    },
+    {
+     "id": "Kufstein",
+     "name": "Kufstein",
+     "opt": false
+    },
+    {
+     "id": "Wörgl Hbf",
+     "name": "Wörgl",
+     "opt": false
+    },
+    {
+     "id": "Jenbach",
+     "name": "Jenbach",
+     "opt": true
+    },
+    {
+     "id": "Innsbruck Hbf",
+     "name": "Innsbruck",
+     "opt": true
+    },
+    {
+     "id": "Hopfgarten im Brixental",
+     "name": "Hopfgarten",
+     "opt": true
+    },
+    {
+     "id": "Kirchberg in Tirol",
+     "name": "Kirchberg",
+     "opt": true
+    },
+    {
+     "id": "Kitzbühel",
+     "name": "Kitzbühel Hahnenkamm",
+     "opt": true
+    },
+    {
+     "id": "St. Johann in Tirol",
+     "name": "St. Johann",
+     "opt": true
+    },
+    {
+     "id": "Fieberbrunn",
+     "name": "Fieberbrunn",
+     "opt": true
+    },
+    {
+     "id": "Hochfilzen",
+     "name": "Hochfilzen",
+     "opt": true
+    },
+    {
+     "id": "Saalfelden am Steinernen Meer",
+     "name": "Saalfelden",
+     "opt": true
+    },
+    {
+     "id": "Zell am See",
+     "name": "Zell am See",
+     "opt": true
+    },
+    {
+     "id": "Schwarzach-St. Veit",
+     "name": "Schwarzach-St. Veit",
+     "opt": true
+    }
+   ]
+  ],
+  "fahrzeuge": "ICE 1, ICE T",
+  "farbe": "#E39F0B",
+  "sprinter": false
+ },
+ {
+  "nr": "25",
+  "verlauf": [
+   [
+    {
+     "id": "Hamburg-Altona",
+     "name": "Hamburg-Altona",
+     "opt": false
+    },
+    {
+     "id": "Hamburg Dammtor",
+     "name": "Hamburg Dammtor",
+     "opt": false
+    },
+    {
+     "id": "Hamburg Hbf",
+     "name": "Hamburg",
+     "opt": false
+    },
+    {
+     "id": "Hamburg-Harburg",
+     "name": "Hamburg-Harburg",
+     "opt": false
+    },
+    {
+     "id": "Lüneburg",
+     "name": "Lüneburg",
+     "opt": false
+    },
+    {
+     "id": "Hannover Hbf",
+     "name": "Hannover",
+     "opt": false
+    },
+    {
+     "id": "Göttingen",
+     "name": "Göttingen",
+     "opt": false
+    },
+    {
+     "id": "Kassel-Wilhelmshöhe",
+     "name": "Kassel-Wilhelmshöhe",
+     "opt": false
+    },
+    {
+     "id": "Fulda",
+     "name": "Fulda",
+     "opt": false
+    },
+    {
+     "id": "Würzburg Hbf",
+     "name": "Würzburg",
+     "opt": false
+    },
+    {
+     "id": "Nürnberg Hbf",
+     "name": "Nürnberg",
+     "opt": false
+    },
+    {
+     "id": "Ingolstadt Hbf",
+     "name": "Ingolstadt",
+     "opt": false
+    },
+    {
+     "id": "München Hbf",
+     "name": "München",
+     "opt": false
+    }
+   ],
+   [
+    {
+     "id": "Kiel Hbf",
+     "name": "Kiel",
+     "opt": true
+    },
+    {
+     "id": "Neumünster",
+     "name": "Neumünster",
+     "opt": true
+    },
+    {
+     "id": "Hamburg Dammtor",
+     "name": "Hamburg Dammtor",
+     "opt": false
+    },
+    {
+     "id": "Hamburg Hbf",
+     "name": "Hamburg",
+     "opt": false
+    },
+    {
+     "id": "Hamburg-Harburg",
+     "name": "Hamburg-Harburg",
+     "opt": false
+    },
+    {
+     "id": "Lüneburg",
+     "name": "Lüneburg",
+     "opt": false
+    },
+    {
+     "id": "Hannover Hbf",
+     "name": "Hannover",
+     "opt": false
+    },
+    {
+     "id": "Göttingen",
+     "name": "Göttingen",
+     "opt": false
+    },
+    {
+     "id": "Kassel-Wilhelmshöhe",
+     "name": "Kassel-Wilhelmshöhe",
+     "opt": false
+    },
+    {
+     "id": "Fulda",
+     "name": "Fulda",
+     "opt": false
+    },
+    {
+     "id": "Würzburg Hbf",
+     "name": "Würzburg",
+     "opt": false
+    },
+    {
+     "id": "Nürnberg Hbf",
+     "name": "Nürnberg",
+     "opt": false
+    },
+    {
+     "id": "Ingolstadt Hbf",
+     "name": "Ingolstadt",
+     "opt": false
+    },
+    {
+     "id": "München Hbf",
+     "name": "München",
+     "opt": false
+    }
+   ]
+  ],
+  "fahrzeuge": "ICE 4",
+  "farbe": "#6A8F4C",
+  "sprinter": false
+ },
+ {
+  "nr": "26",
+  "verlauf": [
+   [
+    {
+     "id": "Oldenburg (Oldenburg) Hbf",
+     "name": "Oldenburg (Oldb)",
+     "opt": true
+    },
+    {
+     "id": "Delmenhorst",
+     "name": "Delmenhorst",
+     "opt": true
+    },
+    {
+     "id": "Bremen Hbf",
+     "name": "Bremen",
+     "opt": false
+    },
+    {
+     "id": "Hannover Hbf",
+     "name": "Hannover",
+     "opt": false
+    },
+    {
+     "id": "Göttingen",
+     "name": "Göttingen",
+     "opt": false
+    },
+    {
+     "id": "Kassel-Wilhelmshöhe",
+     "name": "Kassel-Wilhelmshöhe",
+     "opt": false
+    },
+    {
+     "id": "Wabern (Bz Kassel)",
+     "name": "Wabern",
+     "opt": false
+    },
+    {
+     "id": "Treysa",
+     "name": "Treysa",
+     "opt": false
+    },
+    {
+     "id": "Marburg (Lahn)",
+     "name": "Marburg",
+     "opt": false
+    },
+    {
+     "id": "Gießen",
+     "name": "Gießen",
+     "opt": false
+    },
+    {
+     "id": "Frankfurt (Main) Hbf",
+     "name": "Frankfurt",
+     "opt": false
+    },
+    {
+     "id": "Darmstadt Hbf",
+     "name": "Darmstadt",
+     "opt": false
+    },
+    {
+     "id": "Bensheim",
+     "name": "Bensheim",
+     "opt": false
+    },
+    {
+     "id": "Weinheim (Bergstraße) Hbf",
+     "name": "Weinheim",
+     "opt": false
+    },
+    {
+     "id": "Heidelberg Hbf",
+     "name": "Heidelberg",
+     "opt": false
+    },
+    {
+     "id": "Wiesloch-Walldorf",
+     "name": "Wiesloch-Walldorf",
+     "opt": false
+    },
+    {
+     "id": "Bruchsal",
+     "name": "Bruchsal",
+     "opt": false
+    },
+    {
+     "id": "Karlsruhe Hbf",
+     "name": "Karlsruhe",
+     "opt": false
+    }
+   ]
+  ],
+  "fahrzeuge": "ICE 1, ICE T",
+  "farbe": "#852D15",
+  "sprinter": false
+ },
+ {
+  "nr": "27",
+  "verlauf": [
+   [
+    {
+     "id": "Hamburg-Altona",
+     "name": "Hamburg-Altona",
+     "opt": false
+    },
+    {
+     "id": "Hamburg Dammtor",
+     "name": "Hamburg Dammtor",
+     "opt": true
+    },
+    {
+     "id": "Hamburg Hbf",
+     "name": "Hamburg",
+     "opt": false
+    },
+    {
+     "id": "Berlin-Spandau",
+     "name": "Berlin-Spandau",
+     "opt": false
+    },
+    {
+     "id": "Berlin Hbf",
+     "name": "Berlin Hbf",
+     "opt": true
+    },
+    {
+     "id": "Berlin Gesundbrunnen",
+     "name": "Berlin Gesundbrunnen",
+     "opt": true
+    },
+    {
+     "id": "Dresden-Neustadt",
+     "name": "Dresden Neustadt",
+     "opt": true
+    },
+    {
+     "id": "Dresden Hbf",
+     "name": "Dresden",
+     "opt": true
+    }
+   ]
+  ],
+  "fahrzeuge": "ICE 1, ICE 4, ICE L",
+  "farbe": "#77BA20",
+  "sprinter": false
+ },
+ {
+  "nr": "28",
+  "verlauf": [
+   [
+    {
+     "id": "Berlin Hbf",
+     "name": "Berlin",
+     "opt": false
+    },
+    {
+     "id": "Berlin Südkreuz",
+     "name": "Berlin Südkreuz",
+     "opt": false
+    },
+    {
+     "id": "Lutherstadt Wittenberg Hbf",
+     "name": "Wittenberg",
+     "opt": false
+    },
+    {
+     "id": "Leipzig Hbf",
+     "name": "Leipzig",
+     "opt": false
+    },
+    {
+     "id": "Erfurt Hbf",
+     "name": "Erfurt",
+     "opt": false
+    },
+    {
+     "id": "Coburg",
+     "name": "Coburg",
+     "opt": true
+    },
+    {
+     "id": "Bamberg",
+     "name": "Bamberg",
+     "opt": false
+    },
+    {
+     "id": "Erlangen",
+     "name": "Erlangen",
+     "opt": false
+    },
+    {
+     "id": "Nürnberg Hbf",
+     "name": "Nürnberg",
+     "opt": false
+    },
+    {
+     "id": "Ingolstadt Hbf",
+     "name": "Ingolstadt",
+     "opt": true
+    },
+    {
+     "id": "München Hbf",
+     "name": "München",
+     "opt": false
+    }
+   ],
+   [
+    {
+     "id": "Hamburg-Altona",
+     "name": "Hamburg-Altona",
+     "opt": false
+    },
+    {
+     "id": "Hamburg Dammtor",
+     "name": "Hamburg Dammtor",
+     "opt": false
+    },
+    {
+     "id": "Hamburg Hbf",
+     "name": "Hamburg",
+     "opt": false
+    },
+    {
+     "id": "Ludwigslust",
+     "name": "Ludwigslust",
+     "opt": true
+    },
+    {
+     "id": "Wittenberge",
+     "name": "Wittenberge",
+     "opt": true
+    },
+    {
+     "id": "Berlin-Spandau",
+     "name": "Berlin-Spandau",
+     "opt": false
+    },
+    {
+     "id": "Berlin Hbf",
+     "name": "Berlin",
+     "opt": false
+    },
+    {
+     "id": "Berlin Südkreuz",
+     "name": "Berlin Südkreuz",
+     "opt": false
+    },
+    {
+     "id": "Lutherstadt Wittenberg Hbf",
+     "name": "Wittenberg",
+     "opt": false
+    },
+    {
+     "id": "Leipzig Hbf",
+     "name": "Leipzig",
+     "opt": false
+    },
+    {
+     "id": "Erfurt Hbf",
+     "name": "Erfurt",
+     "opt": false
+    },
+    {
+     "id": "Coburg",
+     "name": "Coburg",
+     "opt": true
+    },
+    {
+     "id": "Bamberg",
+     "name": "Bamberg",
+     "opt": false
+    },
+    {
+     "id": "Erlangen",
+     "name": "Erlangen",
+     "opt": false
+    },
+    {
+     "id": "Nürnberg Hbf",
+     "name": "Nürnberg",
+     "opt": false
+    },
+    {
+     "id": "Ingolstadt Hbf",
+     "name": "Ingolstadt",
+     "opt": true
+    },
+    {
+     "id": "München Hbf",
+     "name": "München",
+     "opt": false
+    }
+   ]
+  ],
+  "fahrzeuge": "ICE 4, ICE T",
+  "farbe": "#D97102",
+  "sprinter": false
+ },
+ {
+  "nr": "29",
+  "verlauf": [
+   [
+    {
+     "id": "Berlin Hbf",
+     "name": "Berlin",
+     "opt": false
+    },
+    {
+     "id": "Berlin Südkreuz",
+     "name": "Berlin Südkreuz",
+     "opt": false
+    },
+    {
+     "id": "Halle (Saale) Hbf",
+     "name": "Halle",
+     "opt": false
+    },
+    {
+     "id": "Erfurt Hbf",
+     "name": "Erfurt",
+     "opt": false
+    },
+    {
+     "id": "Nürnberg Hbf",
+     "name": "Nürnberg",
+     "opt": false
+    },
+    {
+     "id": "Ingolstadt Hbf",
+     "name": "''Ingolstadt ''",
+     "opt": false
+    },
+    {
+     "id": "München Hbf",
+     "name": "München",
+     "opt": false
+    }
+   ]
+  ],
+  "fahrzeuge": "ICE 3",
+  "farbe": "#8002BF",
+  "sprinter": false
+ },
+ {
+  "nr": "33",
+  "verlauf": [
+   [
+    {
+     "id": "Westerland (Sylt)",
+     "name": "Westerland",
+     "opt": false
+    },
+    {
+     "id": "Niebüll",
+     "name": "Niebüll",
+     "opt": false
+    },
+    {
+     "id": "Husum",
+     "name": "Husum",
+     "opt": false
+    },
+    {
+     "id": "Heide (Holst)",
+     "name": "Heide",
+     "opt": false
+    },
+    {
+     "id": "Itzehoe",
+     "name": "Itzehoe",
+     "opt": false
+    },
+    {
+     "id": "Hamburg-Harburg",
+     "name": "Hamburg-Harburg",
+     "opt": false
+    },
+    {
+     "id": "Bremen Hbf",
+     "name": "Bremen",
+     "opt": false
+    },
+    {
+     "id": "Osnabrück Hbf",
+     "name": "Osnabrück",
+     "opt": false
+    },
+    {
+     "id": "Münster (Westfalen) Hbf",
+     "name": "Münster",
+     "opt": false
+    },
+    {
+     "id": "Recklinghausen Hbf",
+     "name": "Recklinghausen",
+     "opt": false
+    },
+    {
+     "id": "Gelsenkirchen Hbf",
+     "name": "Gelsenkirchen",
+     "opt": true
+    },
+    {
+     "id": "Essen Hbf",
+     "name": "Essen",
+     "opt": false
+    },
+    {
+     "id": "Duisburg Hbf",
+     "name": "Duisburg",
+     "opt": false
+    },
+    {
+     "id": "Düsseldorf Hbf",
+     "name": "Düsseldorf",
+     "opt": false
+    },
+    {
+     "id": "Köln Hbf",
+     "name": "Köln",
+     "opt": false
+    }
+   ],
+   [
+    {
+     "id": "Ostseebad Binz",
+     "name": "Ostseebad Binz",
+     "opt": true
+    },
+    {
+     "id": "Bergen auf Rügen",
+     "name": "Bergen",
+     "opt": false
+    },
+    {
+     "id": "Greifswald",
+     "name": "Greifswald",
+     "opt": false
+    },
+    {
+     "id": "Stralsund Hbf",
+     "name": "Stralsund",
+     "opt": false
+    },
+    {
+     "id": "Velgast",
+     "name": "Velgast",
+     "opt": false
+    },
+    {
+     "id": "Ribnitz-Damgarten West",
+     "name": "Ribnitz-Damgarten West",
+     "opt": false
+    },
+    {
+     "id": "Rostock Hbf",
+     "name": "Rostock",
+     "opt": false
+    },
+    {
+     "id": "Bützow",
+     "name": "Bützow",
+     "opt": false
+    },
+    {
+     "id": "Schwerin Hbf",
+     "name": "Schwerin",
+     "opt": false
+    },
+    {
+     "id": "Hamburg-Bergedorf",
+     "name": "Hamburg-Bergedorf",
+     "opt": false
+    },
+    {
+     "id": "Hamburg-Harburg",
+     "name": "Hamburg-Harburg",
+     "opt": false
+    },
+    {
+     "id": "Bremen Hbf",
+     "name": "Bremen",
+     "opt": false
+    },
+    {
+     "id": "Osnabrück Hbf",
+     "name": "Osnabrück",
+     "opt": false
+    },
+    {
+     "id": "Münster (Westfalen) Hbf",
+     "name": "Münster",
+     "opt": false
+    },
+    {
+     "id": "Recklinghausen Hbf",
+     "name": "Recklinghausen",
+     "opt": false
+    },
+    {
+     "id": "Gelsenkirchen Hbf",
+     "name": "Gelsenkirchen",
+     "opt": true
+    },
+    {
+     "id": "Essen Hbf",
+     "name": "Essen",
+     "opt": false
+    },
+    {
+     "id": "Duisburg Hbf",
+     "name": "Duisburg",
+     "opt": false
+    },
+    {
+     "id": "Düsseldorf Hbf",
+     "name": "Düsseldorf",
+     "opt": false
+    },
+    {
+     "id": "Köln Hbf",
+     "name": "Köln",
+     "opt": false
+    }
+   ],
+   [
+    {
+     "id": "Hamburg-Altona",
+     "name": "Hamburg-Altona",
+     "opt": false
+    },
+    {
+     "id": "Hamburg Dammtor",
+     "name": "Hamburg Dammtor",
+     "opt": false
+    },
+    {
+     "id": "Hamburg Hbf",
+     "name": "Hamburg",
+     "opt": false
+    },
+    {
+     "id": "Hamburg-Harburg",
+     "name": "Hamburg-Harburg",
+     "opt": false
+    },
+    {
+     "id": "Bremen Hbf",
+     "name": "Bremen",
+     "opt": false
+    },
+    {
+     "id": "Osnabrück Hbf",
+     "name": "Osnabrück",
+     "opt": false
+    },
+    {
+     "id": "Münster (Westfalen) Hbf",
+     "name": "Münster",
+     "opt": false
+    },
+    {
+     "id": "Recklinghausen Hbf",
+     "name": "Recklinghausen",
+     "opt": false
+    },
+    {
+     "id": "Gelsenkirchen Hbf",
+     "name": "Gelsenkirchen",
+     "opt": true
+    },
+    {
+     "id": "Essen Hbf",
+     "name": "Essen",
+     "opt": false
+    },
+    {
+     "id": "Duisburg Hbf",
+     "name": "Duisburg",
+     "opt": false
+    },
+    {
+     "id": "Düsseldorf Hbf",
+     "name": "Düsseldorf",
+     "opt": false
+    },
+    {
+     "id": "Köln Hbf",
+     "name": "Köln",
+     "opt": false
+    }
+   ]
+  ],
+  "fahrzeuge": "ICE 1, ICE L",
+  "farbe": "#B09FCA",
+  "sprinter": false
+ },
+ {
+  "nr": "41",
+  "verlauf": [
+   [
+    {
+     "id": "Dortmund Hbf",
+     "name": "Dortmund",
+     "opt": true
+    },
+    {
+     "id": "Bochum Hbf",
+     "name": "Bochum",
+     "opt": true
+    },
+    {
+     "id": "Essen Hbf",
+     "name": "Essen",
+     "opt": false
+    },
+    {
+     "id": "Duisburg Hbf",
+     "name": "Duisburg",
+     "opt": false
+    },
+    {
+     "id": "Düsseldorf Hbf",
+     "name": "Düsseldorf",
+     "opt": false
+    },
+    {
+     "id": "Köln Messe/Deutz",
+     "name": "Köln Messe/Deutz",
+     "opt": false
+    },
+    {
+     "id": "Köln/Bonn Flughafen",
+     "name": "Köln/Bonn Flughafen",
+     "opt": true
+    },
+    {
+     "id": "Siegburg/Bonn",
+     "name": "Siegburg/Bonn",
+     "opt": false
+    },
+    {
+     "id": "Montabaur",
+     "name": "Montabaur",
+     "opt": true
+    },
+    {
+     "id": "Limburg Süd",
+     "name": "Limburg Süd",
+     "opt": true
+    },
+    {
+     "id": "Frankfurt Flughafen Fernbahnhof",
+     "name": "Frankfurt Flughafen",
+     "opt": false
+    },
+    {
+     "id": "Frankfurt (Main) Hbf",
+     "name": "Frankfurt",
+     "opt": false
+    },
+    {
+     "id": "Hanau Hbf",
+     "name": "Hanau",
+     "opt": true
+    },
+    {
+     "id": "Aschaffenburg Hbf",
+     "name": "Aschaffenburg",
+     "opt": false
+    },
+    {
+     "id": "Würzburg Hbf",
+     "name": "Würzburg",
+     "opt": false
+    },
+    {
+     "id": "Nürnberg Hbf",
+     "name": "Nürnberg",
+     "opt": false
+    },
+    {
+     "id": "Ingolstadt Hbf",
+     "name": "Ingolstadt",
+     "opt": true
+    },
+    {
+     "id": "München Hbf",
+     "name": "München",
+     "opt": false
+    }
+   ]
+  ],
+  "fahrzeuge": "ICE 3",
+  "farbe": "#BD0013",
+  "sprinter": false
+ },
+ {
+  "nr": "42",
+  "verlauf": [
+   [
+    {
+     "id": "Hamburg-Altona",
+     "name": "Hamburg-Altona",
+     "opt": false
+    },
+    {
+     "id": "Hamburg Dammtor",
+     "name": "Hamburg Dammtor",
+     "opt": false
+    },
+    {
+     "id": "Hamburg Hbf",
+     "name": "Hamburg",
+     "opt": false
+    },
+    {
+     "id": "Hamburg-Harburg",
+     "name": "Hamburg-Harburg",
+     "opt": false
+    },
+    {
+     "id": "Bremen Hbf",
+     "name": "Bremen",
+     "opt": false
+    },
+    {
+     "id": "Osnabrück Hbf",
+     "name": "Osnabrück",
+     "opt": false
+    },
+    {
+     "id": "Münster (Westfalen) Hbf",
+     "name": "Münster",
+     "opt": false
+    },
+    {
+     "id": "Dortmund Hbf",
+     "name": "Dortmund",
+     "opt": false
+    },
+    {
+     "id": "Hagen Hbf",
+     "name": "Hagen",
+     "opt": false
+    },
+    {
+     "id": "Wuppertal Hbf",
+     "name": "Wuppertal",
+     "opt": false
+    },
+    {
+     "id": "Solingen Hbf",
+     "name": "Solingen",
+     "opt": false
+    },
+    {
+     "id": "Köln Hbf",
+     "name": "Köln",
+     "opt": false
+    },
+    {
+     "id": "Frankfurt Flughafen Fernbahnhof",
+     "name": "Frankfurt Flughafen",
+     "opt": false
+    },
+    {
+     "id": "Mannheim Hbf",
+     "name": "Mannheim",
+     "opt": false
+    },
+    {
+     "id": "Stuttgart Hbf",
+     "name": "Stuttgart",
+     "opt": false
+    },
+    {
+     "id": "Ulm Hbf",
+     "name": "Ulm",
+     "opt": false
+    },
+    {
+     "id": "Augsburg Hbf",
+     "name": "Augsburg",
+     "opt": false
+    },
+    {
+     "id": "München-Pasing",
+     "name": "München-Pasing",
+     "opt": false
+    },
+    {
+     "id": "München Hbf",
+     "name": "München",
+     "opt": false
+    }
+   ]
+  ],
+  "fahrzeuge": "ICE 4",
+  "farbe": "#80C217",
+  "sprinter": false
+ },
+ {
+  "nr": "43",
+  "verlauf": [
+   [
+    {
+     "id": "Hamburg-Altona",
+     "name": "Hamburg-Altona",
+     "opt": false
+    },
+    {
+     "id": "Hamburg Dammtor",
+     "name": "Hamburg Dammtor",
+     "opt": false
+    },
+    {
+     "id": "Hamburg Hbf",
+     "name": "Hamburg",
+     "opt": false
+    },
+    {
+     "id": "Hamburg-Harburg",
+     "name": "Hamburg-Harburg",
+     "opt": false
+    },
+    {
+     "id": "Bremen Hbf",
+     "name": "Bremen",
+     "opt": false
+    },
+    {
+     "id": "Osnabrück Hbf",
+     "name": "Osnabrück",
+     "opt": false
+    },
+    {
+     "id": "Münster (Westfalen) Hbf",
+     "name": "Münster",
+     "opt": false
+    },
+    {
+     "id": "Dortmund Hbf",
+     "name": "Dortmund",
+     "opt": false
+    },
+    {
+     "id": "Bochum Hbf",
+     "name": "Bochum",
+     "opt": false
+    },
+    {
+     "id": "Essen Hbf",
+     "name": "Essen",
+     "opt": false
+    },
+    {
+     "id": "Duisburg Hbf",
+     "name": "Duisburg",
+     "opt": false
+    },
+    {
+     "id": "Düsseldorf Hbf",
+     "name": "Düsseldorf",
+     "opt": false
+    },
+    {
+     "id": "Köln Hbf",
+     "name": "Köln",
+     "opt": false
+    },
+    {
+     "id": "Frankfurt Flughafen Fernbahnhof",
+     "name": "Frankfurt Flughafen",
+     "opt": false
+    },
+    {
+     "id": "Mannheim Hbf",
+     "name": "Mannheim",
+     "opt": false
+    },
+    {
+     "id": "Karlsruhe Hbf",
+     "name": "Karlsruhe",
+     "opt": false
+    },
+    {
+     "id": "Baden-Baden",
+     "name": "Baden-Baden",
+     "opt": false
+    },
+    {
+     "id": "Freiburg (Breisgau) Hbf",
+     "name": "Freiburg",
+     "opt": false
+    },
+    {
+     "id": "Basel Badischer Bahnhof",
+     "name": "Basel Bad",
+     "opt": false
+    },
+    {
+     "id": "Basel SBB",
+     "name": "Basel SBB",
+     "opt": false
+    },
+    {
+     "id": "Zürich Hbf",
+     "name": "Zürich",
+     "opt": false
+    },
+    {
+     "id": "Sargans",
+     "name": "Sargans",
+     "opt": false
+    },
+    {
+     "id": "Landquart",
+     "name": "Landquart",
+     "opt": false
+    },
+    {
+     "id": "Chur",
+     "name": "Chur",
+     "opt": false
+    }
+   ],
+   [
+    {
+     "id": "Hamburg-Altona",
+     "name": "Hamburg-Altona",
+     "opt": false
+    },
+    {
+     "id": "Hamburg Dammtor",
+     "name": "Hamburg Dammtor",
+     "opt": false
+    },
+    {
+     "id": "Hamburg Hbf",
+     "name": "Hamburg",
+     "opt": false
+    },
+    {
+     "id": "Hamburg-Harburg",
+     "name": "Hamburg-Harburg",
+     "opt": false
+    },
+    {
+     "id": "Bremen Hbf",
+     "name": "Bremen",
+     "opt": false
+    },
+    {
+     "id": "Osnabrück Hbf",
+     "name": "Osnabrück",
+     "opt": false
+    },
+    {
+     "id": "Münster (Westfalen) Hbf",
+     "name": "Münster",
+     "opt": false
+    },
+    {
+     "id": "Dortmund Hbf",
+     "name": "Dortmund",
+     "opt": false
+    },
+    {
+     "id": "Bochum Hbf",
+     "name": "Bochum",
+     "opt": false
+    },
+    {
+     "id": "Essen Hbf",
+     "name": "Essen",
+     "opt": false
+    },
+    {
+     "id": "Duisburg Hbf",
+     "name": "Duisburg",
+     "opt": false
+    },
+    {
+     "id": "Düsseldorf Hbf",
+     "name": "Düsseldorf",
+     "opt": false
+    },
+    {
+     "id": "Köln Hbf",
+     "name": "Köln",
+     "opt": false
+    },
+    {
+     "id": "Frankfurt Flughafen Fernbahnhof",
+     "name": "Frankfurt Flughafen",
+     "opt": false
+    },
+    {
+     "id": "Mannheim Hbf",
+     "name": "Mannheim",
+     "opt": false
+    },
+    {
+     "id": "Karlsruhe Hbf",
+     "name": "Karlsruhe",
+     "opt": false
+    },
+    {
+     "id": "Baden-Baden",
+     "name": "Baden-Baden",
+     "opt": false
+    },
+    {
+     "id": "Freiburg (Breisgau) Hbf",
+     "name": "Freiburg",
+     "opt": false
+    },
+    {
+     "id": "Basel Badischer Bahnhof",
+     "name": "Basel Bad",
+     "opt": false
+    },
+    {
+     "id": "Basel SBB",
+     "name": "Basel SBB",
+     "opt": false
+    },
+    {
+     "id": "Liestal",
+     "name": "Liestal",
+     "opt": false
+    },
+    {
+     "id": "Olten",
+     "name": "Olten",
+     "opt": false
+    },
+    {
+     "id": "Bern",
+     "name": "Bern",
+     "opt": false
+    },
+    {
+     "id": "Thun",
+     "name": "Thun",
+     "opt": false
+    },
+    {
+     "id": "Spiez",
+     "name": "Spiez",
+     "opt": false
+    },
+    {
+     "id": "Visp",
+     "name": "Visp",
+     "opt": false
+    },
+    {
+     "id": "Brig",
+     "name": "Brig",
+     "opt": false
+    }
+   ]
+  ],
+  "fahrzeuge": "ICE 4",
+  "farbe": "#FCFC00",
+  "sprinter": false
+ },
+ {
+  "nr": "45",
+  "verlauf": [
+   [
+    {
+     "id": "Köln Hbf",
+     "name": "Köln",
+     "opt": false
+    },
+    {
+     "id": "Köln/Bonn Flughafen",
+     "name": "Köln/Bonn Flughafen",
+     "opt": true
+    },
+    {
+     "id": "Siegburg/Bonn",
+     "name": "Siegburg/Bonn",
+     "opt": false
+    },
+    {
+     "id": "Montabaur",
+     "name": "Montabaur",
+     "opt": false
+    },
+    {
+     "id": "Limburg Süd",
+     "name": "Limburg Süd",
+     "opt": false
+    },
+    {
+     "id": "Wiesbaden Hbf",
+     "name": "Wiesbaden",
+     "opt": false
+    },
+    {
+     "id": "Mainz Hbf",
+     "name": "Mainz",
+     "opt": false
+    },
+    {
+     "id": "Mannheim Hbf",
+     "name": "Mannheim",
+     "opt": false
+    },
+    {
+     "id": "Heidelberg Hbf",
+     "name": "Heidelberg",
+     "opt": false
+    },
+    {
+     "id": "Vaihingen (Enz)",
+     "name": "Vaihingen",
+     "opt": true
+    },
+    {
+     "id": "Stuttgart Hbf",
+     "name": "Stuttgart",
+     "opt": false
+    }
+   ]
+  ],
+  "fahrzeuge": "ICE 3",
+  "farbe": "#99F01F",
+  "sprinter": false
+ },
+ {
+  "nr": "47",
+  "verlauf": [
+   [
+    {
+     "id": "Dortmund Hbf",
+     "name": "Dortmund",
+     "opt": false
+    },
+    {
+     "id": "Bochum Hbf",
+     "name": "Bochum",
+     "opt": false
+    },
+    {
+     "id": "Essen Hbf",
+     "name": "Essen",
+     "opt": false
+    },
+    {
+     "id": "Duisburg Hbf",
+     "name": "Duisburg",
+     "opt": false
+    },
+    {
+     "id": "Düsseldorf Hbf",
+     "name": "Düsseldorf",
+     "opt": false
+    },
+    {
+     "id": "Köln Messe/Deutz",
+     "name": "Köln Messe/Deutz",
+     "opt": false
+    },
+    {
+     "id": "Frankfurt Flughafen Fernbahnhof",
+     "name": "Frankfurt Flughafen",
+     "opt": false
+    },
+    {
+     "id": "Mannheim Hbf",
+     "name": "Mannheim",
+     "opt": false
+    },
+    {
+     "id": "Stuttgart Hbf",
+     "name": "Stuttgart",
+     "opt": false
+    },
+    {
+     "id": "Ulm Hbf",
+     "name": "Ulm",
+     "opt": false
+    },
+    {
+     "id": "Augsburg Hbf",
+     "name": "Augsburg",
+     "opt": false
+    },
+    {
+     "id": "München Hbf",
+     "name": "München",
+     "opt": false
+    }
+   ]
+  ],
+  "fahrzeuge": "ICE 3",
+  "farbe": "#0A0136",
+  "sprinter": false
+ },
+ {
+  "nr": "49",
+  "verlauf": [
+   [
+    {
+     "id": "Köln Hbf",
+     "name": "Köln",
+     "opt": false
+    },
+    {
+     "id": "Köln/Bonn Flughafen",
+     "name": "Köln/Bonn Flughafen",
+     "opt": true
+    },
+    {
+     "id": "Siegburg/Bonn",
+     "name": "Siegburg/Bonn",
+     "opt": false
+    },
+    {
+     "id": "Montabaur",
+     "name": "Montabaur",
+     "opt": false
+    },
+    {
+     "id": "Limburg Süd",
+     "name": "Limburg Süd",
+     "opt": false
+    },
+    {
+     "id": "Frankfurt Flughafen Fernbahnhof",
+     "name": "Frankfurt Flughafen",
+     "opt": false
+    },
+    {
+     "id": "Frankfurt (Main) Hbf",
+     "name": "Frankfurt",
+     "opt": false
+    }
+   ]
+  ],
+  "fahrzeuge": "ICE 3",
+  "farbe": "#128C43",
+  "sprinter": false
+ },
+ {
+  "nr": "50",
+  "verlauf": [
+   [
+    {
+     "id": "Dresden Hbf",
+     "name": "Dresden",
+     "opt": false
+    },
+    {
+     "id": "Dresden-Neustadt",
+     "name": "Dresden-Neustadt",
+     "opt": false
+    },
+    {
+     "id": "Riesa",
+     "name": "Riesa",
+     "opt": true
+    },
+    {
+     "id": "Leipzig Hbf",
+     "name": "Leipzig",
+     "opt": false
+    },
+    {
+     "id": "Erfurt Hbf",
+     "name": "Erfurt",
+     "opt": false
+    },
+    {
+     "id": "Gotha",
+     "name": "Gotha",
+     "opt": false
+    },
+    {
+     "id": "Eisenach Hbf",
+     "name": "Eisenach",
+     "opt": false
+    },
+    {
+     "id": "Bad Hersfeld",
+     "name": "Bad Hersfeld",
+     "opt": false
+    },
+    {
+     "id": "Fulda",
+     "name": "Fulda",
+     "opt": false
+    },
+    {
+     "id": "Frankfurt (Main) Hbf",
+     "name": "Frankfurt",
+     "opt": false
+    },
+    {
+     "id": "Frankfurt Flughafen Fernbahnhof",
+     "name": "Frankfurt Flughafen",
+     "opt": false
+    },
+    {
+     "id": "Mainz Hbf",
+     "name": "Mainz",
+     "opt": false
+    },
+    {
+     "id": "Wiesbaden Hbf",
+     "name": "Wiesbaden",
+     "opt": false
+    }
+   ]
+  ],
+  "fahrzeuge": "ICE T, ICE 1",
+  "farbe": "#231F20",
+  "sprinter": false
+ },
+ {
+  "nr": "51",
+  "verlauf": [
+   [
+    {
+     "id": "Dresden Hbf",
+     "name": "Dresden",
+     "opt": true
+    },
+    {
+     "id": "Dresden-Neustadt",
+     "name": "Dresden-Neustadt",
+     "opt": true
+    },
+    {
+     "id": "Leipzig Hbf",
+     "name": "Leipzig",
+     "opt": false
+    },
+    {
+     "id": "Erfurt Hbf",
+     "name": "Erfurt",
+     "opt": false
+    },
+    {
+     "id": "Kassel-Wilhelmshöhe",
+     "name": "Kassel-Wilhelmshöhe",
+     "opt": false
+    },
+    {
+     "id": "Altenbeken",
+     "name": "Altenbeken",
+     "opt": false
+    },
+    {
+     "id": "Paderborn Hbf",
+     "name": "Paderborn",
+     "opt": false
+    },
+    {
+     "id": "Lippstadt",
+     "name": "Lippstadt",
+     "opt": false
+    },
+    {
+     "id": "Soest",
+     "name": "Soest",
+     "opt": false
+    },
+    {
+     "id": "Dortmund Hbf",
+     "name": "Dortmund",
+     "opt": false
+    },
+    {
+     "id": "Bochum Hbf",
+     "name": "Bochum",
+     "opt": false
+    },
+    {
+     "id": "Essen Hbf",
+     "name": "Essen",
+     "opt": false
+    },
+    {
+     "id": "Duisburg Hbf",
+     "name": "Duisburg",
+     "opt": false
+    },
+    {
+     "id": "Düsseldorf Hbf",
+     "name": "Düsseldorf",
+     "opt": false
+    },
+    {
+     "id": "Köln Hbf",
+     "name": "Köln",
+     "opt": false
+    }
+   ]
+  ],
+  "fahrzeuge": "ICE T",
+  "farbe": "#231F20",
+  "sprinter": false
+ },
+ {
+  "nr": "60",
+  "verlauf": [
+   [
+    {
+     "id": "Basel SBB",
+     "name": "Basel SBB",
+     "opt": true
+    },
+    {
+     "id": "Basel Badischer Bahnhof",
+     "name": "Basel Bad Bf",
+     "opt": true
+    },
+    {
+     "id": "Weil am Rhein",
+     "name": "Weil am Rhein",
+     "opt": true
+    },
+    {
+     "id": "Müllheim im Markgräflerland",
+     "name": "Müllheim",
+     "opt": true
+    },
+    {
+     "id": "Freiburg (Breisgau) Hbf",
+     "name": "Freiburg",
+     "opt": true
+    },
+    {
+     "id": "Lahr (Schwarzw)",
+     "name": "Lahr",
+     "opt": true
+    },
+    {
+     "id": "Offenburg",
+     "name": "Offenburg",
+     "opt": true
+    },
+    {
+     "id": "Baden-Baden",
+     "name": "Baden-Baden",
+     "opt": true
+    },
+    {
+     "id": "Karlsruhe Hbf",
+     "name": "Karlsruhe",
+     "opt": false
+    },
+    {
+     "id": "Karlsruhe-Durlach",
+     "name": "Karlsruhe-Durlach",
+     "opt": true
+    },
+    {
+     "id": "Bruchsal",
+     "name": "Bruchsal",
+     "opt": false
+    },
+    {
+     "id": "Stuttgart Hbf",
+     "name": "Stuttgart",
+     "opt": false
+    },
+    {
+     "id": "Ulm Hbf",
+     "name": "Ulm",
+     "opt": false
+    },
+    {
+     "id": "Günzburg",
+     "name": "Günzburg",
+     "opt": true
+    },
+    {
+     "id": "Augsburg Hbf",
+     "name": "Augsburg",
+     "opt": false
+    },
+    {
+     "id": "München-Pasing",
+     "name": "München-Pasing",
+     "opt": false
+    },
+    {
+     "id": "München Hbf",
+     "name": "München",
+     "opt": false
+    }
+   ]
+  ],
+  "fahrzeuge": "ICE 3",
+  "farbe": "#269E50",
+  "sprinter": false
+ },
+ {
+  "nr": "62",
+  "verlauf": [
+   [
+    {
+     "id": "Frankfurt (Main) Hbf",
+     "name": "Frankfurt",
+     "opt": false
+    },
+    {
+     "id": "Darmstadt Hbf",
+     "name": "Darmstadt",
+     "opt": false
+    },
+    {
+     "id": "Bensheim",
+     "name": "Bensheim",
+     "opt": false
+    },
+    {
+     "id": "Weinheim (Bergstraße) Hbf",
+     "name": "Weinheim",
+     "opt": false
+    },
+    {
+     "id": "Heidelberg Hbf",
+     "name": "Heidelberg",
+     "opt": false
+    },
+    {
+     "id": "Stuttgart Hbf",
+     "name": "Stuttgart",
+     "opt": false
+    },
+    {
+     "id": "Ulm Hbf",
+     "name": "Ulm",
+     "opt": false
+    },
+    {
+     "id": "Günzburg",
+     "name": "Günzburg",
+     "opt": false
+    },
+    {
+     "id": "Augsburg Hbf",
+     "name": "Augsburg",
+     "opt": false
+    },
+    {
+     "id": "München Hbf",
+     "name": "München",
+     "opt": false
+    },
+    {
+     "id": "München Ost",
+     "name": "München Ost",
+     "opt": false
+    },
+    {
+     "id": "Rosenheim",
+     "name": "Rosenheim",
+     "opt": false
+    },
+    {
+     "id": "Prien a Chiemsee",
+     "name": "Prien",
+     "opt": false
+    },
+    {
+     "id": "Traunstein",
+     "name": "Traunstein",
+     "opt": false
+    },
+    {
+     "id": "Freilassing",
+     "name": "Freilassing",
+     "opt": false
+    },
+    {
+     "id": "Salzburg Hbf",
+     "name": "Salzburg",
+     "opt": false
+    },
+    {
+     "id": "Golling-Abtenau",
+     "name": "Golling-Abtenau",
+     "opt": false
+    },
+    {
+     "id": "Bischofshofen",
+     "name": "Bischofshofen",
+     "opt": false
+    },
+    {
+     "id": "St. Johann im Pongau",
+     "name": "St. Johann im Pongau",
+     "opt": false
+    },
+    {
+     "id": "Schwarzach-St. Veit",
+     "name": "Schwarzach-St. Veit",
+     "opt": false
+    },
+    {
+     "id": "Bad Gastein",
+     "name": "Bad Gastein",
+     "opt": false
+    },
+    {
+     "id": "Mallnitz",
+     "name": "Mallnitz-Obervellach",
+     "opt": false
+    },
+    {
+     "id": "Spittal-Millstättersee",
+     "name": "Spittal-Millstättersee",
+     "opt": false
+    },
+    {
+     "id": "Villach Hbf",
+     "name": "Villach",
+     "opt": false
+    },
+    {
+     "id": "Velden am Wörther See",
+     "name": "Velden",
+     "opt": false
+    },
+    {
+     "id": "Pörtschach am Wörthersee",
+     "name": "Pörtschach",
+     "opt": true
+    },
+    {
+     "id": "Klagenfurt Hbf",
+     "name": "Klagenfurt",
+     "opt": false
+    },
+    {
+     "id": "Kühnsdorf",
+     "name": "Kühnsdorf-Klopeiner See",
+     "opt": true
+    },
+    {
+     "id": "St. Paul im Lavanttal",
+     "name": "St. Paul im Lavanttal",
+     "opt": true
+    },
+    {
+     "id": "Weststeiermark",
+     "name": "Weststeiermark",
+     "opt": true
+    },
+    {
+     "id": "Graz Hbf",
+     "name": "Graz",
+     "opt": false
+    }
+   ],
+   [
+    {
+     "id": "Münster (Westfalen) Hbf",
+     "name": "Münster (Westfalen) Hbf",
+     "opt": false
+    },
+    {
+     "id": "Recklinghausen Hbf",
+     "name": "Recklinghausen",
+     "opt": false
+    },
+    {
+     "id": "Gelsenkirchen Hbf",
+     "name": "Gelsenkirchen",
+     "opt": false
+    },
+    {
+     "id": "Essen Hbf",
+     "name": "Essen",
+     "opt": false
+    },
+    {
+     "id": "Duisburg Hbf",
+     "name": "Duisburg",
+     "opt": false
+    },
+    {
+     "id": "Düsseldorf Hbf",
+     "name": "Düsseldorf",
+     "opt": false
+    },
+    {
+     "id": "Köln Messe/Deutz",
+     "name": "Köln Messe/Deutz",
+     "opt": false
+    },
+    {
+     "id": "Siegburg/Bonn",
+     "name": "Siegburg/Bonn",
+     "opt": true
+    },
+    {
+     "id": "Frankfurt Flughafen Fernbahnhof",
+     "name": "Frankfurt Flughafen",
+     "opt": false
+    },
+    {
+     "id": "Mannheim Hbf",
+     "name": "Mannheim",
+     "opt": false
+    },
+    {
+     "id": "Vaihingen (Enz)",
+     "name": "Vaihingen",
+     "opt": false
+    },
+    {
+     "id": "Stuttgart Hbf",
+     "name": "Stuttgart",
+     "opt": false
+    },
+    {
+     "id": "Ulm Hbf",
+     "name": "Ulm",
+     "opt": false
+    },
+    {
+     "id": "Günzburg",
+     "name": "Günzburg",
+     "opt": false
+    },
+    {
+     "id": "Augsburg Hbf",
+     "name": "Augsburg",
+     "opt": false
+    },
+    {
+     "id": "München Hbf",
+     "name": "München",
+     "opt": false
+    },
+    {
+     "id": "München Ost",
+     "name": "München Ost",
+     "opt": false
+    },
+    {
+     "id": "Rosenheim",
+     "name": "Rosenheim",
+     "opt": false
+    },
+    {
+     "id": "Prien a Chiemsee",
+     "name": "Prien",
+     "opt": false
+    },
+    {
+     "id": "Traunstein",
+     "name": "Traunstein",
+     "opt": false
+    },
+    {
+     "id": "Freilassing",
+     "name": "Freilassing",
+     "opt": false
+    },
+    {
+     "id": "Salzburg Hbf",
+     "name": "Salzburg",
+     "opt": false
+    },
+    {
+     "id": "Golling-Abtenau",
+     "name": "Golling-Abtenau",
+     "opt": false
+    },
+    {
+     "id": "Bischofshofen",
+     "name": "Bischofshofen",
+     "opt": false
+    },
+    {
+     "id": "St. Johann im Pongau",
+     "name": "St. Johann im Pongau",
+     "opt": false
+    },
+    {
+     "id": "Schwarzach-St. Veit",
+     "name": "Schwarzach-St. Veit",
+     "opt": false
+    },
+    {
+     "id": "Bad Gastein",
+     "name": "Bad Gastein",
+     "opt": false
+    },
+    {
+     "id": "Mallnitz",
+     "name": "Mallnitz-Obervellach",
+     "opt": false
+    },
+    {
+     "id": "Spittal-Millstättersee",
+     "name": "Spittal-Millstättersee",
+     "opt": false
+    },
+    {
+     "id": "Villach Hbf",
+     "name": "Villach",
+     "opt": false
+    },
+    {
+     "id": "Velden am Wörther See",
+     "name": "Velden",
+     "opt": false
+    },
+    {
+     "id": "Pörtschach am Wörthersee",
+     "name": "Pörtschach",
+     "opt": true
+    },
+    {
+     "id": "Klagenfurt Hbf",
+     "name": "Klagenfurt",
+     "opt": false
+    },
+    {
+     "id": "Kühnsdorf",
+     "name": "Kühnsdorf-Klopeiner See",
+     "opt": true
+    },
+    {
+     "id": "St. Paul im Lavanttal",
+     "name": "St. Paul im Lavanttal",
+     "opt": true
+    },
+    {
+     "id": "Weststeiermark",
+     "name": "Weststeiermark",
+     "opt": true
+    },
+    {
+     "id": "Graz Hbf",
+     "name": "Graz",
+     "opt": false
+    }
+   ]
+  ],
+  "fahrzeuge": "ICE 4",
+  "farbe": "#3DB0F2",
+  "sprinter": false
+ },
+ {
+  "nr": "77",
+  "verlauf": [
+   [
+    {
+     "id": "Amsterdam Centraal",
+     "name": "Amsterdam",
+     "opt": false
+    },
+    {
+     "id": "Hilversum",
+     "name": "Hilversum",
+     "opt": false
+    },
+    {
+     "id": "Amersfoort Centraal",
+     "name": "Amersfoort",
+     "opt": false
+    },
+    {
+     "id": "Apeldoorn",
+     "name": "Apeldoorn",
+     "opt": false
+    },
+    {
+     "id": "Deventer",
+     "name": "Deventer",
+     "opt": false
+    },
+    {
+     "id": "Hengelo",
+     "name": "Hengelo",
+     "opt": false
+    },
+    {
+     "id": "Bad Bentheim",
+     "name": "Bad Bentheim",
+     "opt": false
+    },
+    {
+     "id": "Rheine",
+     "name": "Rheine",
+     "opt": false
+    },
+    {
+     "id": "Osnabrück Hbf",
+     "name": "Osnabrück",
+     "opt": false
+    },
+    {
+     "id": "Bünde (Westfalen)",
+     "name": "Bünde",
+     "opt": false
+    },
+    {
+     "id": "Hannover Hbf",
+     "name": "Hannover",
+     "opt": false
+    },
+    {
+     "id": "Berlin-Spandau",
+     "name": "Berlin-Spandau",
+     "opt": false
+    },
+    {
+     "id": "Berlin Hbf",
+     "name": "Berlin",
+     "opt": false
+    },
+    {
+     "id": "Berlin Ostbahnhof",
+     "name": "Berlin Ostbahnhof",
+     "opt": false
+    }
+   ],
+   [
+    {
+     "id": "Münster (Westfalen) Hbf",
+     "name": "Münster (Westfalen) Hbf",
+     "opt": false
+    },
+    {
+     "id": "Osnabrück Hbf",
+     "name": "Osnabrück",
+     "opt": false
+    },
+    {
+     "id": "Bünde (Westfalen)",
+     "name": "Bünde",
+     "opt": false
+    },
+    {
+     "id": "Hannover Hbf",
+     "name": "Hannover",
+     "opt": false
+    },
+    {
+     "id": "Berlin-Spandau",
+     "name": "Berlin-Spandau",
+     "opt": false
+    },
+    {
+     "id": "Berlin Hbf",
+     "name": "Berlin",
+     "opt": false
+    },
+    {
+     "id": "Berlin Ostbahnhof",
+     "name": "Berlin Ostbahnhof",
+     "opt": false
+    }
+   ]
+  ],
+  "fahrzeuge": "ICE 4",
+  "farbe": "",
+  "sprinter": false
+ },
+ {
+  "nr": "78",
+  "verlauf": [
+   [
+    {
+     "id": "Amsterdam Centraal",
+     "name": "Amsterdam",
+     "opt": false
+    },
+    {
+     "id": "Utrecht Centraal",
+     "name": "Utrecht",
+     "opt": false
+    },
+    {
+     "id": "Arnhem Centraal",
+     "name": "Arnheim",
+     "opt": false
+    },
+    {
+     "id": "Oberhausen Hbf",
+     "name": "Oberhausen",
+     "opt": false
+    },
+    {
+     "id": "Duisburg Hbf",
+     "name": "Duisburg",
+     "opt": false
+    },
+    {
+     "id": "Düsseldorf Hbf",
+     "name": "Düsseldorf",
+     "opt": false
+    },
+    {
+     "id": "Köln Hbf",
+     "name": "Köln",
+     "opt": false
+    },
+    {
+     "id": "Siegburg/Bonn",
+     "name": "Siegburg/Bonn",
+     "opt": false
+    },
+    {
+     "id": "Frankfurt Flughafen Fernbahnhof",
+     "name": "Frankfurt Flughafen",
+     "opt": false
+    },
+    {
+     "id": "Frankfurt (Main) Hbf",
+     "name": "Frankfurt",
+     "opt": false
+    }
+   ]
+  ],
+  "fahrzeuge": "",
+  "farbe": "#F50707",
+  "sprinter": false
+ },
+ {
+  "nr": "79",
+  "verlauf": [
+   [
+    {
+     "id": "Brüssel-Süd",
+     "name": "Bruxelles-Midi",
+     "opt": false
+    },
+    {
+     "id": "Brüssel Nord",
+     "name": "Bruxelles-Nord",
+     "opt": false
+    },
+    {
+     "id": "Liège-Guillemins",
+     "name": "Liège-Guillemins",
+     "opt": false
+    },
+    {
+     "id": "Aachen Hbf",
+     "name": "Aachen",
+     "opt": false
+    },
+    {
+     "id": "Köln Hbf",
+     "name": "Köln",
+     "opt": false
+    },
+    {
+     "id": "Frankfurt Flughafen Fernbahnhof",
+     "name": "Frankfurt Flughafen",
+     "opt": false
+    },
+    {
+     "id": "Frankfurt (Main) Hbf",
+     "name": "Frankfurt",
+     "opt": false
+    }
+   ],
+   [
+    {
+     "id": "Antwerpen Centraal",
+     "name": "Antwerpen Centraal",
+     "opt": false
+    },
+    {
+     "id": "Flughafen Brüssel-Zaventem",
+     "name": "Flughafen Brüssel-Zaventem",
+     "opt": false
+    },
+    {
+     "id": "Leuven",
+     "name": "Löwen",
+     "opt": false
+    },
+    {
+     "id": "Liège-Guillemins",
+     "name": "Liège-Guillemins",
+     "opt": false
+    },
+    {
+     "id": "Aachen Hbf",
+     "name": "Aachen",
+     "opt": false
+    },
+    {
+     "id": "Köln Hbf",
+     "name": "Köln",
+     "opt": false
+    }
+   ]
+  ],
+  "fahrzeuge": "",
+  "farbe": "#279C90",
+  "sprinter": false
+ },
+ {
+  "nr": "82",
+  "verlauf": [
+   [
+    {
+     "id": "Frankfurt (Main) Hbf",
+     "name": "Frankfurt",
+     "opt": false
+    },
+    {
+     "id": "Mannheim Hbf",
+     "name": "Mannheim",
+     "opt": false
+    },
+    {
+     "id": "Kaiserslautern Hbf",
+     "name": "Kaiserslautern",
+     "opt": false
+    },
+    {
+     "id": "Saarbrücken Hbf",
+     "name": "Saarbrücken",
+     "opt": false
+    },
+    {
+     "id": "Forbach (Moselle)",
+     "name": "Forbach",
+     "opt": true
+    },
+    {
+     "id": "Paris Gare de l’Est",
+     "name": "Paris Est",
+     "opt": false
+    }
+   ],
+   [
+    {
+     "id": "Frankfurt (Main) Hbf",
+     "name": "Frankfurt",
+     "opt": false
+    },
+    {
+     "id": "Mannheim Hbf",
+     "name": "Mannheim",
+     "opt": false
+    },
+    {
+     "id": "Karlsruhe Hbf",
+     "name": "Karlsruhe",
+     "opt": false
+    },
+    {
+     "id": "Strasbourg",
+     "name": "Strasbourg",
+     "opt": false
+    },
+    {
+     "id": "Paris Gare de l’Est",
+     "name": "Paris Est",
+     "opt": false
+    }
+   ]
+  ],
+  "fahrzeuge": "ICE 3",
+  "farbe": "#E807F0",
+  "sprinter": false
+ },
+ {
+  "nr": "83",
+  "verlauf": [
+   [
+    {
+     "id": "München Hbf",
+     "name": "München",
+     "opt": true
+    },
+    {
+     "id": "Augsburg Hbf",
+     "name": "Augsburg",
+     "opt": true
+    },
+    {
+     "id": "Ulm Hbf",
+     "name": "Ulm",
+     "opt": true
+    },
+    {
+     "id": "Stuttgart Hbf",
+     "name": "Stuttgart",
+     "opt": false
+    },
+    {
+     "id": "Karlsruhe Hbf",
+     "name": "Karlsruhe",
+     "opt": false
+    },
+    {
+     "id": "Strasbourg",
+     "name": "Strasbourg",
+     "opt": false
+    },
+    {
+     "id": "Paris Gare de l’Est",
+     "name": "Paris Est",
+     "opt": false
+    }
+   ]
+  ],
+  "fahrzeuge": "ICE 3",
+  "farbe": "#F00707",
+  "sprinter": false
+ },
+ {
+  "nr": "84",
+  "verlauf": [
+   [
+    {
+     "id": "Frankfurt (Main) Hbf",
+     "name": "Frankfurt",
+     "opt": false
+    },
+    {
+     "id": "Mannheim Hbf",
+     "name": "Mannheim",
+     "opt": false
+    },
+    {
+     "id": "Karlsruhe Hbf",
+     "name": "Karlsruhe",
+     "opt": false
+    },
+    {
+     "id": "Baden-Baden",
+     "name": "Baden-Baden",
+     "opt": false
+    },
+    {
+     "id": "Strasbourg",
+     "name": "Strasbourg",
+     "opt": false
+    },
+    {
+     "id": "Mulhouse-Ville",
+     "name": "Mulhouse-Ville",
+     "opt": false
+    },
+    {
+     "id": "Belfort-Montbéliard TGV",
+     "name": "Belfort-Montbéliard",
+     "opt": false
+    },
+    {
+     "id": "Besançon Franche-Comté TGV",
+     "name": "Besançon",
+     "opt": false
+    },
+    {
+     "id": "Chalon-sur-Saône",
+     "name": "Chalon-sur-Saône",
+     "opt": false
+    },
+    {
+     "id": "Lyon-Part-Dieu",
+     "name": "Lyon-Part-Dieu",
+     "opt": false
+    },
+    {
+     "id": "Avignon TGV",
+     "name": "Avignon",
+     "opt": false
+    },
+    {
+     "id": "Aix-en-Provence TGV",
+     "name": "Aix-en-Provence",
+     "opt": false
+    },
+    {
+     "id": "Marseille-Saint-Charles",
+     "name": "Marseille-Saint-Charles",
+     "opt": false
+    }
+   ]
+  ],
+  "fahrzeuge": "",
+  "farbe": "#F0B907",
+  "sprinter": false
+ },
+ {
+  "nr": "85",
+  "verlauf": [
+   [
+    {
+     "id": "Frankfurt (Main) Hbf",
+     "name": "Frankfurt",
+     "opt": false
+    },
+    {
+     "id": "Mannheim Hbf",
+     "name": "Mannheim",
+     "opt": false
+    },
+    {
+     "id": "Karlsruhe Hbf",
+     "name": "Karlsruhe",
+     "opt": false
+    },
+    {
+     "id": "Ringsheim",
+     "name": "Ringsheim",
+     "opt": false
+    },
+    {
+     "id": "Freiburg (Breisgau) Hbf",
+     "name": "Freiburg",
+     "opt": false
+    },
+    {
+     "id": "Basel Badischer Bahnhof",
+     "name": "Basel Bad",
+     "opt": false
+    },
+    {
+     "id": "Basel SBB",
+     "name": "Basel SBB",
+     "opt": false
+    },
+    {
+     "id": "Zürich Hbf",
+     "name": "Zürich",
+     "opt": false
+    },
+    {
+     "id": "Zug",
+     "name": "Zug",
+     "opt": false
+    },
+    {
+     "id": "Arth-Goldau",
+     "name": "Arth-Goldau",
+     "opt": false
+    },
+    {
+     "id": "Bellinzona",
+     "name": "Bellinzona",
+     "opt": false
+    },
+    {
+     "id": "Lugano",
+     "name": "Lugano",
+     "opt": false
+    },
+    {
+     "id": "Chiasso",
+     "name": "Chiasso",
+     "opt": false
+    },
+    {
+     "id": "Como San Giovanni",
+     "name": "Como",
+     "opt": false
+    },
+    {
+     "id": "Milano Centrale",
+     "name": "Milano",
+     "opt": false
+    }
+   ]
+  ],
+  "fahrzeuge": "",
+  "farbe": "#178748",
+  "sprinter": false
+ },
+ {
+  "nr": "88",
+  "verlauf": [
+   [
+    {
+     "id": "München Hbf",
+     "name": "München",
+     "opt": false
+    },
+    {
+     "id": "Buchloe",
+     "name": "Buchloe",
+     "opt": false
+    },
+    {
+     "id": "Memmingen",
+     "name": "Memmingen",
+     "opt": false
+    },
+    {
+     "id": "Lindau-Reutin",
+     "name": "Lindau-Reutin",
+     "opt": false
+    },
+    {
+     "id": "Bregenz",
+     "name": "Bregenz",
+     "opt": false
+    },
+    {
+     "id": "St. Margrethen",
+     "name": "St. Margrethen",
+     "opt": false
+    },
+    {
+     "id": "St. Gallen",
+     "name": "St. Gallen",
+     "opt": false
+    },
+    {
+     "id": "Winterthur",
+     "name": "Winterthur",
+     "opt": false
+    },
+    {
+     "id": "Zürich Flughafen",
+     "name": "Zürich Flughafen",
+     "opt": false
+    },
+    {
+     "id": "Zürich Hbf",
+     "name": "Zürich",
+     "opt": false
+    }
+   ]
+  ],
+  "fahrzeuge": "",
+  "farbe": "#F013E8",
+  "sprinter": false
+ },
+ {
+  "nr": "89",
+  "verlauf": [
+   [
+    {
+     "id": "München Hbf",
+     "name": "München",
+     "opt": false
+    },
+    {
+     "id": "München Ost",
+     "name": "München Ost",
+     "opt": false
+    },
+    {
+     "id": "Rosenheim",
+     "name": "Rosenheim",
+     "opt": false
+    },
+    {
+     "id": "Kufstein",
+     "name": "Kufstein",
+     "opt": false
+    },
+    {
+     "id": "Wörgl Hbf",
+     "name": "Wörgl",
+     "opt": false
+    },
+    {
+     "id": "Jenbach",
+     "name": "Jenbach",
+     "opt": false
+    },
+    {
+     "id": "Innsbruck Hbf",
+     "name": "Innsbruck",
+     "opt": false
+    },
+    {
+     "id": "Pfaffenhofen (Tirol)",
+     "name": "Telfs-Pfaffenhofen",
+     "opt": false
+    },
+    {
+     "id": "Ötztal",
+     "name": "Ötztal",
+     "opt": false
+    },
+    {
+     "id": "Imst",
+     "name": "Imst-Pitztal",
+     "opt": false
+    },
+    {
+     "id": "Landeck-Zams",
+     "name": "Landeck-Zams",
+     "opt": false
+    },
+    {
+     "id": "St. Anton am Arlberg",
+     "name": "St. Anton",
+     "opt": false
+    },
+    {
+     "id": "Langen am Arlberg",
+     "name": "Langen",
+     "opt": true
+    },
+    {
+     "id": "Bludenz",
+     "name": "Bludenz",
+     "opt": true
+    },
+    {
+     "id": "Feldkirch",
+     "name": "Feldkirch",
+     "opt": true
+    }
+   ],
+   [
+    {
+     "id": "München Hbf",
+     "name": "München",
+     "opt": false
+    },
+    {
+     "id": "München Ost",
+     "name": "München Ost",
+     "opt": false
+    },
+    {
+     "id": "Rosenheim",
+     "name": "Rosenheim",
+     "opt": false
+    },
+    {
+     "id": "Kufstein",
+     "name": "Kufstein",
+     "opt": false
+    },
+    {
+     "id": "Wörgl Hbf",
+     "name": "Wörgl",
+     "opt": false
+    },
+    {
+     "id": "Jenbach",
+     "name": "Jenbach",
+     "opt": false
+    },
+    {
+     "id": "Innsbruck Hbf",
+     "name": "Innsbruck",
+     "opt": false
+    },
+    {
+     "id": "Brenner",
+     "name": "Brenner",
+     "opt": false
+    },
+    {
+     "id": "Franzensfeste",
+     "name": "Franzensfeste",
+     "opt": true
+    },
+    {
+     "id": "Brixen",
+     "name": "Brixen",
+     "opt": false
+    },
+    {
+     "id": "Bozen",
+     "name": "Bozen",
+     "opt": false
+    },
+    {
+     "id": "Trient",
+     "name": "Trento",
+     "opt": false
+    },
+    {
+     "id": "Rovereto",
+     "name": "Rovereto",
+     "opt": false
+    },
+    {
+     "id": "Verona Porta Nuova",
+     "name": "Verona Porta Nuova",
+     "opt": false
+    },
+    {
+     "id": "Vicenza",
+     "name": "Vicenza",
+     "opt": false
+    },
+    {
+     "id": "Padua",
+     "name": "Padova",
+     "opt": false
+    },
+    {
+     "id": "Venezia Mestre",
+     "name": "Venezia Mestre",
+     "opt": false
+    },
+    {
+     "id": "Venezia Santa Lucia",
+     "name": "Venezia Santa Lucia",
+     "opt": false
+    }
+   ],
+   [
+    {
+     "id": "München Hbf",
+     "name": "München",
+     "opt": false
+    },
+    {
+     "id": "München Ost",
+     "name": "München Ost",
+     "opt": false
+    },
+    {
+     "id": "Rosenheim",
+     "name": "Rosenheim",
+     "opt": false
+    },
+    {
+     "id": "Kufstein",
+     "name": "Kufstein",
+     "opt": false
+    },
+    {
+     "id": "Wörgl Hbf",
+     "name": "Wörgl",
+     "opt": false
+    },
+    {
+     "id": "Jenbach",
+     "name": "Jenbach",
+     "opt": false
+    },
+    {
+     "id": "Innsbruck Hbf",
+     "name": "Innsbruck",
+     "opt": false
+    },
+    {
+     "id": "Brenner",
+     "name": "Brenner",
+     "opt": false
+    },
+    {
+     "id": "Franzensfeste",
+     "name": "Franzensfeste",
+     "opt": true
+    },
+    {
+     "id": "Brixen",
+     "name": "Brixen",
+     "opt": false
+    },
+    {
+     "id": "Bozen",
+     "name": "Bozen",
+     "opt": false
+    },
+    {
+     "id": "Trient",
+     "name": "Trento",
+     "opt": false
+    },
+    {
+     "id": "Rovereto",
+     "name": "Rovereto",
+     "opt": false
+    },
+    {
+     "id": "Verona Porta Nuova",
+     "name": "Verona Porta Nuova",
+     "opt": false
+    },
+    {
+     "id": "Bologna Centrale",
+     "name": "Bologna",
+     "opt": false
+    },
+    {
+     "id": "Cesena",
+     "name": "Cesena",
+     "opt": true
+    },
+    {
+     "id": "Rimini",
+     "name": "Rimini",
+     "opt": true
+    },
+    {
+     "id": "Riccione",
+     "name": "Riccione",
+     "opt": true
+    },
+    {
+     "id": "Cattolica",
+     "name": "Cattolica San Giovanni G.",
+     "opt": true
+    },
+    {
+     "id": "Pesaro",
+     "name": "Pesaro",
+     "opt": true
+    },
+    {
+     "id": "Senigallia",
+     "name": "Senigallia",
+     "opt": true
+    },
+    {
+     "id": "Ancona",
+     "name": "Ancona",
+     "opt": true
+    }
+   ]
+  ],
+  "fahrzeuge": "",
+  "farbe": "#AD0755",
+  "sprinter": false
+ },
+ {
+  "nr": "90",
+  "verlauf": [
+   [
+    {
+     "id": "München Hbf",
+     "name": "München",
+     "opt": false
+    },
+    {
+     "id": "Salzburg Hbf",
+     "name": "Salzburg",
+     "opt": false
+    },
+    {
+     "id": "Linz Hbf",
+     "name": "Linz",
+     "opt": false
+    },
+    {
+     "id": "St. Pölten Hbf",
+     "name": "St. Pölten",
+     "opt": false
+    },
+    {
+     "id": "Wien Meidling",
+     "name": "Wien Meidling",
+     "opt": false
+    },
+    {
+     "id": "Wien Hbf",
+     "name": "Wien",
+     "opt": false
+    },
+    {
+     "id": "Hegyeshalom",
+     "name": "Hegyeshalom",
+     "opt": false
+    },
+    {
+     "id": "Mosonmagyaróvár",
+     "name": "Mosonmagyaróvár",
+     "opt": false
+    },
+    {
+     "id": "Györ",
+     "name": "Győr",
+     "opt": false
+    },
+    {
+     "id": "Tatabánya",
+     "name": "Tatabánya",
+     "opt": false
+    },
+    {
+     "id": "Kelenföld",
+     "name": "Kelenföld",
+     "opt": false
+    },
+    {
+     "id": "Budapest Keleti pályaudvar",
+     "name": "Budapest Keleti",
+     "opt": false
+    }
+   ]
+  ],
+  "fahrzeuge": "",
+  "farbe": "#ED1111",
+  "sprinter": false
+ },
+ {
+  "nr": "91",
+  "verlauf": [
+   [
+    {
+     "id": "Dortmund Hbf",
+     "name": "Dortmund",
+     "opt": true
+    },
+    {
+     "id": "Bochum Hbf",
+     "name": "Bochum",
+     "opt": true
+    },
+    {
+     "id": "Essen Hbf",
+     "name": "Essen",
+     "opt": true
+    },
+    {
+     "id": "Duisburg Hbf",
+     "name": "Duisburg",
+     "opt": true
+    },
+    {
+     "id": "Düsseldorf Hbf",
+     "name": "Düsseldorf",
+     "opt": true
+    },
+    {
+     "id": "Köln Hbf",
+     "name": "Köln",
+     "opt": true
+    },
+    {
+     "id": "Bonn Hbf",
+     "name": "Bonn",
+     "opt": true
+    },
+    {
+     "id": "Koblenz Hbf",
+     "name": "Koblenz",
+     "opt": true
+    },
+    {
+     "id": "Mainz Hbf",
+     "name": "Mainz",
+     "opt": true
+    },
+    {
+     "id": "Frankfurt Flughafen Fernbahnhof",
+     "name": "Frankfurt Flughafen",
+     "opt": true
+    },
+    {
+     "id": "Frankfurt (Main) Hbf",
+     "name": "Frankfurt",
+     "opt": false
+    },
+    {
+     "id": "Hanau Hbf",
+     "name": "Hanau",
+     "opt": false
+    },
+    {
+     "id": "Aschaffenburg Hbf",
+     "name": "Aschaffenburg",
+     "opt": true
+    },
+    {
+     "id": "Würzburg Hbf",
+     "name": "Würzburg",
+     "opt": false
+    },
+    {
+     "id": "Nürnberg Hbf",
+     "name": "Nürnberg",
+     "opt": false
+    },
+    {
+     "id": "Regensburg Hbf",
+     "name": "Regensburg",
+     "opt": false
+    },
+    {
+     "id": "Plattling",
+     "name": "Plattling",
+     "opt": false
+    },
+    {
+     "id": "Passau Hbf",
+     "name": "Passau",
+     "opt": false
+    },
+    {
+     "id": "Schärding",
+     "name": "Schärding",
+     "opt": true
+    },
+    {
+     "id": "Wels Hbf",
+     "name": "Wels",
+     "opt": true
+    },
+    {
+     "id": "Linz Hbf",
+     "name": "Linz",
+     "opt": false
+    },
+    {
+     "id": "Amstetten",
+     "name": "Amstetten",
+     "opt": true
+    },
+    {
+     "id": "St. Pölten Hbf",
+     "name": "St. Pölten",
+     "opt": false
+    },
+    {
+     "id": "Tullnerfeld",
+     "name": "Tullnerfeld",
+     "opt": true
+    },
+    {
+     "id": "Wien Meidling",
+     "name": "Wien Meidling",
+     "opt": false
+    },
+    {
+     "id": "Wien Hbf",
+     "name": "Wien",
+     "opt": false
+    }
+   ],
+   [
+    {
+     "id": "Dortmund Hbf",
+     "name": "Dortmund",
+     "opt": true
+    },
+    {
+     "id": "Hagen Hbf",
+     "name": "Hagen",
+     "opt": true
+    },
+    {
+     "id": "Wuppertal Hbf",
+     "name": "Wuppertal",
+     "opt": true
+    },
+    {
+     "id": "Solingen Hbf",
+     "name": "Solingen",
+     "opt": true
+    },
+    {
+     "id": "Köln Hbf",
+     "name": "Köln",
+     "opt": true
+    },
+    {
+     "id": "Bonn Hbf",
+     "name": "Bonn",
+     "opt": true
+    },
+    {
+     "id": "Koblenz Hbf",
+     "name": "Koblenz",
+     "opt": true
+    },
+    {
+     "id": "Mainz Hbf",
+     "name": "Mainz",
+     "opt": true
+    },
+    {
+     "id": "Frankfurt Flughafen Fernbahnhof",
+     "name": "Frankfurt Flughafen",
+     "opt": true
+    },
+    {
+     "id": "Frankfurt (Main) Hbf",
+     "name": "Frankfurt",
+     "opt": false
+    },
+    {
+     "id": "Hanau Hbf",
+     "name": "Hanau",
+     "opt": false
+    },
+    {
+     "id": "Aschaffenburg Hbf",
+     "name": "Aschaffenburg",
+     "opt": true
+    },
+    {
+     "id": "Würzburg Hbf",
+     "name": "Würzburg",
+     "opt": false
+    },
+    {
+     "id": "Nürnberg Hbf",
+     "name": "Nürnberg",
+     "opt": false
+    },
+    {
+     "id": "Regensburg Hbf",
+     "name": "Regensburg",
+     "opt": false
+    },
+    {
+     "id": "Plattling",
+     "name": "Plattling",
+     "opt": false
+    },
+    {
+     "id": "Passau Hbf",
+     "name": "Passau",
+     "opt": false
+    },
+    {
+     "id": "Schärding",
+     "name": "Schärding",
+     "opt": true
+    },
+    {
+     "id": "Wels Hbf",
+     "name": "Wels",
+     "opt": true
+    },
+    {
+     "id": "Linz Hbf",
+     "name": "Linz",
+     "opt": false
+    },
+    {
+     "id": "Amstetten",
+     "name": "Amstetten",
+     "opt": true
+    },
+    {
+     "id": "St. Pölten Hbf",
+     "name": "St. Pölten",
+     "opt": false
+    },
+    {
+     "id": "Tullnerfeld",
+     "name": "Tullnerfeld",
+     "opt": true
+    },
+    {
+     "id": "Wien Meidling",
+     "name": "Wien Meidling",
+     "opt": false
+    },
+    {
+     "id": "Wien Hbf",
+     "name": "Wien",
+     "opt": false
+    }
+   ],
+   [
+    {
+     "id": "Hamburg-Altona",
+     "name": "Hamburg-Altona",
+     "opt": true
+    },
+    {
+     "id": "Hamburg Dammtor",
+     "name": "Hamburg Dammtor",
+     "opt": true
+    },
+    {
+     "id": "Hamburg Hbf",
+     "name": "Hamburg",
+     "opt": true
+    },
+    {
+     "id": "Hamburg-Harburg",
+     "name": "Hamburg-Harburg",
+     "opt": true
+    },
+    {
+     "id": "Hannover Hbf",
+     "name": "Hannover",
+     "opt": true
+    },
+    {
+     "id": "Göttingen",
+     "name": "Göttingen",
+     "opt": true
+    },
+    {
+     "id": "Kassel-Wilhelmshöhe",
+     "name": "Kassel-Wilhelmshöhe",
+     "opt": true
+    },
+    {
+     "id": "Fulda",
+     "name": "Fulda",
+     "opt": true
+    },
+    {
+     "id": "Würzburg Hbf",
+     "name": "Würzburg",
+     "opt": false
+    },
+    {
+     "id": "Nürnberg Hbf",
+     "name": "Nürnberg",
+     "opt": false
+    },
+    {
+     "id": "Regensburg Hbf",
+     "name": "Regensburg",
+     "opt": false
+    },
+    {
+     "id": "Plattling",
+     "name": "Plattling",
+     "opt": false
+    },
+    {
+     "id": "Passau Hbf",
+     "name": "Passau",
+     "opt": false
+    },
+    {
+     "id": "Schärding",
+     "name": "Schärding",
+     "opt": true
+    },
+    {
+     "id": "Wels Hbf",
+     "name": "Wels",
+     "opt": true
+    },
+    {
+     "id": "Linz Hbf",
+     "name": "Linz",
+     "opt": false
+    },
+    {
+     "id": "Amstetten",
+     "name": "Amstetten",
+     "opt": true
+    },
+    {
+     "id": "St. Pölten Hbf",
+     "name": "St. Pölten",
+     "opt": false
+    },
+    {
+     "id": "Tullnerfeld",
+     "name": "Tullnerfeld",
+     "opt": true
+    },
+    {
+     "id": "Wien Meidling",
+     "name": "Wien Meidling",
+     "opt": false
+    },
+    {
+     "id": "Wien Hbf",
+     "name": "Wien",
+     "opt": false
+    }
+   ]
+  ],
+  "fahrzeuge": "ICE T",
+  "farbe": "#877E40",
+  "sprinter": false
+ }
+]

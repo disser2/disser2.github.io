@@ -1,0 +1,1351 @@
+[[Datei:ICE-Logo.svg|110px|alt=|rahmenlos|rand|rechts|ICE-Logo der DB AG (seit 1990)]]
+[[Datei:Germany - ICE line network, train frequencies and top speeds.svg|mini|hochkant=1.5|Takte und zulässige Höchstgeschwindigkeiten im deutschen ICE-Netz (2022)]]
+
+Die '''Liste der Intercity-Express-Linien''' enthält alle [[Intercity-Express]]-[[Verkehrslinie|Linien]] (ICE).<ref>{{DBAG-ICE-Netzplan-URL}}</ref> Das Netz umfasst 39 reguläre sowie fünf [[ICE-Sprinter]]-Linien.
+
+== Legende ==
+; Linie
+: Nennt die offizielle Bezeichnung der [[DB Fernverkehr]] für die jeweilige Linie. Manche Linien, die sich sehr verzweigen, sind in einzelne Streckenabschnitte gegliedert, die jedoch von der offiziellen Linienbezeichnung abweichen.
+
+; Linienverlauf
+: Der Verlauf stellt alle Halte auf einer Strecke dar. Halte, die nur durch einzelne Züge am Tag bedient werden, aber mehrfach täglich durchfahren bzw. umfahren werden, sind ''kursiv'' dargestellt.
+
+; Fahrzeuge
+: Diese Spalte zeigt an, welche ICE-Baureihe in der Regel auf dieser Linie verkehrt.
+
+== Aktuelle Linien (2026) ==
+=== {{Anker|Akt0X}} ICE Sprinter 1–9 (12/2025) ===
+
+Die Linien 1, 3, 4, 6 und 9 sind ICE-Sprinter-Linien, die Großstädte mit wenigen Zwischenhalten verbinden. Zurzeit verbinden ICE Sprinter Berlin mit Frankfurt am Main (Linie 3), mit Stuttgart (Linie 6) und mit Köln und Bonn (Linie 9), Hamburg mit Hannover und Frankfurt am Main (Linie 4) sowie Essen, Duisburg, Düsseldorf und Köln (Linie 1).
+
+Des Weiteren werden die ICE der Relation Frankfurt&nbsp;(M)–Paris mit Laufweg über Strasbourg sowie Teile der auf der Schnellfahrstrecke Köln–Rhein/Main verkehrenden ICE-Linie 41 / 47 auf diesem Teilabschnitt zu den Sprintern gezählt.
+
+Einige der ICE Sprinter verkehren über ihren „Sprinter-Laufweg“ hinaus als klassische ICE und bedienen dann reguläre ICE-Systemhalte.
+
+{| class="wikitable"
+|-
+! Liniennummer
+! colspan="2" | Linienverlauf
+! Fahrzeuge
+|-
+| {{Bahnlinie|ICE|1|ICE}} (1120/1121, 1122/1123, 1520/1521)
+| colspan="2" | [[Hamburg Hauptbahnhof|Hamburg]]&nbsp;- [[Düsseldorf Hauptbahnhof|Düsseldorf]]&nbsp;- [[Köln Hauptbahnhof|Köln]]
+| [[ICE 1]], [[ICE T]]
+|-
+| rowspan="2" | {{Bahnlinie|ICE|3|ICE}} (1130/1131, 1134/1135, 1138/1139)
+| rowspan="2" | [[Bahnhof Berlin Südkreuz|Berlin Südkreuz]]&nbsp;- [[Berlin Hauptbahnhof|Berlin]]&nbsp;- [[Frankfurt (Main) Hauptbahnhof|Frankfurt]]&nbsp;- 
+| [[Frankfurt Flughafen Fernbahnhof|Frankfurt Flughafen (Fern)]] (- [[Mannheim Hauptbahnhof|Mannheim]]&nbsp;- [[Saarbrücken Hauptbahnhof|Saarbrücken]])
+| rowspan="2" | [[ICE 1]], [[ICE 2]]
+|-
+| [[Frankfurt am Main Flughafen Regionalbahnhof|Frankfurt Flughafen (Regio)]]
+|-
+| {{Bahnlinie|ICE|4|ICE}} (1070/1071, 1072/1073, 1074/1077, 1186/1187)
+| colspan="2" | ([[Padborg]]/[[Bahnhof Flensburg|Flensburg]]&nbsp;- ) [[Hamburg Hauptbahnhof|Hamburg]]&nbsp;– [[Hannover Hauptbahnhof|Hannover]]&nbsp;– [[Frankfurt (Main) Hauptbahnhof|Frankfurt]] (- [[Frankfurt am Main Flughafen Regionalbahnhof|Frankfurt Flughafen (Regio)]])
+| [[ICE 1]], [[ICE 4]], [[ICE T]]
+|-
+| {{Bahnlinie|ICE|6|ICE}} (1162/1163)
+| colspan="2" | {{nowrap|[[Bahnhof Berlin Gesundbrunnen|Berlin Gesundbrunnen]] –}} [[Berlin Hauptbahnhof|Berlin]]&nbsp;– [[Nürnberg Hauptbahnhof|Nürnberg]]&nbsp;– [[Stuttgart Hauptbahnhof|Stuttgart]]
+| [[ICE 3]]
+|-
+| {{Bahnlinie|ICE|9|ICE}} (1059, 1154/1155, 1156/1157, 1158/1159)
+| colspan="2" | {{nowrap|[[Berlin Ostbahnhof]]/[[Bahnhof Berlin Südkreuz|Berlin Südkreuz]] –}} [[Berlin Hauptbahnhof|Berlin]]&nbsp;– {{nowrap|[[Bahnhof Berlin-Spandau|Berlin-Spandau]] –}} [[Köln Hauptbahnhof|Köln]]&nbsp;– [[Bonn Hauptbahnhof|Bonn]]
+| [[ICE 1]], [[ICE 2]], [[ICE 4]]
+|}
+
+
+Ab dem 2. Oktober verkehrt ein Zugpaar der Linie {{Bahnlinie|ICE|2|ICE}} von Gesundbrunnen zum Regionalbahnhof des Frankfurter Flughafens. Die restlichen Zugpaare dieser Linie entfallen ab dem 1. Oktober.
+
+{| class="wikitable"
+! Linienverlauf
+|-
+| [[Bahnhof Berlin Gesundbrunnen|Berlin Gesundbrunnen]]&nbsp;- [[Berlin Hauptbahnhof|Berlin]]&nbsp;- [[Bahnhof Berlin Südkreuz|Berlin Südkreuz]]&nbsp;- [[Frankfurt (Main) Hauptbahnhof|Frankfurt]]&nbsp;- [[Frankfurt Flughafen Regionalbahnhof|Frankfurt Flughafen (Regio)]]
+|}
+
+=== Linien 10–16, 19 und 21 ===
+Die Linien beginnen in Berlin. Die Linien 10, 14 und 19 starten am Ostbahnhof in Richtung Köln, die Linien 12 und 13 verkehren vom Berliner Ostbahnhof über Braunschweig nach Frankfurt, und die Linien 11 und 15 fahren von der Tiefebene des Berliner Hauptbahnhofs über Erfurt nach Frankfurt. Einzelne Züge beginnen/enden in Berlin Gesundbrunnen (11, 15), Berlin Südkreuz (13), Warnemünde bzw. Rostock (11), Binz bzw. Stralsund (15) und Hamburg (11, 15). Die Linie 16 verkehrt von Berlin nach Frankfurt, meist als Sprinter über die [[Güterumgehungsbahn Hannover]]. Die Linie 21 verkehrt von Berlin nach Binz.
+
+==== Linie 10 ====
+Die Linie 10 verbindet stündlich Berlin über Hannover mit [[Nordrhein-Westfalen]]. Dabei wird der Zug in Hamm nur noch alle 2 Stunden geflügelt. Ein Zugteil verkehrt nachfolgend über das [[Ruhrgebiet]] nach Düsseldorf, teilweise weiter nach Köln. Der andere Zugteil führt durch das [[Bergisches Land|Bergische Land]] nach Köln. Seit Dezember 2023 verkehrt alle 2 Stunden der Zug ohne Flügelung in Hamm durch das Ruhrgebiet und hält zusätzlich in Minden.
+
+{| class="wikitable" style="width:100%"
+|-
+! Linie
+! colspan="3" | Linienverlauf
+! Fahrzeuge
+|-
+| rowspan="2" style="color:#1464A6;" | '''ICE&nbsp;10'''
+| rowspan="2" | {{nowrap|[[Berlin Ostbahnhof]] –}} [[Berlin Hauptbahnhof|Berlin]]&nbsp;– {{nowrap|[[Bahnhof Berlin-Spandau|Berlin-Spandau]] –}} ''[[Stendal Hauptbahnhof|Stendal]]&nbsp;–'' [[Wolfsburg Hauptbahnhof|Wolfsburg]]&nbsp;– [[Hannover Hauptbahnhof|Hannover]]&nbsp;–
+| rowspan="2" | ''[[Bahnhof Minden (Westfalen)|Minden]]&nbsp;–'' [[Bielefeld Hauptbahnhof|Bielefeld]]&nbsp;– [[Hamm (Westfalen) Hauptbahnhof|Hamm]]&nbsp;–
+| [[Dortmund Hauptbahnhof|Dortmund]]&nbsp;– [[Bochum Hauptbahnhof|Bochum]]&nbsp;– [[Essen Hauptbahnhof|Essen]]&nbsp;– [[Duisburg Hauptbahnhof|Duisburg]]&nbsp;– {{nowrap|[[Bahnhof Düsseldorf Flughafen|Düsseldorf Flughafen]] –}} [[Düsseldorf Hauptbahnhof|Düsseldorf]]''&nbsp;– [[Köln Hauptbahnhof|Köln]]&nbsp;''
+| rowspan="2" | [[ICE 2]], [[ICE 4]] (7-teilig)
+|-
+| [[Hagen Hauptbahnhof|Hagen]]&nbsp;– [[Wuppertal Hauptbahnhof|Wuppertal]]&nbsp;– [[Köln Hauptbahnhof|Köln]]
+|}
+
+Ein Zugpaar dieser Linie fuhr ab Hannover abweichend des üblichen Laufwegs über Bremen nach Oldenburg (Oldb) und zurück. Dieses Zugpaar wird im Jahresfahrplan 2026 nicht mehr angeboten, da seitdem alle 4 Stunden eine eigene ICE-Linie zwischen Berlin und Bremen verkehrt.
+
+Ab Düsseldorf fährt täglich ein Zug (ICE 846) dieser Linie über Neuss nach Mönchengladbach und sonntags weiter bis Aachen.
+
+{| class="wikitable"
+! Linienverlauf
+|-
+| ... – [[Neuss Hauptbahnhof|Neuss]]&nbsp;– [[Mönchengladbach Hauptbahnhof|Mönchengladbach]]''&nbsp;– [[Rheydt Hauptbahnhof|Rheydt]]&nbsp;– [[Bahnhof Erkelenz|Erkelenz]]&nbsp;– [[Bahnhof Geilenkirchen|Geilenkirchen]]&nbsp;– [[Aachen Hauptbahnhof|Aachen]]''
+|}
+
+==== Linie 11 ====
+Die Linie 11 verkehrt im Zweistundentakt von Berlin durch Mitteldeutschland nach München. Die Züge befahren [[Neubaustrecke Erfurt–Leipzig/Halle|zwischen Leipzig und Erfurt]] sowie [[Schnellfahrstrecke Mannheim–Stuttgart|zwischen Mannheim und Stuttgart]] die jeweiligen Schnellfahrstrecken. Einzelne Züge beginnen bereits in Hamburg-Altona. Die in Berlin beginnenden Züge starten in der Regel in Berlin-Gesundbrunnen. Seit Dezember 2022 wird die Linie über die [[Neubaustrecke Wendlingen–Ulm]] geführt.<ref name="dvwg-2021-12-13-1731" />
+
+{| class="wikitable" style="width:100%"
+|-
+! Linie
+! Linienverlauf
+! Fahrzeuge
+|-
+| style="color:#63E0B0;" | '''ICE&nbsp;11'''
+| [[Bahnhof Berlin Gesundbrunnen|Berlin Gesundbrunnen]] – [[Berlin Hauptbahnhof|Berlin Hbf]]&nbsp;– {{nowrap|[[Bahnhof Berlin Südkreuz|Berlin Südkreuz]] –}} {{nowrap|[[Lutherstadt Wittenberg Hauptbahnhof|Wittenberg]] –}} [[Leipzig Hauptbahnhof|Leipzig]]&nbsp;– [[Erfurt Hauptbahnhof|Erfurt]]&nbsp;– [[Eisenach Hauptbahnhof|Eisenach]]&nbsp;– [[Bahnhof Fulda|Fulda]]&nbsp;– [[Frankfurt (Main) Hauptbahnhof|Frankfurt]]&nbsp;– [[Mannheim Hauptbahnhof|Mannheim]]&nbsp;– [[Stuttgart Hauptbahnhof|Stuttgart]]&nbsp;– [[Ulm Hauptbahnhof|Ulm]]&nbsp;– [[Augsburg Hauptbahnhof|Augsburg]]&nbsp;– {{nowrap|[[Bahnhof München-Pasing|München-Pasing]] –}} [[München Hauptbahnhof|München]]
+| [[ICE 4]]
+|}
+
+==== Linie 12 ====
+Die Linie 12 fährt alle zwei Stunden von Berlin über Braunschweig, Kassel, Frankfurt und Mannheim bis in die [[Schweiz]]. Ab Karlsruhe verläuft sie auf Teilen der noch nicht fertiggestellten [[Neu- und Ausbaustrecke Karlsruhe–Basel]]. Einzelne Züge verkehren über Basel hinaus bis Interlaken bzw. Zürich und Chur. Ab 2026 gibt es eine zusätzliche Verbindung bis Brig.
+
+Zwischen Berlin und Fulda überlagert sich die Linie 12 mit der Linie 13 zum Stundentakt, zwischen Mannheim und Basel mit der Linie 43.
+
+{| class="wikitable" style="width:100%"
+|-
+! Linie
+! colspan="2"| Linienverlauf
+! Fahrzeuge
+|-
+| rowspan="2" style="color:#8A5E3E;" | '''ICE&nbsp;12'''
+| rowspan="2" | {{nowrap|[[Berlin Ostbahnhof]] –}} [[Berlin Hauptbahnhof|Berlin]]&nbsp;– {{nowrap|[[Bahnhof Berlin-Spandau|Berlin-Spandau]] –}} [[Wolfsburg Hauptbahnhof|Wolfsburg]]&nbsp;– [[Braunschweig Hauptbahnhof|Braunschweig]]&nbsp;– [[Hildesheim Hauptbahnhof|Hildesheim]]&nbsp;– [[Bahnhof Göttingen|Göttingen]]&nbsp;– {{nowrap|[[Bahnhof Kassel-Wilhelmshöhe|Kassel-Wilhelmshöhe]] –}} [[Bahnhof Fulda|Fulda]]&nbsp;– [[Hanau Hauptbahnhof|Hanau]]&nbsp;– [[Frankfurt (Main) Hauptbahnhof|Frankfurt]]&nbsp;– [[Mannheim Hauptbahnhof|Mannheim]]&nbsp;– [[Karlsruhe Hauptbahnhof|Karlsruhe]]&nbsp;– ''{{nowrap|[[Bahnhof Baden-Baden|Baden-Baden]] –}}'' [[Bahnhof Offenburg|Offenburg]]&nbsp;– [[Freiburg (Breisgau) Hauptbahnhof|Freiburg]]&nbsp;– {{nowrap|[[Basel Badischer Bahnhof|Basel Bad]] –}} {{nowrap|[[Bahnhof Basel SBB|Basel SBB]] –}}
+| ''[[Liestal#Verkehr|Liestal]]&nbsp;– [[Bahnhof Olten|Olten]]&nbsp;– [[Bahnhof Bern|Bern]]&nbsp;– [[Bahnhof Thun|Thun]]&nbsp;– [[Bahnhof Spiez|Spiez]]&nbsp;– {{nowrap|[[Bahnhof Interlaken West|Interlaken West]] –}} {{nowrap|[[Bahnhof Interlaken Ost|Interlaken Ost]]}}''
+| rowspan="2" | [[ICE 4]]
+|-
+| ''[[Zürich Hauptbahnhof|Zürich]]&nbsp;– [[Bahnhof Sargans|Sargans]]&nbsp;– [[Bahnhof Landquart|Landquart]]&nbsp;– [[Bahnhof Chur|Chur]]''
+|}
+
+Montag bis Samstag fährt als letzter Zug in Richtung Norden ICE&nbsp;272 von Göttingen aus weiter nach Hamburg Hauptbahnhof, wo er gegen 1:30 Uhr ankommt. Der erste Zug (ICE 876) beginnt erst in Kassel-Wilhelmshöhe und verkehrt als [[ICE 2]].
+
+{| class="wikitable"
+|-
+! Linienverlauf
+|-
+| ... – [[Bahnhof Göttingen|Göttingen]]&nbsp;– [[Hannover Hauptbahnhof|Hannover]]&nbsp;– [[Bahnhof Celle|Celle]]&nbsp;– [[Bahnhof Uelzen|Uelzen]]&nbsp;– [[Bahnhof Lüneburg|Lüneburg]]&nbsp;– {{nowrap|[[Bahnhof Hamburg-Harburg|Hamburg-Harburg]] –}} [[Hamburg Hauptbahnhof|Hamburg]]
+|}
+
+Nachts verkehrt täglich ein Zug (ICE 271) ab Berlin auf folgendem Laufweg:
+
+{| class="wikitable"
+! Linienverlauf
+|-
+| {{nowrap|[[Berlin Ostbahnhof]] –}} [[Berlin Hauptbahnhof|Berlin]]&nbsp;– {{nowrap|[[Bahnhof Berlin Zoologischer Garten|Berlin Zoologischer Garten]] –}} {{nowrap|[[Bahnhof Berlin-Spandau|Berlin-Spandau]] –}} [[Stendal Hauptbahnhof|Stendal]]&nbsp;– [[Wolfsburg Hauptbahnhof|Wolfsburg]]&nbsp;– [[Hannover Hauptbahnhof|Hannover]]&nbsp;– [[Bahnhof Göttingen|Göttingen]]&nbsp;– [[Bahnhof Fulda|Fulda]]&nbsp;– ...
+|}
+
+In der Gegenrichtung verkehrt nachts täglich ein Zug (ICE 4) nach Berlin auf folgendem Laufweg:
+
+{| class="wikitable"
+! Linienverlauf
+|-
+| ... – [[Frankfurt (Main) Hauptbahnhof|Frankfurt]]&nbsp;– {{nowrap|[[Frankfurt am Main Flughafen Fernbahnhof|Frankfurt Flughafen]] –}} {{nowrap|[[Bahnhof Frankfurt (Main) Süd|Frankfurt Süd]] –}} [[Hanau Hauptbahnhof|Hanau]]&nbsp;– [[Bahnhof Fulda|Fulda]]&nbsp;– [[Bahnhof Göttingen|Göttingen]]&nbsp;– [[Hannover Hauptbahnhof|Hannover]]&nbsp;– [[Wolfsburg Hauptbahnhof|Wolfsburg]]&nbsp;– [[Stendal Hauptbahnhof|Stendal]]&nbsp;– {{nowrap|[[Bahnhof Berlin-Spandau|Berlin-Spandau]] –}} {{nowrap|[[Bahnhof Berlin Zoologischer Garten|Berlin Zoologischer Garten]] –}} [[Berlin Hauptbahnhof|Berlin]]&nbsp;– {{nowrap|[[Berlin Ostbahnhof]]}}
+|}
+
+==== Linie 13 ====
+Die Linie 13 wurde mit dem Fahrplanwechsel im Dezember 2017 eingeführt. Sie verbindet Berlin und Frankfurt am Main über Braunschweig miteinander. Sie tritt an die Stelle der Linie 11, die seitdem über Erfurt statt über Braunschweig fährt. Die Züge verkehren alle 120 Minuten zwischen Berlin und Frankfurt Süd. Seit dem Fahrplanjahr 2026 fahren die Züge alle 240 Minuten weiter über die Strecken [[Bahnstrecke Frankfurt am Main–Heidelberg|Frankfurt am Main–Heidelberg]] und [[Bahnstrecke Mannheim–Basel|Mannheim–Basel]] nach Karlsruhe, wobei sie sich zwischen Darmstadt und Karlsruhe mit der Linie 26 zum 120 Minuten Takt ergänzt. Der Frankfurter Flughafen wird weiterhin alle 240 Minuten angefahren.
+
+{| class="wikitable"
+|-
+! Linie
+! colspan="2"| Linienverlauf
+! Fahrzeuge
+|-
+| rowspan="3" style="color:#A67DA8;" | '''ICE&nbsp;13'''
+| rowspan="3" | {{nowrap|[[Berlin Ostbahnhof]]/[[Bahnhof Berlin Südkreuz|Berlin Südkreuz]] –}} [[Berlin Hauptbahnhof|Berlin]]&nbsp;– {{nowrap|[[Bahnhof Berlin-Spandau|Berlin-Spandau]] –}} [[Stendal Hauptbahnhof|Stendal]]&nbsp;– [[Wolfsburg Hauptbahnhof|Wolfsburg]]&nbsp;– [[Braunschweig Hauptbahnhof|Braunschweig]]&nbsp;– [[Hildesheim Hauptbahnhof|Hildesheim]]&nbsp;– [[Bahnhof Göttingen|Göttingen]]&nbsp;– {{nowrap|[[Bahnhof Kassel-Wilhelmshöhe|Kassel-Wilhelmshöhe]] –}} [[Bahnhof Fulda|Fulda]]&nbsp;–{{nowrap|[[Bahnhof Frankfurt (Main) Süd|Frankfurt Süd]] –}} 
+| {{nowrap|[[Frankfurt am Main Flughafen Fernbahnhof|Frankfurt Flughafen]]}}
+| rowspan="3" | [[ICE 1]]
+|-
+| – [[Darmstadt Hauptbahnhof|Darmstadt]]&nbsp;– [[Bahnhof Bensheim|Bensheim]]&nbsp;– [[Weinheim (Bergstraße) Hauptbahnhof|Weinheim]]&nbsp;– [[Heidelberg Hauptbahnhof|Heidelberg]]&nbsp;–  {{nowrap|[[Bahnhof Wiesloch-Walldorf|Wiesloch-Walldorf]] –}} [[Bahnhof Bruchsal|Bruchsal]]&nbsp;– [[Karlsruhe Hauptbahnhof|Karlsruhe]]
+|-
+|''> [[Frankfurt (Main) Hauptbahnhof|Frankfurt]]''
+|}
+
+Ein Zugpaar (ICE 994/995) am Tagesrand fährt abweichend ab Wiesloch Walldorf nach Stuttgart.
+
+{| class="wikitable"
+|-
+! Linienverlauf
+|-
+| ...– [[Bahnhof Vaihingen (Enz)|Vaihingen]]&nbsp;– [[Stuttgart Hauptbahnhof|Stuttgart]]
+|}
+
+==== Linie 14 ====
+Unter der Linie 14 sind Verstärkerzüge zwischen Berlin und Köln bzw. Aachen geführt. Zwei Zugpaare (ICE 1050/ICE 1053 und ICE 1052/ICE 1055) fahren zwischen Hannover und Essen einen alternativen Laufweg über Osnabrück und Münster. Zwei weitere Zugpaare (ICE 1544/ICE 1545 und ICE 1546/ICE1547) fahren ab Duisburg über Krefeld und Mönchengladbach nach Aachen. ICE 1050 und fährt aus Berlin kommend nach Aachen über Düren. Zwischen 11. Juli und 4. September 2026 fahren zusätzlich ICE 1055 und ICE 1548 zwischen Aachen und Berlin über Düren. Die Linie ist im Fahrplanjahr 2026 von Diese Linie ist seit Dezember 2025 die erste, auf welcher der [[ICE L]] zum Einsatz kommt.
+
+{| class="wikitable" style="width:100%"
+|-
+! Linie
+! colspan="4" | Linienverlauf
+! Fahrzeuge
+|-
+| rowspan="2" style="color:#C128C9;" | '''ICE&nbsp;14'''
+| rowspan="2" | {{nowrap|[[Berlin Ostbahnhof]] –}} [[Berlin Hauptbahnhof|Berlin]]&nbsp;– {{nowrap|[[Bahnhof Berlin-Spandau|Berlin-Spandau]] –}} ''[[Wolfsburg Hauptbahnhof|Wolfsburg]]&nbsp;–'' [[Hannover Hauptbahnhof|Hannover]]&nbsp;–
+| ''[[Bahnhof Herford|Herford]]&nbsp;–'' [[Bielefeld Hauptbahnhof|Bielefeld]]&nbsp;– [[Gütersloh Hauptbahnhof|Gütersloh]]&nbsp;– [[Hamm (Westfalen) Hauptbahnhof|Hamm]]&nbsp;– [[Dortmund Hauptbahnhof|Dortmund]]&nbsp;– [[Bochum Hauptbahnhof|Bochum]]&nbsp;–
+| rowspan="2" | [[Essen Hauptbahnhof|Essen]]&nbsp;– [[Duisburg Hauptbahnhof|Duisburg]]&nbsp;–
+| [[Düsseldorf Hauptbahnhof|Düsseldorf]]&nbsp;– [[Köln Hauptbahnhof|Köln]]&nbsp;– ''[[Bahnhof Düren|Düren]]&nbsp;– [[Aachen Hauptbahnhof|Aachen]]''
+| rowspan="2" | [[ICE T]], [[ICE L]]
+|-
+| [[Osnabrück Hauptbahnhof|Osnabrück]]&nbsp;– [[Münster (Westfalen) Hauptbahnhof|Münster]]&nbsp;– ''[[Recklinghausen Hauptbahnhof|Recklinghausen]]&nbsp;– {{nowrap|[[Wanne-Eickel Hauptbahnhof|Wanne-Eickel]] –}}''
+| [[Krefeld Hauptbahnhof|Krefeld]]&nbsp;– [[Bahnhof Viersen|Viersen]]&nbsp;– [[Mönchengladbach Hauptbahnhof|Mönchengladbach]]&nbsp;– [[Rheydt Hauptbahnhof|Rheydt]]&nbsp;– [[Bahnhof Erkelenz|Erkelenz]]&nbsp;– [[Bahnhof Geilenkirchen|Geilenkirchen]]&nbsp;– [[Bahnhof Herzogenrath|Herzogenrath]]&nbsp;– [[Aachen Hauptbahnhof|Aachen]]
+|}
+
+==== Linie 15 ====
+Die Linie 15 ist eine ICE-Linie, die abschnittsweise den Charakter einer Sprinter-Linie hat und Berlin über Halle (Saale) und Erfurt mit Frankfurt am Main im Zweistundentakt verbindet. Im Fahrplanjahr 2026 wurde die Linie im Zweistundentakt mit 5 Zugpaaren nach Stralsund verlängert. 2 bis 4 Zugpaare (je nach Saison) sind verlängert nach Ostseebad Binz. Anklam, Prenzlau und Pasewalk werden nicht von jedem Zug bedient. Zudem werden nun einheitlich [[ICE 1|ICE 1 LDV]] auf dieser Linie eingesetzt.
+
+Darüber hinaus wird ein Zugpaar täglich nach Saarbrücken verlängert, ein weiteres nach Darmstadt.
+
+{| class="wikitable" style="width:100%"
+|-
+! Linie
+! Linienverlauf
+! Fahrzeuge
+|-
+| style="color:#7A7979;" | '''ICE&nbsp;15'''
+| ''[[Bahnhof Ostseebad Binz|Binz]]&nbsp;– [[Bahnhof Bergen auf Rügen|Bergen]]&nbsp;–'' [[Stralsund Hauptbahnhof|Stralsund]]&nbsp;– [[Bahnhof Greifswald|Greifswald]]&nbsp;– [[Bahnhof Züssow|Züssow]]&nbsp;''– [[Bahnhof Anklam|Anklam]]&nbsp;– [[Bahnhof Pasewalk|Pasewalk]]&nbsp;– [[Bahnhof Prenzlau|Prenzlau]]&nbsp;–'' [[Eberswalde Hauptbahnhof|Eberswalde]]&nbsp;– {{nowrap|[[Bahnhof Berlin Gesundbrunnen|Berlin Gesundbrunnen]] –}} [[Berlin Hauptbahnhof|Berlin]]&nbsp;– {{nowrap|[[Bahnhof Berlin Südkreuz|Berlin Südkreuz]] –}} [[Halle (Saale) Hauptbahnhof|Halle]]&nbsp;– [[Erfurt Hauptbahnhof|Erfurt]]&nbsp;– [[Frankfurt (Main) Hauptbahnhof|Frankfurt]]&nbsp;–''[[Darmstadt Hauptbahnhof|Darmstadt]]&nbsp;– [[Bahnhof Bensheim|Bensheim]]&nbsp;– [[Mannheim Hauptbahnhof|Mannheim]]&nbsp;– [[Neustadt (Weinstraße) Hauptbahnhof|Neustadt]]&nbsp;– [[Kaiserslautern Hauptbahnhof|Kaiserslautern]]&nbsp;– [[Homburg (Saar) Hauptbahnhof|Homburg]]&nbsp;– [[Saarbrücken Hauptbahnhof|Saarbrücken]]''
+| [[ICE 1]]
+|-
+|}
+
+In die Linie 15 integriert ist auch das tägliche Zugpaar Berlin-Paris, welches seit dem Fahrplanjahr 2026 mit Laufweg über Halle und Erfurt angeboten wird.
+
+{| class="wikitable"
+|-
+! Linienverlauf
+! Fahrzeuge
+|-
+| [[Berlin Hauptbahnhof|Berlin]]&nbsp;– {{nowrap|[[Bahnhof Berlin Südkreuz|Berlin Südkreuz]] –}} [[Halle (Saale) Hauptbahnhof|Halle]]&nbsp;– [[Erfurt Hauptbahnhof|Erfurt]]&nbsp;– [[Frankfurt (Main) Hauptbahnhof|Frankfurt]]''&nbsp;''–[[Mannheim Hauptbahnhof|Mannheim]]&nbsp;–[[Karlsruhe Hauptbahnhof|Karlsruhe]]&nbsp;– [[Bahnhof Strasbourg|Strasbourg]]&nbsp;– {{nowrap|[[Paris Gare de l’Est|Paris Est]]}}
+| [[ICE 3]]
+|}
+
+Montag bis Samstag beginnt morgens ein Zug (ICE 1636) in Eisenach. Er hält auch an Bahnhöfen, die sonst nicht von dieser Linie bedient werden (Eisenach, Gotha und Bitterfeld).
+
+{| class="wikitable"
+|-
+! Linienverlauf
+|-
+| [[Eisenach Hauptbahnhof|Eisenach]]&nbsp;– [[Bahnhof Gotha|Gotha]]&nbsp;– [[Erfurt Hauptbahnhof|Erfurt]]&nbsp;– [[Halle (Saale) Hauptbahnhof|Halle]]&nbsp;– [[Bahnhof Bitterfeld|Bitterfeld]]&nbsp;– ...
+|}
+
+==== Linie 16 ====
+Die Linie 16 wurde zum Fahrplanwechsel 2025 eingeführt und verkehrt im Vierstundentakt zwischen Bremen und Berlin (einmal täglich weiter nach Oldenburg (Oldb) als ICE 1040). Zwischen Hannover und Bremen ergänzt sie sich mit der Linie 26 zum Zweistundentakt und ist mit dieser umlauftechnisch verknüpft. Die Linien wenden in Bremen Hbf jeweils auf die andere.
+
+{| class="wikitable" style="width:100%"
+|-
+! Linie
+! colspan="3" | Linienverlauf
+! Fahrzeuge
+|-
+| style="color:#8CCC16;" | '''ICE&nbsp;16'''
+| colspan="3" | [[Bahnhof Berlin Südkreuz|Berlin Südkreuz]] – [[Berlin Hauptbahnhof|Berlin]]&nbsp;– {{nowrap|[[Bahnhof Berlin-Spandau|Berlin-Spandau]] –}} [[Hannover Hauptbahnhof|Hannover]]&nbsp;– [[Bremen Hauptbahnhof|Bremen]] – ''[[Bahnhof Delmenhorst|Delmenhorst]]&nbsp;– [[Oldenburg (Oldenburg) Hauptbahnhof|Oldenburg (Oldb)]]''
+| [[ICE 1]], [[ICE T]]
+|}
+Die Liniennummer 16 wurde bereits ab dem Fahrplanjahr 2024 wieder eingeführt. Die Züge hatten den Charakter einer Sprinter-Linie und verbanden Berlin und Frankfurt am Main mit Laufweg über die Güterumgehungsbahn Hannover. Pro Richtung verkehrten mindestens zwei Züge täglich. Davon war ein Zugpaar bis Saarbrücken verlängert. Im Fahrplanjahr 2026 wurden diese Züge in die Sprinterlinie 3 eingegliedert.
+
+==== Linie 19 ====
+Die Linie 19 verbindet Berlin mit Köln und Bonn im Zweistundentakt. Ein Zugpaar ist bis Koblenz verlängert. Im Gegensatz zur Linie 10 hält die Linie 19 nicht in Wolfsburg und Hamm. Die Linien 10 und 19 bilden zusammen einen ungefähren Stundentakt zwischen Köln und Berlin über Wuppertal und Hagen.
+
+{| class="wikitable" style="width:100%"
+|-
+! Linie
+! Linienverlauf
+! Fahrzeuge
+|-
+| style="color:#E6C5C5;" | '''ICE&nbsp;19'''
+| {{nowrap|[[Berlin Ostbahnhof]] –}} [[Berlin Hauptbahnhof|Berlin]]&nbsp;– {{nowrap|[[Bahnhof Berlin-Spandau|Berlin-Spandau]] –}} [[Hannover Hauptbahnhof|Hannover]]&nbsp;– [[Bielefeld Hauptbahnhof|Bielefeld]]&nbsp;– [[Hagen Hauptbahnhof|Hagen]]&nbsp;– [[Wuppertal Hauptbahnhof|Wuppertal]]&nbsp;– [[Köln Hauptbahnhof|Köln]]''&nbsp;–'' [[Bonn Hauptbahnhof|Bonn]]&nbsp;– ''[[Bahnhof Remagen|Remagen]]&nbsp;– [[Bahnhof Andernach|Andernach]]&nbsp;– [[Koblenz Hauptbahnhof|Koblenz]]''
+| [[ICE 1]], [[ICE 2]], [[ICE 4]] (7-teilig)
+|}
+
+Ein Zugpaar dieser Linie fuhr seit dem Fahrplanjahr 2025 aus Berlin kommend ab Hannover abweichend vom üblichen Laufweg nach Bremen und zurück und ist seit dem Fahrplanjahr 2026 in die Linie 16 integriert. Ebenfalls nicht mehr Teil dieser Linie ist eine Verbindung zwischen Aachen und Berlin.
+
+=== Linien 18, 20 und 22–29 ===
+Die Taktabschnitte der Linien 18, 20, 22, 24, 25, 26, 28 und 29 beginnen alle im [[Bahnhof Hamburg-Altona]]. Einzelne Züge dieser Linien fahren weiter nach [[Kiel]] und [[Lübeck]] bzw. [[Oldenburg (Oldenburg)]], wobei die Züge nach Lübeck und Kiel nicht in Hamburg-Altona halten, oder nach Stralsund bzw. Binz.
+
+Die Linien 18, 28 und 29 fahren über Berlin, die Linien 20, 22, 24, 25 und 26 über Hannover.
+
+Die Linien 20 und 22 durchfahren einige Halte in größeren Städten. Während einiger Messen bedienen die Linien 20, 22, 25 und 26 auch den [[Bahnhof Hannover Messe/Laatzen]].
+
+==== Linie 18 ====
+Die Linie 18 wurde mit der Inbetriebnahme der [[Schnellfahrstrecke Erfurt–Nürnberg]] neu eingeführt. Die Züge beginnen in Hamburg oder vereinzelt auch erst in Berlin. Die Linie 18 fährt ausschließlich über Halle. Sie ergänzte sich zwischen Hamburg und Nürnberg mit der Linie 28 über Leipzig zum Stundentakt, welcher aufgrund der Führung der Linie über Augsburg nur eingeschränkt bis München angeboten wurde.
+
+Mit der Neukonzeption der ICE-Linien zwischen Berlin und München zum Fahrplanjahr 2026 erhielt die Linie eine neue Fahrlage und hält auch in Büchen, Ludwigslust und Wittenberge.
+
+Coburg wird im Fahrplanjahr 2026 von einem Zug in Richtung Süden (ICE 805) und einem Zug Richtung Norden (ICE 700) bedient. Die Züge wechseln in Nürnberg die Fahrtrichtung und fahren über Augsburg mit weiteren Halten in Donauwörth und München-Pasing nach München Hauptbahnhof. Treuchtlingen wird in Richtung Norden nur von einem Zug (ICE 700) dieser Linie bedient.
+
+Die Linie verkehrt im Zweistundentakt, wobei zwei Taktlücken existieren, welche zwischen Hamburg und Berlin durch die zwei ICE-Zugpaare Hamburg-Berlin-Wien (mit Laufweg über Leipzig und Halt in Coburg) gefüllt werden. Sie bildet zusammen mit den Linien 28 und 29 einen 30-Minuten-Takt zwischen Erfurt und Nürnberg, welcher bis München aufgrund des Umweges der Linie über Augsburg nur durch Umstieg in Nürnberg existiert. Zwischen Berlin und Erfurt ergänzt sie sich mit den Linien 15 und 29 zu einem angenäherten 30-Minuten-Takt sowie zwischen Hamburg und Berlin mit der Linie 23 zum Stunden- bzw. mit den Linien 27 und 28 zu einem angenäherten 30-Minuten-Takt
+
+{| class="wikitable" style="width:100%"
+|-
+! Linie
+! Linienverlauf
+! Fahrzeuge
+|-
+| style="color:#FFF203;" | '''ICE&nbsp;18'''
+| [[Bahnhof Hamburg-Altona|Hamburg Altona]]  – [[Bahnhof Hamburg Dammtor|Hamburg Dammtor]] – [[Hamburg Hauptbahnhof|Hamburg]] – [[Bahnhof Büchen|Büchen]] – [[Bahnhof Ludwigslust|Ludwigslust]] – [[Bahnhof Wittenberge|Wittenberge]] – [[Berlin-Spandau|Berlin Spandau]] – [[Berlin Hauptbahnhof|Berlin Hbf]]&nbsp;– {{nowrap|[[Bahnhof Berlin Südkreuz|Berlin Südkreuz]] –}} [[Bahnhof Bitterfeld|Bitterfeld]]&nbsp;– [[Halle (Saale) Hauptbahnhof|Halle]]&nbsp;– [[Erfurt Hauptbahnhof|Erfurt]]&nbsp;– [[Bahnhof Bamberg|Bamberg]]&nbsp;– [[Nürnberg Hauptbahnhof|Nürnberg]]&nbsp;– [[Bahnhof Donauwörth|Donauwörth]]&nbsp;– [[Augsburg Hauptbahnhof|Augsburg]]&nbsp;– {{nowrap|[[Bahnhof München-Pasing|München-Pasing]] –}} München Hbf
+| [[ICE 1]]
+|}
+
+{{Siehe auch|Liste der Intercity-Linien#Linie 18}}
+
+==== Linie 20 ====
+Die Linie 20 verbindet alle zwei Stunden Hamburg mit Basel. Die Fahrten nach Zürich, Chur und Interlaken werden seit 2026 von anderen Linien gefahren. Zwischen Hamburg und Frankfurt überlagert sie sich mit der Linie 22 zu einem Stundentakt. Seit dem Fahrplan 2026 wird nun separat der Bahnhof Uelzen bedient. Bisherige Einzelhalte in Hamburg-Harburg, Fulda sowie Hanau wurden zugunsten der Fahrplanstabilität gestrichen. Des Weiteren wird statt in Baden-Baden regulär nun in Offenburg gehalten.
+
+{| class="wikitable" style="width:100%"
+|-
+! Linie
+!Linienverlauf
+! Fahrzeuge
+|-
+|'''ICE&nbsp;20'''
+|{{nowrap|[[Bahnhof Hamburg-Altona|Hamburg-Altona]] –}}{{nowrap|[[Bahnhof Hamburg Dammtor|Hamburg Dammtor]] –}} [[Hamburg Hauptbahnhof|Hamburg]] – [[Bahnhof Uelzen|Uelzen]] – [[Hannover Hauptbahnhof|Hannover]] – [[Bahnhof Göttingen|Göttingen]] – {{nowrap|[[Bahnhof Kassel-Wilhelmshöhe|Kassel-Wilhelmshöhe]] –}} [[Frankfurt (Main) Hauptbahnhof|Frankfurt]] – [[Mannheim Hauptbahnhof|Mannheim]] – [[Karlsruhe Hauptbahnhof|Karlsruhe]] – {{nowrap|[[Bahnhof Offenburg|Offenburg]] –}} [[Freiburg (Breisgau) Hauptbahnhof|Freiburg]] – {{nowrap|[[Basel Badischer Bahnhof|Basel Bad]] –}} {{nowrap|[[Bahnhof Basel SBB|Basel SBB]]}}
+|[[ICE 4]], [[SBB RABe 501|Stadler Smile]]
+|}
+
+Eine ICE-Leistung der Linie pro Tag führt von Hamburg nach Wiesbaden (ICE 79) sowie zurück (ICE 78).
+
+{| class="wikitable"
+|-
+! Linienverlauf
+|-
+| [[Hamburg Hauptbahnhof|Hamburg]] – [[Bahnhof Hamburg-Harburg|Hamburg-Harburg]] &nbsp;– [[Hannover Hauptbahnhof|Hannover]] – [[Bahnhof Göttingen|Göttingen]]– {{nowrap|[[Bahnhof Kassel-Wilhelmshöhe|Kassel-Wilhelmshöhe]] –}}  [[Frankfurt (Main) Hauptbahnhof|Frankfurt]]–&nbsp; – {{nowrap|[[Frankfurt am Main Flughafen Fernbahnhof|Frankfurt Flughafen]] –}} [[Mainz Hauptbahnhof|Mainz]] – [[Wiesbaden Hauptbahnhof|Wiesbaden]]
+|}
+
+Bis 2025 verkehrte montags bis freitags ein Zug (ICE 1178), aus Basel kommend, ab Mannheim nach Stuttgart.
+
+{| class="wikitable"
+! Linienverlauf
+|-
+| ... – [[Stuttgart Hauptbahnhof|Stuttgart]]
+|}
+
+Bis 2025 verkehrte freitags ein Zug (ICE 1079) ab Kassel-Wilhelmshöhe über Frankfurt (Main) Süd, Darmstadt und Heidelberg nach Stuttgart.
+
+{| class="wikitable"
+! Linienverlauf
+|-
+| ... – {{nowrap|[[Bahnhof Frankfurt (Main) Süd|Frankfurt Süd]] –}} [[Darmstadt Hauptbahnhof|Darmstadt]]&nbsp;– [[Heidelberg Hauptbahnhof|Heidelberg]]&nbsp;– [[Stuttgart Hauptbahnhof|Stuttgart]]
+|}
+
+==== Linie 22 ====
+
+Die Linie 22 verbindet alle zwei Stunden Kiel mit Stuttgart. Zwischen Hamburg und Frankfurt verdichtet sie sich mit Linie 20 zu einem Stundentakt. Seit dem Fahrplan 2026 wird nun separat der Bahnhof Celle bedient. Bisherige Einzelhalte in Hamburg-Harburg, Fulda sowie Hanau wurden zugunsten der Fahrplanstabilität gestrichen.
+
+{| class="wikitable" style="width:100%"
+|-
+! Linie
+!Linienverlauf
+! Fahrzeuge
+|-
+| style="color:#D48E8E" | '''ICE&nbsp;22'''
+| [[Kiel Hauptbahnhof|Kiel]]&nbsp;– [[Bahnhof Neumünster|Neumünster]]''&nbsp;–'' {{nowrap|[[Bahnhof Hamburg Dammtor|Hamburg Dammtor]]}}&nbsp;– [[Hamburg Hauptbahnhof|Hamburg]]&nbsp;– [[Bahnhof Celle|Celle]]&nbsp;– [[Hannover Hauptbahnhof|Hannover]]&nbsp;– [[Bahnhof Göttingen|Göttingen]]&nbsp;– {{nowrap|[[Bahnhof Kassel-Wilhelmshöhe|Kassel-Wilhelmshöhe]] –}} ''[[Hanau Hauptbahnhof|Hanau]]&nbsp;–'' [[Frankfurt (Main) Hauptbahnhof|Frankfurt]]&nbsp;– [[Mannheim Hauptbahnhof|Mannheim]]&nbsp;– ''[[Heidelberg Hauptbahnhof|Heidelberg]]&nbsp;– [[Bahnhof Vaihingen (Enz)|Vaihingen]]&nbsp;–'' [[Stuttgart Hauptbahnhof|Stuttgart]]
+| [[ICE 1]], [[ICE 4]]
+|}
+
+Bis 2025 fuhr täglich ein Zug (ICE 775) ab Mannheim nach Karlsruhe und zeitweise sonntags weiter nach Basel.
+
+{| class="wikitable"
+! Linienverlauf
+|-
+| ... – [[Karlsruhe Hauptbahnhof|Karlsruhe]]&nbsp;– ''{{nowrap|[[Bahnhof Baden-Baden|Baden-Baden]] –}} [[Bahnhof Offenburg|Offenburg]]&nbsp;– [[Freiburg (Breisgau) Hauptbahnhof|Freiburg]]&nbsp;– {{nowrap|[[Basel Badischer Bahnhof|Basel Bad]]}}''
+|}
+
+===== Linie 23 =====
+Zum Fahrplanjahr 2026 sollte im Zuge der Neusortierung der Verkehre zwischen Hamburg, Berlin, Erfurt und München eine neue Linie 23 eingeführt werden, die lediglich Berlin und Hamburg verbindet. Sie sollte sich mit der Linie 18 zum Stundentakt ergänzen und ebenfalls die Halte Wittenberge und Ludwigslust bedienen.<ref>{{Internetquelle |url=https://www.deutschebahn.com/de/presse/presse-regional/pr-hamburg-de/aktuell/presseinformationen-regional/Hamburg-Berlin-systematischer-und-mit-neuer-Kurzlinie-13692164 |titel=Hamburg–Berlin systematischer und mit neuer Kurzlinie |sprache=de-DE |abruf=2026-06-08}}</ref> Aufgrund der verzögerten Fertigstellung der [[Generalsanierung Hochleistungsnetz|Generalsanierung]] [[Bahnstrecke Berlin–Hamburg|Hamburger Bahn]] und direkt am Anschluss angesetzten Bauarbeiten im Knoten Berlin verkehrt die Linie aber im Fahrplanjahr 2026 nicht.
+
+==== Linie 24 ====
+
+Die Linie 24 wurde zum Fahrplanjahr 2021 aus der Linie 26 ausgegliedert und umfasst die (Wochenend-)Verstärker zwischen Hamburg und München bzw. Österreich.
+
+{| class="wikitable"
+|-
+! Linie
+! Linienverlauf
+! Fahrzeuge
+|-
+| style="color:#E39F0B;" | '''ICE&nbsp;24'''
+| {{nowrap|[[Bahnhof Hamburg-Altona|Hamburg-Altona]] –}}{{nowrap|[[Bahnhof Hamburg Dammtor|Hamburg Dammtor]] –}} [[Hamburg Hauptbahnhof|Hamburg]]&nbsp;– {{nowrap|[[Bahnhof Hamburg-Harburg|Hamburg-Harburg]] –}} [[Bahnhof Lüneburg|Lüneburg]]&nbsp;– ''{{nowrap|[[Bad Bevensen#Verkehr|Bad Bevensen]] –}}'' [[Bahnhof Uelzen|Uelzen]]&nbsp;– [[Bahnhof Celle|Celle]]&nbsp;– ''{{nowrap|[[Langenhagen#Verkehr|Langenhagen Mitte]] –}}'' [[Hannover Hauptbahnhof|Hannover]]&nbsp;– [[Bahnhof Göttingen|Göttingen]]&nbsp;– {{nowrap|[[Bahnhof Kassel-Wilhelmshöhe|Kassel-Wilhelmshöhe]] –}} [[Bahnhof Fulda|Fulda]]&nbsp;– [[Würzburg Hauptbahnhof|Würzburg]]&nbsp;– ''[[Bahnhof Steinach (bei Rothenburg ob der Tauber)|Steinach]]&nbsp;– [[Bahnhof Ansbach|Ansbach]]&nbsp;–'' [[Bahnhof Treuchtlingen|Treuchtlingen]]&nbsp;– [[Bahnhof Donauwörth|Donauwörth]]&nbsp;– [[Augsburg Hauptbahnhof|Augsburg]]&nbsp;– {{nowrap|[[Bahnhof München-Pasing|München-Pasing]] –}} [[München Hauptbahnhof|München]]&nbsp;– ''{{nowrap|[[Bahnhof München Ost|München Ost]] –}}'' [[Bahnhof Rosenheim|Rosenheim]]&nbsp;– [[Bahnhof Kufstein|Kufstein]]&nbsp;– [[Wörgl Hauptbahnhof|Wörgl]] (– [[Bahnhof Jenbach|Jenbach]]&nbsp;– [[Innsbruck Hauptbahnhof|Innsbruck]])/(''[[Hopfgarten im Brixental#Verkehr|Hopfgarten]]&nbsp;– [[Kirchberg in Tirol#Verkehr|Kirchberg]]&nbsp;– {{nowrap|[[Kitzbühel#Eisenbahn|Kitzbühel Hahnenkamm]] –}} [[Bahnhof Kitzbühel|Kitzbühel]]&nbsp;– {{nowrap|[[St. Johann in Tirol#Verkehr|St. Johann]] –}} [[Fieberbrunn#Verkehr|Fieberbrunn]]&nbsp;– [[Hochfilzen#Verkehr|Hochfilzen]]&nbsp;– [[Saalfelden am Steinernen Meer#Verkehr|Saalfelden]]&nbsp;– {{nowrap|[[Zell am See#Verkehr|Zell am See]] –}} {{nowrap|[[Bahnhof Schwarzach-St. Veit|Schwarzach-St.&nbsp;Veit]]}}'')
+| [[ICE 1]], [[ICE T]]
+|}
+
+Einzelne Züge fahren ab Kassel über Fulda nach Frankfurt und teilweise weiter nach Stuttgart bzw. Karlsruhe.
+
+{| class="wikitable"
+|-
+! colspan="3" | Linienverlauf
+|-
+| rowspan="3" | ... – {{nowrap|[[Bahnhof Kassel-Wilhelmshöhe|Kassel-Wilhelmshöhe]] –}} [[Bahnhof Fulda|Fulda]]&nbsp;– ''[[Hanau Hauptbahnhof|Hanau]]&nbsp;–'' {{nowrap|[[Frankfurt (Main) Hauptbahnhof|Frankfurt]]/''[[Bahnhof Frankfurt (Main) Süd|Frankfurt Süd]]'' –}} 
+| rowspan="2" | ''[[Darmstadt Hauptbahnhof|Darmstadt]]&nbsp;– [[Bahnhof Bensheim|Bensheim]]&nbsp;– [[Weinheim (Bergstraße) Hauptbahnhof|Weinheim]]&nbsp;–'' 
+| ''[[Karlsruhe Hauptbahnhof|Karlsruhe]]''
+|-
+| ''[[Stuttgart Hauptbahnhof|Stuttgart]]''
+|-
+| colspan="2" | ''[[Mannheim Hauptbahnhof|Mannheim]]&nbsp;– [[Karlsruhe Hauptbahnhof|Karlsruhe]]''
+|}
+
+Ab Mitte 2026{{Zukunft|2026|08}} beginnt bzw. endet ein Zugpaar in [[Westerland|Westerland (Sylt)]] und verkehrt ab Kassel abweichend über die [[Main-Weser-Bahn]] mit Halt u.&nbsp;A. in Gießen und Endstation in Frankfurt (Main) Hbf. Diese Zugleistung verkehrte bisher als IC und war bis Dezember 2025 Teil der Linie 26.<ref>{{Internetquelle |url=https://www.deutschebahn.com/de/presse/presse-regional/pr-hamburg-de/aktuell/presseinformationen-regional/ICE-L-nach-Sylt-13692178 |titel=ICE L nach Sylt |sprache=de-DE |abruf=2025-12-18}}</ref>
+
+{| class="wikitable"
+! Linienverlauf
+! Fahrzeuge
+|-
+| [[Bahnhof Westerland (Sylt)|Westerland (Sylt)]]&nbsp;– [[Bahnhof Niebüll|Niebüll]]&nbsp;– [[Bahnhof Husum|Husum]]&nbsp;– [[Bahnhof Heide (Holst)|Heide (Holst)]]&nbsp;– [[Bahnhof Itzehoe|Itzehoe]]&nbsp;– [[Hamburg Hauptbahnhof|Hamburg]]&nbsp;– [[Bahnhof Hamburg-Harburg|Hamburg-Harburg]]&nbsp;– [[Bahnhof Lüneburg|Lüneburg]]&nbsp;– [[Hannover Hauptbahnhof|Hannover]]&nbsp;– [[Bahnhof Göttingen|Göttingen]]&nbsp;– {{nowrap|[[Bahnhof Kassel-Wilhelmshöhe|Kassel-Wilhelmshöhe]] –}} [[Bahnhof Wabern (Bz Kassel)|Wabern]]&nbsp;''–'' [[Bahnhof Treysa|Treysa]]&nbsp;– [[Bahnhof Marburg (Lahn)|Marburg]]&nbsp;– [[Bahnhof Gießen|Gießen]]&nbsp;– [[Bahnhof Friedberg (Hess)|Friedberg (Hess)]]&nbsp;– [[Frankfurt (Main) Hauptbahnhof|Frankfurt]]
+| [[ICE L]]
+|}
+
+Zeitweise fährt ein Zug (ICE 1205) ab Würzburg nach Nürnberg und endet dort.
+
+{| class="wikitable"
+|-
+! Linienverlauf
+|-
+| ... – [[Würzburg Hauptbahnhof|Würzburg]]&nbsp;– [[Nürnberg Hauptbahnhof|Nürnberg]]
+|}
+
+Samstags beginnt ein Zug (ICE 1683) in Rostock.
+
+{| class="wikitable"
+|-
+! Linienverlauf
+|-
+| [[Rostock Hauptbahnhof|Rostock]]&nbsp;– [[Bahnhof Bützow|Bützow]]&nbsp;– {{nowrap|[[Bahnhof Bad Kleinen|Bad Kleinen]] –}} [[Schwerin Hauptbahnhof|Schwerin]]&nbsp;– ...
+|}
+
+Aus Hamburg kommend fährt ein Zug (ICE 751) ab Hannover über Wolfsburg und Stendal nach Berlin.
+
+{| class="wikitable"
+|-
+! Linienverlauf
+|-
+| ... – [[Hannover Hauptbahnhof|Hannover]]&nbsp;– [[Wolfsburg Hauptbahnhof|Wolfsburg]]&nbsp;– [[Stendal Hauptbahnhof|Stendal]]&nbsp;– {{nowrap|[[Bahnhof Berlin-Spandau|Berlin-Spandau]] –}} [[Berlin Hauptbahnhof|Berlin]]&nbsp;– {{nowrap|[[Berlin Ostbahnhof]]}}
+|}
+
+Sonntags fährt ein Zug (ICE 1276), aus Frankfurt kommend, ab Hannover über Wolfsburg nach Berlin.
+
+{| class="wikitable"
+|-
+! colspan="2" | Linienverlauf
+|-
+| rowspan="2" | ... – [[Hannover Hauptbahnhof|Hannover]]&nbsp;– [[Wolfsburg Hauptbahnhof|Wolfsburg]]&nbsp;– {{nowrap|[[Bahnhof Berlin-Spandau|Berlin-Spandau]] –}}
+| [[Berlin Hauptbahnhof|Berlin]]
+|-
+| {{nowrap|[[Bahnhof Berlin Zoologischer Garten|Berlin Zoologischer Garten]] –}} [[Berlin Hauptbahnhof|Berlin]]&nbsp;– {{nowrap|[[Berlin Ostbahnhof]]}}
+|}
+
+==== Linie 25 ====
+
+Die Linie verkehrt im Stundentakt von Hamburg nach München. Die Linie verkehrt seit Dezember 2019 ausschließlich über die [[Schnellfahrstrecke Nürnberg–Ingolstadt]], die Einzelzüge über Augsburg sind entfallen.
+
+Bis Dezember 2025 wurden die Züge dieser Linie alle zwei Stunden in Hannover geflügelt: Ein Zugteil verkehrte von/nach Hamburg, der andere von/nach Bremen. Diese Züge wurden mit ICE 2 bedient. Zum Fahrplanwechsel im Dezember 2025 wurde diese Flügelung aufgegeben. Seitdem verkehren auf der Linie 25 ausschließlich ICE 4.<ref>{{Internetquelle |url=https://www.deutschebahn.com/de/presse/presse-regional/pr-muenchen-de/aktuell/presseinformationen/Fahrplan-2026-Das-sind-die-Neuerungen-fuer-den-Fernverkehr-in-Bayern--13564962# |titel=Fahrplan 2026: Das sind die Neuerungen für den Fernverkehr in Bayern |abruf=2026-01-02}}</ref> Die Züge von und nach Bremen hielten teilweise in Verden und Nienburg, einzelne Züge wurden über Delmenhorst nach Oldenburg verlängert. Außerdem wurde zum Fahrplanwechsel die tägliche Verbindung nach Lübeck gestrichen. Zudem wird der Bahnhof Lüneburg jetzt stündlich bedient, hingegen wurden die Einzelhalte in Uelzen aufgegeben.
+
+{| class="wikitable" style="width:100%"
+|-
+! Linie
+! colspan="2" | Linienverlauf
+! Fahrzeuge
+|-
+| rowspan="2" style="color:#6A8F4C;" | '''ICE&nbsp;25'''
+| {{nowrap|[[Bahnhof Hamburg-Altona|Hamburg-Altona]] –}}
+| rowspan="2" | {{nowrap|[[Bahnhof Hamburg Dammtor|Hamburg Dammtor]] –}} [[Hamburg Hauptbahnhof|Hamburg]] – [[Bahnhof Hamburg-Harburg|Hamburg-Harburg]] – [[Bahnhof Lüneburg|Lüneburg]] – [[Hannover Hauptbahnhof|Hannover]]&nbsp;– [[Bahnhof Göttingen|Göttingen]]&nbsp;– {{nowrap|[[Bahnhof Kassel-Wilhelmshöhe|Kassel-Wilhelmshöhe]] –}} [[Bahnhof Fulda|Fulda]]&nbsp;– [[Würzburg Hauptbahnhof|Würzburg]]&nbsp;– [[Nürnberg Hauptbahnhof|Nürnberg]]&nbsp;– [[Ingolstadt Hauptbahnhof|Ingolstadt]]&nbsp;– [[München Hauptbahnhof|München]]
+| rowspan="2" | [[ICE 4]]
+|-
+| ''[[Kiel Hauptbahnhof|Kiel]]&nbsp;– [[Bahnhof Neumünster|Neumünster]]&nbsp;–''
+|}
+
+Täglich fährt die letzte ICE-Leistung (ICE 887; samstags als ICE 1087) der Linie von Hamburg nach Wiesbaden.
+
+{| class="wikitable"
+|-
+! Linienverlauf
+|-
+| [[Hamburg Hauptbahnhof|Hamburg]]&nbsp;– [[Bahnhof Lüneburg|Lüneburg]]&nbsp;– [[Bahnhof Uelzen|Uelzen]]&nbsp;– [[Hannover Hauptbahnhof|Hannover]]&nbsp;– [[Bahnhof Göttingen|Göttingen]]&nbsp;– {{nowrap|[[Bahnhof Kassel-Wilhelmshöhe|Kassel-Wilhelmshöhe]] –}} [[Bahnhof Fulda|Fulda]]&nbsp;– [[Hanau Hauptbahnhof|Hanau]]&nbsp;– [[Frankfurt (Main) Hauptbahnhof|Frankfurt]]&nbsp;– {{nowrap|[[Frankfurt am Main Flughafen Fernbahnhof|Frankfurt Flughafen]] –}} [[Mainz Hauptbahnhof|Mainz]]&nbsp;– [[Wiesbaden Hauptbahnhof|Wiesbaden]]
+|}
+
+Die erste ICE-Leistung (ICE 1088) dieser Linie beginnt in Frankfurt und fährt weiter nach Kiel. Der Zug fährt montags bis samstags.
+
+{| class="wikitable"
+|-
+! Linienverlauf
+|-
+| [[Frankfurt (Main) Hauptbahnhof|Frankfurt]]&nbsp;– [[Hanau Hauptbahnhof|Hanau]]&nbsp;– [[Bahnhof Fulda|Fulda]]&nbsp;– {{nowrap|[[Bahnhof Kassel-Wilhelmshöhe|Kassel-Wilhelmshöhe]] –}} [[Bahnhof Göttingen|Göttingen]]&nbsp;– [[Hannover Hauptbahnhof|Hannover]]&nbsp;– {{nowrap|[[Bahnhof Hamburg-Harburg|Hamburg-Harburg]] –}} [[Hamburg Hauptbahnhof|Hamburg]]&nbsp;– {{nowrap|[[Bahnhof Hamburg Dammtor|Hamburg Dammtor]] –}} [[Bahnhof Neumünster|Neumünster]]&nbsp;– [[Kiel Hauptbahnhof|Kiel]]
+|}
+
+==== Linie 26 ====
+
+Die ICE-Linie 26 verkehrt seit Dezember 2025 neu im Vierstundentakt zwischen Bremen und Karlsruhe (einmal täglich als ICE 1573 ab bzw. als ICE 1572 bis Oldenburg (Oldb)). Sie nutzt zwischen Kassel und Frankfurt nicht die [[Schnellfahrstrecke Hannover–Würzburg]], sondern verkehrt mit längerer Fahrzeit zwischen Kassel und Frankfurt über die [[Main-Weser-Bahn]] mit Halten in Wabern, Treysa, Marburg, Gießen und Friedberg.
+
+Eine Besonderheit ist die Überholung durch die Linie 25 Hamburg – München in Göttingen, wodurch die Linie eine wichtige Zu- und Abbringerfunktion als Ersatz für die zum Fahrplanjahr 2026 entfallenden Direktverbindungen Main-Weser-Bahn – Hamburg und Bremen – München besitzt.
+
+Bis 2025 verkehrte die Linie 26 im Zweistundentakt zwischen Karlsruhe und Hamburg und teilweise darüber hinaus bis Stralsund und Binz und hielt an einigen Stationen, die von den meisten ICE-Linien nicht bedient werden, beispielsweise in Lüneburg, Uelzen und Celle.
+
+{| class="wikitable"
+|-
+! Linie
+! Linienverlauf
+! Fahrzeuge
+|-
+| style="color:#852D15;" | '''ICE&nbsp;26'''
+| ''[[Oldenburg (Oldenburg) Hauptbahnhof|Oldenburg (Oldb)]]&nbsp;– [[Bahnhof Delmenhorst|Delmenhorst]]&nbsp;''– [[Bremen Hauptbahnhof|Bremen]]&nbsp;– [[Hannover Hauptbahnhof|Hannover]]&nbsp;– [[Bahnhof Göttingen|Göttingen]]&nbsp;– {{nowrap|[[Bahnhof Kassel-Wilhelmshöhe|Kassel-Wilhelmshöhe]] –}} [[Bahnhof Wabern (Bz Kassel)|Wabern]]&nbsp;''–'' [[Bahnhof Treysa|Treysa]]&nbsp;– [[Bahnhof Marburg (Lahn)|Marburg]]&nbsp;– [[Bahnhof Gießen|Gießen]]&nbsp;– [[Frankfurt (Main) Hauptbahnhof|Frankfurt]]&nbsp;– [[Darmstadt Hauptbahnhof|Darmstadt]]&nbsp;– [[Bahnhof Bensheim|Bensheim]]&nbsp;– [[Weinheim (Bergstraße) Hauptbahnhof|Weinheim]]&nbsp;– [[Heidelberg Hauptbahnhof|Heidelberg]]&nbsp;– {{nowrap|[[Bahnhof Wiesloch-Walldorf|Wiesloch-Walldorf]] –}} [[Bahnhof Bruchsal|Bruchsal]]&nbsp;– [[Karlsruhe Hauptbahnhof|Karlsruhe]]
+| [[ICE 1]], [[ICE T]]
+|}
+
+==== Linie 27 ====
+Die Linie 27 beginnt größtenteils in Hamburg Altona und endet in [[Praha hl.n.]] bzw. [[Dresden Hbf]] bzw. [[Budapest]]. Die ICE-Linie 27 ergänzt die RJ-Linie 27 um das ICE-Zugpaar ICE 872/873 zwischen Hamburg-Altona und Berlin Hbf bzw. Berlin Gesundbrunnen. Eingesetzt werden Züge der Baureihe [[ICE L]], [[ICE 1]], [[ICE 4]] der [[Deutsche Bahn|Deutschen Bahn]] und [[Railjet]] der [[CD]]. Seit dem 1. Mai wird  erstmals der Bahnhof [[Københavns Hovedbanegård]] mit dem Bahnhof Praha hl.&nbsp;n. verbunden. Es gibt aktuell täglich ein Zugpaar mit den Zügen RJ 384/385. Eingesetzt werden die ComfortJet-Garnituren der [[České dráhy]] mit der [[Siemens Vectron|Vectron-Lokomotive]], teilweise schon mit der für den ComfortJet vorgesehenen Baureihe 384, die für den Hochgeschwindigkeitsverkehr von bis zu 230 km/h vorgesehen ist. Ab dem 11. Juli 2026 verbindet der ICE 1970 den Dresdener Hbf mit dem Bahnhof Berlin Gesundbrunnen. Die Leistung wird mit ICE T und ab dem 3. Oktober 2026 mit ICE 1 gefahren.
+
+{| class="wikitable"
+|-
+! Linie
+! Linienverlauf
+! Fahrzeuge
+|-
+| style="color:#77BA20" | '''ICE&nbsp;27'''
+| {{nowrap|[[Bahnhof Hamburg-Altona|Hamburg-Altona]] –}} ''{{nowrap|[[Bahnhof Hamburg Dammtor|Hamburg Dammtor]] –}}'' [[Hamburg Hauptbahnhof|Hamburg]]&nbsp;– {{nowrap|[[Bahnhof Berlin-Spandau|Berlin-Spandau]] }} (→[[Berlin Hauptbahnhof|Berlin Hbf]]/←{{nowrap|[[Bahnhof Berlin Gesundbrunnen|Berlin Gesundbrunnen]] }})(←[[Bahnhof Dresden-Neustadt|Dresden Neustadt]] ←[[Dresden Hbf|Dresden]])
+| [[ICE 1]], [[ICE 4]], [[ICE L]], [[Railjet]]
+|}
+
+Das Zugpaar RJ/RJX 250/251(244) verbindet den [[Berlin Hauptbahnhof|Berliner Hauptbahnhof]] mit dem [[Villach Hbf|Hauptbahnhof Villach]]. Dabei beginnt der Zug 250 erst in Wien, und nur der Zug 251 verkehrt bis Villach durchgehend. An Dienstagen, Donnerstagen und Sonntagen verkehrt der Zug 251 unter der Zugnummer 244 nur bis Dresden Hbf in veränderter Zeitlage. In Richtung [[Wien Hbf]] startet zusätzlich der Zug RJ 177. Die Züge starten in Berlin Hbf (tief) und fahren über Südkreuz Richtung Dresden und Tschechien. Seit dem Farhplanwechsel 2025/26 entfällt der Halt in Doberlug-Kirchhain. Auf den Zügen werden die neuen [[ComfortJet]]-Garnituren eingesetzt mit Lokomotiven der Baureihen [[Taurus III|ÖBB 1216]] (RJ 250/251/244) und [[Siemens Vectron]] (RJ177).
+
+{| class="wikitable"
+! Linienverlauf
+! Fahrzeuge
+|-
+| {{nowrap|[[Berlin Hauptbahnhof|Berlin]] –}} {{nowrap|[[Bahnhof Berlin Südkreuz|Berlin Südkreuz]] –}} [[Bahnhof Elsterwerda|Elsterwerda]]&nbsp;– {{nowrap|[[Bahnhof Dresden-Neustadt|Dresden-Neustadt]] –}} [[Dresden Hauptbahnhof|Dresden]]&nbsp;– {{nowrap|[[Bahnhof Bad Schandau|Bad Schandau]] –}} [[Děčín#Verkehr|Děčín]]&nbsp;– {{nowrap|[[Ústí nad Labem#Verkehr|Ústí nad Labem]] –}} {{nowrap|[[Bahnhof Praha-Holešovice|Praha-Holešovice]] –}} [[Praha hlavní nádraží|Praha]]&nbsp;– [[Pardubice#Verkehrsinfrastruktur|Pardubice]]&nbsp;– {{nowrap|[[Česká Třebová#Verkehr|Česká Třebová]] –}} [[Brno hlavní nádraží|Brno]]&nbsp;– [[Břeclav#Wirtschaft und Verkehr|Břeclav]]&nbsp;– [[Wien Hauptbahnhof|Wien]]&nbsp; (←{{nowrap|[[Bahnhof Wien Meidling|Wien Meidling]] }} ←{{nowrap|[[Wiener Neustadt Hauptbahnhof|Wiener Neustadt]] }}  ←[[Bahnhof Bruck an der Mur|Bruck]]&nbsp; ←[[Graz Hauptbahnhof|Graz]]&nbsp; ←[[Klagenfurt Hbf|Klagenfurt]]&nbsp; ←[[Villach Hbf|Villach]])
+| [[ComfortJet]]
+|}
+
+{{Siehe auch|Liste der Intercity-Linien#Linie 27}}
+
+==== Linie 28 ====
+
+Die Linie 28 beginnt in Hamburg. Zwischen Hamburg und Berlin werden nur sehr vereinzelt Zwischenhalte bedient. Einzelne Züge, die in Stralsund oder saisonal in Binz begannen sind zu Gunsten der zweistündlichen Linie 15 nach Stralsund und Binz entfallen. Nach der Durchquerung von Berlin verkehren die Züge über Leipzig und Erfurt. In Coburg hält pro Richtung nur ein Zug (ICE 501 Richtung Süden und ICE 604 Richtung Norden). Da die Bedienung dieser Stadt eine Fahrzeitverzögerung von etwa 12 Minuten verursacht, ist die Realisierung eines zweistündlichen Anschlusses an die Linien 18 oder 28 nicht möglich. Zwischen Nürnberg und München fahren alle Züge über Ingolstadt, das jedoch ohne Halt passiert wird.
+
+Die Linie verkehrt im Zweistundentakt; Im Zuge der Neuordnung der Verkehre zwischen Hamburg, Berlin, Erfurt und München ergänzt sich die Linie nun mit der Linie 27 zwischen Hamburg und Berlin, mit der Linie 12 zwischen Berlin und Erfurt und mit der Linie 18 zwischen Erfurt und Nürnberg zum Stundentakt. Zudem bedient die Linie nun auch Bitterfeld. Aufgrund des Umweges über Leipzig und der zusätzlichen Halte ist die Linie deutlich langsamer als die Linie 29 über Halle und wird von dieser sogar zwischen Berlin und Erfurt überholt.
+
+{| class="wikitable"
+|-
+! Linie
+! colspan="2" | Linienverlauf
+! Fahrzeuge
+|-
+| rowspan="2" style="color:#D97102" | '''ICE&nbsp;28'''
+| Berlin Gesundbrunnen —
+| rowspan="2" | [[Berlin Hauptbahnhof|Berlin]]&nbsp;– {{nowrap|[[Bahnhof Berlin Südkreuz|Berlin Südkreuz]] –}} {{nowrap|[[Lutherstadt Wittenberg Hauptbahnhof|Wittenberg]] –}} [[Leipzig Hauptbahnhof|Leipzig]]&nbsp;– [[Erfurt Hauptbahnhof|Erfurt]]&nbsp;– ''[[Bahnhof Coburg|Coburg]]&nbsp;–'' [[Bahnhof Bamberg|Bamberg]]&nbsp;– [[Bahnhof Erlangen|Erlangen]]&nbsp;– [[Nürnberg Hauptbahnhof|Nürnberg]]&nbsp;– ''[[Ingolstadt Hauptbahnhof|Ingolstadt]]&nbsp;–'' [[München Hauptbahnhof|München]]
+| rowspan="2" | [[ICE 4]], [[ICE T]]
+|-
+| {{nowrap|[[Bahnhof Hamburg-Altona|Hamburg-Altona]] –}} {{nowrap|[[Bahnhof Hamburg Dammtor|Hamburg Dammtor]] –}} [[Hamburg Hauptbahnhof|Hamburg]]&nbsp;– ''[[Bahnhof Ludwigslust|Ludwigslust]]&nbsp;– [[Bahnhof Wittenberge|Wittenberge]]&nbsp;–'' {{nowrap|[[Bahnhof Berlin-Spandau|Berlin-Spandau]] –}}
+|}
+
+Seit Dezember 2017 verkehrt ein Zugpaar (ICE 1704/1705) ab Leipzig nach Jena und zurück auf folgendem Laufweg:
+
+{| class="wikitable"
+! Linienverlauf
+! Fahrzeug
+|-
+| ... – [[Bahnhof Weißenfels|Weißenfels]]&nbsp;– [[Naumburg (Saale) Hauptbahnhof|Naumburg]]&nbsp;– {{nowrap|[[Bahnhof Jena Paradies|Jena Paradies]] –}} {{nowrap|[[Bahnhof Jena-Göschwitz|Jena-Göschwitz]]}}
+| [[ICE T]]
+|}
+
+Nachdem der Laufweg von Jena über Saalfeld und Lichtenfels nach Bamberg zugunsten der [[Schnellfahrstrecke Erfurt–Nürnberg]] aufgegeben wurde, verblieb lediglich ein morgendlicher Pendlerzug (ICE&nbsp;601) auf der Strecke, der montags bis freitags von Lichtenfels nach München fährt.
+
+{| class="wikitable"
+! Linienverlauf
+! Fahrzeug
+|-
+| [[Bahnhof Lichtenfels|Lichtenfels]]&nbsp;– [[Bahnhof Bamberg|Bamberg]]&nbsp;– [[Bahnhof Erlangen|Erlangen]]&nbsp;– [[Nürnberg Hauptbahnhof|Nürnberg]]&nbsp;– [[Ingolstadt Hauptbahnhof|Ingolstadt]]&nbsp;– [[München Hauptbahnhof|München]]
+| [[ICE 3]]
+|}
+
+==== Linie 29 ====
+
+Die ICE-Sprinter-Linie 29 wurde im Dezember 2017 neu eingeführt. Sie verbindet Berlin und München miteinander. Bis 2018 verbanden drei Zugpaare täglich Berlin mit München in unter 4 Stunden. Zwischen Halle und Erfurt verkehrt die Linie über die [[Neubaustrecke Erfurt–Leipzig/Halle]] sowie zwischen Erfurt und Nürnberg über die [[Schnellfahrstrecke Nürnberg–Erfurt]]. Mit dem Fahrplanwechsel im Dezember 2018 wurde das Angebot auf 5 Sprinter-Zugpaare erhöht, wodurch ein annähernder Zweistundentakt entsteht.
+
+Mit dem 12. Dezember 2021 wurde die Linie bis Hamburg verlängert. Fast alle Züge endeten bzw. begannen in Hamburg. Seit dem Fahrplanjahr 2024 fuhren pro Richtung 3 Züge, die nicht in Halle und Erfurt hielten.
+
+Seit 14. Dezember 2025 wird die Linie im Stundentakt betrieben, verkehrt nicht mehr nach Hamburg und hält zusätzlich alle zwei Stunden in Ingolstadt. Alle Züge halten nun wieder in Halle und Erfurt. Somit verkehren nun täglich 16 Sprinterzugpaare zwischen Berlin und München mit nur ca. 4 Stunden Fahrzeit.
+
+{| class="wikitable"
+|-
+! Linie
+! Linienverlauf
+! Fahrzeuge
+|-
+| style="color:#8002BF;" | '''ICE&nbsp;29'''
+| [[Berlin Hauptbahnhof|Berlin]]&nbsp;– {{nowrap|[[Bahnhof Berlin Südkreuz|Berlin Südkreuz]] –}} [[Halle (Saale) Hauptbahnhof|Halle]]&nbsp;– [[Erfurt Hauptbahnhof|Erfurt]]&nbsp;– [[Nürnberg Hauptbahnhof|Nürnberg]]&nbsp;– [[Ingolstadt Hauptbahnhof|''Ingolstadt&nbsp;'']]– [[München Hauptbahnhof|München]]
+| [[ICE 3]]
+|}
+
+=== Linie 33 ===
+
+Die Linie 33 wurde mit dem Jahresfahrplan 2026 eingeführt. Sie umfasst die touristischen Leistungen zwischen Westerland, Rügen sowie Greifswald und Nordrhein-Westfalen. In ihr gingen die frühere IC-Linie 39 (Westerland&nbsp;– Hamburg&nbsp;– NRW) und der Abschnitt Ostseebad Binz&nbsp;– Hamburg&nbsp;– NRW der Linie 43 auf. Zeitweise verkehrt die Linie im südlichen Abschnitt über Köln weiter nach Bonn und in den nördlichen Teilabschnitten baustellenbedingt nur bis Hamburg-Altona.
+
+{| class="wikitable"
+|-
+! Linie
+! colspan="2" | Linienverlauf
+! Fahrzeuge
+|-
+| rowspan="3" style="color:#B09FCA;" | '''ICE&nbsp;33'''
+|[[Bahnhof Westerland (Sylt)|Westerland]]&nbsp;– [[Bahnhof Niebüll|Niebüll]]&nbsp;– [[Bahnhof Husum|Husum]]&nbsp;– [[Bahnhof Heide (Holst)|Heide]]&nbsp;– [[Bahnhof Itzehoe|Itzehoe]]&nbsp;–
+| rowspan="3" |{{nowrap|[[Bahnhof Hamburg-Harburg|Hamburg-Harburg]] –}} [[Bremen Hauptbahnhof|Bremen]]&nbsp;– [[Osnabrück Hauptbahnhof|Osnabrück]]&nbsp;– [[Münster (Westfalen) Hauptbahnhof|Münster]]&nbsp;– [[Recklinghausen Hauptbahnhof|Recklinghausen]]&nbsp;– ''[[Gelsenkirchen Hauptbahnhof|Gelsenkirchen]]''&nbsp;– [[Essen Hauptbahnhof|Essen]]&nbsp;– [[Duisburg Hauptbahnhof|Duisburg]]&nbsp;–  [[Düsseldorf Hauptbahnhof|Düsseldorf]]&nbsp;– [[Köln Hauptbahnhof|Köln]]
+| rowspan="3" |[[ICE 1]], [[ICE L]]
+|-
+|([[Bahnhof Ostseebad Binz|Ostseebad Binz]]''&nbsp;–'' [[Bahnhof Bergen auf Rügen|Bergen]]&nbsp;– / [[Bahnhof Greifswald|Greifswald]]&nbsp;–) [[Stralsund Hauptbahnhof|Stralsund]]''&nbsp;–'' [[Bahnhof Velgast|Velgast]]''&nbsp;–'' [[Bahnhof Ribnitz-Damgarten West|Ribnitz-Damgarten West]]''&nbsp;–'' [[Rostock Hauptbahnhof|Rostock]]''&nbsp;–'' [[Bahnhof Bützow|Bützow]]''&nbsp;–'' [[Schwerin Hauptbahnhof|Schwerin]]''&nbsp;–'' [[Bahnhof Hamburg-Bergedorf|Hamburg-Bergedorf]]''&nbsp;–''
+|-
+| {{nowrap|[[Bahnhof Hamburg-Altona|Hamburg-Altona]] –}} {{nowrap|[[Bahnhof Hamburg Dammtor|Hamburg Dammtor]] –}} [[Hamburg Hauptbahnhof|Hamburg]]&nbsp;–
+|}
+
+=== Linien 41–49 ===
+
+Die Linien 41, 42, 43, 45, 47 und 49 beginnen alle in der Regel in [[Köln Hauptbahnhof|Köln]], [[Essen Hauptbahnhof|Essen]] oder in [[Dortmund Hauptbahnhof|Dortmund]] und fahren über die [[Schnellfahrstrecke Köln–Rhein/Main|Schnellfahrstrecke Köln–Frankfurt]]. Die Linien 42 und 43 beginnen bereits in [[Bahnhof Hamburg-Altona|Hamburg-Altona]]:
+
+==== Linie 41 ====
+
+Die Linie 41 beginnt größtenteils in Essen und fährt stündlich über Frankfurt am Main und Nürnberg bis München. Die ersten Züge dieser Linie am Morgen in Richtung München sowie die letzten Züge am Abend aus Richtung München beginnen bzw. enden in Dortmund. Der Halt in Siegburg/Bonn wird seit 2026 zweistündlich bedient, die anderen Halte in Köln/Bonn Flughafen, Montabaur, Limburg Süd, Hanau und Ingolstadt nur von einzelnen Zügen.
+
+{| class="wikitable" style="width:100%"
+|-
+! Linie
+! Linienverlauf
+! Fahrzeuge
+|-
+| style="color:#BD0013;" | '''ICE&nbsp;41'''
+| ''([[Dortmund Hauptbahnhof|Dortmund]]&nbsp;– [[Bochum Hauptbahnhof|Bochum]]&nbsp;–)'' [[Essen Hauptbahnhof|Essen]]&nbsp;– [[Duisburg Hauptbahnhof|Duisburg]]&nbsp;– [[Düsseldorf Hauptbahnhof|Düsseldorf]]&nbsp;– {{nowrap|[[Bahnhof Köln Messe/Deutz|Köln Messe/Deutz]] –}} ''{{nowrap|[[Bahnhof Köln/Bonn Flughafen|Köln/Bonn Flughafen]] –}}'' {{nowrap|[[Bahnhof Siegburg/Bonn|Siegburg/Bonn]] –}} ''[[Bahnhof Montabaur|Montabaur]]&nbsp;– {{nowrap|[[Bahnhof Limburg Süd|Limburg Süd]] –}}'' {{nowrap|[[Frankfurt am Main Flughafen Fernbahnhof|Frankfurt Flughafen]] –}} [[Frankfurt (Main) Hauptbahnhof|Frankfurt]]&nbsp;– ''[[Hanau Hauptbahnhof|Hanau]]&nbsp;–'' [[Aschaffenburg Hauptbahnhof|Aschaffenburg]]&nbsp;– [[Würzburg Hauptbahnhof|Würzburg]]&nbsp;– [[Nürnberg Hauptbahnhof|Nürnberg]]&nbsp;– ''[[Ingolstadt Hauptbahnhof|Ingolstadt]]&nbsp;–'' [[München Hauptbahnhof|München]]
+| [[ICE 3]]
+|}
+
+Ein Zug (ICE 1223) verkehrt von Frankfurt Hbf über Frankfurt Flughafen Regionalbahnhof, Mainz, Wiesbaden, Ruhrgebiet, Paderborn und Kassel nach München. Samstags und sonntags startet er erst in Oberhausen.
+
+{| class="wikitable"
+|-
+! Linienverlauf
+|-
+| [[Frankfurt (Main) Hauptbahnhof|Frankfurt]]&nbsp;– {{nowrap|[[Frankfurt am Main Flughafen Regionalbahnhof|Frankfurt Flughafen]] –}} [[Mainz Hauptbahnhof|Mainz]]&nbsp;– [[Wiesbaden Hauptbahnhof|Wiesbaden]]&nbsp;– {{nowrap|[[Bahnhof Limburg Süd|Limburg Süd]] –}} [[Bahnhof Montabaur|Montabaur]]&nbsp;– {{nowrap|[[Bahnhof Siegburg/Bonn|Siegburg/Bonn]] –}} {{nowrap|[[Bahnhof Köln Messe/Deutz|Köln Messe/Deutz]] –}} [[Düsseldorf Hauptbahnhof|Düsseldorf]]&nbsp;– [[Duisburg Hauptbahnhof|Duisburg]]&nbsp;– [[Essen Hauptbahnhof|Essen]]&nbsp;– [[Bochum Hauptbahnhof|Bochum]]&nbsp;– [[Dortmund Hauptbahnhof|Dortmund]]&nbsp;– [[Hamm (Westfalen) Hauptbahnhof|Hamm]]&nbsp;– [[Bahnhof Soest|Soest]]&nbsp;– [[Bahnhof Lippstadt|Lippstadt]]&nbsp;– [[Paderborn Hauptbahnhof|Paderborn]]&nbsp;– [[Bahnhof Altenbeken|Altenbeken]]&nbsp;– [[Bahnhof Warburg (Westfalen)|Warburg]]&nbsp;– {{nowrap|[[Bahnhof Kassel-Wilhelmshöhe|Kassel-Wilhelmshöhe]] –}} [[Bahnhof Fulda|Fulda]]&nbsp;– [[Würzburg Hauptbahnhof|Würzburg]]&nbsp;– [[Nürnberg Hauptbahnhof|Nürnberg]]&nbsp;– [[München Hauptbahnhof|München]]
+|}
+
+{| class="wikitable"
+|-
+! Linienverlauf
+|-
+| [[Oberhausen Hauptbahnhof|Oberhausen]]&nbsp;– [[Essen Hauptbahnhof|Essen]]&nbsp;– ...
+|}
+
+Der Gegenzug (ICE 1224) verkehrt täglich von München über Kassel und Paderborn nach Oberhausen.
+
+{| class="wikitable"
+|-
+! Linienverlauf
+|-
+| ... – [[Dortmund Hauptbahnhof|Dortmund]]&nbsp;– {{nowrap|[[Wanne-Eickel Hauptbahnhof|Wanne-Eickel]] –}} [[Gelsenkirchen Hauptbahnhof|Gelsenkirchen]]&nbsp;– [[Oberhausen Hauptbahnhof|Oberhausen]]
+|}
+
+Ein weiterer Zug (ICE 1128) verkehrt montags bis freitags ab Frankfurt Flughafen Fernbahnhof über Mainz nach Wiesbaden.
+
+{| class="wikitable"
+|-
+! Linienverlauf
+|-
+| ... – {{nowrap|[[Frankfurt am Main Flughafen Fernbahnhof|Frankfurt Flughafen]] –}} [[Mainz Hauptbahnhof|Mainz]]&nbsp;– [[Wiesbaden Hauptbahnhof|Wiesbaden]]
+|}
+
+==== Linie 42 ====
+
+Die Linie 42 verbindet Hamburg und München im Zweistundentakt. Zusammen mit der Linie 43 bildet sie einen Stundentakt zwischen Hamburg und Dortmund, mit der Linie 55 zwischen Dortmund und Köln, mit der Linie 43 zwischen Köln und Mannheim und mit der Linie 11 zwischen Mannheim und München.
+
+Einzelne Züge verkehren zwischen Dortmund und Köln über Bochum, Essen, Duisburg und Düsseldorf statt über Hagen, Wuppertal und Solingen.
+
+{| class="wikitable" style="width:100%"
+|-
+! Linie
+!Linienverlauf
+! Fahrzeuge
+|-
+| style="color:#80C217;" | '''ICE&nbsp;42'''
+| {{nowrap|[[Bahnhof Hamburg-Altona|Hamburg-Altona]] –}} {{nowrap|[[Bahnhof Hamburg Dammtor|Hamburg Dammtor]] –}} [[Hamburg Hauptbahnhof|Hamburg]]&nbsp;– {{nowrap|[[Bahnhof Hamburg-Harburg|Hamburg-Harburg]] –}} [[Bremen Hauptbahnhof|Bremen]]&nbsp;– [[Osnabrück Hauptbahnhof|Osnabrück]]&nbsp;– [[Münster (Westfalen) Hauptbahnhof|Münster]]&nbsp;– [[Dortmund Hauptbahnhof|Dortmund]]&nbsp;– [[Hagen Hauptbahnhof|Hagen]]&nbsp;– [[Wuppertal Hauptbahnhof|Wuppertal]]&nbsp;– [[Solingen Hauptbahnhof|Solingen]]&nbsp;– [[Köln Hauptbahnhof|Köln]]&nbsp;– {{nowrap|[[Frankfurt am Main Flughafen Fernbahnhof|Frankfurt Flughafen]] –}} [[Mannheim Hauptbahnhof|Mannheim]]&nbsp;– [[Stuttgart Hauptbahnhof|Stuttgart]]&nbsp;– [[Ulm Hauptbahnhof|Ulm]]&nbsp;– [[Augsburg Hauptbahnhof|Augsburg]]&nbsp;– {{nowrap|[[Bahnhof München-Pasing|München-Pasing]] –}} [[München Hauptbahnhof|München]]
+| [[ICE 4]]
+|}
+
+==== Linie 43 ====
+
+Die Linie 43 verbindet Hamburg über Köln im Zweistundentakt mit Basel. Seit 2026 halten die Züge regulär in Baden-Baden statt Offenburg im Tausch mit der Linie 20. Der letzte Zug ab Basel verkehrt über Essen nach Dortmund.
+
+Zwischen Hamburg und Dortmund sowie zwischen Köln und Mannheim überlagert sich die Linie 43 mit der Linie 42 zum Stundentakt, zwischen Mannheim und Basel mit der Linie 12.
+
+Ein Zugpaar begann und endete bis 2025 in Ostseebad Binz bzw. Hannover. Dafür verkehren einzelne Zugleistungen nach Zürich/Chur (ICE 109/105) oder Brig (ICE 107).
+
+Einzelne Züge verkehren zwischen Dortmund und Köln über Hagen, Wuppertal und Solingen statt über Bochum, Essen, Duisburg und Düsseldorf.
+
+{| class="wikitable" style="width:100%"
+|-
+! Linie
+! colspan="2" |Linienverlauf
+!
+! Fahrzeuge
+|-
+| rowspan="2" style="color:#FCFC00;" | '''ICE&nbsp;43'''
+| rowspan="2" | {{nowrap|[[Bahnhof Hamburg-Altona|Hamburg-Altona]] –}} {{nowrap|[[Bahnhof Hamburg Dammtor|Hamburg Dammtor]] –}} [[Hamburg Hauptbahnhof|Hamburg]]&nbsp;- {{nowrap|[[Bahnhof Hamburg-Harburg|Hamburg-Harburg]] –}} [[Bremen Hauptbahnhof|Bremen]]&nbsp;– [[Osnabrück Hauptbahnhof|Osnabrück]]&nbsp;- [[Münster (Westfalen) Hauptbahnhof|Münster]] – [[Dortmund Hauptbahnhof|Dortmund]]&nbsp;– [[Bochum Hauptbahnhof|Bochum]]&nbsp;– [[Essen Hauptbahnhof|Essen]]&nbsp;– [[Duisburg Hauptbahnhof|Duisburg]]&nbsp;– [[Düsseldorf Hauptbahnhof|Düsseldorf]]&nbsp;–
+| rowspan="2" | [[Köln Hauptbahnhof|Köln]]&nbsp;– {{nowrap|[[Frankfurt am Main Flughafen Fernbahnhof|Frankfurt Flughafen]] –}} [[Mannheim Hauptbahnhof|Mannheim]]&nbsp;– [[Karlsruhe Hauptbahnhof|Karlsruhe]]&nbsp;– ''{{nowrap|[[Bahnhof Baden-Baden|Baden-Baden]] –}}'' [[Bahnhof Baden-Baden|Baden-Baden]]&nbsp;– [[Freiburg (Breisgau) Hauptbahnhof|Freiburg]]&nbsp;– {{nowrap|[[Basel Badischer Bahnhof|Basel Bad]] –}} {{nowrap|[[Bahnhof Basel SBB|Basel SBB]]}}
+|{{nowrap|[[Zürich Hauptbahnhof|Zürich]] –}} {{nowrap|[[Bahnhof Sargans|Sargans]]}} – {{nowrap|[[Bahnhof Landquart|Landquart]]}} – {{nowrap|[[Bahnhof Chur|Chur]]}}
+| rowspan="2" | [[ICE 4]]
+|-
+|{{nowrap|[[Bahnhof Liestal|Liestal]] –}} {{nowrap|[[Bahnhof Olten|Olten]]}} –{{nowrap|[[Bahnhof Bern|Bern]]}} –{{nowrap|[[Bahnhof Thun|Thun]]}} – {{nowrap|[[Bahnhof Spiez|Spiez]]}} – {{nowrap|[[Bahnhof Visp|Visp]]}} – {{nowrap|[[Bahnhof Brig|Brig]]}}
+|}
+
+Nachts verkehrt ein Zugpaar (ICE 100/ICE 101) ab/bis Berlin auf folgendem Laufweg:
+
+{| class="wikitable"
+! Linienverlauf
+|-
+| {{nowrap|[[Berlin Ostbahnhof]] –}} [[Berlin Hauptbahnhof|Berlin]]&nbsp;– {{nowrap|[[Bahnhof Berlin Zoologischer Garten|Berlin Zoologischer Garten]] –}} {{nowrap|[[Bahnhof Berlin-Wannsee|Berlin-Wannsee]] –}} [[Potsdam Hauptbahnhof|Potsdam]]&nbsp;– [[Brandenburg Hbf|Brandenburg]]&nbsp;– [[Magdeburg Hauptbahnhof|Magdeburg]]&nbsp;– [[Braunschweig Hauptbahnhof|Braunschweig]]&nbsp;– [[Hannover Hauptbahnhof|Hannover]]&nbsp;– [[Bahnhof Minden (Westfalen)|Minden]]&nbsp;– [[Bielefeld Hauptbahnhof|Bielefeld]]&nbsp;– [[Gütersloh Hauptbahnhof|Gütersloh]]&nbsp;– [[Hamm (Westfalen) Hauptbahnhof|Hamm]]&nbsp;– [[Dortmund Hauptbahnhof|Dortmund]]&nbsp;– [[Bochum Hauptbahnhof|Bochum]]&nbsp;– [[Essen Hauptbahnhof|Essen]]&nbsp;– [[Duisburg Hauptbahnhof|Duisburg]]&nbsp;– ''[[Bahnhof Düsseldorf Flughafen|Düsseldorf Flughafen]]&nbsp;–'' [[Düsseldorf Hauptbahnhof|Düsseldorf]]&nbsp;– ...
+|}
+
+==== Linie 45 ====
+
+Die Linie 45 verbindet montags bis freitags mit einem Zugpaar (ICE 710/ICE 711) Köln und Stuttgart. Nach der [[Schnellfahrstrecke Köln–Rhein/Main]] umfährt dieses Zugpaar Frankfurt westlich und fährt über Wiesbaden und Mainz nach Stuttgart. Die Halte Köln/Bonn Flughafen und Vaihingen (Enz) werden nur in Fahrtrichtung Köln bedient.
+
+{| class="wikitable" style="width:100%"
+|-
+! Linie
+! Linienverlauf
+! Fahrzeuge
+|-
+| style="color:#99F01F;" | '''ICE&nbsp;45'''
+| [[Köln Hauptbahnhof|Köln]]&nbsp;– ''{{nowrap|[[Bahnhof Köln/Bonn Flughafen|Köln/Bonn Flughafen]] –}}'' {{nowrap|[[Bahnhof Siegburg/Bonn|Siegburg/Bonn]] –}} [[Bahnhof Montabaur|Montabaur]]&nbsp;– {{nowrap|[[Bahnhof Limburg Süd|Limburg Süd]] –}} [[Wiesbaden Hauptbahnhof|Wiesbaden]]&nbsp;– [[Mainz Hauptbahnhof|Mainz]]&nbsp;– [[Mannheim Hauptbahnhof|Mannheim]]&nbsp;– [[Heidelberg Hauptbahnhof|Heidelberg]]&nbsp;– ''[[Bahnhof Vaihingen (Enz)|Vaihingen]]&nbsp;–'' [[Stuttgart Hauptbahnhof|Stuttgart]]
+| [[ICE 3]]
+|}
+
+Montag bis Freitag und Sonntag verkehrt ein weitereres Zugpaar (ICE 712/ICE 713) der Linie von Köln über Montabaur, Limburg Süd, Wiesbaden und Mainz nach Frankfurt und zurück.
+
+{| class="wikitable" style="width:100%"
+|-
+! Linienverlauf
+! Fahrzeuge
+|-
+| [[Köln Hauptbahnhof|Köln]]&nbsp;– {{nowrap|[[Bahnhof Siegburg/Bonn|Siegburg/Bonn]] –}} [[Bahnhof Montabaur|Montabaur]]&nbsp;– {{nowrap|[[Bahnhof Limburg Süd|Limburg Süd]] –}} [[Wiesbaden Hauptbahnhof|Wiesbaden]]&nbsp;– [[Mainz Hauptbahnhof|Mainz]]&nbsp;– {{nowrap|[[Frankfurt am Main Flughafen Fernbahnhof|Frankfurt Flughafen]] –}} [[Frankfurt (Main) Hauptbahnhof|Frankfurt]]
+| [[ICE 3]]
+|}
+
+==== Linie 47 ====
+
+Die Linie, die mit dem Fahrplanwechsel 2014 eingeführt wurde, verband zunächst mit einzelnen Zügen Dortmund und Stuttgart über die Schnellfahrstrecken [[Schnellfahrstrecke Köln–Rhein/Main|Köln–Rhein/Main]] und [[Schnellfahrstrecke Mannheim–Stuttgart|Mannheim–Stuttgart]]. Frankfurt wird nur am Flughafen und nicht über den Hauptbahnhof bedient. Im Dezember 2022 wurde die Frequenz auf einen annähernden Zweistundentakt erhöht und die Linie nach München verlängert mit Führung über die [[Neubaustrecke Wendlingen–Ulm]].<ref name="dvwg-2021-12-13-1731">{{Internetquelle |url=https://www.youtube.com/watch?v=5rZ6Ux7tNp8&t=1731 |titel=DVWG Live – Herausforderungen bei der Inbetriebnahme des Bahnprojekts Stuttgart-Ulm |werk=YouTube |hrsg=[[Deutsche Verkehrswissenschaftliche Gesellschaft]] |datum=2021-12-13 |abruf=2021-12-25 |zitat=Welche Verkehre laufen dann ab Fahrplan in einem Jahr? Das ist einmal die Linie 11, das ist diese sehr lange Durchmesserlinie von Berlin, über Frankfurt, Stuttgart nach München. (…) Die Linie 47 fährt auf der Schnellfahrstrecke. Das ist die Linie von Dortmund, über Köln, Stuttgart nach München. Und die Linie 60, von Karlsruhe, über Stuttgart, nach München. (…) Auf der Filstalbahn bleiben (…) die Linie 42 (…) und die Linie 62 (…)}}</ref>
+
+{| class="wikitable" style="width:100%"
+|-
+! Linie
+! Linienverlauf
+! Fahrzeuge
+|-
+| style="color:#0A0136" | '''ICE&nbsp;47'''
+| [[Dortmund Hauptbahnhof|Dortmund]]&nbsp;– [[Bochum Hauptbahnhof|Bochum]]&nbsp;– [[Essen Hauptbahnhof|Essen]]&nbsp;– [[Duisburg Hauptbahnhof|Duisburg]]&nbsp;– [[Düsseldorf Hauptbahnhof|Düsseldorf]]&nbsp;– {{nowrap|[[Bahnhof Köln Messe/Deutz|Köln Messe/Deutz]] –}} {{nowrap|[[Frankfurt am Main Flughafen Fernbahnhof|Frankfurt Flughafen]] –}} [[Mannheim Hauptbahnhof|Mannheim]]&nbsp;– [[Stuttgart Hauptbahnhof|Stuttgart]] – [[Ulm Hauptbahnhof|Ulm]] – [[Augsburg Hauptbahnhof|Augsburg]] – [[München Hauptbahnhof|München]]
+| [[ICE 3]]<nowiki/>neo
+|}
+
+Seit dem Fahrplanjahr 2024 fährt ein Zugpaar samstags von Stuttgart nach Norddeich Mole und zurück. Es hat dabei einen etwas anderen Laufweg als der Rest der Linie. Die Halte Leer, Papenburg, Meppen und Lingen werden nur in Fahrtrichtung Stuttgart bedient.
+
+{| class="wikitable" style="width:100%"
+|-
+! Linienverlauf
+|-
+| {{nowrap|[[Bahnhof Norddeich|Norddeich Mole]] –}} [[Bahnhof Norden|Norden]]&nbsp;– [[Emden Hauptbahnhof|Emden]]&nbsp;– ''[[Bahnhof Leer (Ostfriesland)|Leer]]&nbsp;– [[Bahnhof Papenburg (Ems)|Papenburg]]&nbsp;– [[Bahnhof Meppen|Meppen]]&nbsp;– [[Bahnhof Lingen (Ems)|Lingen]]&nbsp;–'' [[Bahnhof Rheine|Rheine]]&nbsp;– [[Münster (Westfalen) Hauptbahnhof|Münster]]&nbsp;– [[Recklinghausen Hauptbahnhof|Recklinghausen]]&nbsp;– {{nowrap|[[Wanne-Eickel Hauptbahnhof|Wanne-Eickel]] –}} [[Gelsenkirchen Hauptbahnhof|Gelsenkirchen]]&nbsp;– [[Duisburg Hauptbahnhof|Duisburg]]&nbsp;– [[Düsseldorf Hauptbahnhof|Düsseldorf]]&nbsp;– {{nowrap|[[Bahnhof Köln Messe/Deutz|Köln Messe/Deutz]] –}} {{nowrap|[[Bahnhof Siegburg/Bonn|Siegburg/Bonn]] –}} {{nowrap|[[Frankfurt am Main Flughafen Fernbahnhof|Frankfurt Flughafen]] –}} [[Mannheim Hauptbahnhof|Mannheim]]&nbsp;– [[Stuttgart Hauptbahnhof|Stuttgart]]
+|}
+
+==== Linie 49 ====
+Die Linie 49 verkehrt zusätzlich zwischen Köln und Frankfurt (Main) und hält an allen Bahnhöfen der [[Schnellfahrstrecke Köln–Rhein/Main]].
+
+{| class="wikitable" style="width:100%"
+|-
+! Linie
+! Linienverlauf
+! Fahrzeuge
+|-
+| style="color:#128C43;" | '''ICE&nbsp;49'''
+| [[Köln Hauptbahnhof|Köln]]&nbsp;– ''{{nowrap|[[Bahnhof Köln/Bonn Flughafen|Köln/Bonn Flughafen]] –}}'' {{nowrap|[[Bahnhof Siegburg/Bonn|Siegburg/Bonn]] –}} [[Bahnhof Montabaur|Montabaur]]&nbsp;– {{nowrap|[[Bahnhof Limburg Süd|Limburg Süd]] –}} {{nowrap|[[Frankfurt am Main Flughafen Fernbahnhof|Frankfurt Flughafen]] –}} [[Frankfurt (Main) Hauptbahnhof|Frankfurt]]
+| [[ICE 3]]
+|}
+
+Von Montag bis Freitag verkehrt ein Zug (ICE 813) bereits ab Dortmund:
+{| class="wikitable"
+|-
+! Linienverlauf
+|-
+| [[Dortmund Hauptbahnhof|Dortmund]]&nbsp;– [[Hagen Hauptbahnhof|Hagen]]&nbsp;– [[Wuppertal Hauptbahnhof|Wuppertal]]&nbsp;– [[Solingen Hauptbahnhof|Solingen]]&nbsp;– [[Köln Hauptbahnhof|Köln]]&nbsp;– ...
+|}
+
+Ein Zugpaar (ICE 902/ICE 903) verkehrt ab/bis Köln Messe/Deutz (tief) statt Köln Hbf.
+
+=== Linie 50 ===
+
+Die Linie 50 ist die einzige Ost-West-ICE-Linie Mitteldeutschlands. Sie beginnt im Osten in Dresden und führt über Riesa nach Leipzig. Erfurt wird über die [[Neubaustrecke Erfurt–Leipzig/Halle|Neubaustrecke]] erreicht. In Frankfurt werden sowohl Hauptbahnhof als auch Flughafen bedient; weitere Halte sind Mainz und Wiesbaden. Bis zum Fahrplanwechsel im Dezember 2015 fuhr ein Zugpaar ab Eisenach über Bebra, Kassel, Paderborn und Hamm nach Düsseldorf.
+
+Zwischen Dresden und Wiesbaden besteht ein zweistündliches Angebot.
+
+{| class="wikitable"
+|-
+! Linie
+! Linienverlauf
+! Fahrzeuge
+|-
+| style="color:#231F20" | '''ICE&nbsp;50'''
+| [[Dresden Hauptbahnhof|Dresden]]&nbsp;– {{nowrap|[[Bahnhof Dresden-Neustadt|Dresden-Neustadt]] –}} ''[[Bahnhof Riesa|Riesa]]&nbsp;''– [[Leipzig Hauptbahnhof|Leipzig]]&nbsp;– [[Erfurt Hauptbahnhof|Erfurt]]&nbsp;– [[Bahnhof Gotha|Gotha]]&nbsp;– [[Eisenach Hauptbahnhof|Eisenach]]&nbsp;– {{nowrap|[[Bahnhof Bad Hersfeld|Bad Hersfeld]] –}} [[Bahnhof Fulda|Fulda]]&nbsp;– [[Frankfurt (Main) Hauptbahnhof|Frankfurt]]&nbsp;– {{nowrap|[[Frankfurt am Main Flughafen Fernbahnhof|Frankfurt Flughafen]] –}} [[Mainz Hauptbahnhof|Mainz]]&nbsp;– [[Wiesbaden Hauptbahnhof|Wiesbaden]]
+| [[ICE T]], [[ICE 1]]
+|}
+
+=== Linie 51 ===
+Seit Fahrplanwechsel 2025/26 wurde die IC-Linie 51 schrittweise durch drei ICE-Zugpaare ergänzt, um die in die Jahre gekommenen [[Intercity (Deutschland)|Flachpark-Intercitys]] zu ersetzen. Die Linie wird mit [[ICE T]] bedient.
+{| class="wikitable"
+|+
+!Linie
+!Linienverlauf
+!Fahrzeuge
+|-
+| style="color:#231F20" | '''ICE&nbsp;51'''
+| ([[Dresden Hauptbahnhof|Dresden]]&nbsp;– {{nowrap|[[Bahnhof Dresden-Neustadt|Dresden-Neustadt]] –}}) [[Leipzig Hauptbahnhof|Leipzig]]&nbsp;– [[Erfurt Hauptbahnhof|Erfurt]]&nbsp;– [[Kassel-Wilhelmshöhe]]&nbsp;– [[Bahnhof Altenbeken|Altenbeken]]&nbsp;– [[Paderborn Hauptbahnhof|Paderborn]]&nbsp;– [[Bahnhof Lippstadt|Lippstadt]]&nbsp;– [[Bahnhof Soest|Soest]]&nbsp;– [[Dortmund Hbf|Dortmund]]&nbsp;– [[Bochum Hbf|Bochum]]&nbsp;– [[Essen Hbf|Essen]]&nbsp;– [[Duisburg Hbf|Duisburg]]&nbsp;– [[Düsseldorf Hbf|Düsseldorf]]&nbsp;– [[Köln Hbf|Köln]]
+| [[ICE T]]
+|}
+
+=== Linie 60 ===
+
+Die neue Linie besteht seit dem Fahrplanwechsel im Dezember 2022. Sie fährt über die [[Schnellfahrstrecke Wendlingen–Ulm]]. Zwei Zugpaare verkehren ab/bis Basel SBB.
+
+{| class="wikitable"
+|-
+! Linie
+! Linienverlauf
+! Fahrzeuge
+|-
+| style="color:#269E50" | '''ICE&nbsp;60'''
+| ''{{nowrap|[[Bahnhof Basel SBB|Basel SBB]] –}} {{nowrap|[[Basel Badischer Bahnhof|Basel Bad Bf]] –}} {{nowrap|[[Bahnhof Weil am Rhein|Weil am Rhein]] –}} [[Bahnhof Müllheim im Markgräflerland|Müllheim]]&nbsp;– [[Freiburg (Breisgau) Hauptbahnhof|Freiburg]]&nbsp;– [[Bahnhof Lahr (Schwarzw)|Lahr]]&nbsp;– [[Bahnhof Offenburg|Offenburg]]&nbsp;– {{nowrap|[[Bahnhof Baden-Baden|Baden-Baden]] –}} ''[[Karlsruhe Hauptbahnhof|Karlsruhe]]&nbsp;– ''{{nowrap|[[Bahnhof Karlsruhe-Durlach|Karlsruhe-Durlach]] –}}'' [[Bahnhof Bruchsal|Bruchsal]]&nbsp;– [[Stuttgart Hauptbahnhof|Stuttgart]]&nbsp;– [[Ulm Hauptbahnhof|Ulm]]&nbsp;– ''[[Bahnhof Günzburg|Günzburg]]&nbsp;–'' [[Augsburg Hauptbahnhof|Augsburg]]&nbsp;– {{nowrap|[[Bahnhof München-Pasing|München-Pasing]] –}} [[München Hauptbahnhof|München]]
+| [[ICE 3]]
+|}
+
+Ein Zugpaar (ICE 562/ICE 563) dieser Linie fährt täglich aus München kommend ab Stuttgart abweichend des üblichen Laufwegs über Mannheim nach Saarbrücken. Für diese beiden Züge wird der [[DB-Baureihe 408|ICE 3neo]] eingesetzt.
+
+{| class="wikitable"
+! Linienverlauf
+|-
+| ... – [[Mannheim Hauptbahnhof|Mannheim]]&nbsp;– [[Neustadt (Weinstraße) Hauptbahnhof|Neustadt]]&nbsp;– [[Kaiserslautern Hauptbahnhof|Kaiserslautern]]&nbsp;– [[Homburg (Saar) Hauptbahnhof|Homburg]]&nbsp;– [[Saarbrücken Hauptbahnhof|Saarbrücken]]
+|}
+
+=== Linie 62 ===
+Bereits vor der Umstellung zum Fahrplanwechsel im Dezember 2025 wurden einzelne Zugpaare dieser Linie auf ICE umgestellt. Mit Inbetriebnahme der österreichischen [[Koralmbahn]] wurde – mit Ausnahme von drei Zugpaaren – der Zuglauf dieser Linie in München gebrochen. Auf dem Nordabschnitt von Frankfurt bis München werden siebenteilige ICE 4, auf dem Südabschnitt von München bis Graz größtenteils Railjets eingesetzt.
+
+Drei mit ICE 4 bis Graz geführte Zugpaare werden ab München auf den Nordabschnitt bis Frankfurt durchgebunden. Davon fährt das Zugpaar ICE 118/119 abweichend ab Stuttgart über Mannheim und die [[Schnellfahrstrecke Köln–Rhein/Main]] bis Münster (Westf).
+
+Die Linie fährt im Zweistundentakt und ergänzt zwischen Frankfurt und Heidelberg die Linien 13 und 26 zu einem gemeinsamen Stundentakt.
+
+{| class="wikitable"
+|-
+! Linie
+! colspan="2" | Linienverlauf
+! Fahrzeuge
+|-
+| rowspan="2" style="color:#3DB0F2;" | '''ICE&nbsp;62'''
+| [[Frankfurt (Main) Hauptbahnhof|Frankfurt]]&nbsp;– [[Darmstadt Hauptbahnhof|Darmstadt]]&nbsp;– [[Bahnhof Bensheim|Bensheim]]&nbsp;– [[Weinheim (Bergstraße) Hauptbahnhof|Weinheim]]&nbsp;– [[Heidelberg Hauptbahnhof|Heidelberg]]&nbsp;–
+| rowspan="2" |[[Stuttgart Hauptbahnhof|Stuttgart]]&nbsp;– [[Ulm Hauptbahnhof|Ulm]]&nbsp;– [[Bahnhof Günzburg|Günzburg]]&nbsp;– [[Augsburg Hauptbahnhof|Augsburg]]&nbsp;– [[München Hauptbahnhof|München]]&nbsp;– {{nowrap|[[Bahnhof München Ost|München Ost]] –}} [[Bahnhof Rosenheim|Rosenheim]]&nbsp;– [[Bahnhof Prien a Chiemsee|Prien]]&nbsp;– [[Bahnhof Traunstein|Traunstein]]&nbsp;– [[Bahnhof Freilassing|Freilassing]]&nbsp;– [[Salzburg Hauptbahnhof|Salzburg]]&nbsp;– {{nowrap|[[Bahnhof Golling-Abtenau|Golling-Abtenau]] –}} [[Bahnhof Bischofshofen|Bischofshofen]]&nbsp;– {{nowrap|[[Bahnhof St. Johann im Pongau|St. Johann im Pongau]] –}} {{nowrap|[[Bahnhof Schwarzach-St. Veit|Schwarzach-St. Veit]] –}} {{nowrap|[[Bahnhof Bad Gastein|Bad Gastein]] –}} {{nowrap|[[Mallnitz#Verkehr|Mallnitz-Obervellach]] –}} {{nowrap|[[Bahnhof Spittal-Millstättersee|Spittal-Millstättersee]] –}} [[Villach Hauptbahnhof|Villach]]&nbsp;– [[Velden am Wörther See#Verkehr|Velden]]&nbsp;– ''[[Bahnhof Pörtschach am Wörthersee|Pörtschach]]''&nbsp;– [[Klagenfurt Hauptbahnhof|Klagenfurt]]&nbsp;– ''{{nowrap|[[Kühnsdorf#Eisenbahn|Kühnsdorf-Klopeiner See]] –}} {{nowrap|[[Bahnhof St. Paul im Lavanttal|St. Paul im Lavanttal]] –}} [[Bahnhof Weststeiermark|Weststeiermark]]''&nbsp;– [[Graz Hauptbahnhof|Graz]]
+| rowspan="2" | [[ICE 4]], [[Railjet 1. Generation|Railjet]]
+|-
+| [[Münster]]&nbsp;– [[Recklinghausen Hauptbahnhof|Recklinghausen]]&nbsp;– [[Gelsenkirchen Hauptbahnhof|Gelsenkirchen]]&nbsp;– [[Essen Hauptbahnhof|Essen]]&nbsp;– [[Duisburg Hauptbahnhof|Duisburg]]&nbsp;– [[Düsseldorf Hauptbahnhof|Düsseldorf]]&nbsp;– {{nowrap|[[Bahnhof Köln Messe/Deutz|Köln Messe/Deutz]] –}} {{nowrap|''[[Bahnhof Siegburg/Bonn|Siegburg/Bonn]]'' –}} {{nowrap|[[Frankfurt am Main Flughafen Fernbahnhof|Frankfurt Flughafen]] –}} [[Mannheim Hauptbahnhof|Mannheim]]&nbsp;– [[Bahnhof Vaihingen (Enz)|Vaihingen]]&nbsp;–
+|}
+
+Zwei [[Railjet (Zuggattung)|Railjet]]-Zugpaare werden ab Graz über die [[Semmeringbahn]] bis Wien verlängert.
+
+{| class="wikitable"
+|-
+! Linienverlauf
+|-
+| ... – {{nowrap|[[Bahnhof Bruck an der Mur|Bruck an der Mur]]&nbsp;–}} [[Kapfenberg]]&nbsp;– [[Bahnhof Mürzzuschlag|Mürzzuschlag]]&nbsp;– [[Wiener Neustadt Hauptbahnhof|Wiener Neustadt]]&nbsp;– [[Bahnhof Wien Meidling|Wien Meidling]]&nbsp;– [[Wien Hauptbahnhof]]&nbsp;(– [[Bahnhof Flughafen Wien|Flughafen Wien]])
+|}
+
+Seit Dezember 2025 wird außerdem das Zugpaar ICE 218/219 von Dortmund über die [[Württembergische Südbahn]] nach Innsbruck bzw. in Gegenrichtung der Linie 62 zugeordnet.
+
+{| class="wikitable"
+|-
+! Linienverlauf
+|-
+| [[Dortmund Hauptbahnhof|Dortmund]]&nbsp;– [[Bochum Hauptbahnhof|Bochum]]&nbsp;– [[Essen Hauptbahnhof|Essen]]&nbsp;– [[Duisburg Hauptbahnhof|Duisburg]]&nbsp;– [[Düsseldorf Hauptbahnhof|Düsseldorf]]&nbsp;– [[Bahnhof Köln Messe/Deutz|Köln Messe/Deutz]]&nbsp;– [[Bahnhof Siegburg/Bonn|Siegburg/Bonn]]&nbsp;– [[Frankfurt am Main Flughafen Fernbahnhof|Frankfurt Flughafen]]&nbsp;– [[Mannheim Hauptbahnhof|Mannheim]]&nbsp;– [[Stuttgart Hauptbahnhof|Stuttgart]]&nbsp;– [[Ulm Hauptbahnhof|Ulm]]&nbsp;– [[Bahnhof Biberach (Riß)|Biberach (Riß)]]&nbsp;– [[Ravensburg#Eisenbahn|Ravensburg]]&nbsp;– [[Bahnhof Friedrichshafen Stadt|Friedrichshafen Stadt]]&nbsp;– [[Bahnhof Lindau-Reutin|Lindau-Reutin]]&nbsp;– [[Bahnhof Bregenz|Bregenz]]&nbsp;– ''{{nowrap|[[Haltestelle Riedenburg|Bregenz Riedenburg]] –}}'' [[Bahnhof Dornbirn|Dornbirn]]&nbsp;– ''[[Hohenems#Öffentlicher Verkehr|Hohenems]]&nbsp;– [[Rankweil]]&nbsp;–'' [[Bahnhof Feldkirch|Feldkirch]]&nbsp;– [[Bahnhof Bludenz|Bludenz]]&nbsp;– [[Langen am Arlberg#Verkehr|Langen]]&nbsp;– ''[[Bahnhof St. Anton am Arlberg|St. Anton]]&nbsp;–'' [[Bahnhof Landeck-Zams|Landeck-Zams]]&nbsp;– [[Imst#Verkehr|Imst-Pitztal]]&nbsp;– ''[[Bahnhof Ötztal|Ötztal]]&nbsp;– [[Pfaffenhofen (Tirol)#Verkehr|Telfs-Pfaffenhofen]]&nbsp;–'' [[Innsbruck Hauptbahnhof|Innsbruck]]&nbsp;
+|}
+
+{{Siehe auch|Liste der Intercity-Linien#Linie 62}}
+
+=== Linien 77–79 ===
+Die Linien 77 bis 79 sind internationale Linien, die in die [[Beneluxstaaten]] führen:
+
+==== Linie 77 ====
+Die Linie 77 soll perspektivisch auf [[ICE L]] umgestellt werden. Derzeit verkehrt sie mit Zügen vom Typ [[DB-Baureihe 408|ICE&nbsp;3neo]]. Die Linie fährt über die [[Schnellfahrstrecke Hannover–Berlin]]. Ab September 2025 wurden auf der Linie sukzessive [[Intercity-Express|ICE]]-Fahrzeuge eingesetzt. Sie lösten die [[Intercity (Deutschland)|Intercity-1]]-Wagen mit niederländischen Lokomotiven des Typs [[Siemens Vectron|Vectron]] schrittweise ab. Seit November 2025 fahren alle Leistungen ausschließlich als ICE.<ref>{{Internetquelle |url=https://www.deutschebahn.com/de/presse/presse-regional/pr-duesseldorf-de/presseinformationen-regional/Schneller-als-geplant-ICE-3neo-ab-sofort-zwischen-Berlin-und-Amsterdam-im-Einsatz-13562224 |titel=Schneller als geplant: ICE 3neo ab sofort zwischen Berlin und Amsterdam im Einsatz |titelerg=Pressemitteilung |werk=deutschebahn.com |datum=2025-09-24 |sprache=de |abruf=2025-11-01}}</ref>
+Die erste Leistung des Tages fährt ab [[Münster]] mit einem [[ICE 4]].
+
+{| class="wikitable"
+|-
+! Linie
+! colspan="2" | Linienverlauf
+! Fahrzeuge
+|-
+| rowspan="2" | '''ICE&nbsp;77'''
+|[[Bahnhof Amsterdam Centraal|Amsterdam]]&nbsp;– [[Bahnhof Hilversum|Hilversum]]&nbsp;– [[Bahnhof Amersfoort Centraal|Amersfoort]]&nbsp;– [[Bahnhof Apeldoorn|Apeldoorn]]&nbsp;– [[Bahnhof Deventer|Deventer]]&nbsp;– [[Bahnhof Hengelo|Hengelo]]&nbsp;– {{nowrap|[[Bahnhof Bad Bentheim|Bad Bentheim]] –}} [[Bahnhof Rheine|Rheine]]&nbsp;–
+| rowspan="2" | [[Osnabrück Hauptbahnhof|Osnabrück]]&nbsp;– [[Bahnhof Bünde (Westfalen)|Bünde]]&nbsp;– [[Hannover Hauptbahnhof|Hannover]]&nbsp;– {{nowrap|[[Bahnhof Berlin-Spandau|Berlin-Spandau]] –}} [[Berlin Hauptbahnhof|Berlin]]&nbsp;– {{nowrap|[[Berlin Ostbahnhof]]}}
+| [[DB-Baureihe 408|ICE 3neo]]
+|-
+| [[Münster]]&nbsp;–
+| [[ICE 4]]
+|}
+
+==== Linien 78–79 ====
+{{Hauptartikel|ICE International}}
+
+===== Linie 78 =====
+Linie 78 verbindet Frankfurt am Main mit Amsterdam und fährt dabei über die [[Schnellfahrstrecke Köln–Rhein/Main]]. Arnheim ist die erste Station hinter der niederländischen Grenze. Die Linie wird im Zweistundentakt angeboten. Seit 2026 wird zusätzlich in Siegburg/Bonn gehalten.
+
+{| class="wikitable" style="width:100%"
+|-
+! Linie
+! Linienverlauf
+! Fahrzeuge
+|-
+| style="color:#F50707" | '''ICE&nbsp;78'''
+| [[Bahnhof Amsterdam Centraal|Amsterdam]]&nbsp;– [[Bahnhof Utrecht Centraal|Utrecht]]&nbsp;– [[Bahnhof Arnhem Centraal|Arnheim]]&nbsp;– [[Oberhausen Hauptbahnhof|Oberhausen]]&nbsp;– [[Duisburg Hauptbahnhof|Duisburg]]&nbsp;– [[Düsseldorf Hauptbahnhof|Düsseldorf]]&nbsp;– [[Köln Hauptbahnhof|Köln]]&nbsp;– {{nowrap|[[Bahnhof Siegburg/Bonn|Siegburg/Bonn]] –}} {{nowrap|[[Frankfurt am Main Flughafen Fernbahnhof|Frankfurt Flughafen]] –}} [[Frankfurt (Main) Hauptbahnhof|Frankfurt]]
+| [[DB-Baureihe 408|ICE 3neo]]
+|}
+
+Seit dem Fahrplanjahr 2025 verbindet ein ICE-Zugpaar (224/225) Amsterdam mit München.
+
+{| class="wikitable"
+|-
+! Linienverlauf
+|-
+| [[Bahnhof Amsterdam Centraal|Amsterdam]]&nbsp;– [[Bahnhof Utrecht Centraal|Utrecht]]&nbsp;– [[Bahnhof Arnhem Centraal|Arnheim]]&nbsp;– [[Duisburg Hauptbahnhof|Duisburg]]&nbsp;– [[Düsseldorf Hauptbahnhof|Düsseldorf]]&nbsp;– {{nowrap|[[Bahnhof Köln Messe/Deutz|Köln Messe/Deutz]] –}} {{nowrap|[[Bahnhof Siegburg/Bonn|Siegburg/Bonn]] –}} {{nowrap|[[Frankfurt am Main Flughafen Fernbahnhof|Frankfurt Flughafen]] –}} [[Mannheim Hauptbahnhof|Mannheim]]&nbsp;– [[Stuttgart Hauptbahnhof|Stuttgart]]&nbsp;– [[Ulm Hauptbahnhof|Ulm]]&nbsp;– [[Augsburg Hauptbahnhof|Augsburg]]&nbsp;– {{nowrap|[[Bahnhof München-Pasing|München-Pasing]] –}} [[München Hauptbahnhof|München]]
+|}
+
+===== Linie 79 =====
+Die Linie 79 verbindet Frankfurt (Main) mit Brüssel und verkehrt dabei in Deutschland auf zwei Schnellfahrstrecken; dies sind [[Schnellfahrstrecke Köln–Rhein/Main|Rhein/Main–Köln]] und [[Schnellfahrstrecke Köln–Aachen|Köln–Aachen]]. Der erste Bahnhof hinter der belgischen Grenze ist Liège-Guillemins. Die Züge verkehrten im Vierstundentakt, bis das Angebot ab Dezember 2016 auf einen Zweistundentakt verdichtet wurde.<ref>{{Webarchiv |url=http://treintrambus.be/actueel/ov-nieuws/2320-vaker-naar-duitsland.html |text=''Dienstregeling 2017: meer ICE’s Brussel – Frankfurt.'' |wayback=20201028090755}} In: ''TreinTramBus''</ref> In Tagesrandlage halten einzelne Züge auch in Limburg Süd, Montabaur, Siegburg/Bonn oder Köln/Bonn Flughafen. Ab dem 7. September 2026 verkehren zusätzlich Mo–Fr zwei tägliche ICE-Verbindungen zwischen Köln und Antwerpen. Ebenfalls verkehrt ein Zugpaar täglich zwischen Köln und Oostende an der belgischen Küste.
+
+{| class="wikitable" style="width:100%"
+|-
+! Linie
+! Linienverlauf
+! Fahrzeuge
+|-
+| rowspan="3" style="color:#279C90;" | '''ICE&nbsp;79'''
+| {{nowrap|[[Bahnhof Brüssel-Süd|Bruxelles-Midi]] –}} {{nowrap|[[Bahnhof Brüssel Nord|Bruxelles-Nord]] –}} {{nowrap|[[Bahnhof Liège-Guillemins|Liège-Guillemins]] –}} [[Aachen Hauptbahnhof|Aachen]]&nbsp;– [[Köln Hauptbahnhof|Köln]]&nbsp;– {{nowrap|[[Frankfurt am Main Flughafen Fernbahnhof|Frankfurt Flughafen]] –}} [[Frankfurt (Main) Hauptbahnhof|Frankfurt]]
+| rowspan="3" | [[DB-Baureihe 408|ICE 3neo]]
+|-
+| {{nowrap|[[Antwerpen Centraal]] –}} {{nowrap|[[Flughafen Brüssel-Zaventem]] –}} [[Bahnhof Leuven|Löwen]] – {{nowrap|[[Bahnhof Liège-Guillemins|Liège-Guillemins]] –}} [[Aachen Hauptbahnhof|Aachen]]&nbsp;– [[Köln Hauptbahnhof|Köln]]
+|-
+|Oostende – Brugge – Gent St Pieters – Bruxelles Midi – Bruxelles Nord – Liège Guillemins – Aachen – Köln
+|}
+
+=== Linien 82–84 ===
+
+Die Linien 82 bis 84 sind internationale Linien, die West- und Süddeutschland mit Frankreich verbinden:
+
+==== Linie 82 ====
+
+Die Linie 82 beginnt ihre Fahrt in Frankfurt Hauptbahnhof und endet im Gare de l’Est von Paris. Dabei fährt sie über die [[LGV Est européenne]], eine Hochgeschwindigkeitstrasse in Frankreich. Auf der Strecke über Saarbrücken verkehren die Züge im Vierstundentakt. In Forbach wird dabei nur einmal am Tag gehalten. Mit der Inbetriebnahme eines neuen Abschnitts der LGV Est européenne 2016 werden auch zwei Zugpaare über Strasbourg geführt, wodurch ein annähernder Zweistundentakt zwischen Frankfurt, Mannheim und Paris entsteht. Auf dieser Linie verkehren sowohl [[TGV]]s als auch [[Intercity-Express|ICEs]].
+
+{| class="wikitable" style="width:100%"
+|-
+! Linie
+! colspan="3" | Linienverlauf
+! Fahrzeuge
+|-
+| rowspan="2" style="color:#E807F0" | '''ICE&nbsp;82'''
+| rowspan="2" | [[Frankfurt (Main) Hauptbahnhof|Frankfurt]]&nbsp;– [[Mannheim Hauptbahnhof|Mannheim]]&nbsp;–
+| [[Kaiserslautern Hauptbahnhof|Kaiserslautern]]&nbsp;– [[Saarbrücken Hauptbahnhof|Saarbrücken]]&nbsp;– ''[[Forbach (Moselle)#Schienenverkehr|Forbach]]''&nbsp;–
+| rowspan="2" | {{nowrap|[[Paris Gare de l’Est|Paris Est]]}}
+| rowspan="2" | [[TGV Duplex|TGV 2N2]], [[ICE 3|ICE 3Velaro]]
+|-
+| [[Karlsruhe Hauptbahnhof|Karlsruhe]]&nbsp;– [[Bahnhof Strasbourg|Strasbourg]]&nbsp;–
+|}
+
+Seit dem Fahrplanjahr 2025 verbindet ein ICE-Zugpaar (9590/9591) Berlin mit Paris. Dieses wurde im Jahr 2026 in die Linie 15 eingegliedert.
+
+{| class="wikitable"
+|-
+! Linienverlauf
+|-
+| {{nowrap|[[Berlin Ostbahnhof]] –}} [[Berlin Hauptbahnhof|Berlin]]&nbsp;– {{nowrap|[[Bahnhof Berlin-Spandau|Berlin-Spandau]] –}} {{nowrap|[[Bahnhof Frankfurt (Main) Süd|Frankfurt Süd]] –}} [[Karlsruhe Hauptbahnhof|Karlsruhe]]&nbsp;– [[Bahnhof Strasbourg|Strasbourg]]&nbsp;– {{nowrap|[[Paris Gare de l’Est|Paris Est]]}}
+|}
+
+==== Linie 83 ====
+
+Linie 83 beginnt in Stuttgart. Von dort verkehren fünf Zugpaare über die [[LGV Est européenne]] nach Paris Est. Ein Zugpaar pro Tag beginnt bzw. endet in München. Dabei wird seit 2016 auch über die LGV Est européenne gefahren.
+
+{| class="wikitable" style="width:100%"
+|-
+! Linie
+! Linienverlauf
+! Fahrzeuge
+|-
+| style="color:#F00707" | '''ICE&nbsp;83'''
+| ''[[München Hauptbahnhof|München]]&nbsp;– [[Augsburg Hauptbahnhof|Augsburg]]&nbsp;– [[Ulm Hauptbahnhof|Ulm]]''&nbsp;– [[Stuttgart Hauptbahnhof|Stuttgart]]&nbsp;– [[Karlsruhe Hauptbahnhof|Karlsruhe]]&nbsp;– [[Bahnhof Strasbourg|Strasbourg]]&nbsp;– {{nowrap|[[Paris Gare de l’Est|Paris Est]]}}
+| [[TGV Duplex|TGV 2N2]], [[ICE 3]]
+|}
+
+==== Linie 84 ====
+
+Die Linie 84 verbindet einmal am Tag Frankfurt mit Marseille über die [[LGV Rhin-Rhône]] und die [[LGV Méditerranée]] (TGV 9580/9583).
+
+Seit 2023 gehört ebenfalls zur Linie 84 ein TGV-Zugpaar (TGV 9594/9599), welches samstags in der Sommersaison Frankfurt mit Bordeaux verbindet. Im Fahrplanjahr 2024 war vom 20. Juli bis zum 3. August sowie am 31. August aufgrund von Bauarbeiten auf der [[Bahnstrecke Mannheim–Frankfurt am Main|Riedbahn]] Stuttgart Start- und Endpunkt.
+
+{| class="wikitable" style="width:100%"
+|-
+! Linie
+! colspan="2" | Linienverlauf
+! Fahrzeuge
+|-
+| rowspan="2" style="color:#F0B907" | '''ICE&nbsp;84'''
+| colspan="2" | [[Frankfurt (Main) Hauptbahnhof|Frankfurt]]&nbsp;– [[Mannheim Hauptbahnhof|Mannheim]]&nbsp;– [[Karlsruhe Hauptbahnhof|Karlsruhe]]&nbsp;– {{nowrap|[[Bahnhof Baden-Baden|Baden-Baden]] –}} [[Bahnhof Strasbourg|Strasbourg]]&nbsp;– {{nowrap|[[Bahnhof Mulhouse-Ville|Mulhouse-Ville]] –}} {{nowrap|[[Bahnhof Belfort-Montbéliard TGV|Belfort-Montbéliard]] –}} [[Bahnhof Besançon Franche-Comté TGV|Besançon]]&nbsp;– [[Chalon-sur-Saône]]&nbsp;– {{nowrap|[[Bahnhof Lyon-Part-Dieu|Lyon-Part-Dieu]] –}} [[Bahnhof Avignon TGV|Avignon]]&nbsp;– {{nowrap|[[Bahnhof Aix-en-Provence TGV|Aix-en-Provence]] –}} {{nowrap|[[Bahnhof Marseille-Saint-Charles|Marseille-Saint-Charles]]}}
+| rowspan="2" | [[TGV Duplex|TGV 2N2]]
+|-
+| [[Frankfurt (Main) Hauptbahnhof|Frankfurt]]&nbsp;– [[Mannheim Hauptbahnhof|Mannheim]]&nbsp;– [[Karlsruhe Hauptbahnhof|Karlsruhe]]&nbsp;– [[Bahnhof Strasbourg|Strasbourg]]&nbsp;– [[Bahnhof Lorraine TGV|Lorraine]]&nbsp;– [[Bahnhof Meuse TGV|Meuse]]&nbsp;– {{nowrap|[[Bahnhof Champagne-Ardenne TGV|Champagne-Ardenne]] –}} {{nowrap|[[Bahnhof Marne-la-Vallée - Chessy|Marne la Vallée-Chessy]] –}} [[Bahnhof Massy TGV|Massy]]&nbsp;– {{nowrap|[[Saint-Pierre-des-Corps#Verkehr|St-Pierre-des-Corps]] –}} [[Poitiers#Verkehr|Poitiers]]&nbsp;– [[Bahnhof Angoulême|Angouleme]]&nbsp;– {{nowrap|[[Bahnhof Bordeaux-Saint-Jean|Bordeaux-St-Jean]]}}
+|}
+
+=== Linie 85 ===
+
+Die ECE-Linie 85 verbindet seit Dezember 2017 einmal am Tag Frankfurt mit Mailand durch den [[Gotthard-Basistunnel]]. Ab Basel verkehrt er als EuroCity 151 weiter bis Mailand.
+
+{| class="wikitable" style="width:100%"
+|-
+! Linie
+! Linienverlauf
+! Fahrzeuge
+|-
+| style="color:#178748" | '''ECE&nbsp;85'''
+| [[Frankfurt (Main) Hauptbahnhof|Frankfurt]]&nbsp;– [[Mannheim Hauptbahnhof|Mannheim]]&nbsp;– [[Karlsruhe Hauptbahnhof|Karlsruhe]]&nbsp;– [[Ringsheim#Verkehr|Ringsheim]]&nbsp;– [[Freiburg (Breisgau) Hauptbahnhof|Freiburg]]&nbsp;– {{nowrap|[[Basel Badischer Bahnhof|Basel Bad]] –}} {{nowrap|[[Bahnhof Basel SBB|Basel SBB]] –}} [[Zürich Hauptbahnhof|Zürich]]&nbsp;– [[Bahnhof Zug|Zug]]&nbsp;– {{nowrap|[[Bahnhof Arth-Goldau|Arth-Goldau]] –}} [[Bahnhof Bellinzona|Bellinzona]]&nbsp;– [[Bahnhof Lugano|Lugano]]&nbsp;– [[Bahnhof Chiasso|Chiasso]]&nbsp;– [[Bahnhof Como San Giovanni|Como]]&nbsp;– [[Bahnhof Milano Centrale|Milano]]
+| [[SBB RABe 501|RABe 501 („Giruno“)]]
+|}
+
+=== Linie 88 ===
+
+Die Linie 88 ist eine [[EuroCity-Express]]-Linie, die im Dezember 2020 eingeführt wurde. Es verkehren zwischen München und Zürich täglich bis zu acht Zugpaare im Zweistundentakt, welche die EuroCity-Linie 88 ersetzen. Eingesetzt werden Fahrzeuge vom Typ [[Alstom ETR 610]] („Astoro“) der [[Schweizerische Bundesbahnen|Schweizerischen Bundesbahnen]].
+
+{| class="wikitable"
+|-
+! Linie
+! Linienverlauf
+! Fahrzeuge
+|-
+| style="color:#F013E8" | '''ECE&nbsp;88'''
+| [[München Hauptbahnhof|München]]&nbsp;– [[Bahnhof Buchloe|Buchloe]]&nbsp;– [[Bahnhof Memmingen|Memmingen]]&nbsp;– {{nowrap|[[Bahnhof Lindau-Reutin|Lindau-Reutin]] –}} [[Bahnhof Bregenz|Bregenz]]&nbsp;– {{nowrap|[[St. Margrethen#Verkehr|St. Margrethen]] –}} {{nowrap|[[Bahnhof St. Gallen|St. Gallen]] –}} [[Bahnhof Winterthur|Winterthur]]&nbsp;– {{nowrap|[[Bahnhof Zürich Flughafen|Zürich Flughafen]] –}} [[Zürich Hauptbahnhof|Zürich]]
+| [[ETR 610]]
+|}
+
+=== Linie 89 ===
+
+Die Linie 89 verbindet München mit Innsbruck und Italien. Ein Zugpaar verbindet Samstags saisonal München mit Feldkirch.
+
+{| class="wikitable" style="width:100%"
+|-
+! Linie
+! colspan="3" | Linienverlauf
+! Fahrzeuge
+|-
+| rowspan="3" style="color:#AD0755" | '''ICE&nbsp;89'''
+| rowspan="3" | [[München Hauptbahnhof|München]]&nbsp;– {{nowrap|[[Bahnhof München Ost|München Ost]] –}} [[Bahnhof Rosenheim|Rosenheim]]&nbsp;– [[Bahnhof Kufstein|Kufstein]]&nbsp;– [[Wörgl Hauptbahnhof|Wörgl]]&nbsp;– [[Bahnhof Jenbach|Jenbach]]&nbsp;– [[Innsbruck Hauptbahnhof|Innsbruck]]&nbsp;– 
+| colspan="2" | {{nowrap|[[Pfaffenhofen (Tirol)#Verkehr|Telfs-Pfaffenhofen]] –}} [[Bahnhof Ötztal|Ötztal]]&nbsp;– {{nowrap|[[Imst#Verkehr|Imst-Pitztal]] –}} {{nowrap|[[Bahnhof Landeck-Zams|Landeck-Zams]] –}} {{nowrap|[[Bahnhof St. Anton am Arlberg|St. Anton]] –}} ''[[Bahnhof Langen am Arlberg|Langen]]&nbsp;– [[Bahnhof Bludenz|Bludenz]]&nbsp;– [[Bahnhof Feldkirch|Feldkirch]]''
+| [[Railjet 1. Generation|Railjet]]
+|-
+| rowspan="2" |[[Bahnhof Brenner|Brenner]]&nbsp;– ''[[Bahnhof Franzensfeste|Franzensfeste]]&nbsp;–'' [[Bahnhof Brixen|Brixen]]&nbsp;– [[Bahnhof Bozen|Bozen]]&nbsp;– [[Bahnhof Trient|Trento]]&nbsp;– [[Bahnhof Rovereto|Rovereto]]&nbsp;– {{nowrap|[[Bahnhof Verona Porta Nuova|Verona Porta Nuova]]}}
+| [[Vicenza]]&nbsp;– [[Padua|Padova]]&nbsp;– {{nowrap|[[Bahnhof Venezia Mestre|Venezia Mestre]]&nbsp;– }}{{nowrap|[[Bahnhof Venezia Santa Lucia|Venezia Santa Lucia]]}}
+| rowspan="2" | [[Railjet 2. Generation|Railjet 2]]
+|-
+| [[Bahnhof Bologna Centrale|Bologna]]&nbsp;– ''[[Cesena]]&nbsp;– [[Bahnhof Rimini|Rimini]]&nbsp;– [[Riccione]]&nbsp;– [[Cattolica|Cattolica San Giovanni G.]]&nbsp;– [[Pesaro]]&nbsp;– [[Senigallia]]&nbsp;– [[Ancona]]''
+|}
+
+=== Linie 90 ===
+Die Linie 90 verbindet alle zwei Stunden München mit Wien und Budapest. Es ist eine der wenigen Linien, die vom [[Railjet (Zuggattung)|Railjet]] bedient werden.
+
+{| class="wikitable" style="width:100%"
+|-
+! Linie
+! Linienverlauf
+! Fahrzeuge
+|-
+| style="color:#ED1111" | '''ICE&nbsp;90'''
+| [[München Hauptbahnhof|München]]&nbsp;– [[Salzburg Hauptbahnhof|Salzburg]]&nbsp;– [[Linz Hauptbahnhof|Linz]]&nbsp;– {{nowrap|[[St. Pölten Hauptbahnhof|St. Pölten]] –}} {{nowrap|[[Bahnhof Wien Meidling|Wien Meidling]] –}} [[Wien Hauptbahnhof|Wien]]&nbsp;– [[Hegyeshalom#Verkehr|Hegyeshalom]]&nbsp;– [[Mosonmagyaróvár]]&nbsp;– [[Györ#Verkehr|Győr]]&nbsp;– [[Tatabánya]]&nbsp;– [[Bahnhof Kelenföld|Kelenföld]]&nbsp;– {{nowrap|[[Budapest Keleti pályaudvar|Budapest Keleti]]}}
+| [[Railjet 1. Generation|Railjet]]
+|}
+
+=== Linie 91 ===
+Die zweistündlich verkehrende Linie 91 beginnt in Dortmund und führt über Köln, Mainz, Frankfurt am Main, Würzburg, Nürnberg und [[Niederbayern]] zum [[Wien Hauptbahnhof|Wiener Hauptbahnhof]]. Ein Zugpaar mit Fahrtbeginn bzw. -ziel in Wien fährt ab Würzburg abweichend über Fulda nach bzw. von Hamburg, wodurch Städte westlich von Würzburg in beide Richtungen eine Taktlücke aufweisen. Seit dem Fahrplanwechsel 2021 fahren alle ICE-Züge (außer dem Zugpaar ICE 20/21, in Tagesrandlage verkehrend, welches in Frankfurt am Main endet, und sofern es die Bauarbeiten im Ruhrgebiet zulassen) bis Dortmund Hbf und starten auch von dort. Somit bekam die [[linke Rheinstrecke]] zwischen dem Mainzer und dem Kölner Hauptbahnhof einen ICE-Verkehr im Zweistundentakt. Dies wurde 2025 aufgrund von größeren Verspätungen in Richtung Wien rückgängig gemacht, sodass wieder nur zwei Züge pro Richtung zwischen Dortmund und Wien verkehren.
+
+{| class="wikitable" style="width:100%"
+|-
+! Linie
+! colspan="4" | Linienverlauf
+! Fahrzeuge
+|-
+| rowspan="3" style="color:#877E40" | '''ICE&nbsp;91'''
+| rowspan="2" | ''[[Dortmund Hauptbahnhof|Dortmund]]&nbsp;–''
+| ''[[Bochum Hauptbahnhof|Bochum]]&nbsp;– [[Essen Hauptbahnhof|Essen]]&nbsp;– [[Duisburg Hauptbahnhof|Duisburg]]&nbsp;– [[Düsseldorf Hauptbahnhof|Düsseldorf]]&nbsp;–''
+| rowspan="2" | ''[[Köln Hauptbahnhof|Köln]]&nbsp;– [[Bonn Hauptbahnhof|Bonn]]&nbsp;– [[Koblenz Hauptbahnhof|Koblenz]]&nbsp;– [[Mainz Hauptbahnhof|Mainz]]&nbsp;– {{nowrap|[[Frankfurt am Main Flughafen Fernbahnhof|Frankfurt Flughafen]] –}}'' [[Frankfurt (Main) Hauptbahnhof|Frankfurt]]&nbsp;– [[Hanau Hauptbahnhof|Hanau]]&nbsp;– ''[[Aschaffenburg Hauptbahnhof|Aschaffenburg]]''&nbsp;–
+| rowspan="3" | [[Würzburg Hauptbahnhof|Würzburg]]&nbsp;– [[Nürnberg Hauptbahnhof|Nürnberg]]&nbsp;– [[Regensburg Hauptbahnhof|Regensburg]]&nbsp;– [[Bahnhof Plattling|Plattling]]&nbsp;– [[Passau Hauptbahnhof|Passau]]&nbsp;– ''[[Schärding#Verkehr|Schärding]]&nbsp;– [[Wels Hauptbahnhof|Wels]]&nbsp;–'' [[Linz Hauptbahnhof|Linz]]&nbsp;– ''[[Bahnhof Amstetten|Amstetten]]&nbsp;–'' {{nowrap|[[St. Pölten Hauptbahnhof|St. Pölten]] –}} ''[[Bahnhof Tullnerfeld|Tullnerfeld]]&nbsp;–'' {{nowrap|[[Bahnhof Wien Meidling|Wien Meidling]] –}} [[Wien Hauptbahnhof|Wien]]
+| rowspan="3" | [[ICE T]]
+|-
+| ''[[Hagen Hauptbahnhof|Hagen]]&nbsp;– [[Wuppertal Hauptbahnhof|Wuppertal]]&nbsp;– [[Solingen Hauptbahnhof|Solingen]]&nbsp;–''
+|-
+| colspan="3" | ''{{nowrap|[[Bahnhof Hamburg-Altona|Hamburg-Altona]] –}} {{nowrap|[[Bahnhof Hamburg Dammtor|Hamburg Dammtor]] –}} [[Hamburg Hauptbahnhof|Hamburg]]&nbsp;– {{nowrap|[[Bahnhof Hamburg-Harburg|Hamburg-Harburg]] –}} [[Hannover Hauptbahnhof|Hannover]]&nbsp;– [[Bahnhof Göttingen|Göttingen]]&nbsp;– {{nowrap|[[Bahnhof Kassel-Wilhelmshöhe|Kassel-Wilhelmshöhe]] –}} [[Bahnhof Fulda|Fulda]]&nbsp;–''
+|}
+
+Es existieren über die zweistündlich verkehrenden Züge zwei tägliche Zugpaare Hamburg – Berlin – Wien (ICE 92/93 und ICE 94/95). Das Zugpaar ICE 94/95 verkehrt auf dem Abschnitt Berlin bis Nürnberg vereint mit dem Zugpaar ICE 1694/1695. Das Zugpaar ICE 92/93 hält abweichend von den Regelzügen in Straubing anstatt in Plattling.
+
+Auf Grund der Korridorsanierung vom 14. Juni 2026 bis zum 13. Dezember 2026 zwischen Regensburg und Passau findet während der Bauzeit nur eingeschränkter Verkehr zwischen Regensburg und Wien statt.<ref>{{Internetquelle |url=https://karte.bahn.de/de/detail/48866a04-a40e-44df-877a-96052c9829dd |titel=DB Verkehrslage |sprache=de-DE |abruf=2026-09-01}}</ref>
+
+{| class="wikitable"
+|-
+! Linienverlauf
+|-
+| {{nowrap|[[Bahnhof Hamburg-Altona|Hamburg-Altona]] –}} [[Hamburg Hauptbahnhof|Hamburg]]&nbsp;– {{nowrap|[[Bahnhof Berlin-Spandau|Berlin-Spandau]] –}} [[Berlin Hauptbahnhof|Berlin]]&nbsp;– {{nowrap|[[Bahnhof Berlin Südkreuz|Berlin Südkreuz]] –}} [[Halle (Saale) Hauptbahnhof|Halle]]&nbsp;– [[Erfurt Hauptbahnhof|Erfurt]]&nbsp;– [[Bahnhof Coburg|Coburg]]&nbsp;– [[Nürnberg Hauptbahnhof|Nürnberg]]&nbsp;– [[Regensburg Hauptbahnhof|Regensburg]]&nbsp;– ''[[Bahnhof Straubing|Straubing]]&nbsp;– [[Bahnhof Plattling|Plattling]]&nbsp;–'' [[Passau Hauptbahnhof|Passau]]&nbsp;–''[[Wels Hauptbahnhof|Wels]]&nbsp;–'' [[Linz Hauptbahnhof|Linz]]&nbsp;– {{nowrap|[[St. Pölten Hauptbahnhof|St. Pölten]] –}} {{nowrap|[[Bahnhof Wien Meidling|Wien Meidling]] –}} [[Wien Hauptbahnhof|Wien]]
+|}
+
+== Eingestellte Linien ==
+=== {{Anker|Ex0X}} Eingestellte oder nicht verwirklichte ICE Sprinter ===
+{| class="wikitable"
+|-
+! Linie
+! Linienverlauf
+! Fahrzeuge
+! Betriebszeit
+|-
+| {{Bahnlinie|ICE|1|ICE}} || ''Hamburg&nbsp;– Essen&nbsp;– Duisburg&nbsp;– Düsseldorf&nbsp;– Köln''
+| [[ICE 2]], [[ICE 4]]
+| von 2003 bis 2021, ab 2022 in ICE-Linie 39 integriert
+|-
+| {{Bahnlinie|ICE|2|ICE}} || ''Köln&nbsp;– Frankfurt&nbsp;– München''
+| [[ICE 3]]
+| von 2006 bis 2007
+|-
+| {{Bahnlinie|ICE|3|ICE}} || ''Berlin Hauptbahnhof&nbsp;– (Hannover)&nbsp;– Frankfurt''
+|| [[ICE 1]]
+| von 2002 bis 2017, 2018 letzter Einzelzug in ICE-Linie 13 integriert
+|-
+| {{Bahnlinie|ICE|5|ICE}} || ''Köln&nbsp;– Frankfurt&nbsp;– Stuttgart''
+| [[ICE 3]]
+| von 2005 bis 2006
+|}
+
+=== {{Anker|Ex1X|Ex4X|Ex8X}} Eingestellte ICE-Linien oder nicht mehr genutzte Liniennummern ===
+{| class="wikitable"
+|-
+! Linie
+! colspan="3" | Linienverlauf
+! Fahrzeuge
+! Grund
+|-
+| {{Bahnlinie|ICE|16|ICE}}<ref name="PpV2006" />
+| {{nowrap|Berlin Ostbf –}} Berlin&nbsp;– Berlin-Spandau&nbsp;– ''(Wolfsburg&nbsp;–)''
+| Hannover&nbsp;– Göttingen&nbsp;– {{nowrap|Kassel-Wilhelmshöhe –}} Frankfurt
+| ''({{nowrap|– Frankfurt Flughafen –}} Mainz&nbsp;– Wiesbaden)''
+| rowspan="2" | [[ICE 1]]
+| Verstärkerzüge Berlin–Frankfurt über Hannover wurden 2004 bis 2007 in den Mitteilungen zu den aktuellen Fahrplanänderungen als Linie {{Bahnlinie|ICE|16|ICE}} bezeichnet.<br />Diese Liniennummer wurde in der Liniennetzkarte nicht verwendet.
+|-
+| {{Bahnlinie|ICE|21|ICE}}
+| colspan="3" | ''(Oldenburg&nbsp;–)'' Bremen&nbsp;– Hannover&nbsp;– Göttingen&nbsp;– Kassel-Wilhelmshöhe&nbsp;– Frankfurt&nbsp;– Darmstadt&nbsp;– Mannheim&nbsp;– Saarbrücken
+| im Dezember 2005 eingestellt
+|-
+| {{Bahnlinie|ICE|21|ICE}}
+| colspan="3" | {{nowrap|[[Bahnhof Berlin Südkreuz|Berlin Südkreuz]] –}} [[Berlin Hauptbahnhof|Berlin]]&nbsp;– {{nowrap|[[Bahnhof Berlin Gesundbrunnen|Berlin Gesundbrunnen]] –}} ''[[Bahnhof Bernau (b Berlin)|Bernau]]&nbsp;–'' [[Eberswalde Hauptbahnhof|Eberswalde]]&nbsp;– [[Bahnhof Angermünde|Angermünde]]&nbsp;– [[Bahnhof Prenzlau|Prenzlau]]&nbsp;– [[Bahnhof Pasewalk|Pasewalk]]&nbsp;– [[Bahnhof Anklam|Anklam]]&nbsp;– [[Bahnhof Züssow|Züssow]]&nbsp;– [[Bahnhof Greifswald|Greifswald]]&nbsp;– [[Stralsund Hauptbahnhof|Stralsund]]&nbsp;– [[Bahnhof Bergen auf Rügen|Bergen]]&nbsp;– [[Bahnhof Ostseebad Binz|Binz]]
+| [[ICE 1]]
+| Nur im Jahr 2024 und 2025 in dieser Form. Seit 2026 Teil der ICE-Linie 15
+|-
+| {{Bahnlinie|ICE|30|ICE}}
+| colspan="3" | ''[[Münster Hauptbahnhof|Münster]]&nbsp;- [[Dortmund Hauptbahnhof|Dortmund]]&nbsp;– [[Bochum Hauptbahnhof|Bochum]]&nbsp;– [[Essen Hauptbahnhof|Essen]]&nbsp;– [[Duisburg Hauptbahnhof|Duisburg]]&nbsp;– [[Düsseldorf Hauptbahnhof|Düsseldorf]]&nbsp;– [[Köln Hauptbahnhof|Köln]] – [[Bonn Hauptbahnhof|Bonn]] – [[Koblenz Hauptbahnhof|Koblenz]] – [[Mainz Hauptbahnhof|Mainz]] – [[Mannheim Hauptbahnhof|Mannheim]] – [[Heidelberg Hauptbahnhof|Heidelberg]] – [[Vaihingen an der Enz|Vaihingen (Enz)]] – [[Stuttgart Hauptbahnhof|Stuttgart]]''
+| [[ICE T]]
+| 1 Zugpaar, im Dezember 2022 durch {{Bahnlinie|ICE|55|ICE}} ersetzt
+|-
+| rowspan="2" | {{Bahnlinie|ICE|31|ICE}}
+| [[Bahnhof Hamburg-Altona|Hamburg-Altona]]&nbsp;– [[Bahnhof Hamburg Dammtor|Hamburg Dammtor]]&nbsp;–
+| rowspan="2" | [[Hamburg Hauptbahnhof|Hamburg]]&nbsp;– [[Bahnhof Hamburg-Harburg|Hamburg-Harburg]]&nbsp;– [[Bremen Hauptbahnhof|Bremen]]&nbsp;– [[Osnabrück Hauptbahnhof|Osnabrück]]&nbsp;– [[Münster Hauptbahnhof|Münster]]&nbsp;– [[Dortmund Hauptbahnhof|Dortmund]]&nbsp;– [[Hagen Hauptbahnhof|Hagen]]&nbsp;– [[Wuppertal Hauptbahnhof|Wuppertal]]&nbsp;– [[Solingen Hauptbahnhof|Solingen]]&nbsp;– [[Köln Hauptbahnhof|Köln]]&nbsp;– [[Bonn Hauptbahnhof|Bonn]] – [[Koblenz Hauptbahnhof|Koblenz]] – ''[[Bingen (Rhein) Hauptbahnhof|Bingen]]&nbsp;– [[Mainz Hauptbahnhof|Mainz]] {{nowrap|[[Frankfurt Flughafen Fernbahnhof|Frankfurt Flughafen]] –}}'' [[Frankfurt (Main) Hauptbahnhof|Frankfurt]]&nbsp;– [[Hanau Hauptbahnhof|Hanau]]&nbsp;– [[Würzburg Hauptbahnhof|Würzburg]]&nbsp;– [[Nürnberg Hauptbahnhof|Nürnberg]]&nbsp;–
+| [[Regensburg Hauptbahnhof|Regensburg]]&nbsp;– [[Bahnhof Plattling|Plattling]]&nbsp;– [[Passau Hauptbahnhof|Passau]]
+| rowspan="2" | [[ICE 1]], [[ICE-T]]
+| rowspan="2" | Im Dezember 2021 durch {{Bahnlinie|ICE|42|ICE}} und {{Bahnlinie|ICE|91|ICE}} ersetzt
+|-
+| ''[[Kiel Hauptbahnhof|Kiel]]&nbsp;- [[Bahnhof Neumünster|Neumünster]]&nbsp;-''
+| ''[[München Hauptbahnhof|München]]''
+|-
+| rowspan="2" | {{Bahnlinie|ICE|32|ICE}}
+| [[Münster (Westfalen) Hauptbahnhof|Münster]]&nbsp;– [[Recklinghausen Hauptbahnhof|Recklinghausen]]&nbsp;– {{nowrap|[[Wanne-Eickel Hauptbahnhof|Wanne-Eickel]] –}} [[Gelsenkirchen Hauptbahnhof|Gelsenkirchen]]&nbsp;– [[Duisburg Hauptbahnhof|Duisburg]]&nbsp;– [[Düsseldorf Hauptbahnhof|Düsseldorf]]&nbsp;– {{nowrap|[[Bahnhof Köln Messe/Deutz|Köln Messe/Deutz]] –}} {{nowrap|[[Bahnhof Siegburg/Bonn|Siegburg/Bonn]] –}} [[Bahnhof Montabaur|Montabaur]]&nbsp;– [[Wiesbaden Hauptbahnhof|Wiesbaden]]&nbsp;– [[Mainz Hauptbahnhof|Mainz]]&nbsp;– ''[[Worms Hauptbahnhof|Worms]]''&nbsp;– [[Mannheim Hauptbahnhof|Mannheim]]&nbsp;– 
+| rowspan="2" | [[Heidelberg Hauptbahnhof|Heidelberg]]&nbsp;– ''{{nowrap|[[Bahnhof Wiesloch-Walldorf|Wiesloch-Walldorf]] –}}'' [[Stuttgart Hauptbahnhof|Stuttgart]]&nbsp;– [[Ulm Hauptbahnhof|Ulm]]&nbsp;–
+| [[Bahnhof Biberach (Riß)|Biberach]]&nbsp;– ''[[Bahnhof Aulendorf|Aulendorf]]&nbsp;–'' [[Ravensburg#Verkehr|Ravensburg]]&nbsp;– {{nowrap|[[Bahnhof Friedrichshafen Stadt|Friedrichshafen Stadt]] –}} {{nowrap|[[Bahnhof Lindau-Reutin|Lindau-Reutin]] –}} [[Bahnhof Bregenz|Bregenz]]&nbsp;– ''{{nowrap|[[Haltestelle Riedenburg|Bregenz Riedenburg]] –}}'' [[Bahnhof Dornbirn|Dornbirn]]&nbsp;– ''[[Hohenems#Öffentlicher Verkehr|Hohenems]]&nbsp;– [[Rankweil]]&nbsp;–'' [[Bahnhof Feldkirch|Feldkirch]]&nbsp;– [[Bahnhof Bludenz|Bludenz]]&nbsp;– [[Langen am Arlberg#Verkehr|Langen]]&nbsp;– ''[[Bahnhof St. Anton am Arlberg|St. Anton]]&nbsp;–'' [[Bahnhof Landeck-Zams|Landeck-Zams]]&nbsp;– [[Imst#Verkehr|Imst-Pitztal]]&nbsp;– ''[[Bahnhof Ötztal|Ötztal]]&nbsp;– [[Pfaffenhofen (Tirol)#Verkehr|Telfs-Pfaffenhofen]]&nbsp;–'' [[Innsbruck Hauptbahnhof|Innsbruck]]&nbsp;(– ''[[Bahnhof Jenbach|Jenbach]]&nbsp;– [[Wörgl Hauptbahnhof|Wörgl]]&nbsp;– [[Salzburg Hauptbahnhof|Salzburg]]&nbsp;– [[Linz Hauptbahnhof|Linz]]&nbsp;– [[St. Pölten Hauptbahnhof|St. Pölten]]&nbsp;– {{nowrap|[[Bahnhof Wien Meidling|Wien Meidling]] –}} [[Wien Hauptbahnhof|Wien]]&nbsp;– {{nowrap|[[Bahnhof Flughafen Wien|Flughafen Wien]]}}'')
+| rowspan="2" | [[ICE 4]] (7-teilig), [[Railjet 1. Generation|Railjet]]
+| rowspan="2" | Im Dezember 2025 eingestellt und durch {{Bahnlinie|ICE|62|ICE}} ersetzt
+|-
+| {{nowrap|[[Frankfurt am Main Hauptbahnhof|Frankfurt]]&nbsp;–}} [[Darmstadt Hauptbahnhof|Darmstadt]]&nbsp;– [[Bahnhof Bensheim|Bensheim]]&nbsp;– [[Weinheim (Bergstraße) Hauptbahnhof|Weinheim]]&nbsp;–
+| [[Bahnhof Günzburg|Günzburg]]&nbsp;– [[Augsburg Hauptbahnhof|Augsburg]]&nbsp;– [[München Hauptbahnhof|München]]&nbsp;– {{nowrap|[[Bahnhof München Ost|München Ost]] –}} [[Bahnhof Rosenheim|Rosenheim]]&nbsp;– [[Bahnhof Prien a Chiemsee|Prien]]&nbsp;– [[Bahnhof Traunstein|Traunstein]]&nbsp;– [[Bahnhof Freilassing|Freilassing]]&nbsp;– [[Salzburg Hauptbahnhof|Salzburg]]&nbsp;– {{nowrap|[[Haltestelle Salzburg Süd|Salzburg Süd]] –}} [[Bahnhof Hallein|Hallein]]&nbsp;– {{nowrap|[[Bahnhof Golling-Abtenau|Golling-Abtenau]] –}} [[Werfen#Verkehr|Werfen]]&nbsp;– [[Bahnhof Bischofshofen|Bischofshofen]]&nbsp;– {{nowrap|[[Bahnhof St. Johann im Pongau|St. Johann im Pongau]] –}} {{nowrap|[[Bahnhof Schwarzach-St. Veit|Schwarzach-St. Veit]] –}} [[Bahnhof Dorfgastein|Dorfgastein]]&nbsp;– {{nowrap|[[Bahnhof Bad Hofgastein|Bad Hofgastein]] –}} {{nowrap|[[Bahnhof Bad Gastein|Bad Gastein]] –}} {{nowrap|[[Mallnitz#Verkehr|Mallnitz-Obervellach]] –}} {{nowrap|[[Bahnhof Spittal-Millstättersee|Spittal-Millstättersee]] –}} [[Villach Hauptbahnhof|Villach]]&nbsp;– [[Velden am Wörther See#Verkehr|Velden]]&nbsp;– [[Bahnhof Pörtschach am Wörthersee|Pörtschach]]&nbsp;– [[Krumpendorf am Wörthersee#Verkehr|Krumpendorf]]&nbsp;– [[Klagenfurt Hauptbahnhof|Klagenfurt]]
+|- id="Linie 35"
+| rowspan="2" | {{Bahnlinie|ICE|35|ICE}}
+| {{nowrap|[[Norddeich Mole]] –}} [[Norddeich]]&nbsp;– [[Norden (Ostfriesland)|Norden]]&nbsp;–
+| rowspan="2" colspan="2" | [[Emden Hauptbahnhof|Emden]]&nbsp;– [[Bahnhof Leer (Ostfriesland)|Leer]]&nbsp;– [[Bahnhof Papenburg|Papenburg]]&nbsp;– [[Bahnhof Meppen|Meppen]]&nbsp;– [[Bahnhof Lingen (Ems)|Lingen]]&nbsp;– [[Bahnhof Rheine|Rheine]]&nbsp;– [[Münster Hauptbahnhof|Münster]]&nbsp;– [[Recklinghausen Hauptbahnhof|Recklinghausen]]&nbsp;– [[Wanne-Eickel Hauptbahnhof|Wanne-Eickel]]&nbsp;– [[Gelsenkirchen Hauptbahnhof|Gelsenkirchen]]&nbsp;– [[Oberhausen Hauptbahnhof|Oberhausen]]&nbsp;– [[Duisburg Hauptbahnhof|Duisburg]]&nbsp;– [[Düsseldorf Hauptbahnhof|Düsseldorf]]&nbsp;– [[Köln Hauptbahnhof|Köln]]&nbsp;– [[Bonn Hauptbahnhof|Bonn]]&nbsp;– [[Bahnhof Remagen|Remagen]]&nbsp;– [[Bahnhof Andernach|Andernach]]&nbsp;– [[Koblenz Hauptbahnhof|Koblenz]]
+| rowspan="2" | [[ICE 2]], [[ICE 4]] (7-teilig)
+| rowspan="2" | Die beiden Zugpaare verkehrten vor Dezember 2023 und ab Juli 2024 als Intercity.
+|-
+| {{nowrap|[[Bahnhof Emden Außenhafen|Emden Außenhafen]]&nbsp;–}}
+|-
+|-id="ICE 39"
+| rowspan="2" | {{Bahnlinie|ICE|39|ICE}}
+| rowspan="2" | {{nowrap|[[Bahnhof Hamburg-Altona|Hamburg-Altona]] –}} {{nowrap|[[Bahnhof Hamburg Dammtor|Hamburg Dammtor]] –}} [[Hamburg Hauptbahnhof|Hamburg]]&nbsp;– ''{{nowrap|[[Bahnhof Hamburg-Harburg|Hamburg-Harburg]] –}} [[Bremen Hauptbahnhof|Bremen]]&nbsp;– [[Bahnhof Diepholz|Diepholz]]&nbsp;– [[Osnabrück Hauptbahnhof|Osnabrück]]&nbsp;– [[Münster (Westfalen) Hauptbahnhof|Münster]]&nbsp;–''
+| ''[[Hamm (Westfalen) Hauptbahnhof|Hamm]]&nbsp;–'' [[Dortmund Hauptbahnhof|Dortmund]]&nbsp;– [[Bochum Hauptbahnhof|Bochum]]&nbsp;–
+| rowspan="2" | [[Essen Hauptbahnhof|Essen]]&nbsp;– [[Duisburg Hauptbahnhof|Duisburg]]&nbsp;– ''{{nowrap|[[Bahnhof Düsseldorf Flughafen|Düsseldorf Flughafen]] –}}'' [[Düsseldorf Hauptbahnhof|Düsseldorf]]&nbsp;– [[Köln Hauptbahnhof|Köln]]&nbsp;– [[Bonn Hauptbahnhof|Bonn]]&nbsp;– ''[[Bahnhof Remagen|Remagen]]&nbsp;– [[Bahnhof Andernach|Andernach]]&nbsp;–'' [[Koblenz Hauptbahnhof|Koblenz]]&nbsp;– ''[[Bingen (Rhein) Hauptbahnhof|Bingen]]&nbsp;–'' [[Mainz Hauptbahnhof|Mainz]]&nbsp;– {{nowrap|[[Frankfurt am Main Flughafen Fernbahnhof|Frankfurt Flughafen]] –}} [[Frankfurt (Main) Hauptbahnhof|Frankfurt]]&nbsp;– [[Hanau Hauptbahnhof|Hanau]]&nbsp;– ''[[Aschaffenburg Hauptbahnhof|Aschaffenburg]]''&nbsp;– [[Würzburg Hauptbahnhof|Würzburg]]&nbsp;– [[Nürnberg Hauptbahnhof|Nürnberg]]&nbsp;– ''([[Ingolstadt Hauptbahnhof|Ingolstadt]]&nbsp;– [[München Hauptbahnhof|München]] oder [[Regensburg Hauptbahnhof|Regensburg]]&nbsp;– ''[[Bahnhof Straubing|Straubing]]&nbsp;–'' [[Bahnhof Plattling|Plattling]]&nbsp;– [[Passau Hauptbahnhof|Passau]])''
+| rowspan="2" | [[ICE 1]], [[ICE T]]
+| rowspan="2" |2021 eingeführt und im Fahrplanjahr 2026 in den Linien 33 und 43 aufgegangen
+|-
+| ''[[Recklinghausen Hauptbahnhof|Recklinghausen]]&nbsp;–''
+|-
+| {{Bahnlinie|ICE|40|ICE}}
+| colspan="3" | ''Münster&nbsp;– Dortmund&nbsp;– (Bochum&nbsp;– Essen&nbsp;– Duisburg&nbsp;– Düsseldorf) oder (Hagen&nbsp;– Wuppertal&nbsp;– Solingen)&nbsp;– Köln&nbsp;– Siegburg/Bonn&nbsp;– {{nowrap|Frankfurt Flughafen –}} Frankfurt''
+| [[ICE 3]]
+| im Mai 2006 durch {{Bahnlinie|ICE|42|ICE}} ersetzt
+|-
+| {{Bahnlinie|ICE|51|ICE}}<ref name="Liniennetz" />
+| Dresden&nbsp;– {{nowrap|Dresden-Neustadt –}} Leipzig&nbsp;– ''(Naumburg&nbsp;–)''
+| Weimar&nbsp;– Erfurt&nbsp;– ''(Gotha&nbsp;–)'' Eisenach&nbsp;–
+| Bebra&nbsp;– {{nowrap|Kassel-Wilhelmshöhe –}} Warburg&nbsp;– Altenbeken&nbsp;– Paderborn&nbsp;– Lippstadt&nbsp;– Soest&nbsp;– Hamm&nbsp;– Dortmund&nbsp;– Bochum&nbsp;– Essen&nbsp;– Duisburg&nbsp;– {{nowrap|Düsseldorf Flughafen –}} Düsseldorf
+| [[ICE T]]
+| In den Jahren 2003 und 2004 existierte zwischen Weimar und Düsseldorf ein Vierstundentakt, in den Jahren 2005 und 2006 nur noch einzelne Zugpaare zwischen Dresden und Düsseldorf. Im Dezember 2007 wurde das verbliebene Zugpaar ICE 1758/1759 eingestellt.<br />Seit 2011 ist das neue Zugpaar 1745/1746 Dresden–Düsseldorf in die Linie {{Bahnlinie|ICE|50|ICE}} Dresden–Frankfurt integriert und besitzt keine separate Liniennummer mehr. Zum Fahrplanwechsel 2015 wurde auch dieses Zugpaar eingestellt und ging in der IC-Linie [[Liste der Intercity-Linien (Deutschland)#Linie 50|{{Bahnlinie|IC||IC 50 MDV}}]], jedoch mit Start in Leipzig, nicht mehr in Dresden, auf.
+|-
+| {{Bahnlinie|ICE|55|ICE}}
+| colspan="3" | {{nowrap|Berlin Ostbf –}} Potsdam&nbsp;– Magdeburg&nbsp;– Hannover&nbsp;– Dortmund&nbsp;– Duisburg&nbsp;/ Wuppertal&nbsp;– Köln
+| [[ICE 1]]
+| im Dezember 2005 eingestellt
+|-
+| {{Bahnlinie|ICE|65|ICE}}
+| colspan="3" | Dresden&nbsp;– Chemnitz&nbsp;– Hof&nbsp;– Bayreuth/ – Marktredwitz&nbsp;– Nürnberg
+| rowspan="4" | [[ICE TD]]
+| Verkehrte im Fahrplanjahr 2001 als {{Bahnlinie|ICE|17|ICE}}.
+Ende 2003 wegen [[ICE TD#Abstellung|mehrerer Probleme mit dem ICE TD]] eingestellt.
+|-
+| {{Bahnlinie|ICE|75|ICE}}
+| colspan="3" | [[Københavns Hovedbanegård|København]]&nbsp;– {{nowrap|[[Høje-Taastrup Kommune|Høje Taastrup]] –}} [[Næstved#Verkehr|Næstved]]&nbsp;– [[Vordingborg]]&nbsp;– [[Nykøbing Falster#Verkehr|Nykøbing]]&nbsp;– [[Rødby#Geschichte|Rødby]]&nbsp;– [[Bahnhof Puttgarden|Puttgarden]]&nbsp;– [[Oldenburg in Holstein#Schienenverkehr|Oldenburg]]&nbsp;– [[Lübeck Hauptbahnhof|Lübeck]]&nbsp;– [[Hamburg Hauptbahnhof|Hamburg]]
+| im Dezember 2017 in IC-Linie überführt
+|-
+| {{Bahnlinie|ICE|75|ICE}}
+| colspan="3" | &nbsp;– [[Bahnhof Berlin-Spandau|Berlin-Spandau]]&nbsp;– [[Berlin Hauptbahnhof|Berlin]]&nbsp;– [[Berlin Ostbahnhof]]
+| Bedienung Berlins bereits im Dezember 2015 eingestellt<ref>{{Literatur |Autor=Thomas Fülling |Titel=Schneller mit der Bahn nach Frankfurt |Sammelwerk=[[Berliner Morgenpost]] |Datum=2015-12-02 |Seiten=2 |Online=http://www.morgenpost.de/incoming/article206744405/Schneller-mit-der-Bahn-nach-Frankfurt.html |ZDB=749437-3}}</ref>
+|-
+| {{Bahnlinie|ICE|76|ICE}}
+| colspan="3" | [[Bahnhof Aarhus|Aarhus]]&nbsp;– [[Skanderborg#Verkehr|Skanderborg]]&nbsp;– [[Horsens]]&nbsp;– [[Vejle#Verkehr|Vejle]]&nbsp;– [[Fredericia#Verkehr|Fredericia]]&nbsp;– [[Kolding#Wirtschaft und Verkehr|Kolding]]&nbsp;– [[Padborg]]&nbsp;– [[Bahnhof Flensburg|Flensburg]]&nbsp;– [[Bahnhof Schleswig|Schleswig]]&nbsp;– [[Bahnhof Rendsburg|Rendsburg]]&nbsp;– [[Bahnhof Neumünster|Neumünster]]&nbsp;– {{nowrap|[[Bahnhof Hamburg Dammtor|Hamburg Dammtor]] –}} [[Hamburg Hauptbahnhof|Hamburg]]&nbsp;– [[Berlin Hauptbahnhof|Berlin]]&nbsp;– [[Berlin Ostbahnhof|Berlin&nbsp;Ostbf]]
+| am 13. Dezember 2015 in EC-Linie 76 mit dänischen [[DSB MF|IC3]]-Fahrzeugen umgewandelt
+|-
+| {{Bahnlinie|ICE|80|ICE}}
+| colspan="3" | Dortmund&nbsp;– Essen&nbsp;– Duisburg&nbsp;– Düsseldorf&nbsp;– Köln&nbsp;– Aachen&nbsp;– Liège-Guillemins&nbsp;– Paris&nbsp;Nord
+| [[Thalys]]
+| Die DB beendete im Dezember 2016 die Zusammenarbeit mit dem Thalys, daher zählt diese nicht mehr zu den ICE-Linien.
+|-
+| {{Bahnlinie|ICE|87|ICE}}
+| colspan="3" | ''(Frankfurt&nbsp;– Darmstadt&nbsp;– Bensheim&nbsp;– Heidelberg''&nbsp;–) Stuttgart&nbsp;– Singen&nbsp;– <small>Zürich</small>
+| [[ICE T]]
+| ab 21. März 2010 durch {{Bahnlinie|ICE|87|IC}} ersetzt, da aufgrund von [[ICE T#Probleme mit den Radsatzwellen|Problemen an den Radsatzwellen]] nicht genügend ICE T verfügbar sind
+|-
+| {{Bahnlinie|ICE|88|ICE}}
+| colspan="3" | München&nbsp;– Memmingen&nbsp;– Lindau&nbsp;– Zürich
+| [[ICE TD]]
+| Einzelzüge bis Dezember 2003 mit ICE TD, anschließend komplett durch EC 88 ersetzt
+|}
+
+=== In anderen Linien aufgegangene Teilabschnitte ===
+{| class="wikitable"
+|-
+! Linie
+! Linienverlauf
+! Fahrzeuge
+! Grund
+|-
+| rowspan="2" | {{Bahnlinie|ICE|10|ICE}}
+| &nbsp;– [[Bonn Hauptbahnhof|Bonn]]&nbsp;– [[Bahnhof Remagen|Remagen]]&nbsp;– [[Bahnhof Andernach|Andernach]]&nbsp;– [[Koblenz Hauptbahnhof|Koblenz]]
+| rowspan="2" | [[ICE 2]], [[ICE 4]]
+| ab Dezember 2023 Abschnitt durch neue Linie 19 ersetzt
+|-
+| ... – [[Bahnhof Nienburg (Weser)|Nienburg]]&nbsp;– [[Bahnhof Verden (Aller)|Verden]]&nbsp;– [[Bremen Hauptbahnhof|Bremen]]&nbsp;– [[Bahnhof Delmenhorst|Delmenhorst]]&nbsp;– [[Oldenburg (Oldenburg) Hauptbahnhof|Oldenburg]]
+| seit Dezember 2025 verkehrt Linie 16 zwischen Berlin und Bremen
+|-
+| {{Bahnlinie|ICE|11|ICE}}
+| &nbsp;– [[Bahnhof Berlin-Spandau|Berlin-Spandau]]&nbsp;– [[Braunschweig Hauptbahnhof|Braunschweig]]&nbsp;– [[Hildesheim Hauptbahnhof|Hildesheim]]&nbsp;– [[Bahnhof Göttingen|Göttingen]]&nbsp;– [[Bahnhof Kassel-Wilhelmshöhe|Kassel-Wilhelmshöhe]]&nbsp;–
+| rowspan="3" | [[ICE 1]]
+| ab Dezember 2017 über Erfurt geführt, Abschnitt durch neue Linie 13 ersetzt
+|-
+| rowspan="2" | {{Bahnlinie|ICE|19|ICE}}
+| &nbsp;– [[Bingen (Rhein) Hauptbahnhof|Bingen]]&nbsp;– [[Mainz Hauptbahnhof|Mainz]]&nbsp;– [[Mannheim Hauptbahnhof|Mannheim]]&nbsp;– [[Heidelberg Hauptbahnhof|Heidelberg]]&nbsp;– [[Stuttgart Hauptbahnhof|Stuttgart]]
+| seit Juli 2024 eingestellt, weiterhin durch Linie 55 bedient
+|-
+| – [[Bremen Hauptbahnhof|Bremen]]&nbsp;
+| ab Dezember 2025 verkehrt Linie 16 zwischen Berlin und Bremen
+|-
+| {{Bahnlinie|ICE|25|ICE}}
+| &nbsp;– [[Bahnhof Tutzing|Tutzing]]&nbsp;– [[Bahnhof Murnau|Murnau]]&nbsp;– [[Oberau#Verkehr|Oberau]]&nbsp;– [[Bahnhof Garmisch-Partenkirchen|Garmisch-Partenkirchen]]
+| [[ICE&nbsp;1]], [[ICE&nbsp;2]], [[ICE&nbsp;3]], [[ICE&nbsp;T]]
+| ab Dezember 2017 eingestellt, weiterhin noch von Linie 28 und 41 bedient
+|-
+| {{Bahnlinie|ICE|28|ICE}}
+| kein Halt mehr in [[Bahnhof Bitterfeld|Bitterfeld]] und [[Bahnhof Erlangen|Erlangen]]
+| rowspan="5" | [[ICE T]]
+| seit Dezember 2017 Halt anderer Linien; Halt in Erlangen spätestens im Fahrplanjahr 2019/20 im Zweistundentakt wieder aufgenommen
+|-
+| {{Bahnlinie|ICE|28|ICE}}
+| &nbsp;– [[Naumburg (Saale) Hauptbahnhof|Naumburg (Saale)]]&nbsp;– {{nowrap|[[Bahnhof Jena Paradies|Jena Paradies]] –}} {{nowrap|[[Bahnhof Saalfeld (Saale)|Saalfeld (Saale)]] –}} [[Bahnhof Lichtenfels|Lichtenfels]]&nbsp;–
+| im Dezember 2017 aufgrund der Inbetriebnahme der [[Schnellfahrstrecke Erfurt–Nürnberg]] eingestellt
+|-
+| {{Bahnlinie|ICE|28|ICE}}
+| &nbsp;– [[Mittenwald#Bahnverkehr|Mittenwald]]&nbsp;– [[Bahnhof Seefeld in Tirol|Seefeld]]&nbsp;– [[Innsbruck Hauptbahnhof|Innsbruck]]
+| seit Dezember 2017 nur noch bis Garmisch-Partenkirchen
+|-
+| {{Bahnlinie|ICE|28|ICE}}
+| &nbsp;– [[Leipzig Hauptbahnhof|Leipzig]]&nbsp;– [[Erfurt Hauptbahnhof|Erfurt]]&nbsp;– [[Bahnhof Gotha|Gotha]]&nbsp;– [[Bahnhof Eisenach|Eisenach]]
+| im Dezember 2017 eingestellt
+|-
+| {{Bahnlinie|ICE|28|ICE}}
+| &nbsp;– [[Leipzig Hauptbahnhof|Leipzig]]&nbsp;– [[Erfurt Hauptbahnhof|Erfurt]]&nbsp;– [[Bahnhof Fulda|Fulda]]&nbsp;– [[Würzburg Hauptbahnhof|Würzburg]]&nbsp;– [[Nürnberg Hauptbahnhof|Nürnberg]]&nbsp;–
+|
+|-
+| {{Bahnlinie|ICE|29|ICE}}
+| ''[[Lübeck Hauptbahnhof|Lübeck]]&nbsp;–'' 
+''bzw.'' {{nowrap|[[Bahnhof Hamburg-Altona|Hamburg-Altona]] –}} {{nowrap|[[Bahnhof Hamburg Dammtor|Hamburg Dammtor]] –}} [[Hamburg Hauptbahnhof|Hamburg]]&nbsp;– {{nowrap|[[Bahnhof Berlin-Spandau|Berlin-Spandau]] –}} 
+|
+| Mit Neukonzeption der ICE-Linien zwischen Berlin und München im Fahrplanjahr 2029 entfiel die Verlängerung der Linie 29 nach Hamburg und auch das Zugpaar nach Lübeck.
+|-
+| {{Bahnlinie|ICE|43|ICE}}
+| [[Bahnhof Amsterdam Centraal|Amsterdam]]&nbsp;– [[Bahnhof Utrecht Centraal|Utrecht]]&nbsp;– [[Bahnhof Arnhem Centraal|Arnheim]]&nbsp;– [[Oberhausen Hauptbahnhof|Oberhausen]]&nbsp;–
+| [[ICE3]]
+| seit Dezember 2024 in der Linie 78 integriert
+|-
+| {{Bahnlinie|ICE|50|ICE}}
+| [[Saarbrücken Hauptbahnhof|Saarbrücken]]&nbsp;– [[Homburg (Saar) Hauptbahnhof|Homburg]]&nbsp;– [[Kaiserslautern Hauptbahnhof|Kaiserslautern]]&nbsp;– [[Neustadt (Weinstraße) Hauptbahnhof|Neustadt&nbsp;(Wstr)]]&nbsp;– [[Mannheim Hauptbahnhof|Mannheim]]&nbsp;– [[Darmstadt Hauptbahnhof|Darmstadt]]&nbsp;–
+| rowspan="2" | [[ICE T]]
+| seit Dezember 2018 Teil von Linie 15
+|-
+| {{Bahnlinie|ICE|91|ICE}}
+| [[Hamburg Hauptbahnhof|Hamburg]]&nbsp;– [[Bahnhof Hamburg-Harburg|Hamburg-Harburg]]&nbsp;– [[Bremen Hauptbahnhof|Bremen]]&nbsp;– [[Osnabrück Hauptbahnhof|Osnabrück]]&nbsp;– [[Münster (Westfalen) Hauptbahnhof|Münster]]&nbsp;–
+| seit Dezember 2018 Teil von Linie 42
+|}
+
+== Siehe auch ==
+* [[Liste der Nachtzugverbindungen in Deutschland#ICE|ICE-Nachtverbindungen]]
+* [[Liste der Intercity-Express-Bahnhöfe]]
+* [[Liste der Intercity-Linien (Deutschland)|Liste der Intercity-Linien]]
+* [[Liste der Bahnhöfe mit Halt von Intercitys der Deutschen Bahn|Liste der Intercity-Bahnhöfe]]
+
+== Weblinks ==
+* {{DBAG-ICE-Netzplan-URL}}
+* [https://fernbahn.de/datenbank Datenbank Fernverkehr] Übersicht über Zugläufe deutscher Fernzüge seit 1987
+* [https://ptna.openstreetmap.de/results/DE/DE-Bahnverkehr-Analysis.html#A2.1.1 Liste sowie Verläufe von ICE-Linien] und [http://osmtrainroutes.bplaced.net/beta/ Zugroutenanalyse] (Linienverläufe, Geschwindigkeiten, Signale) auf der Grundlage von OpenStreetMap-Daten
+
+== Einzelnachweise ==
+<references responsive>
+<ref name="Liniennetz">
+{{Webarchiv |url=http://www.bahn.de/p/view/buchung/karten/streckennetz.shtml |text=''Liniennetzplan abgerufen 04/2010'' |wayback=20160612204011 |archiv-bot=2022-12-04 22:09:36 InternetArchiveBot}}
+</ref>
+<ref name="PpV2006">
+{{Webarchiv |url=http://www.bahnnews.info/fahrplanwechsel06/fernverkehr.htm |text=''Fahrplanvorschau 2006'' |wayback=20100115222308}} / Drehscheibe-Zeitschrift Ausgabe #196
+</ref>
+</references>
+
+<references group="F" />
+
+{{Navigationsleiste Fernverkehrslinien Deutschland}}
+
+[[Kategorie:Intercity-Express|!Linien]]
+[[Kategorie:Liste (Schienenverkehr)|Intercityexpresslinien]]

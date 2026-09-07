@@ -1,0 +1,1730 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<title>ICE Verbindungen</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="ICE Verbindungen">
+<meta name="theme-color" content="#f2f2f7" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#000000" media="(prefers-color-scheme: dark)">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='22' fill='%23d22'/%3E%3Crect x='14' y='46' width='72' height='9' rx='4.5' fill='%23fff'/%3E%3Ccircle cx='26' cy='50.5' r='11' fill='%23fff'/%3E%3Ccircle cx='74' cy='50.5' r='11' fill='%23fff'/%3E%3Ccircle cx='26' cy='50.5' r='5' fill='%23d22'/%3E%3Ccircle cx='74' cy='50.5' r='5' fill='%23d22'/%3E%3C/svg%3E">
+<style>/* ICE Verbindungen – iOS-inspiriertes Design (wie die Taufnamen-App) */
+:root {
+  --bg: #f2f2f7;
+  --card: #ffffff;
+  --text: #000000;
+  --text2: #8e8e93;
+  --accent: #007aff;
+  --green: #34c759;
+  --orange: #ff9500;
+  --red: #d22;
+  --sep: rgba(60,60,67,.12);
+  --chipbg: #e9e9ee;
+  --sheet: #ffffff;
+  --shadow: 0 1px 3px rgba(0,0,0,.06);
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #000000;
+    --card: #1c1c1e;
+    --text: #ffffff;
+    --text2: #98989f;
+    --accent: #0a84ff;
+    --green: #30d158;
+    --orange: #ff9f0a;
+    --sep: rgba(84,84,88,.5);
+    --chipbg: #2c2c2e;
+    --sheet: #1c1c1e;
+    --shadow: none;
+  }
+}
+
+* { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+html { height: 100%; }
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", Roboto, sans-serif;
+  font-size: 16px;
+  -webkit-font-smoothing: antialiased;
+  padding-bottom: calc(90px + env(safe-area-inset-bottom));
+}
+
+/* ---------- Header ---------- */
+.topbar {
+  position: sticky; top: 0; z-index: 20;
+  background: color-mix(in srgb, var(--bg) 82%, transparent);
+  -webkit-backdrop-filter: blur(18px); backdrop-filter: blur(18px);
+  padding: calc(8px + env(safe-area-inset-top)) 16px 8px;
+  border-bottom: .5px solid var(--sep);
+}
+.topbar-row { display: flex; align-items: center; justify-content: space-between; }
+.topbar h1 { font-size: 22px; font-weight: 800; margin: 0; letter-spacing: -.3px; }
+.pill-btn {
+  display: flex; align-items: center; gap: 6px;
+  background: var(--accent); color: #fff; border: none;
+  border-radius: 999px; padding: 7px 13px;
+  font-size: 14px; font-weight: 700; cursor: pointer;
+}
+
+.searchwrap { position: relative; margin-top: 10px; }
+.searchicon { position: absolute; left: 10px; top: 50%; transform: translateY(-50%); color: var(--text2); }
+#search, #pickSearch {
+  width: 100%; border: none; border-radius: 10px;
+  background: var(--chipbg); color: var(--text);
+  padding: 9px 34px 9px 32px; font-size: 16px; outline: none;
+  appearance: none; -webkit-appearance: none;
+  font-family: inherit;
+}
+#pickSearch { padding-left: 12px; }
+#search::-webkit-search-cancel-button,
+#pickSearch::-webkit-search-cancel-button { display: none; }
+.clear-btn {
+  position: absolute; right: 6px; top: 50%; transform: translateY(-50%);
+  border: none; background: var(--text2); color: var(--bg);
+  width: 20px; height: 20px; border-radius: 50%; font-size: 14px; line-height: 1;
+  cursor: pointer; padding: 0;
+}
+
+.chips {
+  display: flex; gap: 7px; align-items: center;
+  overflow-x: auto; margin: 10px -16px 0; padding: 0 16px 4px;
+  scrollbar-width: none; -webkit-overflow-scrolling: touch;
+}
+.chips::-webkit-scrollbar { display: none; }
+.chip {
+  flex: 0 0 auto; border: none; border-radius: 999px;
+  background: var(--chipbg); color: var(--text);
+  padding: 6px 13px; font-size: 13.5px; font-weight: 600; cursor: pointer;
+  white-space: nowrap; font-family: inherit;
+}
+.chip.active { background: var(--accent); color: #fff; }
+.chip-sep { flex: 0 0 1px; height: 18px; background: var(--sep); }
+
+/* ---------- Liste ---------- */
+main { padding: 4px 16px 0; max-width: 640px; margin: 0 auto; }
+.listmeta { color: var(--text2); font-size: 13px; padding: 8px 4px 4px; }
+
+.card {
+  display: flex; align-items: center; gap: 12px;
+  background: var(--card); border-radius: 14px;
+  padding: 12px 14px; margin-bottom: 8px;
+  box-shadow: var(--shadow); cursor: pointer;
+  transition: transform .08s;
+}
+.card:active { transform: scale(.985); }
+.card.done { outline: 1.5px solid var(--green); }
+
+.linebadge {
+  flex: 0 0 auto; min-width: 42px; height: 34px; border-radius: 9px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 15.5px; font-weight: 800; letter-spacing: -.3px;
+  background: var(--chipbg); color: var(--text);
+  border: 1px solid transparent; padding: 0 6px;
+}
+.linebadge.sm { min-width: 34px; height: 26px; font-size: 13px; border-radius: 7px; }
+
+.card-body { flex: 1 1 auto; min-width: 0; }
+.card-name {
+  font-weight: 700; font-size: 16.5px; margin-bottom: 3px;
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+.card-sub {
+  display: flex; flex-wrap: wrap; gap: 5px; align-items: center;
+  font-size: 12.5px; color: var(--text2);
+}
+.badge {
+  background: var(--chipbg); border-radius: 5px; padding: 1.5px 6px;
+  font-weight: 700; font-size: 11.5px; color: var(--text);
+}
+.badge.privat { background: #e1efff; color: #0057b8; }
+.badge.dienst { background: #ffe9cf; color: #a85700; }
+.badge.warn   { background: transparent; color: var(--orange); border: 1px dashed var(--orange); }
+@media (prefers-color-scheme: dark) {
+  .badge.privat { background: #10233a; color: #7ab8ff; }
+  .badge.dienst { background: #362410; color: #ffb85c; }
+}
+
+.minibar {
+  width: 100%; height: 6px; margin-top: 7px;
+  background: var(--chipbg); border-radius: 3px; overflow: hidden;
+}
+.minibar > div { height: 100%; background: var(--green); border-radius: 3px; }
+.card-right { flex: 0 0 auto; text-align: right; color: var(--text2); font-size: 12px; }
+.card-right b { display: block; color: var(--text); font-size: 15px; font-variant-numeric: tabular-nums; }
+
+.empty { text-align: center; color: var(--text2); padding: 60px 0; }
+.empty-icon { font-size: 40px; margin-bottom: 8px; }
+.credits { color: var(--text2); font-size: 12px; text-align: center; padding: 24px 0 8px; line-height: 1.6; }
+.credits a { color: var(--text2); }
+
+/* ---------- Tabbar ---------- */
+.tabbar {
+  position: fixed; left: 50%; transform: translateX(-50%);
+  bottom: calc(10px + env(safe-area-inset-bottom)); z-index: 20;
+  display: flex; gap: 4px;
+  background: color-mix(in srgb, var(--card) 88%, transparent);
+  -webkit-backdrop-filter: blur(18px); backdrop-filter: blur(18px);
+  border-radius: 999px; padding: 5px;
+  box-shadow: 0 4px 20px rgba(0,0,0,.15);
+}
+.tab {
+  display: flex; flex-direction: column; align-items: center; gap: 1px;
+  border: none; background: transparent; color: var(--text2);
+  border-radius: 999px; padding: 6px 16px; cursor: pointer; font-family: inherit;
+}
+.tab span { font-size: 10.5px; font-weight: 600; }
+.tab.active { background: var(--chipbg); color: var(--accent); }
+.tab-add { background: var(--accent); color: #fff; }
+.tab-add.active { background: var(--accent); color: #fff; }
+
+/* ---------- Sheets ---------- */
+.sheet-backdrop {
+  position: fixed; inset: 0; background: rgba(0,0,0,.4); z-index: 30;
+  opacity: 0; transition: opacity .25s;
+}
+.sheet-backdrop.show { opacity: 1; }
+.sheet {
+  position: fixed; left: 0; right: 0; bottom: 0; z-index: 31;
+  background: var(--sheet);
+  border-radius: 18px 18px 0 0;
+  max-height: 90vh; overflow: hidden;
+  transform: translateY(100%); transition: transform .3s cubic-bezier(.32,.72,.35,1);
+  max-width: 640px; margin: 0 auto;
+  display: flex; flex-direction: column;
+}
+.sheet.show { transform: translateY(0); }
+.sheet-tall { height: 90vh; }
+#pickSheet { z-index: 33; }
+#pickBackdrop { z-index: 32; }
+.sheet-handle {
+  flex: 0 0 auto; width: 38px; height: 5px; border-radius: 3px;
+  background: var(--text2); opacity: .4; margin: 8px auto 4px;
+}
+.sheet-head {
+  flex: 0 0 auto; display: flex; align-items: center; justify-content: space-between;
+  gap: 12px; padding: 4px 18px 8px;
+}
+.sheet-head h2 { margin: 0; font-size: 20px; font-weight: 800; letter-spacing: -.3px; }
+.close-btn {
+  border: none; background: var(--chipbg); color: var(--text2);
+  width: 30px; height: 30px; border-radius: 50%; font-size: 19px; line-height: 1;
+  cursor: pointer; flex: 0 0 auto;
+}
+.sheet-content {
+  flex: 1 1 auto; overflow-y: auto; -webkit-overflow-scrolling: touch;
+  padding: 4px 18px calc(24px + env(safe-area-inset-bottom));
+}
+.pick-search { flex: 0 0 auto; padding: 0 18px 8px; }
+
+/* ---------- Formular ---------- */
+.form-section { font-size: 13px; font-weight: 700; color: var(--text2);
+  text-transform: uppercase; letter-spacing: .4px; margin: 18px 4px 7px; }
+.form-group { background: var(--bg); border-radius: 13px; overflow: hidden; }
+.form-row {
+  display: flex; align-items: center; justify-content: space-between; gap: 12px;
+  padding: 11px 14px; border-bottom: .5px solid var(--sep); font-size: 15.5px;
+}
+.form-row:last-child { border-bottom: none; }
+.form-row .k { color: var(--text2); flex: 0 0 auto; }
+.form-row input[type=date], .form-row input[type=text] {
+  border: none; background: transparent; color: var(--text);
+  font-size: 15.5px; font-family: inherit; text-align: right; outline: none;
+  min-width: 0; flex: 1 1 auto; padding: 0;
+}
+.form-row input[type=date] { flex: 0 0 auto; }
+.picker-btn {
+  flex: 1 1 auto; min-width: 0; border: none; background: transparent;
+  color: var(--accent); font-size: 15.5px; font-family: inherit; font-weight: 600;
+  text-align: right; cursor: pointer; padding: 0;
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+.picker-btn.empty { color: var(--text2); font-weight: 400; }
+
+.segmented {
+  display: flex; background: var(--chipbg); border-radius: 10px; padding: 2px; margin-top: 2px;
+}
+.segmented button {
+  flex: 1; border: none; background: transparent; color: var(--text);
+  padding: 8px 6px; border-radius: 8px; font-size: 14.5px; font-weight: 600;
+  cursor: pointer; font-family: inherit;
+}
+.segmented button.active { background: var(--card); box-shadow: var(--shadow); }
+
+.linepick { display: flex; flex-wrap: wrap; gap: 7px; padding: 2px 0; }
+.linepick .lp {
+  border: 1.5px solid var(--sep); background: var(--card); color: var(--text);
+  border-radius: 10px; padding: 7px 11px; cursor: pointer; font-family: inherit;
+  display: flex; align-items: center; gap: 7px; font-size: 13.5px; font-weight: 600;
+}
+.linepick .lp.active { border-color: var(--accent); color: var(--accent); }
+.hint { color: var(--text2); font-size: 13px; padding: 8px 4px 0; line-height: 1.45; }
+.hint.warn { color: var(--orange); }
+
+.big-btn {
+  width: 100%; border: none; border-radius: 13px;
+  padding: 14px; font-size: 16.5px; font-weight: 700; cursor: pointer;
+  background: var(--accent); color: #fff; margin: 20px 0 0; font-family: inherit;
+}
+.big-btn[disabled] { opacity: .4; }
+.text-btn {
+  width: 100%; border: none; background: transparent; color: #ff3b30;
+  font-size: 15.5px; font-weight: 600; padding: 14px; cursor: pointer;
+  font-family: inherit;
+}
+
+/* ---------- Bahnhofsliste ---------- */
+.pick-row {
+  display: flex; align-items: center; justify-content: space-between; gap: 10px;
+  padding: 12px 4px; border-bottom: .5px solid var(--sep); cursor: pointer;
+}
+.pick-row:last-child { border-bottom: none; }
+.pick-row .pn { font-size: 16px; font-weight: 600; }
+.pick-row .ps { font-size: 12.5px; color: var(--text2); margin-top: 2px; }
+.pick-row.sel .pn { color: var(--accent); }
+
+/* ---------- Linien-Detail ---------- */
+.detail-top { display: flex; align-items: center; gap: 12px; margin: 2px 0 6px; }
+.detail-name { font-size: 20px; font-weight: 800; letter-spacing: -.3px; line-height: 1.2; }
+.detail-sub { color: var(--text2); font-size: 13.5px; margin-top: 3px; }
+
+.kv-table { margin-top: 12px; background: var(--bg); border-radius: 13px; overflow: hidden; }
+.kv {
+  display: flex; justify-content: space-between; gap: 16px;
+  padding: 11px 14px; font-size: 15px; border-bottom: .5px solid var(--sep);
+}
+.kv:last-child { border-bottom: none; }
+.kv .k { color: var(--text2); flex: 0 0 auto; }
+.kv .v { text-align: right; font-weight: 600; }
+
+.route { margin: 4px 0 2px; padding: 6px 0 2px; }
+.route-var { font-size: 12.5px; font-weight: 700; color: var(--text2); margin: 14px 0 6px; }
+.stop { display: flex; align-items: stretch; gap: 12px; min-height: 30px; }
+.stop-rail { flex: 0 0 14px; position: relative; }
+.stop-rail::before, .stop-rail::after {
+  content: ""; position: absolute; left: 6px; width: 3px; background: var(--chipbg);
+}
+.stop-rail::before { top: 0; height: 15px; }
+.stop-rail::after { top: 15px; bottom: 0; }
+.stop:first-child .stop-rail::before, .stop:last-child .stop-rail::after { background: transparent; }
+.stop.rail-in .stop-rail::before { background: var(--green); }
+.stop.rail-out .stop-rail::after { background: var(--green); }
+.stop-dot {
+  position: absolute; left: 1px; top: 9px; width: 13px; height: 13px;
+  border-radius: 50%; background: var(--bg); border: 3px solid var(--chipbg); z-index: 1;
+}
+.stop.visited .stop-dot { border-color: var(--green); background: var(--green); }
+.stop-name { padding: 6px 0 6px; font-size: 14.5px; }
+.stop.visited .stop-name { font-weight: 700; }
+.stop.opt .stop-name { color: var(--text2); }
+.stop-name .optmark { font-size: 11px; color: var(--text2); margin-left: 5px; }
+
+.trip-row {
+  display: flex; align-items: center; gap: 10px;
+  padding: 10px 14px; border-bottom: .5px solid var(--sep); font-size: 14.5px;
+  cursor: pointer;
+}
+.trip-row:last-child { border-bottom: none; }
+.trip-row .tr-main { flex: 1 1 auto; min-width: 0; }
+.trip-row .tr-sub { color: var(--text2); font-size: 12.5px; margin-top: 2px; }
+.hist { background: var(--bg); border-radius: 13px; overflow: hidden; }
+.hist-title { font-size: 13px; font-weight: 700; color: var(--text2);
+  text-transform: uppercase; letter-spacing: .4px; margin: 20px 4px 7px; }
+
+/* ---------- Statistik ---------- */
+.ringwrap { display: flex; flex-direction: column; align-items: center; padding: 10px 0 4px; }
+.ring { position: relative; width: 190px; height: 190px; }
+.ring svg { transform: rotate(-90deg); }
+.ring-label {
+  position: absolute; inset: 0; display: flex; flex-direction: column;
+  align-items: center; justify-content: center; gap: 1px;
+}
+.ring-frac { color: var(--text2); font-size: 14px; font-weight: 600; }
+.ring-pct { font-size: 33px; font-weight: 800; letter-spacing: -.5px; }
+.ring-sub { color: var(--text2); font-size: 12px; letter-spacing: 1.5px; font-weight: 600; }
+
+.tiles { display: flex; gap: 8px; margin-top: 14px; }
+.tile { flex: 1; background: var(--bg); border-radius: 13px; padding: 12px 10px; text-align: center; }
+.tile .tv { font-size: 22px; font-weight: 800; letter-spacing: -.4px; }
+.tile .tl { font-size: 11.5px; color: var(--text2); margin-top: 2px; line-height: 1.25; }
+
+.stat-section { font-size: 13px; font-weight: 700; color: var(--text2);
+  text-transform: uppercase; letter-spacing: .4px; margin: 20px 4px 8px; }
+.statcard { background: var(--bg); border-radius: 13px; padding: 6px 14px; }
+.bar-row { display: flex; align-items: center; gap: 10px; padding: 7px 0; }
+.bar-row .bl { flex: 0 0 96px; font-size: 13.5px; font-weight: 600;
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.bar-row .bar { flex: 1 1 auto; height: 14px; background: var(--chipbg); border-radius: 7px; overflow: hidden; }
+.bar-row .bar > div { height: 100%; background: var(--accent); border-radius: 7px; }
+.bar-row .bn { flex: 0 0 62px; text-align: right; font-size: 13px; color: var(--text2);
+  font-variant-numeric: tabular-nums; }
+
+.month-chart { display: flex; align-items: flex-end; gap: 3px; height: 110px; padding: 12px 2px 4px; }
+.month-chart .mc { flex: 1 1 0; display: flex; flex-direction: column; align-items: center; gap: 4px; min-width: 0; }
+.month-chart .mcb { width: 100%; max-width: 26px; background: var(--accent); border-radius: 4px 4px 0 0; }
+.month-chart .mcl { font-size: 9.5px; color: var(--text2); white-space: nowrap; }
+.month-chart .mcn { font-size: 10px; font-weight: 700; }
+
+.io-row { display: flex; gap: 8px; margin-top: 18px; }
+.io-row button {
+  flex: 1; border: none; border-radius: 11px; padding: 11px;
+  background: var(--chipbg); color: var(--accent);
+  font-size: 15px; font-weight: 600; cursor: pointer; font-family: inherit;
+}
+.io-row button.danger { color: #ff3b30; }
+
+/* ---------- Bestätigungs-Dialog ---------- */
+.alert-backdrop {
+  position: fixed; inset: 0; z-index: 50;
+  background: rgba(0,0,0,.4);
+  display: flex; align-items: center; justify-content: center;
+  padding: 24px; opacity: 0; transition: opacity .2s;
+}
+.alert-backdrop.show { opacity: 1; }
+.alert-backdrop:not(.show) { pointer-events: none; }
+.alert {
+  width: 100%; max-width: 290px; background: var(--sheet);
+  border-radius: 16px; overflow: hidden; text-align: center;
+  padding: 20px 18px 0;
+  transform: scale(.9); transition: transform .2s cubic-bezier(.32,.72,.35,1);
+  box-shadow: 0 10px 40px rgba(0,0,0,.3);
+}
+.alert-backdrop.show .alert { transform: scale(1); }
+.alert-title { font-size: 17px; font-weight: 700; }
+.alert-text { font-size: 13.5px; color: var(--text2); margin-top: 6px; line-height: 1.4; }
+.alert-actions { display: flex; margin: 18px -18px 0; border-top: .5px solid var(--sep); }
+.alert-btn {
+  flex: 1; border: none; background: transparent; color: var(--accent);
+  padding: 13px 6px; font-size: 16.5px; font-family: inherit; cursor: pointer;
+}
+.alert-btn + .alert-btn { border-left: .5px solid var(--sep); }
+.alert-btn.primary { font-weight: 700; }
+.alert-btn.destructive { color: #ff3b30; font-weight: 700; }
+
+/* ---------- Toast ---------- */
+.toast {
+  position: fixed; left: 50%; transform: translateX(-50%) translateY(20px);
+  bottom: calc(90px + env(safe-area-inset-bottom)); z-index: 60;
+  background: rgba(0,0,0,.85); color: #fff; -webkit-backdrop-filter: blur(10px);
+  padding: 10px 18px; border-radius: 999px; font-size: 14px; font-weight: 600;
+  opacity: 0; transition: opacity .25s, transform .25s; pointer-events: none;
+}
+.toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+</style>
+</head>
+<body>
+
+<header class="topbar">
+  <div class="topbar-row">
+    <h1 id="title">ICE&nbsp;Verbindungen</h1>
+    <button class="pill-btn" id="statsBtn" aria-label="Statistiken">
+      <span id="headerCount">0/0</span>
+      <svg viewBox="0 0 24 24" width="16" height="16"><path fill="currentColor" d="M5 9h3v11H5zM10.5 4h3v16h-3zM16 13h3v7h-3z"/></svg>
+    </button>
+  </div>
+  <div class="searchwrap">
+    <svg class="searchicon" viewBox="0 0 24 24" width="16" height="16"><path fill="currentColor" d="M15.5 14h-.79l-.28-.27a6.5 6.5 0 1 0-.7.7l.27.28v.79l5 4.99L20.49 19zm-6 0A4.5 4.5 0 1 1 14 9.5 4.5 4.5 0 0 1 9.5 14z"/></svg>
+    <input type="search" id="search" placeholder="Linie, Bahnhof oder Zugnummer" autocomplete="off" autocorrect="off" autocapitalize="off">
+    <button id="clearSearch" class="clear-btn" hidden>&times;</button>
+  </div>
+  <div class="chips" id="chips"></div>
+</header>
+
+<main>
+  <div class="listmeta" id="listMeta"></div>
+  <div id="list"></div>
+  <div class="empty" id="empty" hidden>
+    <div class="empty-icon">🚆</div>
+    <p id="emptyText">Nichts gefunden</p>
+  </div>
+  <footer class="credits">
+    Liniennetz: <a href="https://de.wikipedia.org/wiki/Liste_der_Intercity-Express-Linien" target="_blank" rel="noopener">Wikipedia – Liste der ICE-Linien</a> (Stand 09/2026)
+  </footer>
+</main>
+
+<div class="tabbar">
+  <button class="tab active" id="tabLinien">
+    <svg viewBox="0 0 24 24" width="22" height="22"><path fill="currentColor" d="M12 2c-4 0-8 .5-8 4v9.5A3.5 3.5 0 0 0 7.5 19L6 20.5v.5h12v-.5L16.5 19a3.5 3.5 0 0 0 3.5-3.5V6c0-3.5-4-4-8-4zM7.5 17A1.5 1.5 0 1 1 9 15.5 1.5 1.5 0 0 1 7.5 17zm3.5-7H6V6h5zm2 0V6h5v4zm3.5 7a1.5 1.5 0 1 1 1.5-1.5 1.5 1.5 0 0 1-1.5 1.5z"/></svg>
+    <span>Linien</span>
+  </button>
+  <button class="tab" id="tabFahrten">
+    <svg viewBox="0 0 24 24" width="22" height="22"><path fill="currentColor" d="M19 4h-1V2h-2v2H8V2H6v2H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2zm0 16H5V10h14zM5 8V6h14v2z"/></svg>
+    <span>Fahrten</span>
+  </button>
+  <button class="tab tab-add" id="tabAdd">
+    <svg viewBox="0 0 24 24" width="22" height="22"><path fill="currentColor" d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6z"/></svg>
+    <span>Eintragen</span>
+  </button>
+</div>
+
+<!-- Linien-Detail -->
+<div class="sheet-backdrop" id="detailBackdrop" hidden></div>
+<div class="sheet sheet-tall" id="detailSheet" hidden>
+  <div class="sheet-handle"></div>
+  <div class="sheet-head">
+    <h2 id="detailTitle">Linie</h2>
+    <button class="close-btn" id="detailClose">&times;</button>
+  </div>
+  <div class="sheet-content" id="detailContent"></div>
+</div>
+
+<!-- Fahrt eintragen / bearbeiten -->
+<div class="sheet-backdrop" id="editBackdrop" hidden></div>
+<div class="sheet sheet-tall" id="editSheet" hidden>
+  <div class="sheet-handle"></div>
+  <div class="sheet-head">
+    <h2 id="editTitle">Fahrt eintragen</h2>
+    <button class="close-btn" id="editClose">&times;</button>
+  </div>
+  <div class="sheet-content" id="editContent"></div>
+</div>
+
+<!-- Bahnhofsauswahl -->
+<div class="sheet-backdrop" id="pickBackdrop" hidden></div>
+<div class="sheet sheet-tall" id="pickSheet" hidden>
+  <div class="sheet-handle"></div>
+  <div class="sheet-head">
+    <h2 id="pickTitle">Bahnhof</h2>
+    <button class="close-btn" id="pickClose">&times;</button>
+  </div>
+  <div class="pick-search">
+    <input type="search" id="pickSearch" placeholder="Bahnhof suchen" autocomplete="off" autocorrect="off" autocapitalize="off">
+  </div>
+  <div class="sheet-content" id="pickContent"></div>
+</div>
+
+<!-- Statistik -->
+<div class="sheet-backdrop" id="statsBackdrop" hidden></div>
+<div class="sheet sheet-tall" id="statsSheet" hidden>
+  <div class="sheet-handle"></div>
+  <div class="sheet-head">
+    <h2>Statistiken</h2>
+    <button class="close-btn" id="statsClose">&times;</button>
+  </div>
+  <div class="sheet-content" id="statsContent"></div>
+</div>
+
+<script>/* ICE-Liniennetz - erzeugt von tools/parse_lines.py
+   Quelle: de.wikipedia.org/wiki/Liste_der_Intercity-Express-Linien (Stand 09/2026)
+   STATIONS: [{id, name}]   LINES: {nr, fz (Fahrzeuge), col (Linienfarbe), sp, v (Varianten)}
+   Variante = [[Stationsindex, 1 = nur einzelne Zuege], ...] */
+var STATIONS = [
+  {"id": "Hamburg Hbf", "name": "Hamburg"},
+  {"id": "Düsseldorf Hbf", "name": "Düsseldorf"},
+  {"id": "Köln Hbf", "name": "Köln"},
+  {"id": "Berlin Südkreuz", "name": "Berlin Südkreuz"},
+  {"id": "Berlin Hbf", "name": "Berlin"},
+  {"id": "Frankfurt (Main) Hbf", "name": "Frankfurt"},
+  {"id": "Frankfurt Flughafen Fernbahnhof", "name": "Frankfurt Flughafen (Fern)"},
+  {"id": "Mannheim Hbf", "name": "Mannheim"},
+  {"id": "Saarbrücken Hbf", "name": "Saarbrücken"},
+  {"id": "Frankfurt Flughafen Regionalbahnhof", "name": "Frankfurt Flughafen (Regio)"},
+  {"id": "Padborg", "name": "Padborg"},
+  {"id": "Flensburg", "name": "Flensburg"},
+  {"id": "Hannover Hbf", "name": "Hannover"},
+  {"id": "Berlin Gesundbrunnen", "name": "Berlin Gesundbrunnen"},
+  {"id": "Nürnberg Hbf", "name": "Nürnberg"},
+  {"id": "Stuttgart Hbf", "name": "Stuttgart"},
+  {"id": "Berlin Ostbahnhof", "name": "Berlin Ostbahnhof"},
+  {"id": "Berlin-Spandau", "name": "Berlin-Spandau"},
+  {"id": "Bonn Hbf", "name": "Bonn"},
+  {"id": "Stendal Hbf", "name": "Stendal"},
+  {"id": "Wolfsburg Hbf", "name": "Wolfsburg"},
+  {"id": "Minden (Westfalen)", "name": "Minden"},
+  {"id": "Bielefeld Hbf", "name": "Bielefeld"},
+  {"id": "Hamm (Westfalen) Hbf", "name": "Hamm"},
+  {"id": "Dortmund Hbf", "name": "Dortmund"},
+  {"id": "Bochum Hbf", "name": "Bochum"},
+  {"id": "Essen Hbf", "name": "Essen"},
+  {"id": "Duisburg Hbf", "name": "Duisburg"},
+  {"id": "Düsseldorf Flughafen", "name": "Düsseldorf Flughafen"},
+  {"id": "Hagen Hbf", "name": "Hagen"},
+  {"id": "Wuppertal Hbf", "name": "Wuppertal"},
+  {"id": "Lutherstadt Wittenberg Hbf", "name": "Wittenberg"},
+  {"id": "Leipzig Hbf", "name": "Leipzig"},
+  {"id": "Erfurt Hbf", "name": "Erfurt"},
+  {"id": "Eisenach Hbf", "name": "Eisenach"},
+  {"id": "Fulda", "name": "Fulda"},
+  {"id": "Ulm Hbf", "name": "Ulm"},
+  {"id": "Augsburg Hbf", "name": "Augsburg"},
+  {"id": "München-Pasing", "name": "München-Pasing"},
+  {"id": "München Hbf", "name": "München"},
+  {"id": "Braunschweig Hbf", "name": "Braunschweig"},
+  {"id": "Hildesheim Hbf", "name": "Hildesheim"},
+  {"id": "Göttingen", "name": "Göttingen"},
+  {"id": "Kassel-Wilhelmshöhe", "name": "Kassel-Wilhelmshöhe"},
+  {"id": "Hanau Hbf", "name": "Hanau"},
+  {"id": "Karlsruhe Hbf", "name": "Karlsruhe"},
+  {"id": "Baden-Baden", "name": "Baden-Baden"},
+  {"id": "Offenburg", "name": "Offenburg"},
+  {"id": "Freiburg (Breisgau) Hbf", "name": "Freiburg"},
+  {"id": "Basel Badischer Bahnhof", "name": "Basel Bad"},
+  {"id": "Basel SBB", "name": "Basel SBB"},
+  {"id": "Liestal", "name": "Liestal"},
+  {"id": "Olten", "name": "Olten"},
+  {"id": "Bern", "name": "Bern"},
+  {"id": "Thun", "name": "Thun"},
+  {"id": "Spiez", "name": "Spiez"},
+  {"id": "Interlaken West", "name": "Interlaken West"},
+  {"id": "Interlaken Ost", "name": "Interlaken Ost"},
+  {"id": "Zürich Hbf", "name": "Zürich"},
+  {"id": "Sargans", "name": "Sargans"},
+  {"id": "Landquart", "name": "Landquart"},
+  {"id": "Chur", "name": "Chur"},
+  {"id": "Frankfurt (Main) Süd", "name": "Frankfurt Süd"},
+  {"id": "Darmstadt Hbf", "name": "Darmstadt"},
+  {"id": "Bensheim", "name": "Bensheim"},
+  {"id": "Weinheim (Bergstraße) Hbf", "name": "Weinheim"},
+  {"id": "Heidelberg Hbf", "name": "Heidelberg"},
+  {"id": "Wiesloch-Walldorf", "name": "Wiesloch-Walldorf"},
+  {"id": "Bruchsal", "name": "Bruchsal"},
+  {"id": "Herford", "name": "Herford"},
+  {"id": "Gütersloh Hbf", "name": "Gütersloh"},
+  {"id": "Düren", "name": "Düren"},
+  {"id": "Aachen Hbf", "name": "Aachen"},
+  {"id": "Osnabrück Hbf", "name": "Osnabrück"},
+  {"id": "Münster (Westfalen) Hbf", "name": "Münster"},
+  {"id": "Recklinghausen Hbf", "name": "Recklinghausen"},
+  {"id": "Wanne-Eickel Hbf", "name": "Wanne-Eickel"},
+  {"id": "Krefeld Hbf", "name": "Krefeld"},
+  {"id": "Viersen", "name": "Viersen"},
+  {"id": "Mönchengladbach Hbf", "name": "Mönchengladbach"},
+  {"id": "Rheydt Hbf", "name": "Rheydt"},
+  {"id": "Erkelenz", "name": "Erkelenz"},
+  {"id": "Geilenkirchen", "name": "Geilenkirchen"},
+  {"id": "Herzogenrath", "name": "Herzogenrath"},
+  {"id": "Ostseebad Binz", "name": "Binz"},
+  {"id": "Bergen auf Rügen", "name": "Bergen"},
+  {"id": "Stralsund Hbf", "name": "Stralsund"},
+  {"id": "Greifswald", "name": "Greifswald"},
+  {"id": "Züssow", "name": "Züssow"},
+  {"id": "Anklam", "name": "Anklam"},
+  {"id": "Pasewalk", "name": "Pasewalk"},
+  {"id": "Prenzlau", "name": "Prenzlau"},
+  {"id": "Eberswalde Hbf", "name": "Eberswalde"},
+  {"id": "Halle (Saale) Hbf", "name": "Halle"},
+  {"id": "Neustadt (Weinstraße) Hbf", "name": "Neustadt"},
+  {"id": "Kaiserslautern Hbf", "name": "Kaiserslautern"},
+  {"id": "Homburg (Saar) Hbf", "name": "Homburg"},
+  {"id": "Bremen Hbf", "name": "Bremen"},
+  {"id": "Delmenhorst", "name": "Delmenhorst"},
+  {"id": "Oldenburg (Oldenburg) Hbf", "name": "Oldenburg (Oldb)"},
+  {"id": "Hamburg-Altona", "name": "Hamburg Altona"},
+  {"id": "Hamburg Dammtor", "name": "Hamburg Dammtor"},
+  {"id": "Büchen", "name": "Büchen"},
+  {"id": "Ludwigslust", "name": "Ludwigslust"},
+  {"id": "Wittenberge", "name": "Wittenberge"},
+  {"id": "Bitterfeld", "name": "Bitterfeld"},
+  {"id": "Bamberg", "name": "Bamberg"},
+  {"id": "Donauwörth", "name": "Donauwörth"},
+  {"id": "Remagen", "name": "Remagen"},
+  {"id": "Andernach", "name": "Andernach"},
+  {"id": "Koblenz Hbf", "name": "Koblenz"},
+  {"id": "Uelzen", "name": "Uelzen"},
+  {"id": "Kiel Hbf", "name": "Kiel"},
+  {"id": "Neumünster", "name": "Neumünster"},
+  {"id": "Celle", "name": "Celle"},
+  {"id": "Vaihingen (Enz)", "name": "Vaihingen"},
+  {"id": "Hamburg-Harburg", "name": "Hamburg-Harburg"},
+  {"id": "Lüneburg", "name": "Lüneburg"},
+  {"id": "Bad Bevensen", "name": "Bad Bevensen"},
+  {"id": "Langenhagen", "name": "Langenhagen Mitte"},
+  {"id": "Würzburg Hbf", "name": "Würzburg"},
+  {"id": "Steinach (bei Rothenburg ob der Tauber)", "name": "Steinach"},
+  {"id": "Ansbach", "name": "Ansbach"},
+  {"id": "Treuchtlingen", "name": "Treuchtlingen"},
+  {"id": "München Ost", "name": "München Ost"},
+  {"id": "Rosenheim", "name": "Rosenheim"},
+  {"id": "Kufstein", "name": "Kufstein"},
+  {"id": "Wörgl Hbf", "name": "Wörgl"},
+  {"id": "Jenbach", "name": "Jenbach"},
+  {"id": "Innsbruck Hbf", "name": "Innsbruck"},
+  {"id": "Hopfgarten im Brixental", "name": "Hopfgarten"},
+  {"id": "Kirchberg in Tirol", "name": "Kirchberg"},
+  {"id": "Kitzbühel", "name": "Kitzbühel Hahnenkamm"},
+  {"id": "St. Johann in Tirol", "name": "St. Johann"},
+  {"id": "Fieberbrunn", "name": "Fieberbrunn"},
+  {"id": "Hochfilzen", "name": "Hochfilzen"},
+  {"id": "Saalfelden am Steinernen Meer", "name": "Saalfelden"},
+  {"id": "Zell am See", "name": "Zell am See"},
+  {"id": "Schwarzach-St. Veit", "name": "Schwarzach-St. Veit"},
+  {"id": "Ingolstadt Hbf", "name": "Ingolstadt"},
+  {"id": "Wabern (Bz Kassel)", "name": "Wabern"},
+  {"id": "Treysa", "name": "Treysa"},
+  {"id": "Marburg (Lahn)", "name": "Marburg"},
+  {"id": "Gießen", "name": "Gießen"},
+  {"id": "Dresden-Neustadt", "name": "Dresden Neustadt"},
+  {"id": "Dresden Hbf", "name": "Dresden"},
+  {"id": "Coburg", "name": "Coburg"},
+  {"id": "Erlangen", "name": "Erlangen"},
+  {"id": "Westerland (Sylt)", "name": "Westerland"},
+  {"id": "Niebüll", "name": "Niebüll"},
+  {"id": "Husum", "name": "Husum"},
+  {"id": "Heide (Holst)", "name": "Heide"},
+  {"id": "Itzehoe", "name": "Itzehoe"},
+  {"id": "Gelsenkirchen Hbf", "name": "Gelsenkirchen"},
+  {"id": "Velgast", "name": "Velgast"},
+  {"id": "Ribnitz-Damgarten West", "name": "Ribnitz-Damgarten West"},
+  {"id": "Rostock Hbf", "name": "Rostock"},
+  {"id": "Bützow", "name": "Bützow"},
+  {"id": "Schwerin Hbf", "name": "Schwerin"},
+  {"id": "Hamburg-Bergedorf", "name": "Hamburg-Bergedorf"},
+  {"id": "Köln Messe/Deutz", "name": "Köln Messe/Deutz"},
+  {"id": "Köln/Bonn Flughafen", "name": "Köln/Bonn Flughafen"},
+  {"id": "Siegburg/Bonn", "name": "Siegburg/Bonn"},
+  {"id": "Montabaur", "name": "Montabaur"},
+  {"id": "Limburg Süd", "name": "Limburg Süd"},
+  {"id": "Aschaffenburg Hbf", "name": "Aschaffenburg"},
+  {"id": "Solingen Hbf", "name": "Solingen"},
+  {"id": "Visp", "name": "Visp"},
+  {"id": "Brig", "name": "Brig"},
+  {"id": "Wiesbaden Hbf", "name": "Wiesbaden"},
+  {"id": "Mainz Hbf", "name": "Mainz"},
+  {"id": "Riesa", "name": "Riesa"},
+  {"id": "Gotha", "name": "Gotha"},
+  {"id": "Bad Hersfeld", "name": "Bad Hersfeld"},
+  {"id": "Altenbeken", "name": "Altenbeken"},
+  {"id": "Paderborn Hbf", "name": "Paderborn"},
+  {"id": "Lippstadt", "name": "Lippstadt"},
+  {"id": "Soest", "name": "Soest"},
+  {"id": "Weil am Rhein", "name": "Weil am Rhein"},
+  {"id": "Müllheim im Markgräflerland", "name": "Müllheim"},
+  {"id": "Lahr (Schwarzw)", "name": "Lahr"},
+  {"id": "Karlsruhe-Durlach", "name": "Karlsruhe-Durlach"},
+  {"id": "Günzburg", "name": "Günzburg"},
+  {"id": "Prien a Chiemsee", "name": "Prien"},
+  {"id": "Traunstein", "name": "Traunstein"},
+  {"id": "Freilassing", "name": "Freilassing"},
+  {"id": "Salzburg Hbf", "name": "Salzburg"},
+  {"id": "Golling-Abtenau", "name": "Golling-Abtenau"},
+  {"id": "Bischofshofen", "name": "Bischofshofen"},
+  {"id": "St. Johann im Pongau", "name": "St. Johann im Pongau"},
+  {"id": "Bad Gastein", "name": "Bad Gastein"},
+  {"id": "Mallnitz", "name": "Mallnitz-Obervellach"},
+  {"id": "Spittal-Millstättersee", "name": "Spittal-Millstättersee"},
+  {"id": "Villach Hbf", "name": "Villach"},
+  {"id": "Velden am Wörther See", "name": "Velden"},
+  {"id": "Pörtschach am Wörthersee", "name": "Pörtschach"},
+  {"id": "Klagenfurt Hbf", "name": "Klagenfurt"},
+  {"id": "Kühnsdorf", "name": "Kühnsdorf-Klopeiner See"},
+  {"id": "St. Paul im Lavanttal", "name": "St. Paul im Lavanttal"},
+  {"id": "Weststeiermark", "name": "Weststeiermark"},
+  {"id": "Graz Hbf", "name": "Graz"},
+  {"id": "Amsterdam Centraal", "name": "Amsterdam"},
+  {"id": "Hilversum", "name": "Hilversum"},
+  {"id": "Amersfoort Centraal", "name": "Amersfoort"},
+  {"id": "Apeldoorn", "name": "Apeldoorn"},
+  {"id": "Deventer", "name": "Deventer"},
+  {"id": "Hengelo", "name": "Hengelo"},
+  {"id": "Bad Bentheim", "name": "Bad Bentheim"},
+  {"id": "Rheine", "name": "Rheine"},
+  {"id": "Bünde (Westfalen)", "name": "Bünde"},
+  {"id": "Utrecht Centraal", "name": "Utrecht"},
+  {"id": "Arnhem Centraal", "name": "Arnheim"},
+  {"id": "Oberhausen Hbf", "name": "Oberhausen"},
+  {"id": "Brüssel-Süd", "name": "Bruxelles-Midi"},
+  {"id": "Brüssel Nord", "name": "Bruxelles-Nord"},
+  {"id": "Liège-Guillemins", "name": "Liège-Guillemins"},
+  {"id": "Antwerpen Centraal", "name": "Antwerpen Centraal"},
+  {"id": "Flughafen Brüssel-Zaventem", "name": "Flughafen Brüssel-Zaventem"},
+  {"id": "Leuven", "name": "Löwen"},
+  {"id": "Forbach (Moselle)", "name": "Forbach"},
+  {"id": "Paris Gare de l’Est", "name": "Paris Est"},
+  {"id": "Strasbourg", "name": "Strasbourg"},
+  {"id": "Mulhouse-Ville", "name": "Mulhouse-Ville"},
+  {"id": "Belfort-Montbéliard TGV", "name": "Belfort-Montbéliard"},
+  {"id": "Besançon Franche-Comté TGV", "name": "Besançon"},
+  {"id": "Chalon-sur-Saône", "name": "Chalon-sur-Saône"},
+  {"id": "Lyon-Part-Dieu", "name": "Lyon-Part-Dieu"},
+  {"id": "Avignon TGV", "name": "Avignon"},
+  {"id": "Aix-en-Provence TGV", "name": "Aix-en-Provence"},
+  {"id": "Marseille-Saint-Charles", "name": "Marseille-Saint-Charles"},
+  {"id": "Ringsheim", "name": "Ringsheim"},
+  {"id": "Zug", "name": "Zug"},
+  {"id": "Arth-Goldau", "name": "Arth-Goldau"},
+  {"id": "Bellinzona", "name": "Bellinzona"},
+  {"id": "Lugano", "name": "Lugano"},
+  {"id": "Chiasso", "name": "Chiasso"},
+  {"id": "Como San Giovanni", "name": "Como"},
+  {"id": "Milano Centrale", "name": "Milano"},
+  {"id": "Buchloe", "name": "Buchloe"},
+  {"id": "Memmingen", "name": "Memmingen"},
+  {"id": "Lindau-Reutin", "name": "Lindau-Reutin"},
+  {"id": "Bregenz", "name": "Bregenz"},
+  {"id": "St. Margrethen", "name": "St. Margrethen"},
+  {"id": "St. Gallen", "name": "St. Gallen"},
+  {"id": "Winterthur", "name": "Winterthur"},
+  {"id": "Zürich Flughafen", "name": "Zürich Flughafen"},
+  {"id": "Pfaffenhofen (Tirol)", "name": "Telfs-Pfaffenhofen"},
+  {"id": "Ötztal", "name": "Ötztal"},
+  {"id": "Imst", "name": "Imst-Pitztal"},
+  {"id": "Landeck-Zams", "name": "Landeck-Zams"},
+  {"id": "St. Anton am Arlberg", "name": "St. Anton"},
+  {"id": "Langen am Arlberg", "name": "Langen"},
+  {"id": "Bludenz", "name": "Bludenz"},
+  {"id": "Feldkirch", "name": "Feldkirch"},
+  {"id": "Brenner", "name": "Brenner"},
+  {"id": "Franzensfeste", "name": "Franzensfeste"},
+  {"id": "Brixen", "name": "Brixen"},
+  {"id": "Bozen", "name": "Bozen"},
+  {"id": "Trient", "name": "Trento"},
+  {"id": "Rovereto", "name": "Rovereto"},
+  {"id": "Verona Porta Nuova", "name": "Verona Porta Nuova"},
+  {"id": "Vicenza", "name": "Vicenza"},
+  {"id": "Padua", "name": "Padova"},
+  {"id": "Venezia Mestre", "name": "Venezia Mestre"},
+  {"id": "Venezia Santa Lucia", "name": "Venezia Santa Lucia"},
+  {"id": "Bologna Centrale", "name": "Bologna"},
+  {"id": "Cesena", "name": "Cesena"},
+  {"id": "Rimini", "name": "Rimini"},
+  {"id": "Riccione", "name": "Riccione"},
+  {"id": "Cattolica", "name": "Cattolica San Giovanni G."},
+  {"id": "Pesaro", "name": "Pesaro"},
+  {"id": "Senigallia", "name": "Senigallia"},
+  {"id": "Ancona", "name": "Ancona"},
+  {"id": "Linz Hbf", "name": "Linz"},
+  {"id": "St. Pölten Hbf", "name": "St. Pölten"},
+  {"id": "Wien Meidling", "name": "Wien Meidling"},
+  {"id": "Wien Hbf", "name": "Wien"},
+  {"id": "Hegyeshalom", "name": "Hegyeshalom"},
+  {"id": "Mosonmagyaróvár", "name": "Mosonmagyaróvár"},
+  {"id": "Györ", "name": "Győr"},
+  {"id": "Tatabánya", "name": "Tatabánya"},
+  {"id": "Kelenföld", "name": "Kelenföld"},
+  {"id": "Budapest Keleti pályaudvar", "name": "Budapest Keleti"},
+  {"id": "Regensburg Hbf", "name": "Regensburg"},
+  {"id": "Plattling", "name": "Plattling"},
+  {"id": "Passau Hbf", "name": "Passau"},
+  {"id": "Schärding", "name": "Schärding"},
+  {"id": "Wels Hbf", "name": "Wels"},
+  {"id": "Amstetten", "name": "Amstetten"},
+  {"id": "Tullnerfeld", "name": "Tullnerfeld"},
+];
+
+var LINES = [
+  {nr:"1",fz:"ICE 1, ICE T",col:"",sp:true,v:[[[0,0],[1,0],[2,0]]]},
+  {nr:"3",fz:"ICE 1, ICE 2",col:"",sp:true,v:[[[3,0],[4,0],[5,0],[6,0],[7,1],[8,1]],[[3,0],[4,0],[5,0],[9,0]]]},
+  {nr:"4",fz:"ICE 1, ICE 4, ICE T",col:"",sp:true,v:[[[10,1],[11,1],[0,0],[12,0],[5,0],[9,1]]]},
+  {nr:"6",fz:"ICE 3",col:"",sp:true,v:[[[13,0],[4,0],[14,0],[15,0]]]},
+  {nr:"9",fz:"ICE 1, ICE 2, ICE 4",col:"",sp:true,v:[[[16,0],[3,0],[4,0],[17,0],[2,0],[18,0]]]},
+  {nr:"10",fz:"ICE 2, ICE 4",col:"#1464A6",sp:false,v:[[[16,0],[4,0],[17,0],[19,1],[20,0],[12,0],[21,1],[22,0],[23,0],[24,0],[25,0],[26,0],[27,0],[28,0],[1,0],[2,1]],[[16,0],[4,0],[17,0],[19,1],[20,0],[12,0],[21,1],[22,0],[23,0],[29,0],[30,0],[2,0]]]},
+  {nr:"11",fz:"ICE 4",col:"#63E0B0",sp:false,v:[[[13,0],[4,0],[3,0],[31,0],[32,0],[33,0],[34,0],[35,0],[5,0],[7,0],[15,0],[36,0],[37,0],[38,0],[39,0]]]},
+  {nr:"12",fz:"ICE 4",col:"#8A5E3E",sp:false,v:[[[16,0],[4,0],[17,0],[20,0],[40,0],[41,0],[42,0],[43,0],[35,0],[44,0],[5,0],[7,0],[45,0],[46,1],[47,0],[48,0],[49,0],[50,0],[51,1],[52,1],[53,1],[54,1],[55,1],[56,1],[57,1]],[[16,0],[4,0],[17,0],[20,0],[40,0],[41,0],[42,0],[43,0],[35,0],[44,0],[5,0],[7,0],[45,0],[46,1],[47,0],[48,0],[49,0],[50,0],[58,1],[59,1],[60,1],[61,1]]]},
+  {nr:"13",fz:"ICE 1",col:"#A67DA8",sp:false,v:[[[16,0],[3,0],[4,0],[17,0],[19,0],[20,0],[40,0],[41,0],[42,0],[43,0],[35,0],[62,0],[6,0]],[[16,0],[3,0],[4,0],[17,0],[19,0],[20,0],[40,0],[41,0],[42,0],[43,0],[35,0],[62,0],[63,0],[64,0],[65,0],[66,0],[67,0],[68,0],[45,0]],[[16,0],[3,0],[4,0],[17,0],[19,0],[20,0],[40,0],[41,0],[42,0],[43,0],[35,0],[62,0],[5,1]]]},
+  {nr:"14",fz:"ICE T, ICE L",col:"#C128C9",sp:false,v:[[[16,0],[4,0],[17,0],[20,1],[12,0],[69,1],[22,0],[70,0],[23,0],[24,0],[25,0],[26,0],[27,0],[1,0],[2,0],[71,1],[72,1]],[[16,0],[4,0],[17,0],[20,1],[12,0],[73,0],[74,0],[75,1],[76,1],[26,0],[27,0],[77,0],[78,0],[79,0],[80,0],[81,0],[82,0],[83,0],[72,0]]]},
+  {nr:"15",fz:"ICE 1",col:"#7A7979",sp:false,v:[[[84,1],[85,1],[86,0],[87,0],[88,0],[89,1],[90,1],[91,1],[92,0],[13,0],[4,0],[3,0],[93,0],[33,0],[5,0],[63,1],[64,1],[7,1],[94,1],[95,1],[96,1],[8,1]]]},
+  {nr:"16",fz:"ICE 1, ICE T",col:"#8CCC16",sp:false,v:[[[3,0],[4,0],[17,0],[12,0],[97,0],[98,1],[99,1]]]},
+  {nr:"18",fz:"ICE 1",col:"#FFF203",sp:false,v:[[[100,0],[101,0],[0,0],[102,0],[103,0],[104,0],[17,0],[4,0],[3,0],[105,0],[93,0],[33,0],[106,0],[14,0],[107,0],[37,0],[38,0]]]},
+  {nr:"19",fz:"ICE 1, ICE 2, ICE 4",col:"#E6C5C5",sp:false,v:[[[16,0],[4,0],[17,0],[12,0],[22,0],[29,0],[30,0],[2,0],[18,0],[108,1],[109,1],[110,1]]]},
+  {nr:"20",fz:"ICE 4",col:"",sp:false,v:[[[100,0],[101,0],[0,0],[111,0],[12,0],[42,0],[43,0],[5,0],[7,0],[45,0],[47,0],[48,0],[49,0],[50,0]]]},
+  {nr:"22",fz:"ICE 1, ICE 4",col:"#D48E8E",sp:false,v:[[[112,0],[113,0],[101,0],[0,0],[114,0],[12,0],[42,0],[43,0],[44,1],[5,0],[7,0],[66,1],[115,1],[15,0]]]},
+  {nr:"24",fz:"ICE 1, ICE T",col:"#E39F0B",sp:false,v:[[[100,0],[101,0],[0,0],[116,0],[117,0],[118,1],[111,0],[114,0],[119,1],[12,0],[42,0],[43,0],[35,0],[120,0],[121,1],[122,1],[123,0],[107,0],[37,0],[38,0],[39,0],[124,1],[125,0],[126,0],[127,0],[128,1],[129,1],[130,1],[131,1],[132,1],[133,1],[134,1],[135,1],[136,1],[137,1],[138,1]]]},
+  {nr:"25",fz:"ICE 4",col:"#6A8F4C",sp:false,v:[[[100,0],[101,0],[0,0],[116,0],[117,0],[12,0],[42,0],[43,0],[35,0],[120,0],[14,0],[139,0],[39,0]],[[112,1],[113,1],[101,0],[0,0],[116,0],[117,0],[12,0],[42,0],[43,0],[35,0],[120,0],[14,0],[139,0],[39,0]]]},
+  {nr:"26",fz:"ICE 1, ICE T",col:"#852D15",sp:false,v:[[[99,1],[98,1],[97,0],[12,0],[42,0],[43,0],[140,0],[141,0],[142,0],[143,0],[5,0],[63,0],[64,0],[65,0],[66,0],[67,0],[68,0],[45,0]]]},
+  {nr:"27",fz:"ICE 1, ICE 4, ICE L",col:"#77BA20",sp:false,v:[[[100,0],[101,1],[0,0],[17,0],[4,1],[13,1],[144,1],[145,1]]]},
+  {nr:"28",fz:"ICE 4, ICE T",col:"#D97102",sp:false,v:[[[4,0],[3,0],[31,0],[32,0],[33,0],[146,1],[106,0],[147,0],[14,0],[139,1],[39,0]],[[100,0],[101,0],[0,0],[103,1],[104,1],[17,0],[4,0],[3,0],[31,0],[32,0],[33,0],[146,1],[106,0],[147,0],[14,0],[139,1],[39,0]]]},
+  {nr:"29",fz:"ICE 3",col:"#8002BF",sp:false,v:[[[4,0],[3,0],[93,0],[33,0],[14,0],[139,0],[39,0]]]},
+  {nr:"33",fz:"ICE 1, ICE L",col:"#B09FCA",sp:false,v:[[[148,0],[149,0],[150,0],[151,0],[152,0],[116,0],[97,0],[73,0],[74,0],[75,0],[153,1],[26,0],[27,0],[1,0],[2,0]],[[84,1],[85,0],[87,0],[86,0],[154,0],[155,0],[156,0],[157,0],[158,0],[159,0],[116,0],[97,0],[73,0],[74,0],[75,0],[153,1],[26,0],[27,0],[1,0],[2,0]],[[100,0],[101,0],[0,0],[116,0],[97,0],[73,0],[74,0],[75,0],[153,1],[26,0],[27,0],[1,0],[2,0]]]},
+  {nr:"41",fz:"ICE 3",col:"#BD0013",sp:false,v:[[[24,1],[25,1],[26,0],[27,0],[1,0],[160,0],[161,1],[162,0],[163,1],[164,1],[6,0],[5,0],[44,1],[165,0],[120,0],[14,0],[139,1],[39,0]]]},
+  {nr:"42",fz:"ICE 4",col:"#80C217",sp:false,v:[[[100,0],[101,0],[0,0],[116,0],[97,0],[73,0],[74,0],[24,0],[29,0],[30,0],[166,0],[2,0],[6,0],[7,0],[15,0],[36,0],[37,0],[38,0],[39,0]]]},
+  {nr:"43",fz:"ICE 4",col:"#FCFC00",sp:false,v:[[[100,0],[101,0],[0,0],[116,0],[97,0],[73,0],[74,0],[24,0],[25,0],[26,0],[27,0],[1,0],[2,0],[6,0],[7,0],[45,0],[46,0],[48,0],[49,0],[50,0],[58,0],[59,0],[60,0],[61,0]],[[100,0],[101,0],[0,0],[116,0],[97,0],[73,0],[74,0],[24,0],[25,0],[26,0],[27,0],[1,0],[2,0],[6,0],[7,0],[45,0],[46,0],[48,0],[49,0],[50,0],[51,0],[52,0],[53,0],[54,0],[55,0],[167,0],[168,0]]]},
+  {nr:"45",fz:"ICE 3",col:"#99F01F",sp:false,v:[[[2,0],[161,1],[162,0],[163,0],[164,0],[169,0],[170,0],[7,0],[66,0],[115,1],[15,0]]]},
+  {nr:"47",fz:"ICE 3",col:"#0A0136",sp:false,v:[[[24,0],[25,0],[26,0],[27,0],[1,0],[160,0],[6,0],[7,0],[15,0],[36,0],[37,0],[39,0]]]},
+  {nr:"49",fz:"ICE 3",col:"#128C43",sp:false,v:[[[2,0],[161,1],[162,0],[163,0],[164,0],[6,0],[5,0]]]},
+  {nr:"50",fz:"ICE T, ICE 1",col:"#231F20",sp:false,v:[[[145,0],[144,0],[171,1],[32,0],[33,0],[172,0],[34,0],[173,0],[35,0],[5,0],[6,0],[170,0],[169,0]]]},
+  {nr:"51",fz:"ICE T",col:"#231F20",sp:false,v:[[[145,1],[144,1],[32,0],[33,0],[43,0],[174,0],[175,0],[176,0],[177,0],[24,0],[25,0],[26,0],[27,0],[1,0],[2,0]]]},
+  {nr:"60",fz:"ICE 3",col:"#269E50",sp:false,v:[[[50,1],[49,1],[178,1],[179,1],[48,1],[180,1],[47,1],[46,1],[45,0],[181,1],[68,0],[15,0],[36,0],[182,1],[37,0],[38,0],[39,0]]]},
+  {nr:"62",fz:"ICE 4",col:"#3DB0F2",sp:false,v:[[[5,0],[63,0],[64,0],[65,0],[66,0],[15,0],[36,0],[182,0],[37,0],[39,0],[124,0],[125,0],[183,0],[184,0],[185,0],[186,0],[187,0],[188,0],[189,0],[138,0],[190,0],[191,0],[192,0],[193,0],[194,0],[195,1],[196,0],[197,1],[198,1],[199,1],[200,0]],[[74,0],[75,0],[153,0],[26,0],[27,0],[1,0],[160,0],[162,1],[6,0],[7,0],[115,0],[15,0],[36,0],[182,0],[37,0],[39,0],[124,0],[125,0],[183,0],[184,0],[185,0],[186,0],[187,0],[188,0],[189,0],[138,0],[190,0],[191,0],[192,0],[193,0],[194,0],[195,1],[196,0],[197,1],[198,1],[199,1],[200,0]]]},
+  {nr:"77",fz:"ICE 4",col:"",sp:false,v:[[[201,0],[202,0],[203,0],[204,0],[205,0],[206,0],[207,0],[208,0],[73,0],[209,0],[12,0],[17,0],[4,0],[16,0]],[[74,0],[73,0],[209,0],[12,0],[17,0],[4,0],[16,0]]]},
+  {nr:"78",fz:"",col:"#F50707",sp:false,v:[[[201,0],[210,0],[211,0],[212,0],[27,0],[1,0],[2,0],[162,0],[6,0],[5,0]]]},
+  {nr:"79",fz:"",col:"#279C90",sp:false,v:[[[213,0],[214,0],[215,0],[72,0],[2,0],[6,0],[5,0]],[[216,0],[217,0],[218,0],[215,0],[72,0],[2,0]]]},
+  {nr:"82",fz:"ICE 3",col:"#E807F0",sp:false,v:[[[5,0],[7,0],[95,0],[8,0],[219,1],[220,0]],[[5,0],[7,0],[45,0],[221,0],[220,0]]]},
+  {nr:"83",fz:"ICE 3",col:"#F00707",sp:false,v:[[[39,1],[37,1],[36,1],[15,0],[45,0],[221,0],[220,0]]]},
+  {nr:"84",fz:"",col:"#F0B907",sp:false,v:[[[5,0],[7,0],[45,0],[46,0],[221,0],[222,0],[223,0],[224,0],[225,0],[226,0],[227,0],[228,0],[229,0]]]},
+  {nr:"85",fz:"",col:"#178748",sp:false,v:[[[5,0],[7,0],[45,0],[230,0],[48,0],[49,0],[50,0],[58,0],[231,0],[232,0],[233,0],[234,0],[235,0],[236,0],[237,0]]]},
+  {nr:"88",fz:"",col:"#F013E8",sp:false,v:[[[39,0],[238,0],[239,0],[240,0],[241,0],[242,0],[243,0],[244,0],[245,0],[58,0]]]},
+  {nr:"89",fz:"",col:"#AD0755",sp:false,v:[[[39,0],[124,0],[125,0],[126,0],[127,0],[128,0],[129,0],[246,0],[247,0],[248,0],[249,0],[250,0],[251,1],[252,1],[253,1]],[[39,0],[124,0],[125,0],[126,0],[127,0],[128,0],[129,0],[254,0],[255,1],[256,0],[257,0],[258,0],[259,0],[260,0],[261,0],[262,0],[263,0],[264,0]],[[39,0],[124,0],[125,0],[126,0],[127,0],[128,0],[129,0],[254,0],[255,1],[256,0],[257,0],[258,0],[259,0],[260,0],[265,0],[266,1],[267,1],[268,1],[269,1],[270,1],[271,1],[272,1]]]},
+  {nr:"90",fz:"",col:"#ED1111",sp:false,v:[[[39,0],[186,0],[273,0],[274,0],[275,0],[276,0],[277,0],[278,0],[279,0],[280,0],[281,0],[282,0]]]},
+  {nr:"91",fz:"ICE T",col:"#877E40",sp:false,v:[[[24,1],[25,1],[26,1],[27,1],[1,1],[2,1],[18,1],[110,1],[170,1],[6,1],[5,0],[44,0],[165,1],[120,0],[14,0],[283,0],[284,0],[285,0],[286,1],[287,1],[273,0],[288,1],[274,0],[289,1],[275,0],[276,0]],[[24,1],[29,1],[30,1],[166,1],[2,1],[18,1],[110,1],[170,1],[6,1],[5,0],[44,0],[165,1],[120,0],[14,0],[283,0],[284,0],[285,0],[286,1],[287,1],[273,0],[288,1],[274,0],[289,1],[275,0],[276,0]],[[100,1],[101,1],[0,1],[116,1],[12,1],[42,1],[43,1],[35,1],[120,0],[14,0],[283,0],[284,0],[285,0],[286,1],[287,1],[273,0],[288,1],[274,0],[289,1],[275,0],[276,0]]]},
+];
+
+/* ICE Verbindungen – Fahrten-Tracker */
+(function () {
+  "use strict";
+
+  var STORE_KEY = "iceRoutes.v1";
+
+  // ---------- Persistenz ----------
+  // Intern:     { id, d: "YYYY-MM-DD", z: "ICE 106", l: "43", a: vonIdx, b: nachIdx, m: "p"|"g" }
+  // Gespeichert: a/b als Bahnhofs-ID ("Köln Hbf"), damit ein neu erzeugtes
+  //              data.js mit anderer Reihenfolge alte Fahrten nicht verschiebt.
+  var IDX_OF = {};
+  STATIONS.forEach(function (s, i) { IDX_OF[s.id] = i; });
+
+  function toIdx(v) {
+    if (typeof v === "number") return STATIONS[v] ? v : null;   // Altformat
+    return IDX_OF[v] != null ? IDX_OF[v] : null;
+  }
+  function tripIn(x) {
+    if (!x || !x.d) return null;
+    var a = toIdx(x.a), b = toIdx(x.b);
+    if (a == null || b == null) return null;
+    return { id: x.id || newId(), d: x.d, z: x.z || "", l: x.l || "",
+             a: a, b: b, m: x.m === "g" ? "g" : "p" };
+  }
+  function tripOut(t) {
+    return { id: t.id, d: t.d, z: t.z, l: t.l,
+             a: STATIONS[t.a].id, b: STATIONS[t.b].id, m: t.m };
+  }
+  function loadTrips() {
+    try {
+      var raw = JSON.parse(localStorage.getItem(STORE_KEY));
+      var arr = raw && raw.trips ? raw.trips : [];
+      return arr.map(tripIn).filter(Boolean);
+    } catch (e) { return []; }
+  }
+  function saveTrips() {
+    try {
+      localStorage.setItem(STORE_KEY, JSON.stringify({ v: 1, trips: trips.map(tripOut) }));
+    } catch (e) {}
+  }
+  var trips = loadTrips();
+
+  // ---------- Zustand ----------
+  var state = {
+    view: "linien",     // linien | fahrten
+    q: "",
+    lf: "alle",         // alle | gefahren | offen | voll | sprinter
+    ff: "alle"          // alle | p | g
+  };
+
+  // ---------- Netz aufbereiten ----------
+  function segKey(a, b) { return a < b ? a + "-" + b : b + "-" + a; }
+
+  var lineByNr = {};
+  var NET = LINES.map(function (l) {
+    var stns = {}, segs = {}, longest = l.v[0];
+    l.v.forEach(function (v) {
+      if (v.length > longest.length) longest = v;
+      v.forEach(function (p, i) {
+        stns[p[0]] = 1;
+        if (i) segs[segKey(v[i - 1][0], p[0])] = 1;
+      });
+    });
+    var info = {
+      nr: l.nr,
+      line: l,
+      stns: Object.keys(stns).map(Number),
+      segs: Object.keys(segs),
+      label: STATIONS[longest[0][0]].name + " – " + STATIONS[longest[longest.length - 1][0]].name
+    };
+    lineByNr[l.nr] = l;
+    return info;
+  });
+  var netByNr = {};
+  NET.forEach(function (n) { netByNr[n.nr] = n; });
+
+  var TOTAL_SEGS = (function () {
+    var all = {};
+    NET.forEach(function (n) { n.segs.forEach(function (s) { all[s] = 1; }); });
+    return Object.keys(all).length;
+  })();
+
+  // Bahnhof -> Liniennummern
+  var LINES_AT = {};
+  NET.forEach(function (n) {
+    n.stns.forEach(function (s) {
+      (LINES_AT[s] = LINES_AT[s] || []).push(n.nr);
+    });
+  });
+
+  // ---------- Helpers ----------
+  function $(id) { return document.getElementById(id); }
+  function esc(s) {
+    return String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+  }
+  function fmtDate(iso) {
+    if (!iso) return "";
+    var p = iso.split("-");
+    return p[2] + "." + p[1] + "." + p[0];
+  }
+  function todayISO() {
+    var d = new Date();
+    return d.getFullYear() + "-" + String(d.getMonth() + 1).padStart(2, "0") +
+      "-" + String(d.getDate()).padStart(2, "0");
+  }
+  function pct(n, total) { return total ? n / total * 100 : 0; }
+  function fmtPct(p) { return p.toFixed(p >= 10 ? 0 : 1).replace(".", ",") + " %"; }
+  function stName(i) { return STATIONS[i] ? STATIONS[i].name : "?"; }
+  function norm(s) {
+    return s.toLowerCase().replace(/ä/g, "ae").replace(/ö/g, "oe")
+      .replace(/ü/g, "ue").replace(/ß/g, "ss");
+  }
+
+  // Linienfarbe aus der Wikipedia-Netzgrafik
+  function lineStyle(l) {
+    var c = l && l.col;
+    if (!c) return 'style="border-color:var(--sep)"';
+    var h = c.replace("#", "");
+    if (h.length === 3) h = h[0] + h[0] + h[1] + h[1] + h[2] + h[2];
+    var r = parseInt(h.slice(0, 2), 16), g = parseInt(h.slice(2, 4), 16), b = parseInt(h.slice(4, 6), 16);
+    var lum = (0.299 * r + 0.587 * g + 0.114 * b) / 255;
+    return 'style="background:' + c + ';color:' + (lum > 0.6 ? "#000" : "#fff") +
+      ';border-color:rgba(128,128,128,.4)"';
+  }
+  function lineBadge(nr, small) {
+    return '<div class="linebadge' + (small ? " sm" : "") + '" ' + lineStyle(lineByNr[nr]) + '>' +
+      esc(nr) + '</div>';
+  }
+
+  // ---------- Abdeckung ----------
+  // Sucht die Variante der Linie, auf der beide Bahnhöfe liegen (kürzester Abschnitt).
+  function tripPath(t) {
+    var l = lineByNr[t.l];
+    if (!l || t.a == null || t.b == null) return null;
+    var best = null;
+    l.v.forEach(function (v) {
+      var i = -1, j = -1;
+      for (var k = 0; k < v.length; k++) {
+        if (v[k][0] === t.a && i < 0) i = k;
+        if (v[k][0] === t.b) j = k;
+      }
+      if (i < 0 || j < 0) return;
+      var lo = Math.min(i, j), hi = Math.max(i, j);
+      if (!best || hi - lo < best.hi - best.lo) best = { v: v, lo: lo, hi: hi };
+    });
+    return best;
+  }
+
+  var COV = null;
+  function coverage() {
+    if (COV) return COV;
+    var segs = {}, stns = {}, byLine = {}, tripsOfLine = {};
+    trips.forEach(function (t) {
+      (tripsOfLine[t.l] = tripsOfLine[t.l] || []).push(t);
+      var p = tripPath(t);
+      if (!p) return;
+      var b = byLine[t.l] = byLine[t.l] || { segs: {}, stns: {} };
+      for (var k = p.lo; k <= p.hi; k++) {
+        stns[p.v[k][0]] = 1; b.stns[p.v[k][0]] = 1;
+      }
+      for (k = p.lo; k < p.hi; k++) {
+        var key = segKey(p.v[k][0], p.v[k + 1][0]);
+        segs[key] = 1; b.segs[key] = 1;
+      }
+    });
+    COV = {
+      segs: segs, stns: stns, byLine: byLine, tripsOfLine: tripsOfLine,
+      nSegs: Object.keys(segs).length,
+      nStns: Object.keys(stns).length,
+      nLines: Object.keys(tripsOfLine).filter(function (nr) { return !!lineByNr[nr]; }).length
+    };
+    return COV;
+  }
+  function lineCov(nr) {
+    var c = coverage(), b = c.byLine[nr], n = netByNr[nr];
+    var done = b ? Object.keys(b.segs).length : 0;
+    return { done: done, total: n.segs.length, pct: pct(done, n.segs.length),
+             trips: (c.tripsOfLine[nr] || []).length };
+  }
+  function invalidate() { COV = null; }
+
+  // ---------- Liste ----------
+  function filteredLines() {
+    var q = norm(state.q);
+    return NET.filter(function (n) {
+      var c = lineCov(n.nr);
+      if (state.lf === "gefahren" && !c.trips) return false;
+      if (state.lf === "offen" && c.trips) return false;
+      if (state.lf === "voll" && c.done < c.total) return false;
+      if (state.lf === "sprinter" && !n.line.sp) return false;
+      if (q) {
+        if (norm("ice " + n.nr).indexOf(q) === 0 || n.nr === state.q.trim()) return true;
+        var hay = norm(n.label + " " + n.line.fz + " " +
+          n.stns.map(stName).join(" "));
+        if (hay.indexOf(q) === -1) return false;
+      }
+      return true;
+    });
+  }
+  function filteredTrips() {
+    var q = norm(state.q);
+    return trips.filter(function (t) {
+      if (state.ff !== "alle" && t.m !== state.ff) return false;
+      if (q) {
+        var hay = norm((t.z || "") + " " + stName(t.a) + " " + stName(t.b) +
+          " ICE " + (t.l || "") + " " + fmtDate(t.d));
+        if (hay.indexOf(q) === -1) return false;
+      }
+      return true;
+    }).sort(function (a, b) {
+      return a.d === b.d ? (a.id < b.id ? 1 : -1) : (a.d < b.d ? 1 : -1);
+    });
+  }
+
+  function renderChips() {
+    var html = "";
+    if (state.view === "linien") {
+      [["alle", "Alle"], ["gefahren", "Gefahren"], ["offen", "Offen"],
+       ["voll", "Komplett"], ["sprinter", "Sprinter"]].forEach(function (p) {
+        html += '<button class="chip' + (state.lf === p[0] ? " active" : "") +
+          '" data-lf="' + p[0] + '">' + p[1] + '</button>';
+      });
+    } else {
+      [["alle", "Alle"], ["p", "Privat"], ["g", "Geschäftlich"]].forEach(function (p) {
+        html += '<button class="chip' + (state.ff === p[0] ? " active" : "") +
+          '" data-ff="' + p[0] + '">' + p[1] + '</button>';
+      });
+    }
+    $("chips").innerHTML = html;
+  }
+
+  function render() {
+    var c = coverage();
+    $("headerCount").textContent = c.nLines + "/" + NET.length;
+    $("title").innerHTML = state.view === "linien" ? "ICE&nbsp;Verbindungen" : "Meine&nbsp;Fahrten";
+    $("search").placeholder = state.view === "linien"
+      ? "Linie, Bahnhof oder Zugnummer" : "Zug, Bahnhof oder Datum";
+    renderChips();
+
+    var html = "";
+    if (state.view === "linien") {
+      var arr = filteredLines();
+      arr.forEach(function (n) {
+        var lc = lineCov(n.nr);
+        html += '<div class="card' + (lc.trips ? " done" : "") + '" data-line="' + esc(n.nr) + '">' +
+          lineBadge(n.nr) +
+          '<div class="card-body">' +
+            '<div class="card-name">' + esc(n.label) + '</div>' +
+            '<div class="card-sub">' +
+              (n.line.sp ? '<span class="badge">Sprinter</span>' : "") +
+              (n.line.fz ? '<span>' + esc(n.line.fz) + '</span>' : "") +
+              (lc.trips ? '<span>· ' + lc.trips + (lc.trips === 1 ? " Fahrt" : " Fahrten") + '</span>' : "") +
+            '</div>' +
+            '<div class="minibar"><div style="width:' + lc.pct.toFixed(1) + '%"></div></div>' +
+          '</div>' +
+          '<div class="card-right"><b>' + Math.round(lc.pct) + '%</b>' +
+            lc.done + '/' + lc.total + '</div>' +
+        '</div>';
+      });
+      $("listMeta").textContent = arr.length + " von " + NET.length + " Linien";
+      $("emptyText").textContent = "Keine Linie gefunden";
+      $("empty").hidden = arr.length > 0;
+    } else {
+      var tr = filteredTrips();
+      tr.forEach(function (t) {
+        html += '<div class="card" data-trip="' + esc(t.id) + '">' +
+          (t.l ? lineBadge(t.l, true) : '<div class="linebadge sm" style="border-color:var(--sep)">–</div>') +
+          '<div class="card-body">' +
+            '<div class="card-name">' + esc(stName(t.a)) + ' → ' + esc(stName(t.b)) + '</div>' +
+            '<div class="card-sub">' +
+              '<span class="badge ' + (t.m === "g" ? "dienst" : "privat") + '">' +
+                (t.m === "g" ? "Geschäftlich" : "Privat") + '</span>' +
+              (t.z ? '<span>' + esc(t.z) + '</span>' : "") +
+              '<span>· ' + fmtDate(t.d) + '</span>' +
+              (!t.l ? '<span class="badge warn">ohne Linie</span>' : "") +
+            '</div>' +
+          '</div>' +
+        '</div>';
+      });
+      $("listMeta").textContent = tr.length + (tr.length === 1 ? " Fahrt" : " Fahrten") +
+        (trips.length !== tr.length ? " von " + trips.length : "");
+      $("emptyText").textContent = trips.length ? "Keine Fahrt gefunden" : "Noch keine Fahrt eingetragen";
+      $("empty").hidden = tr.length > 0;
+    }
+    $("list").innerHTML = html;
+  }
+
+  // ---------- Linien-Detail ----------
+  var currentLine = null;
+  function openLine(nr) {
+    var n = netByNr[nr];
+    if (!n) return;
+    currentLine = nr;
+    var lc = lineCov(nr), c = coverage(), b = c.byLine[nr] || { segs: {}, stns: {} };
+    var html =
+      '<div class="detail-top">' + lineBadge(nr) +
+        '<div><div class="detail-name">' + esc(n.label) + '</div>' +
+        '<div class="detail-sub">' + (n.line.sp ? "ICE Sprinter · " : "") +
+          (n.line.fz ? esc(n.line.fz) : "ICE") + '</div></div>' +
+      '</div>' +
+      '<div class="kv-table">' +
+        kv("Abschnitte gefahren", lc.done + " von " + lc.total + " (" + fmtPct(lc.pct) + ")") +
+        kv("Halte besucht", Object.keys(b.stns).length + " von " + n.stns.length) +
+        kv("Eigene Fahrten", String(lc.trips)) +
+      '</div>' +
+      '<button class="big-btn" id="addOnLine">Fahrt auf dieser Linie eintragen</button>';
+
+    n.line.v.forEach(function (v, vi) {
+      if (n.line.v.length > 1) {
+        html += '<div class="route-var">Laufweg ' + (vi + 1) + ": " +
+          esc(stName(v[0][0])) + " – " + esc(stName(v[v.length - 1][0])) + '</div>';
+      } else {
+        html += '<div class="hist-title">Laufweg</div>';
+      }
+      html += '<div class="route">';
+      v.forEach(function (p, i) {
+        var visited = !!b.stns[p[0]];
+        var inSeg = i > 0 && b.segs[segKey(v[i - 1][0], p[0])];
+        var outSeg = i < v.length - 1 && b.segs[segKey(p[0], v[i + 1][0])];
+        html += '<div class="stop' + (visited ? " visited" : "") + (p[1] ? " opt" : "") +
+          (inSeg ? " rail-in" : "") + (outSeg ? " rail-out" : "") + '">' +
+          '<div class="stop-rail"><span class="stop-dot"></span></div>' +
+          '<div class="stop-name">' + esc(stName(p[0])) +
+            (p[1] ? '<span class="optmark">nur einzelne Züge</span>' : "") + '</div>' +
+        '</div>';
+      });
+      html += '</div>';
+    });
+
+    var mine = (c.tripsOfLine[nr] || []).slice().sort(function (x, y) { return x.d < y.d ? 1 : -1; });
+    if (mine.length) {
+      html += '<div class="hist-title">Meine Fahrten</div><div class="hist">';
+      mine.forEach(function (t) {
+        html += '<div class="trip-row" data-trip="' + esc(t.id) + '">' +
+          '<div class="tr-main"><div>' + esc(stName(t.a)) + ' → ' + esc(stName(t.b)) + '</div>' +
+          '<div class="tr-sub">' + fmtDate(t.d) + (t.z ? " · " + esc(t.z) : "") + '</div></div>' +
+          '<span class="badge ' + (t.m === "g" ? "dienst" : "privat") + '">' +
+            (t.m === "g" ? "Geschäftlich" : "Privat") + '</span>' +
+        '</div>';
+      });
+      html += '</div>';
+    }
+
+    $("detailTitle").textContent = "ICE " + nr;
+    $("detailContent").innerHTML = html;
+    $("detailContent").scrollTop = 0;
+    $("addOnLine").addEventListener("click", function () {
+      hideSheet("detailSheet", "detailBackdrop");
+      openEdit(null, nr);
+    });
+    showSheet("detailSheet", "detailBackdrop");
+  }
+  function kv(k, v) {
+    return '<div class="kv"><span class="k">' + esc(k) + '</span><span class="v">' + esc(v) + '</span></div>';
+  }
+
+  // ---------- Fahrt eintragen / bearbeiten ----------
+  var form = null;
+
+  function newId() {
+    return Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
+  }
+  function candidateLines(a, b) {
+    if (a == null || b == null) return [];
+    var out = [];
+    NET.forEach(function (n) {
+      var best = tripPath({ l: n.nr, a: a, b: b });
+      if (best) out.push({ nr: n.nr, span: best.hi - best.lo });
+    });
+    out.sort(function (x, y) { return x.span - y.span; });
+    return out;
+  }
+
+  function openEdit(tripId, presetLine) {
+    var t = tripId ? trips.filter(function (x) { return x.id === tripId; })[0] : null;
+    form = t ? { id: t.id, d: t.d, z: t.z || "", l: t.l || "", a: t.a, b: t.b, m: t.m || "p" }
+             : { id: null, d: todayISO(), z: "", l: presetLine || "", a: null, b: null, m: "p" };
+    $("editTitle").textContent = t ? "Fahrt bearbeiten" : "Fahrt eintragen";
+    renderEdit();
+    showSheet("editSheet", "editBackdrop");
+  }
+
+  function renderEdit() {
+    var cands = candidateLines(form.a, form.b);
+    if (form.a != null && form.b != null) {
+      var ok = cands.some(function (c) { return c.nr === form.l; });
+      if (!ok) form.l = cands.length ? cands[0].nr : "";
+    }
+    var html =
+      '<div class="form-section">Abschnitt</div>' +
+      '<div class="form-group">' +
+        '<div class="form-row"><span class="k">Von</span>' +
+          '<button class="picker-btn' + (form.a == null ? " empty" : "") + '" data-pick="a">' +
+            (form.a == null ? "Bahnhof wählen" : esc(stName(form.a))) + '</button></div>' +
+        '<div class="form-row"><span class="k">Nach</span>' +
+          '<button class="picker-btn' + (form.b == null ? " empty" : "") + '" data-pick="b">' +
+            (form.b == null ? "Bahnhof wählen" : esc(stName(form.b))) + '</button></div>' +
+      '</div>' +
+
+      '<div class="form-section">Zug</div>' +
+      '<div class="form-group">' +
+        '<div class="form-row"><span class="k">Datum</span>' +
+          '<input type="date" id="fDate" value="' + form.d + '"></div>' +
+        '<div class="form-row"><span class="k">Zugnummer</span>' +
+          '<input type="text" id="fZug" value="' + esc(form.z) + '" placeholder="z. B. ICE 106"></div>' +
+      '</div>' +
+
+      '<div class="form-section">Anlass</div>' +
+      '<div class="segmented" id="fMode">' +
+        '<button data-m="p"' + (form.m === "p" ? ' class="active"' : "") + '>Privat</button>' +
+        '<button data-m="g"' + (form.m === "g" ? ' class="active"' : "") + '>Geschäftlich</button>' +
+      '</div>' +
+
+      '<div class="form-section">Linie</div>';
+
+    if (form.a == null || form.b == null) {
+      html += '<div class="linepick">' + (form.l
+        ? '<button class="lp active" data-line="' + esc(form.l) + '">' +
+            lineBadge(form.l, true) + esc(netByNr[form.l] ? netByNr[form.l].label : "") + '</button>'
+        : "") + '</div>' +
+        '<div class="hint">Wähle Von und Nach – die passenden Linien erscheinen dann automatisch.</div>';
+    } else if (!cands.length) {
+      html += '<div class="hint warn">Keine ICE-Linie verbindet diese beiden Bahnhöfe direkt. ' +
+        'Die Fahrt lässt sich trotzdem speichern, zählt dann aber nicht zur Netzabdeckung. ' +
+        'Bei Umstiegen am besten je Abschnitt eine Fahrt eintragen.</div>';
+    } else {
+      html += '<div class="linepick">';
+      cands.forEach(function (c) {
+        var n = netByNr[c.nr];
+        html += '<button class="lp' + (form.l === c.nr ? " active" : "") + '" data-line="' + esc(c.nr) + '">' +
+          lineBadge(c.nr, true) + esc(n.label) + '</button>';
+      });
+      html += '</div>';
+      if (cands.length > 1) {
+        html += '<div class="hint">' + cands.length + ' Linien bedienen diesen Abschnitt – ' +
+          'die des gefahrenen Zuges auswählen.</div>';
+      }
+    }
+
+    html += '<button class="big-btn" id="fSave"' +
+      (form.a == null || form.b == null || form.a === form.b ? " disabled" : "") + '>Speichern</button>';
+    if (form.id) html += '<button class="text-btn" id="fDelete">Fahrt löschen</button>';
+
+    $("editContent").innerHTML = html;
+
+    $("editContent").querySelectorAll("[data-pick]").forEach(function (btn) {
+      btn.addEventListener("click", function () { openPicker(this.dataset.pick); });
+    });
+    $("fDate").addEventListener("change", function () { form.d = this.value || todayISO(); });
+    $("fZug").addEventListener("input", function () { form.z = this.value; });
+    $("fMode").addEventListener("click", function (ev) {
+      var b = ev.target.closest("[data-m]");
+      if (!b) return;
+      form.m = b.dataset.m;
+      this.querySelectorAll("button").forEach(function (x) { x.classList.toggle("active", x === b); });
+    });
+    $("editContent").querySelectorAll(".lp").forEach(function (btn) {
+      btn.addEventListener("click", function () { form.l = this.dataset.line; renderEdit(); });
+    });
+    $("fSave").addEventListener("click", saveForm);
+    if ($("fDelete")) $("fDelete").addEventListener("click", deleteForm);
+  }
+
+  function saveForm() {
+    if (form.a == null || form.b == null || form.a === form.b) return;
+    var z = form.z.trim();
+    if (/^\d+$/.test(z)) z = "ICE " + z;
+    var t = { id: form.id || newId(), d: form.d, z: z, l: form.l, a: form.a, b: form.b, m: form.m };
+    var i = -1;
+    trips.forEach(function (x, k) { if (x.id === t.id) i = k; });
+    if (i >= 0) trips[i] = t; else trips.push(t);
+    saveTrips(); invalidate(); render();
+    hideSheet("editSheet", "editBackdrop");
+    toast(i >= 0 ? "Fahrt aktualisiert" : "Fahrt gespeichert");
+  }
+
+  function deleteForm() {
+    var t = trips.filter(function (x) { return x.id === form.id; })[0];
+    if (!t) return;
+    confirmDialog({
+      title: "Fahrt löschen?",
+      text: stName(t.a) + " → " + stName(t.b) + " am " + fmtDate(t.d) +
+        " wird entfernt. Das lässt sich nicht rückgängig machen.",
+      ok: "Löschen", destructive: true
+    }, function () {
+      trips = trips.filter(function (x) { return x.id !== form.id; });
+      saveTrips(); invalidate(); render();
+      hideSheet("editSheet", "editBackdrop");
+      toast("Fahrt gelöscht");
+    });
+  }
+
+  // ---------- Bahnhofsauswahl ----------
+  var pickTarget = null;
+  function openPicker(target) {
+    pickTarget = target;
+    $("pickTitle").textContent = target === "a" ? "Von" : "Nach";
+    $("pickSearch").value = "";
+    renderPicker();
+    showSheet("pickSheet", "pickBackdrop");
+    setTimeout(function () { $("pickSearch").focus(); }, 320);
+  }
+
+  // Bahnhöfe, die mit dem bereits gewählten Bahnhof (bzw. der Linie) auf einem Laufweg liegen
+  function relatedStations() {
+    var other = pickTarget === "a" ? form.b : form.a;
+    var set = {};
+    if (other != null) {
+      LINES.forEach(function (l) {
+        l.v.forEach(function (v) {
+          if (v.some(function (p) { return p[0] === other; })) {
+            v.forEach(function (p) { set[p[0]] = 1; });
+          }
+        });
+      });
+      delete set[other];
+      return set;
+    }
+    if (form.l && lineByNr[form.l]) {
+      netByNr[form.l].stns.forEach(function (s) { set[s] = 1; });
+      return set;
+    }
+    return null;
+  }
+
+  function renderPicker() {
+    var q = norm($("pickSearch").value.trim());
+    var rel = relatedStations();
+    var cur = pickTarget === "a" ? form.a : form.b;
+    var groups = [{ t: "", items: [] }];
+    var idx = STATIONS.map(function (s, i) { return i; }).filter(function (i) {
+      return !q || norm(STATIONS[i].name).indexOf(q) >= 0 || norm(STATIONS[i].id).indexOf(q) >= 0;
+    }).sort(function (x, y) {
+      return STATIONS[x].name.localeCompare(STATIONS[y].name, "de");
+    });
+
+    if (rel) {
+      groups = [{ t: "Auf einem gemeinsamen Laufweg", items: [] },
+                { t: "Weitere Bahnhöfe", items: [] }];
+      idx.forEach(function (i) { groups[rel[i] ? 0 : 1].items.push(i); });
+    } else {
+      groups[0].items = idx;
+    }
+
+    var html = "";
+    groups.forEach(function (g) {
+      if (!g.items.length) return;
+      if (g.t) html += '<div class="hist-title">' + g.t + " (" + g.items.length + ")</div>";
+      g.items.forEach(function (i) {
+        var ls = (LINES_AT[i] || []);
+        html += '<div class="pick-row' + (i === cur ? " sel" : "") + '" data-st="' + i + '">' +
+          '<div><div class="pn">' + esc(STATIONS[i].name) + '</div>' +
+          '<div class="ps">ICE ' + ls.slice(0, 6).join(" · ") +
+            (ls.length > 6 ? " · +" + (ls.length - 6) : "") + '</div></div>' +
+          (i === cur ? '<span class="badge">gewählt</span>' : "") +
+        '</div>';
+      });
+    });
+    if (!html) html = '<div class="hint">Kein Bahnhof gefunden.</div>';
+    $("pickContent").innerHTML = html;
+  }
+
+  // ---------- Statistik ----------
+  function renderStats() {
+    var c = coverage();
+    var total = NET.length;
+    var p = pct(c.nLines, total);
+    var R = 80, C = 2 * Math.PI * R;
+
+    var html =
+      '<div class="ringwrap"><div class="ring">' +
+        '<svg width="190" height="190" viewBox="0 0 190 190">' +
+          '<circle cx="95" cy="95" r="' + R + '" fill="none" stroke="var(--chipbg)" stroke-width="16"/>' +
+          '<circle cx="95" cy="95" r="' + R + '" fill="none" stroke="var(--accent)" stroke-width="16" ' +
+            'stroke-linecap="round" stroke-dasharray="' + C + '" stroke-dashoffset="' +
+            (C * (1 - p / 100)) + '"/>' +
+        '</svg>' +
+        '<div class="ring-label">' +
+          '<span class="ring-frac">' + c.nLines + '/' + total + '</span>' +
+          '<span class="ring-pct">' + fmtPct(p) + '</span>' +
+          '<span class="ring-sub">LINIEN</span>' +
+        '</div>' +
+      '</div></div>';
+
+    var segP = pct(c.nSegs, TOTAL_SEGS);
+    var full = NET.filter(function (n) { var lc = lineCov(n.nr); return lc.total && lc.done === lc.total; }).length;
+    html += '<div class="tiles">' +
+      '<div class="tile"><div class="tv">' + trips.length + '</div><div class="tl">Fahrten</div></div>' +
+      '<div class="tile"><div class="tv">' + Math.round(segP) + '%</div>' +
+        '<div class="tl">Netz<br>' + c.nSegs + '/' + TOTAL_SEGS + ' Abschnitte</div></div>' +
+      '<div class="tile"><div class="tv">' + c.nStns + '</div>' +
+        '<div class="tl">von ' + STATIONS.length + '<br>Bahnhöfen</div></div>' +
+    '</div>';
+
+    if (full) {
+      html += '<div class="hint">' + full + (full === 1 ? " Linie" : " Linien") +
+        ' komplett abgefahren.</div>';
+    }
+
+    // Anlass
+    var np = trips.filter(function (t) { return t.m !== "g"; }).length;
+    html += '<div class="stat-section">Nach Anlass</div><div class="statcard">' +
+      barRow("Privat", np, trips.length) +
+      barRow("Geschäftlich", trips.length - np, trips.length) + '</div>';
+
+    // Fahrten je Monat
+    var byMonth = {};
+    trips.forEach(function (t) {
+      var m = (t.d || "").slice(0, 7);
+      if (m) byMonth[m] = (byMonth[m] || 0) + 1;
+    });
+    var months = [], now = new Date();
+    for (var i = 11; i >= 0; i--) {
+      var d = new Date(now.getFullYear(), now.getMonth() - i, 1);
+      var key = d.getFullYear() + "-" + String(d.getMonth() + 1).padStart(2, "0");
+      months.push({ n: byMonth[key] || 0,
+        label: ["J", "F", "M", "A", "M", "J", "J", "A", "S", "O", "N", "D"][d.getMonth()] });
+    }
+    var maxM = Math.max.apply(null, months.map(function (m) { return m.n; }).concat([1]));
+    html += '<div class="stat-section">Fahrten · letzte 12 Monate</div>' +
+      '<div class="statcard"><div class="month-chart">';
+    months.forEach(function (m) {
+      html += '<div class="mc"><span class="mcn">' + (m.n || "") + '</span>' +
+        '<div class="mcb" style="height:' + Math.round(m.n / maxM * 70 + (m.n ? 6 : 2)) +
+          'px;opacity:' + (m.n ? 1 : .25) + '"></div>' +
+        '<span class="mcl">' + m.label + '</span></div>';
+    });
+    html += '</div></div>';
+
+    // Abdeckung je gefahrener Linie
+    var driven = NET.map(function (n) { return { n: n, c: lineCov(n.nr) }; })
+      .filter(function (x) { return x.c.trips; })
+      .sort(function (x, y) { return y.c.pct - x.c.pct; });
+    if (driven.length) {
+      html += '<div class="stat-section">Abschnitte je Linie</div><div class="statcard">';
+      driven.forEach(function (x) {
+        html += barRow("ICE " + x.n.nr, x.c.done, x.c.total);
+      });
+      html += '</div>';
+    }
+
+    // Meistgenutzte Bahnhöfe (Ein- und Ausstiege)
+    var byStation = {};
+    trips.forEach(function (t) {
+      [t.a, t.b].forEach(function (s) { if (s != null) byStation[s] = (byStation[s] || 0) + 1; });
+    });
+    var topSt = Object.keys(byStation).map(Number)
+      .sort(function (x, y) { return byStation[y] - byStation[x]; }).slice(0, 6);
+    if (topSt.length) {
+      var maxS = byStation[topSt[0]];
+      html += '<div class="stat-section">Ein- und Ausstiege</div><div class="statcard">';
+      topSt.forEach(function (s) {
+        html += '<div class="bar-row"><span class="bl">' + esc(stName(s)) + '</span>' +
+          '<div class="bar"><div style="width:' + pct(byStation[s], maxS).toFixed(1) + '%"></div></div>' +
+          '<span class="bn">' + byStation[s] + '×</span></div>';
+      });
+      html += '</div>';
+    }
+
+    html += '<div class="io-row">' +
+      '<button id="exportBtn">Exportieren</button>' +
+      '<button id="importBtn">Importieren</button>' +
+      '<button id="resetBtn" class="danger">Zurücksetzen</button>' +
+    '</div>';
+
+    $("statsContent").innerHTML = html;
+    $("exportBtn").addEventListener("click", doExport);
+    $("importBtn").addEventListener("click", doImport);
+    $("resetBtn").addEventListener("click", doReset);
+  }
+  function barRow(label, n, total) {
+    var p = total && n ? Math.max(n / total * 100, 1.5) : 0;
+    return '<div class="bar-row"><span class="bl">' + esc(label) + '</span>' +
+      '<div class="bar"><div style="width:' + p.toFixed(1) + '%"></div></div>' +
+      '<span class="bn">' + n + '/' + total + '</span></div>';
+  }
+
+  // ---------- Export / Import ----------
+  function doExport() {
+    var data = JSON.stringify({ v: 1, trips: trips.map(tripOut) });
+    if (navigator.share) {
+      navigator.share({ title: "ICE Verbindungen", text: data }).catch(function () {});
+    } else if (navigator.clipboard) {
+      navigator.clipboard.writeText(data).then(function () { toast("In die Zwischenablage kopiert"); });
+    } else {
+      prompt("Fahrten kopieren:", data);
+    }
+  }
+  function doImport() {
+    var t = prompt("Exportierte Fahrten einfügen:");
+    if (!t) return;
+    try {
+      var obj = JSON.parse(t);
+      var arr = obj.trips || obj;
+      var have = {}, n = 0;
+      trips.forEach(function (x) { have[x.id] = 1; });
+      arr.forEach(function (x) {
+        var t = tripIn(x);
+        if (!t || have[t.id]) return;
+        have[t.id] = 1;
+        trips.push(t);
+        n++;
+      });
+      saveTrips(); invalidate(); render(); renderStats();
+      toast(n + (n === 1 ? " Fahrt" : " Fahrten") + " importiert");
+    } catch (e) { alert("Konnte die Daten nicht lesen."); }
+  }
+  function doReset() {
+    confirmDialog({
+      title: "Alles zurücksetzen?",
+      text: "Alle " + trips.length + " Fahrten werden gelöscht. Das lässt sich nicht rückgängig machen.",
+      ok: "Löschen", destructive: true
+    }, function () {
+      trips = []; saveTrips(); invalidate(); render(); renderStats();
+      toast("Alle Fahrten gelöscht");
+    });
+  }
+
+  // ---------- Sheets, Dialog, Toast ----------
+  function showSheet(sheetId, backdropId) {
+    var s = $(sheetId), b = $(backdropId);
+    s.hidden = false; b.hidden = false;
+    requestAnimationFrame(function () {
+      requestAnimationFrame(function () { s.classList.add("show"); b.classList.add("show"); });
+    });
+  }
+  function hideSheet(sheetId, backdropId) {
+    var s = $(sheetId), b = $(backdropId);
+    s.classList.remove("show"); b.classList.remove("show");
+    setTimeout(function () { s.hidden = true; b.hidden = true; }, 300);
+  }
+
+  var openAlert = null;
+  function confirmDialog(opts, onOk) {
+    document.querySelectorAll(".alert-backdrop").forEach(function (x) { x.remove(); });
+    openAlert = null;
+    var wrap = document.createElement("div");
+    wrap.className = "alert-backdrop";
+    wrap.innerHTML = '<div class="alert" role="alertdialog" aria-modal="true">' +
+      '<div class="alert-title">' + esc(opts.title) + '</div>' +
+      (opts.text ? '<div class="alert-text">' + esc(opts.text) + '</div>' : "") +
+      '<div class="alert-actions">' +
+        '<button class="alert-btn" data-act="cancel">' + esc(opts.cancel || "Abbrechen") + '</button>' +
+        '<button class="alert-btn ' + (opts.destructive ? "destructive" : "primary") +
+          '" data-act="ok">' + esc(opts.ok || "OK") + '</button>' +
+      '</div></div>';
+    document.body.appendChild(wrap);
+    requestAnimationFrame(function () {
+      requestAnimationFrame(function () { wrap.classList.add("show"); });
+    });
+    function close(ok) {
+      if (!wrap.parentNode) return;
+      wrap.classList.remove("show");
+      setTimeout(function () { if (wrap.parentNode) wrap.remove(); }, 200);
+      openAlert = null;
+      if (ok) onOk();
+    }
+    wrap.addEventListener("click", function (ev) {
+      var b = ev.target.closest("[data-act]");
+      if (b) close(b.dataset.act === "ok");
+      else if (ev.target === wrap) close(false);
+    });
+    openAlert = function () { close(false); };
+  }
+
+  var toastEl = null, toastTimer = null;
+  function toast(msg) {
+    if (!toastEl) {
+      toastEl = document.createElement("div");
+      toastEl.className = "toast";
+      document.body.appendChild(toastEl);
+    }
+    toastEl.textContent = msg;
+    requestAnimationFrame(function () { toastEl.classList.add("show"); });
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(function () { toastEl.classList.remove("show"); }, 1900);
+  }
+
+  // ---------- Events ----------
+  $("search").addEventListener("input", function () {
+    state.q = this.value.trim();
+    $("clearSearch").hidden = !state.q;
+    render();
+  });
+  $("clearSearch").addEventListener("click", function () {
+    $("search").value = ""; state.q = ""; this.hidden = true;
+    render(); $("search").focus();
+  });
+
+  $("chips").addEventListener("click", function (ev) {
+    var c = ev.target.closest(".chip");
+    if (!c) return;
+    if (c.dataset.lf) state.lf = c.dataset.lf;
+    if (c.dataset.ff) state.ff = c.dataset.ff;
+    render();
+  });
+
+  $("list").addEventListener("click", function (ev) {
+    var card = ev.target.closest(".card");
+    if (!card) return;
+    if (card.dataset.line) openLine(card.dataset.line);
+    else if (card.dataset.trip) openEdit(card.dataset.trip);
+  });
+
+  function switchView(v) {
+    state.view = v;
+    $("tabLinien").classList.toggle("active", v === "linien");
+    $("tabFahrten").classList.toggle("active", v === "fahrten");
+    render();
+    window.scrollTo({ top: 0 });
+  }
+  $("tabLinien").addEventListener("click", function () { switchView("linien"); });
+  $("tabFahrten").addEventListener("click", function () { switchView("fahrten"); });
+  $("tabAdd").addEventListener("click", function () { openEdit(null); });
+
+  $("statsBtn").addEventListener("click", function () {
+    renderStats(); showSheet("statsSheet", "statsBackdrop");
+  });
+  $("statsClose").addEventListener("click", function () { hideSheet("statsSheet", "statsBackdrop"); });
+  $("statsBackdrop").addEventListener("click", function () { hideSheet("statsSheet", "statsBackdrop"); });
+  $("detailContent").addEventListener("click", function (ev) {
+    var r = ev.target.closest("[data-trip]");
+    if (r) { hideSheet("detailSheet", "detailBackdrop"); openEdit(r.dataset.trip); }
+  });
+  $("detailClose").addEventListener("click", function () { hideSheet("detailSheet", "detailBackdrop"); });
+  $("detailBackdrop").addEventListener("click", function () { hideSheet("detailSheet", "detailBackdrop"); });
+  $("editClose").addEventListener("click", function () { hideSheet("editSheet", "editBackdrop"); });
+  $("editBackdrop").addEventListener("click", function () { hideSheet("editSheet", "editBackdrop"); });
+  $("pickClose").addEventListener("click", function () { hideSheet("pickSheet", "pickBackdrop"); });
+  $("pickBackdrop").addEventListener("click", function () { hideSheet("pickSheet", "pickBackdrop"); });
+  $("pickSearch").addEventListener("input", renderPicker);
+  $("pickContent").addEventListener("click", function (ev) {
+    var r = ev.target.closest("[data-st]");
+    if (!r) return;
+    var i = parseInt(r.dataset.st, 10);
+    if (pickTarget === "a") form.a = i; else form.b = i;
+    if (form.a != null && form.a === form.b) {
+      if (pickTarget === "a") form.b = null; else form.a = null;
+    }
+    hideSheet("pickSheet", "pickBackdrop");
+    renderEdit();
+  });
+
+  document.addEventListener("keydown", function (ev) {
+    if (ev.key !== "Escape") return;
+    if (openAlert) { openAlert(); return; }
+    if (!$("pickSheet").hidden) { hideSheet("pickSheet", "pickBackdrop"); return; }
+    if (!$("editSheet").hidden) { hideSheet("editSheet", "editBackdrop"); return; }
+    if (!$("detailSheet").hidden) { hideSheet("detailSheet", "detailBackdrop"); return; }
+    if (!$("statsSheet").hidden) { hideSheet("statsSheet", "statsBackdrop"); }
+  });
+
+  // Swipe-down zum Schließen
+  [["detailSheet", "detailBackdrop"], ["editSheet", "editBackdrop"],
+   ["pickSheet", "pickBackdrop"], ["statsSheet", "statsBackdrop"]].forEach(function (pair) {
+    var el = $(pair[0]), startY = null;
+    el.addEventListener("touchstart", function (ev) {
+      var content = el.querySelector(".sheet-content");
+      startY = content.scrollTop <= 0 ? ev.touches[0].clientY : null;
+    }, { passive: true });
+    el.addEventListener("touchmove", function (ev) {
+      if (startY === null) return;
+      if (ev.touches[0].clientY - startY > 70) {
+        startY = null;
+        hideSheet(pair[0], pair[1]);
+      }
+    }, { passive: true });
+  });
+
+  // ---------- Start ----------
+  render();
+})();
+</script>
+</body>
+</html>
