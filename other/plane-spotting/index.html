@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<title>Plane Spotting</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="Plane Spotting">
+<meta name="theme-color" content="#f2f2f7" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#000000" media="(prefers-color-scheme: dark)">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='22' fill='%230a5bd3'/%3E%3Cpath fill='%23fff' d='M52 14c4 0 6 3 6 7v20l28 17v8L58 58v18l10 7v7l-18-5-18 5v-7l10-7V58L14 66v-8l28-17V21c0-4 2-7 6-7z'/%3E%3C/svg%3E">
+<!-- Home-Bildschirm-Icon (iOS/iPadOS); erzeugt von tools/make_icons.py -->
+<link rel="apple-touch-icon" href="icons/icon-180.png">
+<link rel="apple-touch-icon" sizes="120x120" href="icons/icon-120.png">
+<link rel="apple-touch-icon" sizes="152x152" href="icons/icon-152.png">
+<link rel="apple-touch-icon" sizes="167x167" href="icons/icon-167.png">
+<link rel="apple-touch-icon" sizes="180x180" href="icons/icon-180.png">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<header class="topbar">
+  <div class="topbar-row">
+    <h1 id="title">Plane&nbsp;Spotting</h1>
+    <button class="pill-btn" id="statsBtn" aria-label="Statistiken">
+      <span id="headerCount">0/0</span>
+      <svg viewBox="0 0 24 24" width="16" height="16"><path fill="currentColor" d="M5 9h3v11H5zM10.5 4h3v16h-3zM16 13h3v7h-3z"/></svg>
+    </button>
+  </div>
+  <div class="searchwrap">
+    <svg class="searchicon" viewBox="0 0 24 24" width="16" height="16"><path fill="currentColor" d="M15.5 14h-.79l-.28-.27a6.5 6.5 0 1 0-.7.7l.27.28v.79l5 4.99L20.49 19zm-6 0A4.5 4.5 0 1 1 14 9.5 4.5 4.5 0 0 1 9.5 14z"/></svg>
+    <input type="search" id="search" placeholder="Kennzeichen, Airline oder Flughafen" autocomplete="off" autocorrect="off" autocapitalize="off">
+    <button id="clearSearch" class="clear-btn" hidden>&times;</button>
+  </div>
+  <div class="chips" id="chips"></div>
+</header>
+
+<main>
+  <div id="mapView" hidden>
+    <div class="mapwrap full" id="mapWrap">
+      <div class="map-legend">
+        <div><i class="dot"></i>Spotting-Flughafen</div>
+        <div><i class="col"></i>Route einer Sichtung</div>
+      </div>
+      <div class="map-ctrl">
+        <button id="mapIn" aria-label="Vergrößern">+</button>
+        <button id="mapOut" aria-label="Verkleinern">&minus;</button>
+        <button id="mapDE" class="wide" aria-label="Deutschland">DE</button>
+        <button id="mapAll" class="wide" aria-label="Ganze Welt">Welt</button>
+      </div>
+      <div class="map-info" id="mapInfo" hidden>
+        <span id="mapInfoBadge"></span>
+        <div class="mi-body">
+          <div class="mi-name" id="mapInfoName"></div>
+          <div class="mi-sub" id="mapInfoSub"></div>
+        </div>
+        <span class="mi-go">›</span>
+      </div>
+    </div>
+    <div class="map-hint">Flughafen antippen für die Sichtungen dort · ziehen zum Verschieben · zwei Finger zum Zoomen<br>Kartengrundlage: Natural Earth (gemeinfrei)</div>
+  </div>
+  <div class="listmeta" id="listMeta"></div>
+  <div id="list"></div>
+  <div class="empty" id="empty" hidden>
+    <div class="empty-icon">✈️</div>
+    <p id="emptyText">Nichts gefunden</p>
+  </div>
+  <footer class="credits">
+    Flughäfen: <a href="https://ourairports.com/" target="_blank" rel="noopener">OurAirports</a> (gemeinfrei) ·
+    Airline-Codes: <a href="https://openflights.org/data.html" target="_blank" rel="noopener">OpenFlights</a> (ODbL)<br>
+    Flugzeug- und Routendaten auf Abruf: <a href="https://www.adsbdb.com/" target="_blank" rel="noopener">adsbdb.com</a>
+  </footer>
+</main>
+
+<div class="tabbar">
+  <button class="tab active" id="tabSicht">
+    <svg viewBox="0 0 24 24" width="22" height="22"><path fill="currentColor" d="M12 2c1.2 0 2 1 2 2.2v5.3l8 4.7v2.3l-8-2.5v5.2l2.8 2v1.6L12 21.4l-4.8 1.4v-1.6l2.8-2v-5.2L2 16.5v-2.3l8-4.7V4.2C10 3 10.8 2 12 2z"/></svg>
+    <span>Sichtungen</span>
+  </button>
+  <button class="tab" id="tabSamm">
+    <svg viewBox="0 0 24 24" width="22" height="22"><path fill="currentColor" d="M4 4h7v7H4zm9 0h7v7h-7zM4 13h7v7H4zm9 0h7v7h-7z"/></svg>
+    <span>Sammlung</span>
+  </button>
+  <button class="tab" id="tabKarte">
+    <svg viewBox="0 0 24 24" width="22" height="22"><path fill="currentColor" d="m20.5 3-.16.03L15 5.1 9 3 3.36 4.9c-.21.07-.36.25-.36.48V20.5c0 .28.22.5.5.5l.16-.03L9 18.9l6 2.1 5.64-1.9c.21-.07.36-.25.36-.48V3.5c0-.28-.22-.5-.5-.5zM15 19l-6-2.11V5l6 2.11z"/></svg>
+    <span>Karte</span>
+  </button>
+  <button class="tab tab-add" id="tabAdd" aria-label="Sichtung eintragen">
+    <svg viewBox="0 0 24 24" width="22" height="22"><path fill="currentColor" d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6z"/></svg>
+    <span>Spotten</span>
+  </button>
+</div>
+
+<!-- Sichtung eintragen / bearbeiten -->
+<div class="sheet-backdrop" id="editBackdrop" hidden></div>
+<div class="sheet sheet-tall" id="editSheet" hidden>
+  <div class="sheet-handle"></div>
+  <div class="sheet-head">
+    <h2 id="editTitle">Sichtung</h2>
+    <button class="close-btn" id="editClose">&times;</button>
+  </div>
+  <div class="sheet-content" id="editContent"></div>
+</div>
+
+<!-- Detail (Flugzeug, Typ, Airline, Flughafen) -->
+<div class="sheet-backdrop" id="detailBackdrop" hidden></div>
+<div class="sheet sheet-tall" id="detailSheet" hidden>
+  <div class="sheet-handle"></div>
+  <div class="sheet-head">
+    <h2 id="detailTitle">Detail</h2>
+    <button class="close-btn" id="detailClose">&times;</button>
+  </div>
+  <div class="sheet-content" id="detailContent"></div>
+</div>
+
+<!-- Auswahl (Flughafen / Typ) -->
+<div class="sheet-backdrop" id="pickBackdrop" hidden></div>
+<div class="sheet sheet-tall" id="pickSheet" hidden>
+  <div class="sheet-handle"></div>
+  <div class="sheet-head">
+    <h2 id="pickTitle">Auswahl</h2>
+    <button class="close-btn" id="pickClose">&times;</button>
+  </div>
+  <div class="pick-search">
+    <input type="search" id="pickSearch" placeholder="Suchen" autocomplete="off" autocorrect="off" autocapitalize="off">
+  </div>
+  <div class="sheet-content" id="pickContent"></div>
+</div>
+
+<!-- Statistik -->
+<div class="sheet-backdrop" id="statsBackdrop" hidden></div>
+<div class="sheet sheet-tall" id="statsSheet" hidden>
+  <div class="sheet-handle"></div>
+  <div class="sheet-head">
+    <h2>Statistiken</h2>
+    <button class="close-btn" id="statsClose">&times;</button>
+  </div>
+  <div class="sheet-content" id="statsContent"></div>
+</div>
+
+<!-- Foto-Lightbox -->
+<div class="lightbox" id="lightbox" hidden>
+  <button class="lb-close" id="lbClose" aria-label="Schließen">&times;</button>
+  <div class="lb-inner">
+    <div class="lb-img" id="lbImg"></div>
+    <div class="lb-cap" id="lbCap"></div>
+  </div>
+</div>
+
+<script src="data.js"></script>
+<script src="geo.js"></script>
+<script src="map.js"></script>
+<script src="lookup.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
