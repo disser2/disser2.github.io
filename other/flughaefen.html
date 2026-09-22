@@ -1,0 +1,548 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Flughäfen">
+<meta name="theme-color" content="#F2F2F7">
+<title>Flughäfen</title>
+<style>
+:root{
+  --bg:#F2F2F7; --card:#FFFFFF; --fill:#E9E9EF; --fill2:#E5E5EA; --text:#000; --text2:#8A8A8E; --text3:#C7C7CC;
+  --blue:#007AFF; --green:#34C759; --red:#FF3B30; --sep:#D8D8DC; --sheet:#FFFFFF; --group:#F2F2F7; --shadow:0 8px 30px rgba(0,0,0,.12);
+  --eu-bg:#E1EDFF; --eu-fg:#0A5AD6; --as-bg:#FFE3E0; --as-fg:#C8321F; --na-bg:#FFEBD9; --na-fg:#B85A00;
+  --sa-bg:#DDF5E4; --sa-fg:#1E8A3E; --af-bg:#FFF4CC; --af-fg:#8F6A00; --oc-bg:#EEE3FF; --oc-fg:#6A35C9;
+  box-sizing:border-box; padding-top:env(safe-area-inset-top,0px); padding-bottom:env(safe-area-inset-bottom,0px);
+  color-scheme:light dark;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#000; --card:#1C1C1E; --fill:#2C2C2E; --fill2:#3A3A3C; --text:#fff; --text2:#8E8E93; --text3:#48484A;
+    --blue:#0A84FF; --green:#30D158; --red:#FF453A; --sep:#38383A; --sheet:#1C1C1E; --group:#2C2C2E; --shadow:0 8px 30px rgba(0,0,0,.6);
+    --eu-bg:#0F2A4F; --eu-fg:#6FA8FF; --as-bg:#4A1914; --as-fg:#FF8A7A; --na-bg:#4A2A0B; --na-fg:#FFB066;
+    --sa-bg:#10361D; --sa-fg:#5FD984; --af-bg:#3F3308; --af-fg:#F2CD4A; --oc-bg:#2F1C52; --oc-fg:#B794FF;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#000; --card:#1C1C1E; --fill:#2C2C2E; --fill2:#3A3A3C; --text:#fff; --text2:#8E8E93; --text3:#48484A;
+  --blue:#0A84FF; --green:#30D158; --red:#FF453A; --sep:#38383A; --sheet:#1C1C1E; --group:#2C2C2E; --shadow:0 8px 30px rgba(0,0,0,.6);
+  --eu-bg:#0F2A4F; --eu-fg:#6FA8FF; --as-bg:#4A1914; --as-fg:#FF8A7A; --na-bg:#4A2A0B; --na-fg:#FFB066;
+  --sa-bg:#10361D; --sa-fg:#5FD984; --af-bg:#3F3308; --af-fg:#F2CD4A; --oc-bg:#2F1C52; --oc-fg:#B794FF;
+}
+html{scroll-padding-top:env(safe-area-inset-top,0px);-webkit-text-size-adjust:100%}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+body{margin:0;background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text","Helvetica Neue",Helvetica,Arial,sans-serif;font-size:17px;line-height:1.3;overflow-x:hidden}
+button{font:inherit;color:inherit;border:0;background:none;cursor:pointer;padding:0}
+button:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid var(--blue);outline-offset:2px}
+
+.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:10;background:var(--bg);padding:10px 16px 0}
+.titlebar{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:6px 0 12px}
+h1{font-size:32px;font-weight:800;letter-spacing:-.02em;margin:0;line-height:1.1}
+.tb-right{display:flex;gap:8px;align-items:center}
+.pill{background:var(--blue);color:#fff;border-radius:999px;padding:8px 16px;font-weight:700;font-size:18px;display:flex;align-items:center;gap:8px;font-variant-numeric:tabular-nums}
+.pill svg{width:16px;height:16px}
+.addbtn{width:38px;height:38px;border-radius:50%;background:var(--fill);color:var(--blue);display:grid;place-items:center;font-size:24px;font-weight:500;line-height:1}
+.search{display:flex;align-items:center;gap:8px;background:var(--fill);border-radius:12px;padding:0 12px;height:44px}
+.search svg{width:18px;height:18px;color:var(--text2);flex:none}
+.search input{flex:1;border:0;background:transparent;font:inherit;color:var(--text);outline:none;min-width:0;height:100%}
+.search input::placeholder{color:var(--text2)}
+.clear{color:var(--text2);font-size:18px;width:24px;height:24px;border-radius:50%;display:none;place-items:center}
+.chips{display:flex;gap:8px;overflow-x:auto;padding:12px 16px 12px;margin:0 -16px;scrollbar-width:none;align-items:center}
+.chips::-webkit-scrollbar{display:none}
+.chip{flex:none;background:var(--fill);border-radius:999px;padding:8px 16px;font-weight:600;font-size:16px;white-space:nowrap}
+.chip.on{background:var(--blue);color:#fff}
+.vsep{flex:none;width:1px;height:24px;background:var(--sep)}
+.divider{height:1px;background:var(--sep);margin:0 -16px}
+
+main{padding:10px 16px 120px}
+.count{color:var(--text2);font-size:15px;margin:6px 4px 10px}
+.list{display:flex;flex-direction:column;gap:10px}
+.card{display:flex;align-items:center;gap:14px;background:var(--card);border-radius:18px;padding:14px 14px 14px 14px;border:2px solid transparent;width:100%;text-align:left}
+.card.seen{border-color:var(--green)}
+.check{flex:none;width:34px;height:34px;border-radius:50%;border:2px solid var(--text3);display:grid;place-items:center}
+.card.seen .check{background:var(--green);border-color:var(--green)}
+.check svg{width:18px;height:18px;color:#fff;opacity:0}
+.card.seen .check svg{opacity:1}
+.body{flex:1;min-width:0}
+.city{font-size:21px;font-weight:700;letter-spacing:-.01em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.meta{display:flex;flex-wrap:wrap;align-items:center;gap:6px;margin-top:5px}
+.tag{border-radius:7px;padding:2px 8px;font-weight:700;font-size:15px}
+.tag.code{letter-spacing:.04em}
+.tag.cc{background:var(--fill);color:var(--text)}
+.tag.own{border:1.5px dashed var(--text3);color:var(--text2);background:none;font-weight:600}
+.c-EU{background:var(--eu-bg);color:var(--eu-fg)} .c-AS{background:var(--as-bg);color:var(--as-fg)} .c-NA{background:var(--na-bg);color:var(--na-fg)}
+.c-SA{background:var(--sa-bg);color:var(--sa-fg)} .c-AF{background:var(--af-bg);color:var(--af-fg)} .c-OC{background:var(--oc-bg);color:var(--oc-fg)}
+.aname{color:var(--text2);font-size:14px;margin-top:4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.date{color:var(--green);font-weight:700;font-size:16px;margin-top:4px;font-variant-numeric:tabular-nums}
+.flag{flex:none;width:58px;height:58px;display:grid;place-items:center;font-size:44px;line-height:1}
+.empty{text-align:center;color:var(--text2);padding:50px 20px}
+.empty b{display:block;color:var(--text);font-size:19px;margin-bottom:6px}
+
+.tabbar{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(14px + env(safe-area-inset-bottom,0px));z-index:20;display:flex;gap:4px;padding:6px;border-radius:999px;background:color-mix(in srgb,var(--card) 82%,transparent);backdrop-filter:blur(20px) saturate(180%);-webkit-backdrop-filter:blur(20px) saturate(180%);box-shadow:var(--shadow);border:0.5px solid var(--sep)}
+.tab{display:flex;flex-direction:column;align-items:center;gap:2px;padding:7px 18px;border-radius:999px;color:var(--text2);font-size:12px;font-weight:600;min-width:84px}
+.tab svg{width:24px;height:24px}
+.tab.on{color:var(--blue);background:var(--fill)}
+
+.scrim{position:fixed;inset:0;background:rgba(0,0,0,.35);z-index:40;opacity:0;pointer-events:none;transition:opacity .25s}
+.scrim.on{opacity:1;pointer-events:auto}
+.sheet{position:fixed;left:0;right:0;bottom:0;z-index:50;background:var(--sheet);border-radius:22px 22px 0 0;max-height:calc(100% - 60px - env(safe-area-inset-top,0px));display:flex;flex-direction:column;transform:translateY(105%);transition:transform .32s cubic-bezier(.2,.8,.2,1);padding-bottom:env(safe-area-inset-bottom,0px);max-width:640px;margin:0 auto}
+.sheet.on{transform:none}
+.grab{width:40px;height:5px;border-radius:3px;background:var(--text3);margin:8px auto 4px}
+.sh-head{display:flex;align-items:center;justify-content:space-between;padding:8px 20px 8px}
+.sh-head h2{margin:0;font-size:26px;font-weight:800;letter-spacing:-.01em}
+.xbtn{width:34px;height:34px;border-radius:50%;background:var(--fill);color:var(--text2);display:grid;place-items:center}
+.xbtn svg{width:14px;height:14px}
+.sh-body{overflow-y:auto;padding:4px 20px 28px;-webkit-overflow-scrolling:touch}
+@media (prefers-reduced-motion: reduce){.sheet,.scrim{transition:none}}
+
+.ring{position:relative;width:220px;height:220px;margin:14px auto 22px}
+.ring svg{width:100%;height:100%;transform:rotate(-90deg)}
+.ring .in{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center}
+.ring .frac{color:var(--text2);font-size:17px;font-weight:600;font-variant-numeric:tabular-nums}
+.ring .pct{font-size:44px;font-weight:800;letter-spacing:-.02em;font-variant-numeric:tabular-nums}
+.ring .lbl{color:var(--text2);font-size:13px;font-weight:600;letter-spacing:.14em}
+.quick{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:24px}
+.quick div{background:var(--group);border-radius:14px;padding:12px;text-align:center}
+.quick b{display:block;font-size:24px;font-weight:800;font-variant-numeric:tabular-nums}
+.quick span{color:var(--text2);font-size:13px}
+.sec{color:var(--text2);font-size:15px;font-weight:600;margin:0 4px 8px}
+.group{background:var(--group);border-radius:16px;padding:6px 16px;margin-bottom:24px}
+.row{display:grid;grid-template-columns:110px 1fr 64px;align-items:center;gap:12px;padding:10px 0}
+.row .n{font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.bar{height:16px;border-radius:8px;background:var(--fill2);overflow:hidden}
+.bar i{display:block;height:100%;background:var(--blue);border-radius:8px;min-width:0}
+.row .v{color:var(--text2);text-align:right;font-variant-numeric:tabular-nums}
+.months{display:flex;align-items:flex-end;gap:6px;height:150px;padding:22px 0 0}
+.mcol{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;height:100%;gap:4px}
+.mcol b{font-size:12px;font-variant-numeric:tabular-nums}
+.mcol i{width:100%;max-width:22px;background:var(--blue);border-radius:5px 5px 2px 2px;min-height:3px}
+.mcol i.z{background:var(--fill2)}
+.mcol span{font-size:11px;color:var(--text2)}
+.countries{display:flex;flex-wrap:wrap;gap:6px;padding:8px 0}
+.countries span{background:var(--card);border-radius:8px;padding:4px 8px;font-size:15px}
+
+.hero-ap{text-align:center;padding:4px 0 18px}
+.hero-ap .f{font-size:60px;line-height:1.1}
+.hero-ap .c{font-size:26px;font-weight:800;margin-top:4px}
+.hero-ap .s{color:var(--text2);margin-top:2px}
+.field{display:flex;flex-direction:column;gap:6px;margin-bottom:14px}
+.field label{font-size:14px;color:var(--text2);font-weight:600;margin-left:4px}
+.field input,.field select{font:inherit;color:var(--text);background:var(--group);border:0;border-radius:12px;padding:0 14px;height:48px;width:100%;appearance:none;-webkit-appearance:none}
+.field input[type=date]{display:flex;align-items:center}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.btn{display:block;width:100%;height:52px;border-radius:14px;font-weight:700;font-size:17px;margin-top:10px}
+.btn.primary{background:var(--blue);color:#fff}
+.btn.danger{background:var(--group);color:var(--red)}
+.btn.plain{background:var(--group);color:var(--blue)}
+.err{color:var(--red);font-size:14px;min-height:18px;margin:0 4px}
+.foot{color:var(--text2);font-size:13px;text-align:center;margin-top:18px}
+.toast{position:fixed;left:50%;top:calc(12px + env(safe-area-inset-top,0px));transform:translate(-50%,-150%);z-index:60;background:var(--card);box-shadow:var(--shadow);border-radius:999px;padding:10px 18px;font-weight:600;font-size:15px;transition:transform .3s}
+.toast.on{transform:translate(-50%,0)}
+.coords{font-size:13px;color:var(--text2);margin-top:3px;font-variant-numeric:tabular-nums}
+.facts{background:var(--group);border-radius:16px;padding:4px 16px;margin-bottom:18px}
+.fact{display:flex;justify-content:space-between;gap:12px;padding:11px 0;border-bottom:1px solid var(--sep);font-size:16px}
+.fact:last-child{border-bottom:0}
+.fact span:first-child{color:var(--text2)}
+.fact span:last-child{text-align:right;font-weight:600;font-variant-numeric:tabular-nums}
+.plan{background:var(--group);border-radius:16px;overflow:hidden;margin-bottom:10px;position:relative}
+.plan svg{display:block;width:100%;height:auto}
+.plan .attr{position:absolute;right:6px;bottom:4px;font-size:10px;color:#fff;text-shadow:0 0 3px #000}
+.seg{display:flex;background:var(--fill);border-radius:10px;padding:2px;margin-bottom:10px}
+.seg button{flex:1;padding:7px 0;border-radius:8px;font-size:14px;font-weight:600;color:var(--text2)}
+.seg button.on{background:var(--card);color:var(--text);box-shadow:0 1px 3px rgba(0,0,0,.12)}
+.tiles{position:relative;width:100%;height:260px;overflow:hidden;background:var(--fill2)}
+.tiles img{position:absolute;width:256px;height:256px;max-width:none;user-select:none}
+.tiles .pin{position:absolute;left:50%;top:50%;width:14px;height:14px;margin:-7px 0 0 -7px;border-radius:50%;background:var(--red);border:3px solid #fff;box-shadow:0 1px 4px rgba(0,0,0,.5)}
+.tiles .off{position:absolute;inset:0;display:none;align-items:center;justify-content:center;text-align:center;padding:20px;color:var(--text2);font-size:14px}
+.zoom{position:absolute;right:8px;top:8px;display:flex;flex-direction:column;gap:6px}
+.zoom button{width:34px;height:34px;border-radius:10px;background:color-mix(in srgb,var(--card) 90%,transparent);font-size:20px;font-weight:600;box-shadow:0 1px 4px rgba(0,0,0,.25)}
+.links{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:22px}
+.links a{display:block;text-align:center;background:var(--group);color:var(--blue);text-decoration:none;font-weight:600;border-radius:12px;padding:11px 0;font-size:15px}
+.hint{color:var(--text2);font-size:13px;margin:0 4px 16px}
+.menu-btn{width:38px;height:38px;border-radius:50%;background:var(--fill);color:var(--blue);display:grid;place-items:center}
+.menu-btn svg{width:20px;height:20px}
+</style>
+</head>
+<body>
+<div class="top">
+  <div class="titlebar">
+    <h1>Flughäfen</h1>
+    <div class="tb-right">
+      <button class="menu-btn" id="menuBtn" aria-label="Daten sichern"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12M7 10l5 5 5-5M4 19h16"/></svg></button>
+      <button class="addbtn" id="addBtn" aria-label="Eigenen Flughafen hinzufügen">+</button>
+      <button class="pill" id="statBtn" aria-label="Statistiken öffnen"><span id="pillTxt">0/0</span>
+        <svg viewBox="0 0 16 16" fill="currentColor"><rect x="1" y="7" width="3" height="8" rx="1.5"/><rect x="6.5" y="2" width="3" height="13" rx="1.5"/><rect x="12" y="9" width="3" height="6" rx="1.5"/></svg></button>
+    </div>
+  </div>
+  <div class="search">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><circle cx="10.5" cy="10.5" r="6.5"/><path d="M15.5 15.5 21 21"/></svg>
+    <input id="q" type="search" placeholder="Stadt, Code oder Land" autocomplete="off" autocorrect="off" spellcheck="false">
+    <button class="clear" id="qClear" aria-label="Suche löschen">✕</button>
+  </div>
+  <div class="chips" id="chips"></div>
+  <div class="divider"></div>
+</div>
+
+<main>
+  <div class="count" id="count"></div>
+  <div class="list" id="list"></div>
+</main>
+
+<nav class="tabbar" aria-label="Sortierung">
+  <button class="tab on" data-sort="name"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M4 7h16M4 12h11M4 17h7"/></svg>Name</button>
+  <button class="tab" data-sort="land"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M5 21V4M5 4h11l-2 4 2 4H5"/></svg>Land</button>
+  <button class="tab" data-sort="date"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M2 16l20-6-1-3-7 2-6-6-2 1 3 7-5 1.5-2-2-1.5.5z"/><path d="M3 21h18" stroke-linecap="round"/></svg>Besucht</button>
+</nav>
+
+<div class="scrim" id="scrim"></div>
+
+<section class="sheet" id="statSheet" role="dialog" aria-label="Statistiken">
+  <div class="grab"></div>
+  <div class="sh-head"><h2>Statistiken</h2><button class="xbtn" data-close aria-label="Schließen"><svg viewBox="0 0 14 14" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M2 2l10 10M12 2 2 12"/></svg></button></div>
+  <div class="sh-body" id="statBody"></div>
+</section>
+
+<section class="sheet" id="visitSheet" role="dialog" aria-label="Flughafen">
+  <div class="grab"></div>
+  <div class="sh-head"><h2 id="vTitle">Flughafen</h2><button class="xbtn" data-close aria-label="Schließen"><svg viewBox="0 0 14 14" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M2 2l10 10M12 2 2 12"/></svg></button></div>
+  <div class="sh-body" id="vBody">
+    <div class="hero-ap" id="vHero"></div>
+    <div class="field"><label for="vDate">Zuletzt dort gewesen</label><input type="date" id="vDate"></div>
+    <button class="btn primary" id="vSave">Als besucht speichern</button>
+    <button class="btn danger" id="vRemove">Als nicht besucht markieren</button>
+    <div style="height:24px"></div>
+    <div class="sec">Lageplan</div>
+    <div class="seg" id="planSeg"><button data-m="plan" class="on">Pisten</button><button data-m="sat">Satellit</button><button data-m="map">Karte</button></div>
+    <div class="plan" id="plan"></div>
+    <p class="hint" id="planHint"></p>
+    <div class="links" id="vLinks"></div>
+    <div class="sec">Details</div>
+    <div class="facts" id="vFacts"></div>
+    <button class="btn danger" id="vDelete">Eigenen Flughafen löschen</button>
+  </div>
+</section>
+
+<section class="sheet" id="addSheet" role="dialog" aria-label="Flughafen hinzufügen">
+  <div class="grab"></div>
+  <div class="sh-head"><h2>Flughafen hinzufügen</h2><button class="xbtn" data-close aria-label="Schließen"><svg viewBox="0 0 14 14" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M2 2l10 10M12 2 2 12"/></svg></button></div>
+  <div class="sh-body">
+    <div class="two">
+      <div class="field"><label for="aCode">IATA-Code</label><input id="aCode" maxlength="3" placeholder="z. B. MGL" autocapitalize="characters"></div>
+      <div class="field"><label for="aCC">Land (ISO)</label><input id="aCC" maxlength="2" placeholder="z. B. DE" autocapitalize="characters"></div>
+    </div>
+    <div class="field"><label for="aCity">Stadt</label><input id="aCity" placeholder="z. B. Mönchengladbach"></div>
+    <div class="field"><label for="aName">Name des Flughafens</label><input id="aName" placeholder="optional"></div>
+    <div class="two">
+      <div class="field"><label for="aLat">Breitengrad</label><input id="aLat" inputmode="decimal" placeholder="51.230"></div>
+      <div class="field"><label for="aLon">Längengrad</label><input id="aLon" inputmode="decimal" placeholder="6.504"></div>
+    </div>
+    <div class="field"><label for="aCont">Kontinent</label><select id="aCont"></select></div>
+    <div class="err" id="aErr"></div>
+    <button class="btn primary" id="aSave">Hinzufügen</button>
+  </div>
+</section>
+
+<section class="sheet" id="dataSheet" role="dialog" aria-label="Daten sichern">
+  <div class="grab"></div>
+  <div class="sh-head"><h2>Daten sichern</h2><button class="xbtn" data-close aria-label="Schließen"><svg viewBox="0 0 14 14" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M2 2l10 10M12 2 2 12"/></svg></button></div>
+  <div class="sh-body">
+    <p class="hint">Deine Besuche liegen nur im Speicher dieses Browsers. Lade ab und zu eine Sicherung herunter – damit kannst du sie auch auf ein anderes Gerät übertragen.</p>
+    <button class="btn primary" id="expBtn">Sicherung herunterladen</button>
+    <button class="btn plain" id="impBtn">Sicherung laden</button>
+    <input type="file" id="impFile" accept="application/json,.json" hidden>
+    <p class="foot" id="dataInfo"></p>
+  </div>
+</section>
+
+<div class="toast" id="toast"></div>
+<script>
+// [code, Stadt, Name, Land, Kontinent, lat, lon, Höhe m, Gemeinde, ICAO, Pisten]
+// Piste: [Kennung A, Kennung B, Länge m, Breite m, latA, lonA, latB, lonB] oder [.., .., L, B, Richtung°]
+const DATA = [["FRA","Frankfurt","Frankfurt am Main","DE","EU",50.02671,8.55835,111,"Frankfurt am Main","EDDF",[["07C","25C",4000,60,50.0326,8.53463,50.0451,8.58698],["07L","25R",2800,45,50.0371,8.49708,50.0458,8.53372],["07R","25L",4000,45,50.0275,8.53417,50.0401,8.58653],["18","36",4000,45,50.03415,8.52594,49.99849,8.5263]]],["MUC","München","Franz Josef Strauß","DE","EU",48.3538,11.7861,453,"Munich","EDDM",[["08L","26R",4000,60,48.3628,11.7676,48.3669,11.8212],["08R","26L",4000,60,48.3407,11.751,48.3448,11.8046]]],["BER","Berlin","Berlin Brandenburg","DE","EU",52.36174,13.50234,48,"Berlin","EDDB",[["06L","24R",3600,45,52.36672,13.48093,52.37841,13.53021],["06R","24L",4000,60,52.34544,13.46843,52.35843,13.52318]]],["DUS","Düsseldorf","Düsseldorf International","DE","EU",51.2895,6.76678,45,"Düsseldorf","EDDL",[["05L","23R",2700,45,51.2837,6.74872,51.2984,6.77965],["05R","23L",3000,45,51.2796,6.75199,51.2959,6.78622]]],["HAM","Hamburg","Helmut Schmidt","DE","EU",53.6304,9.98823,16,"Hamburg","EDDH",[["05","23",3250,46,53.6183,9.96371,53.6371,10.0018],["15","33",3666,46,53.6544,9.97521,53.6251,10.0005]]],["CGN","Köln/Bonn","Konrad Adenauer","DE","EU",50.8659,7.14274,92,"Köln (Cologne)","EDDK",[["06","24",2459,45,50.8601,7.12378,50.8697,7.15527],["13L","31R",3815,60,50.8805,7.12908,50.8552,7.16569],["13R","31L",1863,45,50.8708,7.12086,50.8585,7.13874]]],["STR","Stuttgart","Manfred Rommel","DE","EU",48.6899,9.22196,389,"Stuttgart","EDDS",[["07","25",3345,45,48.6857,9.20013,48.694,9.2438]]],["HAJ","Hannover","Hannover-Langenhagen","DE","EU",52.4611,9.68508,56,"Hannover","EDDV",[["09C","27C",777,23,52.46483,9.68375,52.46451,9.69521],["09L","27R",3790,45,52.46838,9.64827,52.46683,9.70415],["09R","27L",2340,45,52.455,9.67677,52.454,9.71115]]],["NUE","Nürnberg","Albrecht Dürer","DE","EU",49.4987,11.07806,319,"Nuremberg","EDDN",[["10","28",2700,45,49.5005,11.0592,49.4969,11.096]]],["LEJ","Leipzig/Halle","Leipzig/Halle","DE","EU",51.42066,12.2327,142,"Schkeuditz","EDDP",[["08L","26R",3600,45,51.4312,12.2158,51.4336,12.2674],["08R","26L",3600,60,51.41161,12.20465,51.41402,12.25625]]],["DRS","Dresden","Dresden International","DE","EU",51.13412,13.76783,230,"Dresden","EDDC",[["04","22",2850,60,51.12466,13.75468,51.14404,13.78135]]],["BRE","Bremen","Hans Koschnick","DE","EU",53.04679,8.78932,4,"Bremen","EDDW",[["09","27",2634,45,53.04648,8.77006,53.04737,8.80934]]],["DTM","Dortmund","Dortmund","DE","EU",51.5183,7.61224,130,"Dortmund","EDLW",[["06","24",2000,45,51.5147,7.6019,51.5235,7.62699]]],["FMO","Münster/Osnabrück","Münster Osnabrück International","DE","EU",52.13382,7.68848,49,"Greven","EDDG",[["07","25",2170,45,52.1315,7.67006,52.1379,7.70002]]],["PAD","Paderborn","Paderborn/Lippstadt","DE","EU",51.61253,8.61746,213,"Büren","EDLP",[["05","23",2180,45,51.6087,8.60318,51.6194,8.62959]]],["NRN","Weeze","Niederrhein","DE","EU",51.60136,6.14123,32,"Weeze","EDLV",[["09","27",2440,45,51.6028,6.12454,51.6021,6.15973]]],["FMM","Memmingen","Allgäu Airport","DE","EU",47.98809,10.23825,633,"Memmingen","EDJA",[["06","24",2630,45,47.98331,10.22564,47.99536,10.25599]]],["FKB","Karlsruhe/Baden-Baden","Baden Airpark","DE","EU",48.7794,8.0805,124,"Rheinmünster","EDSB",[["03","21",2983,45,48.7679,8.06976,48.7908,8.09125]]],["HHN","Hahn","Frankfurt-Hahn","DE","EU",49.94635,7.26173,503,"Frankfurt am Main (Lautzenhausen)","EDFH",[["03","21",3800,45,49.9314,7.24688,49.9602,7.27529]]],["SCN","Saarbrücken","Saarbrücken","DE","EU",49.21455,7.10973,322,"Saarbrücken","EDDR",[["08","26",2000,45,49.2142,7.09668,49.215,7.12372]]],["FDH","Friedrichshafen","Bodensee-Airport","DE","EU",47.6713,9.51149,417,"Friedrichshafen","EDNY",[["06","24",2356,45,47.666,9.49789,47.6766,9.52509]]],["ERF","Erfurt","Erfurt-Weimar","DE","EU",50.97828,10.96071,316,"Erfurt","EDDE",[["09","27",2600,50,50.98128,10.93973,50.97834,10.97647]]],["RLG","Rostock","Rostock-Laage","DE","EU",53.9182,12.2783,42,"Laage","ETNL",[["09","27",2500,45,53.91961,12.26027,53.9165,12.2983]]],["GWT","Sylt","Westerland","DE","EU",54.9132,8.34047,16,"Sylt","EDXW",[["06","24",1696,45,54.9094,8.32917,54.9171,8.35199],["14","32",2120,45,54.9193,8.33288,54.9039,8.35209]]],["KSF","Kassel","Kassel Airport","DE","EU",51.41839,9.39164,250,"Calden","EDVK",[["09","27",2500,45,51.4218,9.37423,51.4198,9.41008]]],["VIE","Wien","Wien-Schwechat","AT","EU",48.1103,16.5697,183,"Vienna","LOWW",[["11","29",3500,45,48.1228,16.5334,48.109,16.5756],["16","34",3600,45,48.1198,16.5782,48.0886,16.5913]]],["SZG","Salzburg","W. A. Mozart","AT","EU",47.7933,13.0043,430,"Salzburg","LOWS",[["15","33",2750,45,47.80563,12.99619,47.78206,13.01109]]],["INN","Innsbruck","Kranebitten","AT","EU",47.2602,11.344,581,"Innsbruck","LOWI",[["08","26",2000,45,47.2588,11.3309,47.2616,11.357]]],["GRZ","Graz","Graz-Thalerhof","AT","EU",46.9911,15.4396,340,"Feldkirchen bei Graz","LOWG",[["16C","34C",3000,45,47.0043,15.436,46.9778,15.4433]]],["LNZ","Linz","Blue Danube","AT","EU",48.23536,14.18813,299,"Linz","LOWL",[["08","26",3000,60,48.2325,14.1674,48.2339,14.2077]]],["KLU","Klagenfurt","Klagenfurt","AT","EU",46.6425,14.3377,449,"Klagenfurt am Wörthersee","LOWK",[["10L","28R",2720,45,46.6459,14.3207,46.6391,14.3548]]],["ZRH","Zürich","Zürich-Kloten","CH","EU",47.45806,8.54806,432,"Zurich","LSZH",[["10","28",2500,60,47.4589,8.53747,47.4566,8.57045],["14","32",3300,60,47.4831,8.53473,47.4613,8.56446],["16","34",3700,60,47.4756,8.53595,47.4454,8.55673]]],["GVA","Genf","Genève Aéroport","CH","EU",46.2381,6.10895,430,"Geneva","LSGG",[["04","22",3900,50,46.2258,6.09092,46.2504,6.12699]]],["BSL","Basel","EuroAirport Basel-Mulhouse-Freiburg","FR","EU",47.60068,7.52112,270,"Bâle / Mulhouse","LFSB",[["07","25",1715,60,47.58794,7.51687,47.59143,7.53911],["15","33",3900,60,47.6177,7.50986,47.58593,7.53196]]],["LHR","London","Heathrow","GB","EU",51.47075,-0.45991,25,"London","EGLL",[["09L","27R",3901,50,51.47749,-0.48944,51.47768,-0.43323],["09R","27L",3658,50,51.46478,-0.48681,51.46496,-0.43405]]],["LGW","London","Gatwick","GB","EU",51.14874,-0.18574,62,"London","EGKK",[["08L","26R",2561,45,51.14689,-0.2126,51.15183,-0.1768],["08R","26L",3317,45,51.1451,-0.21235,51.15149,-0.16599]]],["STN","London","Stansted","GB","EU",51.885,0.235,106,"London, Essex","EGSS",[["04","22",3049,46,51.87508,0.21993,51.89517,0.25005]]],["LTN","London","Luton","GB","EU",51.8747,-0.36833,160,"Luton, Luton","EGGW",[["07","25",2162,45,51.872,-0.38355,51.8772,-0.35333]]],["LCY","London","London City","GB","EU",51.5053,0.05528,6,"London","EGLC",[["09","27",1508,30,51.50558,0.04433,51.50489,0.06603]]],["MAN","Manchester","Manchester","GB","EU",53.34938,-2.27952,78,"Manchester, Greater Manchester","EGCC",[["05L","23R",3048,45,53.3451,-2.29274,53.3624,-2.25714],["05R","23L",3050,45,53.332,-2.31066,53.3491,-2.27499]]],["BHX","Birmingham","Birmingham","GB","EU",52.4539,-1.74803,100,"Birmingham, West Midlands","EGBB",[["15","33",3052,45,52.4656,-1.76111,52.44296,-1.73589]]],["BRS","Bristol","Bristol","GB","EU",51.38233,-2.71645,190,"Bristol","EGGD",[["09","27",2011,45,51.3821,-2.7335,51.3832,-2.70467]]],["EDI","Edinburgh","Edinburgh","GB","EU",55.95014,-3.37229,41,"Ingliston, Edinburgh","EGPH",[["06","24",2558,45,55.944,-3.39014,55.9559,-3.35506]]],["GLA","Glasgow","Glasgow","GB","EU",55.8719,-4.43306,8,"Glasgow","EGPF",[["05","23",2661,45,55.8635,-4.44906,55.8799,-4.41831]]],["DUB","Dublin","Dublin","IE","EU",53.42871,-6.26212,74,"Dublin","EIDW",[["10L","28R",3110,45,53.43716,-6.28062,53.4352,-6.24496],["10R","28L",2637,45,53.42243,-6.29007,53.4203,-6.25058],["16","34",2072,45,53.437,-6.26198,53.4199,-6.24959]]],["CDG","Paris","Charles de Gaulle","FR","EU",49.00896,2.55412,119,"Paris (Roissy-en-France, Val-d'Oise)","LFPG",[["08L","26R",4215,45,48.9957,2.55274,48.9988,2.61018],["08R","26L",2700,60,48.9929,2.56566,48.9949,2.60243],["09L","27R",2700,60,49.0247,2.52489,49.0267,2.56169],["09R","27L",4200,45,49.0206,2.51306,49.0237,2.57029]]],["ORY","Paris","Orly","FR","EU",48.7295,2.35896,89,"Paris (Orly, Val-de-Marne)","LFPO",[["02","20",2400,60,48.7175,2.3767,48.738,2.38697],["06","24",3650,45,48.72,2.31692,48.7355,2.36068],["07","25",3320,45,48.7194,2.35859,48.7274,2.40207]]],["NCE","Nizza","Côte d'Azur","FR","EU",43.6584,7.21587,4,"Nice, Alpes-Maritimes","LFMN",[["04L","22R",2628,45,43.6518,7.20404,43.6695,7.22851],["04R","22L",2963,45,43.6467,7.20249,43.6656,7.22844]]],["LYS","Lyon","Saint-Exupéry","FR","EU",45.726,5.09014,250,"Colombier-Saugnieu, Rhône","LFLL",[["17L","35R",2670,45,45.7349,5.09187,45.711,5.09478],["17R","35L",4000,45,45.7466,5.08594,45.7107,5.0903]]],["MRS","Marseille","Marseille Provence","FR","EU",43.43809,5.2125,23,"Marignane, Bouches-du-Rhône","LFML",[["13L","31R",3500,45,43.4491,5.19731,43.4273,5.22846],["13R","31L",2370,45,43.4413,5.20302,43.4259,5.22435]]],["TLS","Toulouse","Blagnac","FR","EU",43.6291,1.36382,152,"Toulouse/Blagnac","LFBO",[["14L","32R",3000,45,43.6374,1.35762,43.6156,1.38022],["14R","32L",3500,45,43.6441,1.34593,43.619,1.3721]]],["BOD","Bordeaux","Mérignac","FR","EU",44.82865,-0.71536,49,"Bordeaux","LFBD",[["05","23",3100,45,44.8191,-0.72898,44.8387,-0.701],["11","29",2415,45,44.8316,-0.72924,44.8254,-0.6999]]],["NTE","Nantes","Atlantique","FR","EU",47.1532,-1.61073,27,"Nantes","LFRS",[["03","21",2900,45,47.1416,-1.61954,47.1648,-1.6019]]],["AMS","Amsterdam","Schiphol","NL","EU",52.3086,4.76389,-3,"Amsterdam","EHAM",[["04","22",2020,45,52.3004,4.78348,52.314,4.80302],["06","24",3439,45,52.2879,4.73402,52.3046,4.77752],["09","27",3453,45,52.3166,4.74635,52.3184,4.79689],["18C","36C",3300,45,52.3314,4.74003,52.3018,4.7375],["18L","36R",3400,45,52.3213,4.77996,52.2908,4.77735],["18R","36L",3800,60,52.3627,4.71193,52.3286,4.70884]]],["EIN","Eindhoven","Eindhoven","NL","EU",51.4501,5.37453,23,"Eindhoven","EHEH",[["03","21",3000,45,51.4391,5.36213,51.4612,5.38689]]],["RTM","Rotterdam","Rotterdam The Hague","NL","EU",51.9569,4.43722,-5,"Rotterdam","EHRD",[["06","24",2200,45,51.9521,4.42824,51.9628,4.45508]]],["BRU","Brüssel","Brussels Airport","BE","EU",50.9014,4.48444,53,"Zaventem","EBBR",[["01","19",2987,50,50.8869,4.49142,50.9129,4.50202],["07L","25R",3638,45,50.8989,4.45566,50.9126,4.50263],["07R","25L",3211,45,50.889,4.48042,50.8989,4.5233]]],["CRL","Charleroi","Brussels South Charleroi","BE","EU",50.46196,4.45956,187,"Charleroi","EBCI",[["06","24",3055,45,50.45517,4.43671,50.46656,4.47592]]],["LUX","Luxemburg","Findel","LU","EU",49.62685,6.21213,376,"Luxembourg","ELLX",[["06","24",4000,45,49.6177,6.18746,49.6355,6.23556]]],["CPH","Kopenhagen","Kastrup","DK","EU",55.6179,12.656,5,"Copenhagen","EKCH",[["04L","22R",3600,45,55.5922,12.60354,55.61654,12.64117],["04R","22L",3300,45,55.6031,12.633,55.6254,12.6676],["12","30",2800,45,55.62629,12.63333,55.61252,12.67053]]],["BLL","Billund","Billund","DK","EU",55.74034,9.15702,75,"Billund","EKBI",[["09","27",3100,45,55.7397,9.13244,55.7412,9.18177]]],["ARN","Stockholm","Arlanda","SE","EU",59.64849,17.92883,42,"Stockholm","ESSA",[["01L","19R",3301,45,59.6373,17.9132,59.6664,17.9238],["01R","19L",2500,45,59.6264,17.9507,59.6485,17.9587],["08","26",2500,45,59.6584,17.9361,59.6639,17.9792]]],["GOT","Göteborg","Landvetter","SE","EU",57.6628,12.2798,154,"Göteborg","ESGG",[["03","21",3299,45,57.6495,12.2677,57.6761,12.2919]]],["OSL","Oslo","Gardermoen","NO","EU",60.1939,11.1004,208,"Oslo (Gardermoen)","ENGM",[["01L","19R",3600,45,60.185,11.0737,60.2161,11.0917],["01R","19L",2950,45,60.1758,11.1078,60.2012,11.1225]]],["BGO","Bergen","Flesland","NO","EU",60.2934,5.21814,52,"Bergen","ENBR",[["17","35",2990,45,60.3066,5.2137,60.2801,5.22258]]],["TOS","Tromsø","Langnes","NO","EU",69.6833,18.9189,9,"Tromsø","ENTC",[["18","36",2451,45,69.69378,18.9259,69.67237,18.91162]]],["HEL","Helsinki","Helsinki-Vantaa","FI","EU",60.31836,24.96334,55,"Helsinki (Vantaa)","EFHK",[["04L","22R",3060,60,60.3129,24.9039,60.3315,24.9447],["04R","22L",3500,60,60.30947,24.93234,60.33069,24.97909],["15","33",2901,60,60.3303,24.9645,60.3071,24.9883]]],["RVN","Rovaniemi","Rovaniemi","FI","EU",66.56333,25.82975,196,"Rovaniemi","EFRO",[["03","21",3002,60,66.5541,25.81,66.5755,25.8509]]],["KEF","Reykjavík","Keflavík","IS","EU",63.985,-22.6056,52,"Reykjavík","BIKF",[["01","19",3054,60,63.96449,-22.60543,63.99186,-22.60541],["10","28",3065,60,63.98503,-22.65498,63.98503,-22.59237]]],["MAD","Madrid","Adolfo Suárez Barajas","ES","EU",40.49341,-3.57225,609,"Madrid","LEMD",[["14L","32R",3500,60,40.4949,-3.55787,40.47,-3.53258],["14R","32L",3988,60,40.4849,-3.57601,40.4557,-3.54638],["18L","36R",3500,60,40.5326,-3.55938,40.5011,-3.55921],["18R","36L",4350,60,40.5318,-3.57485,40.4926,-3.57463]]],["BCN","Barcelona","El Prat","ES","EU",41.2971,2.07846,4,"Barcelona","LEBL",[["02","20",2530,45,41.28774,2.08483,41.30929,2.09467],["06L","24R",3353,60,41.29324,2.06725,41.30573,2.10375],["06R","24L",2660,60,41.28231,2.07434,41.29222,2.10328]]],["PMI","Palma de Mallorca","Son Sant Joan","ES","EU",39.5517,2.73881,8,"Palma de Mallorca","LEPA",[["06L","24R",3270,45,39.5471,2.71073,39.5625,2.74319],["06R","24L",3000,45,39.5413,2.73174,39.5553,2.76153]]],["AGP","Málaga","Costa del Sol","ES","EU",36.6749,-4.49911,16,"Málaga","LEMG",[["12","30",2750,45,36.691,-4.5078,36.6796,-4.48053],["13","31",3200,45,36.6845,-4.51259,36.6654,-4.48582]]],["ALC","Alicante","Alicante-Elche","ES","EU",38.2822,-0.55816,43,"Alicante","LEAL",[["10","28",3000,45,38.2845,-0.575,38.2798,-0.54132]]],["VLC","Valencia","Manises","ES","EU",39.48916,-0.48096,73,"Valencia","LEVC",[["12","30",2700,45,39.49636,-0.50011,39.48362,-0.46666]]],["SVQ","Sevilla","San Pablo","ES","EU",37.418,-5.89311,34,"Seville","LEZL",[["09","27",3362,45,37.4179,-5.91208,37.418,-5.8741]]],["BIO","Bilbao","Bilbao","ES","EU",43.3011,-2.91061,42,"Bilbao","LEBB",[["10","28",1910,45,43.3033,-2.93703,43.3013,-2.91254],["12","30",2600,45,43.3063,-2.92494,43.2958,-2.8963]]],["IBZ","Ibiza","Ibiza","ES","EU",38.8729,1.37312,7,"Ibiza (Eivissa)","LEIB",[["06","24",2800,45,38.8669,1.35887,38.8787,1.38738]]],["MAH","Menorca","Mahón","ES","EU",39.8626,4.21865,92,"Mahón (Maó)","LEMH",[["01","19",2550,45,39.85126,4.21632,39.87217,4.22062]]],["TFS","Teneriffa","Teneriffa Süd","ES","EU",28.0445,-16.5725,64,"Tenerife","GCTS",[["07","25",3200,45,28.0392,-16.5876,28.0497,-16.5573]]],["LPA","Gran Canaria","Gran Canaria","ES","EU",27.9319,-15.3866,24,"Gran Canaria Island","GCLP",[["03L","21R",3100,45,27.9189,-15.3923,27.9449,-15.3808],["03R","21L",3100,45,27.9182,-15.3904,27.9442,-15.3788]]],["ACE","Lanzarote","César Manrique","ES","EU",28.9455,-13.6052,14,"San Bartolomé","GCRR",[["03","21",2400,45,28.9358,-13.6108,28.9551,-13.5996]]],["FUE","Fuerteventura","Fuerteventura","ES","EU",28.4527,-13.8638,26,"El Matorral","GCFV",[["01","19",3420,45,28.43287,-13.8644,28.46356,-13.86339]]],["LIS","Lissabon","Humberto Delgado","PT","EU",38.7813,-9.13592,114,"Lisbon","LPPT",[["02","20",3810,45,38.76568,-9.1443,38.79731,-9.12738]]],["OPO","Porto","Francisco Sá Carneiro","PT","EU",41.2481,-8.68139,69,"Porto","LPPR",[["17","35",3480,45,41.2633,-8.68524,41.2325,-8.6772]]],["FAO","Faro","Faro","PT","EU",37.01591,-7.97094,7,"Faro","LPFR",[["10","28",2490,45,37.0173,-7.98609,37.0134,-7.95856]]],["FNC","Funchal","Cristiano Ronaldo (Madeira)","PT","EU",32.69781,-16.77461,59,"Funchal","LPMA",[["05","23",2777,45,32.689,-16.7848,32.7068,-16.764]]],["PDL","Ponta Delgada","João Paulo II (Azoren)","PT","EU",37.7412,-25.6979,79,"Ponta Delgada","LPPD",[["12","30",2497,45,37.7462,-25.7109,37.7379,-25.6846]]],["FCO","Rom","Fiumicino","IT","EU",41.80453,12.252,4,"Rome","LIRF",[["07","25",3300,45,41.79933,12.23214,41.80963,12.26948],["16L","34R",3902,60,41.846,12.2615,41.8124,12.2755],["16R","34L",3902,60,41.8155,12.2264,41.782,12.2404]]],["CIA","Rom","Ciampino","IT","EU",41.79877,12.59533,130,"Rome","LIRA",[["15","33",2202,45,41.8081,12.5888,41.7904,12.601]]],["MXP","Mailand","Malpensa","IT","EU",45.6306,8.72811,234,"Ferno (VA)","LIMC",[["17L","35R",3920,60,45.65038,8.72794,45.61574,8.73751],["17R","35L",3920,60,45.64545,8.71874,45.61082,8.7283]]],["LIN","Mailand","Linate","IT","EU",45.4451,9.27674,108,"Segrate (MI)","LIML",[["17","35",2442,60,45.45622,9.27587,45.43431,9.27823]]],["BGY","Bergamo","Orio al Serio","IT","EU",45.66936,9.70885,238,"Orio al Serio (BG)","LIME",[["10","28",2874,45,45.67104,9.68979,45.66441,9.72543]]],["VCE","Venedig","Marco Polo","IT","EU",45.5053,12.3519,2,"Venezia (VE)","LIPZ",[["04L","22R",2780,45,45.4952,12.3356,45.5137,12.3594],["04R","22L",3300,45,45.4941,12.3377,45.5162,12.366]]],["NAP","Neapel","Capodichino","IT","EU",40.886,14.2908,90,"Napoli","LIRN",[["06","24",2628,45,40.8798,14.2775,40.8923,14.304]]],["BLQ","Bologna","Guglielmo Marconi","IT","EU",44.5354,11.2887,37,"Bologna","LIPE",[["12","30",2803,45,44.5411,11.2729,44.5298,11.3044]]],["FLR","Florenz","Peretola","IT","EU",43.80856,11.20282,43,"Firenze (FI)","LIRQ",[["05","23",1560,45,43.80534,11.19782,43.8147,11.21228]]],["PSA","Pisa","Galileo Galilei","IT","EU",43.6839,10.3927,2,"Pisa (PI)","LIRP",[["03L","21R",2792,45,43.6738,10.3807,43.694,10.4015],["03R","21L",2993,45,43.6731,10.3832,43.6946,10.4055]]],["TRN","Turin","Caselle","IT","EU",45.2008,7.64963,301,"Caselle Torinese (TO)","LIMF",[["18","36",3300,60,45.2156,7.65057,45.1859,7.64869]]],["BRI","Bari","Karol Wojtyła","IT","EU",41.1389,16.7606,59,"Bari","LIBD",[["07","25",3000,45,41.13286,16.74063,41.14233,16.77408]]],["CTA","Catania","Fontanarossa","IT","EU",37.4668,15.0664,12,"Catania","LICC",[["08","26",2435,45,37.4656,15.0527,37.4679,15.0801]]],["PMO","Palermo","Falcone e Borsellino","IT","EU",38.176,13.091,20,"Palermo","LICJ",[["02","20",2074,45,38.1661,13.0856,38.1832,13.0952],["07","25",3326,60,38.1743,13.0865,38.1858,13.1208]]],["CAG","Cagliari","Elmas","IT","EU",39.2515,9.05428,4,"Cagliari","LIEE",[["14","32",2803,45,39.2608,9.04347,39.2421,9.06511]]],["OLB","Olbia","Costa Smeralda","IT","EU",40.89895,9.51846,11,"Olbia (SS)","LIEO",[["05","23",2745,45,40.8924,9.50569,40.9049,9.52957]]],["ATH","Athen","Eleftherios Venizelos","GR","EU",37.9364,23.9445,94,"Spata-Artemida","LGAV",[["03L","21R",3800,45,37.921,23.9192,37.9485,23.945],["03R","21L",4000,45,37.9235,23.9433,37.9524,23.9704]]],["SKG","Thessaloniki","Makedonia","GR","EU",40.51928,22.97001,7,"Thessaloniki","LGTS",[["10","28",3440,50,40.522,22.9591,40.5167,22.987],["16","34",2410,60,40.5303,22.9676,40.5092,22.9744]]],["HER","Heraklion","Nikos Kazantzakis","GR","EU",35.3397,25.1803,35,"Heraklion","LGIR",[["09","27",2714,45,35.341,25.1612,35.339,25.1905],["12","30",1566,50,35.3439,25.1733,35.3356,25.1873]]],["CHQ","Chania","Ioannis Daskalogiannis","GR","EU",35.53121,24.15067,149,"Souda","LGSA",[["11","29",3347,45,35.5371,24.134,35.5261,24.1684]]],["RHO","Rhodos","Diagoras","GR","EU",36.4054,28.0862,5,"Rhodes","LGRP",[["06","24",3306,45,36.4003,28.0689,36.4105,28.1035]]],["CFU","Korfu","Ioannis Kapodistrias","GR","EU",39.60145,19.91218,2,"Kerkyra (Corfu)","LGKR",[["16","34",2375,45,39.61252,19.90943,39.59155,19.91481]]],["KGS","Kos","Hippokrates","GR","EU",36.79452,27.09115,126,"Kos Island","LGKO",[["14","32",2390,45,36.8036,27.0836,36.7852,27.0979]]],["JTR","Santorini","Thira","GR","EU",36.40004,25.47864,39,"Santorini Island","LGSR",[["15","33",2197,30,36.4081,25.4751,36.3902,25.4834]]],["JMK","Mykonos","Mykonos","GR","EU",37.4351,25.3481,123,"Mykonos","LGMK",[["16","34",1902,30,37.4433,25.3447,37.4271,25.3518]]],["IST","Istanbul","Istanbul Airport","TR","EU",41.27487,28.73214,99,"Istanbul","LTFM",[["09","27",2819,45,41.25369,28.76627,41.25406,28.80002],["16L","34R",3750,45,41.2986,28.7092,41.2649,28.7099],["16R","34L",3750,60,41.2986,28.70675,41.26484,28.70741],["17L","35R",4100,60,41.29883,28.72704,41.26192,28.72776],["17R","35L",4100,45,41.2988,28.7245,41.2619,28.7253],["18","36",3060,45,41.2898,28.7562,41.2622,28.7567]]],["SAW","Istanbul","Sabiha Gökçen","TR","EU",40.8986,29.3092,95,"Pendik, Istanbul","LTFJ",[["06L","24R",3000,45,40.8927,29.2934,40.9044,29.325],["06R","24L",3540,60,40.88485,29.30259,40.89876,29.34038]]],["AYT","Antalya","Antalya","TR","AS",36.8987,30.8005,54,"Antalya","LTAI",[["18C","36C",3400,45,36.9155,30.7947,36.8851,30.7906],["18L","36R",3400,45,36.9114,30.8114,36.8809,30.8072],["18R","36L",2990,45,36.9157,30.7924,36.889,30.7887]]],["ADB","Izmir","Adnan Menderes","TR","AS",38.2924,27.157,126,"Gaziemir","LTBJ",[["16L","34R",3240,45,38.3066,27.1527,38.2782,27.1612],["16R","34L",3240,45,38.3062,27.1506,38.2778,27.1592]]],["DLM","Dalaman","Dalaman","TR","AS",36.7131,28.7925,6,"Dalaman","LTBS",[["01","19",3000,45,36.7001,28.7881,36.7262,28.7969]]],["BJV","Bodrum","Milas-Bodrum","TR","AS",37.24931,27.66401,6,"Bodrum","LTFE",[["10L","28R",3000,45,37.255,27.6492,37.2473,27.6815],["10R","28L",2940,45,37.2534,27.6486,37.2469,27.6756]]],["ESB","Ankara","Esenboğa","TR","AS",40.1281,32.9951,952,"Ankara","LTAC",[["03L","21R",3750,45,40.1178,32.9837,40.1424,33.0072],["03R","21L",3750,60,40.1141,32.9832,40.1413,33.0091]]],["PRG","Prag","Václav Havel","CZ","EU",50.10087,14.25991,380,"Prague","LKPR",[["06","24",3715,45,50.1018,14.2263,50.116,14.2734],["12","30",3250,45,50.108,14.2454,50.0905,14.2817]]],["WAW","Warschau","Chopin","PL","EU",52.1657,20.9671,110,"Warsaw","EPWA",[["11","29",2800,50,52.1715,20.9467,52.161,20.9839],["15","33",3690,60,52.1786,20.9559,52.1494,20.9814]]],["KRK","Krakau","Johannes Paul II.","PL","EU",50.0777,19.7848,241,"Balice","EPKK",[["07","25",2550,60,50.0754,19.7681,50.0802,19.8029]]],["GDN","Danzig","Lech Wałęsa","PL","EU",54.3776,18.4662,149,"Gdańsk","EPGD",[["11","29",2800,45,54.3811,18.452,54.3713,18.4917]]],["WRO","Breslau","Nikolaus Kopernikus","PL","EU",51.10372,16.8821,123,"Wrocław","EPWR",[["11","29",2503,45,51.1088,16.8658,51.099,16.898]]],["BUD","Budapest","Ferenc Liszt","HU","EU",47.43018,19.26239,151,"Budapest","LHBP",[["13L","31R",3707,45,47.4454,19.2575,47.423,19.2939],["13R","31L",3010,45,47.4487,19.2208,47.4305,19.2502]]],["BTS","Bratislava","M. R. Štefánik","SK","EU",48.1702,17.2127,133,"Bratislava","LZIB",[["04","22",2900,60,48.1608,17.1994,48.1796,17.2265],["13","31",3190,45,48.1757,17.204,48.1558,17.2348]]],["LJU","Ljubljana","Jože Pučnik","SI","EU",46.2237,14.4576,388,"Zgornji Brnik","LJLJ",[["12","30",3300,45,46.2325,14.4404,46.2149,14.4748]]],["ZAG","Zagreb","Franjo Tuđman","HR","EU",45.7429,16.0688,108,"Velika Gorica","LDZA",[["04","22",3252,45,45.73188,16.05197,45.75191,16.08243]]],["SPU","Split","Split","HR","EU",43.5389,16.298,24,"Split","LDSP",[["05","23",2550,45,43.5321,16.2856,43.546,16.3106]]],["DBV","Dubrovnik","Dubrovnik","HR","EU",42.56225,18.26554,161,"Dubrovnik","LDDU",[["11","29",3230,45,42.56957,18.24753,42.55582,18.28219]]],["BEG","Belgrad","Nikola Tesla","RS","EU",44.8184,20.3091,102,"Belgrade","LYBE",[["12L","30R",3400,45,44.82652,20.29097,44.81033,20.32745],["12R","30L",3500,45,44.82499,20.28989,44.80832,20.32748]]],["OTP","Bukarest","Henri Coandă","RO","EU",44.57179,26.10328,96,"Otopeni","LROP",[["08L","26R",3500,45,44.5765,26.0839,44.5798,26.1278],["08R","26L",3500,45,44.5645,26.0766,44.5678,26.1204]]],["SOF","Sofia","Sofia","BG","EU",42.69636,23.41767,531,"Sofia","LBSF",[["09","27",3600,45,42.6975,23.3995,42.69516,23.43966]]],["VAR","Varna","Varna","BG","EU",43.2321,27.8251,70,"Varna","LBWN",[["09","27",2517,45,43.2334,27.8098,43.2306,27.8406]]],["BOJ","Burgas","Burgas","BG","EU",42.56992,27.51517,41,"Burgas","LBBG",[["04","22",3200,45,42.5598,27.5016,42.5804,27.5289]]],["TIA","Tirana","Mutter Teresa","AL","EU",41.4147,19.7206,38,"Rinas","LATI",[["17","35",3000,45,41.427,19.7189,41.4025,19.7222]]],["SKP","Skopje","Skopje International","MK","EU",41.95809,21.62258,238,"Ilinden","LWSK",[["16","34",2950,45,41.9723,21.6177,41.951,21.6251]]],["TGD","Podgorica","Podgorica","ME","EU",42.3594,19.2519,43,"Podgorica","LYPG",[["18","36",2500,45,42.3706,19.253,42.3482,19.2507]]],["SJJ","Sarajevo","Sarajevo","BA","EU",43.8246,18.3315,521,"Sarajevo","LQSA",[["11","29",2641,46,43.83,18.3171,43.8192,18.3459]]],["MLA","Malta","Malta International","MT","EU",35.84593,14.49155,91,"Valletta","LMML",[["05","23",2373,45,35.8475,14.4601,35.8599,14.4815],["13","31",3350,58,35.8564,14.4788,35.8339,14.5068]]],["LCA","Larnaka","Larnaka","CY","EU",34.8751,33.6249,2,"Larnaca","LCLK",[["04","22",2994,45,34.86418,33.61225,34.8832,33.6355]]],["PFO","Paphos","Paphos","CY","EU",34.718,32.4857,12,"Paphos","LCPH",[["11","29",2700,45,34.7223,32.4719,34.7138,32.4996]]],["RIX","Riga","Riga","LV","EU",56.92075,23.97071,11,"Riga","EVRA",[["18","36",3200,45,56.9351,23.9731,56.90644,23.96835]]],["TLL","Tallinn","Lennart Meri","EE","EU",59.41325,24.83264,40,"Tallinn","EETN",[["08","26",3480,45,59.41334,24.80591,59.41317,24.86721]]],["VNO","Vilnius","Vilnius","LT","EU",54.6341,25.2858,198,"Vilnius","EYVI",[["01","19",2515,50,54.6237,25.2785,54.6446,25.2931]]],["KBP","Kiew","Boryspil","UA","EU",50.345,30.8947,130,"Boryspil","UKBB",[["18L","36R",4000,60,50.3606,30.9081,50.3247,30.9056],["18R","36L",3500,63,50.3522,30.8831,50.3208,30.8808]]],["DXB","Dubai","Dubai International","AE","AS",25.24979,55.37099,19,"Dubai","OMDB",[["12L","30R",4351,60,25.26463,55.35042,25.24771,55.38093],["12R","30L",4447,60,25.25284,55.36438,25.23592,55.39488]]],["AUH","Abu Dhabi","Zayed International","AE","AS",24.44097,54.64924,27,"Abu Dhabi","OMAA",[["13L","31R",4100,60,24.465,54.63833,24.44233,54.67017],["13R","31L",4106,60,24.4444,54.6352,24.4217,54.6672]]],["DOH","Doha","Hamad International","QA","AS",25.27306,51.60806,4,"Doha","OTHH",[["16L","34R",4850,60,25.2961,51.6088,25.2554,51.6268],["16R","34L",4250,60,25.291,51.5897,25.2553,51.6054]]],["BAH","Bahrain","Bahrain International","BH","AS",26.2673,50.63764,2,"Manama","OBBI",[["12L","30R",3956,60,26.2804,50.617,26.2613,50.6502],["12R","30L",2530,45,26.271,50.6299,26.2587,50.6513]]],["MCT","Maskat","Muscat International","OM","AS",23.60022,58.28527,15,"Muscat/Seeb","OOMS",[["08L","26R",4000,60,23.60591,58.25797,23.60892,58.29546],["08R","26L",4080,45,23.5917,58.2669,23.5945,58.3019]]],["RUH","Riad","King Khalid","SA","AS",24.9576,46.6988,625,"Riyadh","OERK",[["15L","33R",4205,60,24.9769,46.702,24.944,46.7228],["15R","33L",4205,60,24.9709,46.6749,24.938,46.6957]]],["JED","Dschidda","King Abdulaziz","SA","AS",21.68024,39.15744,15,"Jeddah","OEJN",[["16C","34C",4000,60,21.69507,39.15154,21.66118,39.16492],["16L","34R",4000,60,21.70044,39.16713,21.6665,39.1805],["16R","34L",3800,60,21.7027,39.1269,21.6705,39.1396]]],["KWI","Kuwait","Kuwait International","KW","AS",29.22449,47.96981,63,"Kuwait City","OKKK",[["15L","33R",3500,45,29.2412,47.9834,29.2126,47.9987],["15R","33L",3400,45,29.2405,47.9615,29.2127,47.9763],["16","34",4580,60,29.22831,47.9419,29.19085,47.96181]]],["TLV","Tel Aviv","Ben Gurion","IL","AS",32.0114,34.8867,41,"Tel Aviv","LLBG",[["03","21",2772,60,31.99622,34.88608,32.01812,34.90023],["08","26",4062,45,32.013,34.8604,32.0189,34.8986],["12","30",3112,45,32.0147,34.8658,31.9999,34.8942]]],["AMM","Amman","Queen Alia","JO","AS",31.7226,35.9932,730,"Amman","OJAI",[["08L","26R",3660,61,31.7267,35.9696,31.7322,36.0075],["08R","26L",3660,61,31.7144,35.9806,31.7199,36.0185]]],["BEY","Beirut","Rafic Hariri","LB","AS",33.81983,35.48744,27,"Beirut","OLBA",[["03","21",3800,45,33.7982,35.4809,33.8269,35.5031],["16","34",3395,45,33.8401,35.4789,33.8105,35.4878],["17","35",3250,60,33.8382,35.4871,33.8093,35.4889]]],["TBS","Tiflis","Schota Rustaweli","GE","AS",41.6692,44.9547,495,"Tbilisi","UGTB",[["13R","31L",3000,45,41.6778,44.9401,41.6582,44.9649]]],["EVN","Eriwan","Swartnoz","AM","AS",40.14894,44.39789,865,"Yerevan","UDYZ",[["08","26",3850,56,40.1472,44.3733,40.1474,44.4185]]],["GYD","Baku","Heydar Aliyev","AZ","AS",40.47278,50.05093,3,"Baku","UBBB",[["16","34",4000,60,40.49093,50.03043,40.45592,50.04143],["17","35",3200,45,40.4867,50.0633,40.4567,50.0633]]],["TAS","Taschkent","Islam Karimov","UZ","AS",41.2579,69.2812,432,"Tashkent","UZTT",[["08L","26R",4000,60,41.2567,69.2617,41.26,69.3017],["08R","26L",3905,45,41.2533,69.2617,41.2583,69.3033]]],["ALA","Almaty","Almaty","KZ","AS",43.35427,77.04283,681,"Almaty","UAAA",[["05L","23R",4500,45,43.3473,77.0252,43.3701,77.0711],["05R","23L",4400,45,43.34124,77.01746,43.36348,77.06235]]],["DEL","Delhi","Indira Gandhi","IN","AS",28.55563,77.09519,237,"New Delhi","VIDP",[["09","27",2813,45,28.5705,77.088,28.5698,77.117],["10","28",3810,45,28.5672,77.0848,28.5585,77.1225],["11L","29R",4400,45,28.55013,77.06818,28.54075,77.11188],["11R","29L",4430,60,28.54717,77.06549,28.53773,77.10953]]],["BOM","Mumbai","Chhatrapati Shivaji Maharaj","IN","AS",19.0887,72.8679,12,"Mumbai","VABB",[["09","27",3509,60,19.0884,72.848,19.0889,72.8811],["14","32",2871,45,19.0985,72.8573,19.0801,72.8772]]],["BLR","Bengaluru","Kempegowda","IN","AS",13.1979,77.7063,914,"Bengaluru","VOBL",[["09L","27R",4000,45,13.20716,77.68607,13.20685,77.72297],["09R","27L",4000,45,13.18973,77.68998,13.18941,77.72688]]],["MAA","Chennai","Chennai International","IN","AS",12.99001,80.1693,16,"Chennai","VOMM",[["07","25",3658,45,12.9841,80.153,12.996,80.1844],["12","30",2045,45,13.0019,80.1658,12.9934,80.1825]]],["GOI","Goa","Dabolim","IN","AS",15.38006,73.83333,46,"Vasco da Gama","VOGO",[["08","26",3458,45,15.3778,73.8156,15.3839,73.8472]]],["CMB","Colombo","Bandaranaike","LK","AS",7.18076,79.8841,9,"Colombo","VCBI",[["04","22",3350,45,7.16874,79.8749,7.19277,79.8933]]],["MLE","Malé","Velana","MV","AS",4.19183,73.5291,2,"Malé","VRMM",[["18","36",3400,60,4.21257,73.53101,4.18186,73.53104]]],["KTM","Kathmandu","Tribhuvan","NP","AS",27.6966,85.3591,1338,"Kathmandu","VNKT",[["02","20",3350,45,27.6838,85.3534,27.7094,85.3648]]],["BKK","Bangkok","Suvarnabhumi","TH","AS",13.6811,100.747,2,"Bangkok","VTBS",[["01","19",4000,60,13.6567,100.75183,13.69171,100.76103],["02L","20R",4000,60,13.66517,100.72924,13.70016,100.73844],["02R","20L",3700,60,13.67128,100.73467,13.70367,100.74318]]],["DMK","Bangkok","Don Mueang","TH","AS",13.9126,100.607,3,"Bangkok","VTBD",[["03L","21R",3700,60,13.8971,100.596,13.9264,100.612],["03R","21L",3500,45,13.8995,100.602,13.9274,100.617]]],["HKT","Phuket","Phuket","TH","AS",8.11326,98.3174,25,"Phuket","VTSP",[["09","27",3100,45,8.11199,98.3033,8.11451,98.33042]]],["CNX","Chiang Mai","Chiang Mai","TH","AS",18.7668,98.9626,316,"Chiang Mai","VTCC",[["18","36",3400,45,18.78376,98.96292,18.75304,98.96285]]],["USM","Ko Samui","Samui","TH","AS",9.54779,100.062,20,"Na Thon (Ko Samui Island)","VTSM",[["17","35",2060,45,9.55721,100.062,9.53867,100.063]]],["KBV","Krabi","Krabi","TH","AS",8.09559,98.98896,25,"Krabi","VTSG",[["14","32",3000,45,8.10647,98.9801,8.09176,98.9922]]],["SIN","Singapur","Changi","SG","AS",1.35019,103.994,7,"Singapore","WSSS",[["02C","20C",4000,60,1.3288,103.985,1.36213,103.999],["02L","20R",4000,60,1.34897,103.978,1.38241,103.992]]],["KUL","Kuala Lumpur","KLIA","MY","AS",2.74558,101.71,21,"Sepang","WMKK",[["14L","32R",4124,60,2.77828,101.702,2.74739,101.722],["14R","32L",4050,60,2.74351,101.698,2.71313,101.718],["15","33",3960,60,2.73817,101.6775,2.7085,101.69733]]],["PEN","Penang","Penang","MY","AS",5.2963,100.27618,3,"Penang","WMKP",[["04","22",3352,46,5.2859,100.267,5.30838,100.287]]],["CGK","Jakarta","Soekarno-Hatta","ID","AS",-6.12557,106.656,10,"Jakarta","WIII",[["06","24",3000,60,-6.11389,106.64459,-6.10384,106.66977],["07L","25R",3600,60,-6.12106,106.639,-6.10899,106.669],["07R","25L",3660,60,-6.1426,106.644,-6.13032,106.674]]],["DPS","Bali","Ngurah Rai","ID","AS",-8.74841,115.16712,4,"Kuta, Badung","WADD",[["09","27",2984,45,-8.74871,115.154,-8.74763,115.181]]],["MNL","Manila","Ninoy Aquino","PH","AS",14.5086,121.02,23,"Manila (Pasay)","RPLL",[["06","24",3737,60,14.4978,121.0,14.5145,121.03],["13","31",2258,45,14.5242,121.003,14.5098,121.018]]],["CEB","Cebu","Mactan-Cebu","PH","AS",10.30926,123.97974,9,"Cebu City/Lapu-Lapu City","RPVM",[["04L","22R",2560,45,10.30252,123.97167,10.31893,123.98814],["04R","22L",3310,45,10.29695,123.96879,10.31818,123.9901]]],["SGN","Ho-Chi-Minh-Stadt","Tân Sơn Nhất","VN","AS",10.8188,106.652,10,"Ho Chi Minh City","VVTS",[["07L","25R",3050,45,10.815,106.637,10.8249,106.663],["07R","25L",3800,45,10.8115,106.637,10.8237,106.67]]],["HAN","Hanoi","Nội Bài","VN","AS",21.2212,105.807,12,"Hanoi (Soc Son)","VVNB",[["11L","29R",3200,45,21.2255,105.792,21.2165,105.823],["11R","29L",3800,45,21.22496,105.78543,21.21432,105.82222]]],["DAD","Đà Nẵng","Đà Nẵng","VN","AS",16.0439,108.199,10,"Da Nang","VVDN",[["17L","35R",3500,45,16.0577,108.198,16.0304,108.202],["17R","35L",3048,45,16.0574,108.196,16.0301,108.2]]],["KTI","Phnom Penh","Techo International","KH","AS",11.35999,104.92127,6,"Phnom Penh (Boeng Khyang)","VDTI",[["05","23",4000,60,11.3478,104.9078,11.3723,104.9347]]],["SAI","Siem Reap","Siem Reap-Angkor International","KH","AS",13.36974,104.22383,58,"Siem Reap","VDSA",[["05","23",3605,60,50]]],["HKG","Hongkong","Hong Kong International","HK","AS",22.31184,113.91486,9,"Hong Kong","VHHH",[["07C","25C",3800,60,22.3104,113.896,22.3216,113.931],["07L","25R",3800,60,22.32107,113.88069,22.33231,113.91556],["07R","25L",3800,60,22.2962,113.898,22.30743,113.93282]]],["MFM","Macau","Macau International","MO","AS",22.1496,113.592,6,"Nossa Senhora do Carmo","VMMC",[["16","34",3214,45,22.1623,113.586,22.135,113.597]]],["TPE","Taipeh","Taoyuan","TW","AS",25.0777,121.233,32,"Taoyuan","RCTP",[["05L","23R",3660,60,25.0729,121.216,25.09447,121.24338],["05R","23L",3350,60,25.06084,121.22349,25.0833,121.252]]],["PEK","Peking","Capital","CN","AS",40.07735,116.5967,35,"Beijing","ZBAA",[["01","19",3800,60,40.05891,116.6176,40.09283,116.6123],["18L","36R",3800,60,40.08936,116.59483,40.05553,116.60017],["18R","36L",3200,50,40.10211,116.56969,40.07348,116.57416]]],["PKX","Peking","Daxing","CN","AS",39.50129,116.41397,30,"Beijing","ZBAD",[["01L","19R",3400,60,39.4713,116.431,39.5017,116.427],["11L","29R",3800,60,39.5167,116.431,39.5089,116.474],["17L","35R",3800,60,39.51791,116.39611,39.48393,116.40147],["17R","35L",3800,45,39.51707,116.38734,39.4831,116.3927]]],["PVG","Shanghai","Pudong","CN","AS",31.1434,121.805,4,"Shanghai (Pudong)","ZSPD",[["15","33",3400,60,150],["16L","34R",3800,60,31.16018,121.81616,31.12757,121.82846],["16R","34L",3800,60,31.159,121.812,31.1264,121.824],["17L","35R",4000,60,31.1613,121.786,31.127,121.799],["17R","35L",3400,60,31.15483,121.78316,31.12567,121.79417]]],["SHA","Shanghai","Hongqiao","CN","AS",31.1981,121.33426,3,"Shanghai (Minhang)","ZSSS",[["18L","36R",3400,45,31.2132,121.335,31.1825,121.337],["18R","36L",3300,60,31.21,121.332,31.186,121.333]]],["CAN","Guangzhou","Baiyun","CN","AS",23.3924,113.299,15,"Guangzhou (Huadu)","ZGGG",[["01L","19R",3400,45,23.38069,113.27529,23.41048,113.28333],["01R","19L",3600,45,23.3768,113.284,23.40841,113.29195],["02L","20R",3800,60,23.3757,113.305,23.4089,113.314],["02R","20L",3800,60,23.3695,113.308,23.4028,113.317],["03","21",3600,45,23.35478,113.31915,23.38632,113.32767]]],["SZX","Shenzhen","Bao'an","CN","AS",22.63947,113.80326,4,"Shenzhen","ZGSZ",[["15","33",3400,45,22.653,113.803,22.6256,113.818],["16L","34R",3800,60,22.65446,113.78485,22.62388,113.80162],["16R","34L",3600,45,22.65906,113.77634,22.63008,113.79222]]],["CTU","Chengdu","Shuangliu","CN","AS",30.55826,103.94597,495,"Chengdu (Shuangliu)","ZUUU",[["02L","20R",3600,45,30.56346,103.93999,30.5936,103.954],["02R","20L",3600,60,30.5195,103.937,30.5496,103.95068]]],["ICN","Seoul","Incheon","KR","AS",37.4691,126.451,7,"Seoul","RKSI",[["15L","33R",3750,60,37.4839,126.44,37.4564,126.465],["15R","33L",3750,60,37.4818,126.436,37.4542,126.461],["16L","34R",4000,60,37.47274,126.41563,37.44343,126.4417],["16R","34L",3750,60,37.46875,126.41345,37.44127,126.43788]]],["GMP","Seoul","Gimpo","KR","AS",37.5583,126.791,18,"Seoul","RKSS",[["14L","32R",3600,45,37.5703,126.778,37.5474,126.807],["14R","32L",3200,60,37.568,126.776,37.5476,126.801]]],["PUS","Busan","Gimhae","KR","AS",35.1795,128.938,2,"Busan","RKPK",[["18L","36R",2745,46,35.1941,128.937,35.1695,128.94099],["18R","36L",3200,60,35.1939,128.935,35.1652,128.939]]],["NRT","Tokio","Narita","JP","AS",35.76858,140.38871,43,"Narita","RJAA",[["16L","34R",2500,60,35.8027,140.38,35.7858,140.392],["16R","34L",4000,60,35.7744,140.368,35.7433,140.39101]]],["HND","Tokio","Haneda","JP","AS",35.54968,139.78696,11,"Tokyo","RJTT",[["04","22",2500,61,35.54901,139.76127,35.56746,139.77711],["05","23",2500,61,35.524,139.80347,35.5406,139.82212],["16L","34R",3360,61,35.5659,139.78655,35.53969,139.80514],["16R","34L",3000,61,35.56045,139.76873,35.53659,139.78567]]],["KIX","Osaka","Kansai","JP","AS",34.4273,135.244,8,"Osaka","RJBB",[["06L","24R",4000,60,34.4285,135.20616,34.45133,135.24001],["06R","24L",3500,60,34.4174,135.229,34.4372,135.259]]],["ITM","Osaka","Itami","JP","AS",34.78085,135.44083,15,"Osaka","RJOO",[["14L","32R",1828,46,34.7953,135.429,34.7836,135.44299],["14R","32L",2999,61,34.7913,135.429,34.7722,135.452]]],["NGO","Nagoya","Chūbu Centrair","JP","AS",34.8584,136.80499,5,"Tokoname","RJGG",[["18","36",3500,60,34.8739,136.802,34.8429,136.80901]]],["CTS","Sapporo","New Chitose","JP","AS",42.77475,141.69041,25,"Sapporo","RJCC",[["01L","19R",3000,61,42.7616,141.69299,42.7884,141.688],["01R","19L",3000,61,42.762,141.696,42.7888,141.692]]],["FUK","Fukuoka","Fukuoka","JP","AS",33.5859,130.451,10,"Fukuoka","RJFF",[["16L","34R",2800,60,33.5969,130.44299,33.575,130.45799],["16R","34L",2500,60,33.59597,130.44122,33.57641,130.45459]]],["OKA","Okinawa","Naha","JP","AS",26.19244,127.6398,4,"Naha","ROAH",[["18L","36R",2999,46,26.2093,127.645,26.1823,127.646],["18R","36L",2700,60,26.2031,127.632,26.1787,127.634]]],["ULN","Ulaanbaatar","Chinggis Khaan","MN","AS",47.8431,106.767,1330,"Ulaanbaatar","ZMUB",[["14","32",3100,60,47.853,106.753,47.8322,106.781],["15","33",1999,40,47.8508,106.75,47.836,106.765]]],["JFK","New York","John F. Kennedy","US","NA",40.63945,-73.77932,4,"New York","KJFK",[["04L","22R",3682,61,40.622,-73.7856,40.6488,-73.7647],["04R","22L",2560,61,40.6254,-73.7703,40.6452,-73.7549],["13L","31R",3048,61,40.6578,-73.7902,40.6437,-73.7593],["13R","31L",4423,61,40.6484,-73.8167,40.6279,-73.7716]]],["EWR","New York","Newark Liberty","US","NA",40.6894,-74.17055,5,"Newark","KEWR",[["11","29",2050,46,40.70282,-74.18075,40.7012,-74.1565],["4L","22R",3353,46,40.67539,-74.17946,40.70257,-74.16217],["4R","22L",3048,46,40.67759,-74.17425,40.7023,-74.15854]]],["LGA","New York","LaGuardia","US","NA",40.7772,-73.8726,6,"New York","KLGA",[["04","22",2134,46,40.7692,-73.8841,40.7854,-73.8707],["13","31",2134,46,40.7823,-73.8785,40.7721,-73.8571]]],["BOS","Boston","Logan","US","NA",42.36197,-71.0079,6,"Boston","KBOS",[["04L","22R",2397,46,42.358,-71.01434,42.37832,-71.00451],["04R","22L",3050,46,42.35106,-71.0118,42.37692,-70.99929],["09","27",2134,46,42.3558,-71.0129,42.3602,-70.9877],["14","32",1524,30,42.3566,-71.0233,42.3486,-71.0082],["15L","33R",779,30,42.3736,-71.0091,42.3686,-71.0025],["15R","33L",3073,46,42.3743,-71.0179,42.3546,-70.9916]]],["IAD","Washington","Dulles","US","NA",38.9445,-77.4558,95,"Dulles","KIAD",[["01C","19C",3505,46,38.9391,-77.4598,38.9706,-77.4593],["01L","19R",2865,46,38.945,-77.47482,38.97078,-77.47445],["01R","19L",3505,46,38.9238,-77.4364,38.9553,-77.436],["12","30",3201,46,38.9438,-77.4904,38.9336,-77.4559]]],["DCA","Washington","Ronald Reagan","US","NA",38.8521,-77.0377,5,"Washington","KDCA",[["01","19",2185,46,38.8424,-77.0368,38.8612,-77.0387],["04","22",1524,46,38.8423,-77.0408,38.8544,-77.0333],["15","33",1586,46,38.8617,-77.0438,38.8503,-77.0327]]],["PHL","Philadelphia","Philadelphia","US","NA",39.8719,-75.2411,11,"Philadelphia","KPHL",[["08","26",1524,46,39.8783,-75.23,39.8818,-75.2128],["09L","27R",2896,46,39.8687,-75.2557,39.8752,-75.2229],["09R","27L",3658,61,39.8608,-75.2752,39.868,-75.239],["17","35",1981,46,39.886,-75.2353,39.872,-75.2283]]],["ATL","Atlanta","Hartsfield-Jackson","US","NA",33.6367,-84.4281,313,"Atlanta","KATL",[["08L","26R",2743,46,33.6495,-84.439,33.6495,-84.4095],["08R","26L",3048,46,33.6468,-84.4384,33.6468,-84.4055],["09L","27R",3776,46,33.6347,-84.448,33.6347,-84.4089],["09R","27L",2743,46,33.6318,-84.448,33.6318,-84.4184],["10","28",2743,46,33.6203,-84.4479,33.6203,-84.4183]]],["CLT","Charlotte","Charlotte Douglas","US","NA",35.214,-80.9431,228,"Charlotte","KCLT",[["18C","36C",3048,46,35.2271,-80.9531,35.2003,-80.9508],["18L","36R",2644,46,35.2244,-80.9361,35.2012,-80.9341],["18R","36L",2743,46,35.225,-80.9674,35.2009,-80.9653]]],["MIA","Miami","Miami International","US","NA",25.79601,-80.28975,2,"Miami","KMIA",[["08L","26R",2621,46,25.8029,-80.3015,25.804,-80.2754],["08R","26L",3202,61,25.8007,-80.3014,25.802,-80.2695],["09","27",3967,46,25.7861,-80.3148,25.7877,-80.2754],["12","30",2853,46,25.7993,-80.3023,25.7866,-80.2775]]],["FLL","Fort Lauderdale","Fort Lauderdale-Hollywood","US","NA",26.0726,-80.1527,3,"Fort Lauderdale","KFLL",[["10L","28R",2743,46,26.0769,-80.1665,26.0768,-80.1391],["10R","28L",2438,46,26.06589,-80.15835,26.06574,-80.13399]]],["MCO","Orlando","Orlando International","US","NA",28.4294,-81.309,29,"Orlando","KMCO",[["17L","35R",2744,46,28.4437,-81.2826,28.4189,-81.2823],["17R","35L",3048,46,28.4356,-81.2959,28.4081,-81.2956],["18L","36R",3659,61,28.4483,-81.3223,28.4153,-81.322],["18R","36L",3659,61,28.4483,-81.327,28.4153,-81.3266]]],["TPA","Tampa","Tampa International","US","NA",27.9755,-82.5332,8,"Tampa","KTPA",[["10","28",2133,46,27.9708,-82.5361,27.9702,-82.5144],["19L","01R",2530,46,27.9871,-82.5282,27.9643,-82.529],["19R","01L",3353,46,27.9935,-82.5413,27.9633,-82.5424]]],["ORD","Chicago","O'Hare","US","NA",41.9786,-87.9048,207,"Chicago","KORD",[["04L","22R",2286,46,41.9817,-87.9139,41.9975,-87.8964],["04R","22L",2461,46,41.9533,-87.8994,41.9699,-87.8798],["09C","27C",3427,61,41.98831,-87.93158,41.98833,-87.89021],["09L","27R",2286,46,42.00283,-87.92667,42.00283,-87.89909],["09R","27L",3432,46,41.9839,-87.91835,41.9839,-87.88905],["10C","28C",3292,61,41.9657,-87.9315,41.9657,-87.8918],["10L","28R",3962,46,41.969,-87.9315,41.9691,-87.8837],["10R","28L",2286,46,41.9572,-87.9279,41.95724,-87.90029]]],["DTW","Detroit","Detroit Metro","US","NA",42.21377,-83.35379,197,"Detroit","KDTW",[["03L","21R",2591,46,42.2078,-83.3512,42.2283,-83.3361],["03R","21L",3048,46,42.1956,-83.3518,42.2197,-83.3341],["04L","22R",3048,46,42.2022,-83.384,42.2262,-83.3663],["04R","22L",3659,61,42.2023,-83.3713,42.2312,-83.35],["09L","27R",2654,46,42.217,-83.3632,42.2175,-83.331],["09R","27L",2591,46,42.199,-83.3617,42.1995,-83.3304]]],["MSP","Minneapolis","Minneapolis–Saint Paul","US","NA",44.88008,-93.22174,256,"Minneapolis","KMSP",[["04","22",3355,46,44.8723,-93.2383,44.8936,-93.2083],["12L","30R",2499,46,44.8929,-93.221,44.8813,-93.194],["12R","30L",3048,61,44.8878,-93.2341,44.8735,-93.2012],["17","35",2438,46,44.8878,-93.2422,44.8662,-93.2366]]],["DFW","Dallas","Dallas/Fort Worth","US","NA",32.8968,-97.038,185,"Dallas-Fort Worth","KDFW",[["13L","31R",2743,61,32.9126,-97.0215,32.895,-97.0008],["13R","31L",2835,46,32.9096,-97.0831,32.8903,-97.0633],["17C","35C",4084,46,32.9157,-97.026,32.8789,-97.0262],["17L","35R",2591,46,32.8983,-97.0098,32.875,-97.0099],["17R","35L",4084,61,32.9157,-97.0299,32.8789,-97.0301],["18L","36R",4085,61,32.9158,-97.0507,32.879,-97.0509],["18R","36L",4084,46,32.9158,-97.0546,32.879,-97.0548]]],["IAH","Houston","George Bush","US","NA",29.9844,-95.3414,30,"Houston","KIAH",[["08L","26R",2743,46,30.0072,-95.3588,30.0072,-95.3304],["08R","26L",2866,46,29.9934,-95.355,29.9934,-95.3253],["09","27",3048,46,29.9776,-95.3341,29.9776,-95.3025],["15L","33R",3658,46,29.9879,-95.3579,29.9588,-95.34],["15R","33L",3048,46,29.9878,-95.3614,29.9635,-95.3465]]],["AUS","Austin","Austin-Bergstrom","US","NA",30.19753,-97.66201,165,"Austin","KAUS",[["18L","36R",2743,46,30.2038,-97.6579,30.1791,-97.6572],["18R","36L",3734,46,30.2136,-97.6794,30.1799,-97.6785]]],["MSY","New Orleans","Louis Armstrong","US","NA",29.9934,-90.26467,1,"New Orleans","KMSY",[["02","20",2134,46,29.9845,-90.2514,30.0031,-90.2455],["11","29",3080,46,29.9966,-90.2817,29.9892,-90.251]]],["BNA","Nashville","Nashville","US","NA",36.1245,-86.6782,183,"Nashville","KBNA",[["02C","20C",2439,46,36.1033,-86.688,36.1242,-86.6796],["02L","20R",2348,46,36.1177,-86.6865,36.1378,-86.6786],["02R","20L",2439,46,36.1127,-86.6676,36.1336,-86.6593],["13","31",3362,46,36.1413,-86.6954,36.1205,-86.6682]]],["DEN","Denver","Denver International","US","NA",39.86003,-104.67379,1655,"Denver","KDEN",[["07","25",3658,46,39.8409,-104.727,39.8407,-104.684],["08","26",3658,46,39.8776,-104.662,39.8772,-104.619],["16L","34R",3658,46,39.897,-104.687,39.8641,-104.687],["16R","34L",4877,61,39.8958,-104.696,39.8519,-104.697],["17L","35R",3658,46,39.865,-104.641,39.832,-104.642],["17R","35L",3658,46,39.8612,-104.66,39.8283,-104.661]]],["SLC","Salt Lake City","Salt Lake City","US","NA",40.78886,-111.97987,1288,"Salt Lake City","KSLC",[["14","32",1491,46,40.78572,-111.97125,40.77376,-111.96324],["16L","34R",3658,46,40.80746,-111.97695,40.77465,-111.97315],["16R","34L",3658,46,40.80778,-111.9993,40.77498,-111.99549],["17","35",2925,46,40.79892,-111.96209,40.77259,-111.96209]]],["LAS","Las Vegas","Harry Reid","US","NA",36.08336,-115.15182,665,"Las Vegas","KLAS",[["01L","19R",2978,46,36.0753,-115.17,36.0977,-115.158],["01R","19L",2978,46,36.07417,-115.1675,36.0985,-115.1535],["08L","26R",4522,46,36.07633,-115.17133,36.07633,-115.121],["08R","26L",3208,46,36.0736,-115.161,36.0737,-115.126]]],["PHX","Phoenix","Sky Harbor","US","NA",33.4353,-112.0059,346,"Phoenix","KPHX",[["07L","25R",3139,46,33.4311,-112.027,33.431,-111.993],["07R","25L",2377,46,33.4289,-112.027,33.4288,-112.002],["08","26",3502,46,33.4409,-112.03,33.4408,-111.992]]],["LAX","Los Angeles","Los Angeles International","US","NA",33.9425,-118.408,38,"Los Angeles","KLAX",[["6L","24R",2721,46,33.94912,-118.43119,33.95211,-118.40195],["6R","24L",3310,46,33.94682,-118.43469,33.95047,-118.39906],["7L","25R",3930,46,33.93556,-118.42209,33.93988,-118.37979],["7R","25L",3382,61,33.93366,-118.41907,33.93737,-118.3827]]],["SAN","San Diego","San Diego","US","NA",32.7336,-117.19,5,"San Diego","KSAN",[["09","27",2865,61,32.73713,-117.20437,32.73,-117.17499]]],["SFO","San Francisco","San Francisco International","US","NA",37.61981,-122.37482,4,"San Francisco","KSFO",[["10L","28R",3618,61,37.62874,-122.39341,37.61354,-122.35716],["10R","28L",3469,61,37.6263,-122.39312,37.61172,-122.35837],["1L","19R",2332,61,37.6079,-122.38295,37.62648,-122.37063],["1R","19L",2640,61,37.60633,-122.38106,37.62735,-122.36712]]],["SEA","Seattle","Seattle-Tacoma","US","NA",47.44794,-122.31028,132,"Seattle","KSEA",[["16C","34C",2873,46,47.4638,-122.311,47.438,-122.311],["16L","34R",3627,46,47.4638,-122.308,47.4312,-122.308],["16R","34L",2591,46,47.4638,-122.318,47.4405,-122.318]]],["PDX","Portland","Portland International","US","NA",45.5887,-122.598,9,"Portland","KPDX",[["10L","28R",2995,46,45.59654,-122.60006,45.58343,-122.56644],["10R","28L",3353,46,45.59515,-122.62151,45.58051,-122.5839],["3","21",1829,46,45.58241,-122.61686,45.59406,-122.60026]]],["ANC","Anchorage","Ted Stevens","US","NA",61.179,-149.99256,46,"Anchorage","PANC",[["07L","25R",3231,46,61.16976,-150.00833,61.16981,-149.9483],["07R","25L",3780,61,61.16781,-150.04287,61.16788,-149.97265],["15","33",3312,61,61.19973,-150.01453,61.17104,-149.99847]]],["HNL","Honolulu","Daniel K. Inouye","US","OC",21.31839,-157.92567,4,"Honolulu, Oahu","PHNL",[["04L","22R",2120,46,21.3183,-157.923,21.3298,-157.907],["04R","22L",2744,46,21.3139,-157.927,21.3288,-157.90601],["04W","22W",914,46,21.3147,-157.91299,21.3199,-157.90601],["08L","26R",3767,61,21.3252,-157.94299,21.3252,-157.907],["08R","26L",3658,61,21.3068,-157.946,21.3068,-157.911],["08W","26W",1551,91,21.3113,-157.91701,21.3111,-157.90199]]],["OGG","Maui","Kahului","US","OC",20.89626,-156.43184,16,"Kahului","PHOG",[["02","20",2133,46,20.8891,-156.436,20.9049,-156.425],["05","23",1518,46,20.898,-156.437,20.9038,-156.424]]],["YYZ","Toronto","Pearson","CA","NA",43.67594,-79.62942,173,"Toronto","CYYZ",[["05","23",3389,61,43.6739,-79.6639,43.6947,-79.6333],["06L","24R",2956,61,43.66105,-79.62343,43.67898,-79.59737],["06R","24L",2743,61,43.6583,-79.62193,43.67529,-79.59724],["15L","33R",3368,61,43.6919,-79.6422,43.67,-79.6139],["15R","33L",2770,61,43.6858,-79.6517,43.6675,-79.6283]]],["YUL","Montréal","Pierre Elliott Trudeau","CA","NA",45.46784,-73.74229,36,"Montréal","CYUL",[["06L","24R",3353,61,45.46106,-73.76501,45.48328,-73.73592],["06R","24L",2926,61,45.45766,-73.74139,45.47702,-73.71601]]],["YOW","Ottawa","Macdonald-Cartier","CA","NA",45.3225,-75.6692,114,"Ottawa","CYOW",[["04","22",1006,23,45.32668,-75.68902,45.3343,-75.6835],["07","25",2438,61,45.3133,-75.671,45.3252,-75.6448],["14","32",3048,61,45.32703,-75.68624,45.31079,-75.65492]]],["YHZ","Halifax","Stanfield","CA","NA",44.8808,-63.5086,145,"Halifax","CYHZ",[["05","23",3200,61,44.8686,-63.525,44.8883,-63.5056],["14","32",2347,61,44.8936,-63.5183,44.8811,-63.4942]]],["YYC","Calgary","Calgary","CA","NA",51.11882,-114.00993,1084,"Calgary","CYYC",[["11","29",2438,61,51.1264,-114.037,51.1156,-114.006],["17L","35R",4267,61,51.1483,-113.99,51.11,-113.99],["17R","35L",3863,61,51.1314,-114.021,51.0966,-114.021]]],["YVR","Vancouver","Vancouver International","CA","NA",49.1939,-123.184,4,"Vancouver","CYVR",[["08L","26R",3030,61,49.205,-123.201,49.2006,-123.16],["08R","26L",3505,61,49.1901,-123.208,49.1844,-123.161],["13","31",2225,61,49.1999,-123.201,49.1842,-123.182]]],["MEX","Mexiko-Stadt","Benito Juárez","MX","NA",19.43582,-99.07033,2230,"Mexico City","MMMX",[["05L","23R",3952,45,19.4276,-99.0905,19.4457,-99.0582],["05R","23L",3900,45,19.427,-99.0858,19.4449,-99.0539]]],["CUN","Cancún","Cancún","MX","NA",21.04082,-86.87347,7,"Cancún","MMUN",[["12L","30R",2800,45,21.0547,-86.88138,21.04066,-86.85896],["12R","30L",3500,60,21.0453,-86.891,21.0278,-86.8629]]],["GDL","Guadalajara","Miguel Hidalgo","MX","NA",20.52334,-103.31011,1529,"Guadalajara","MMGL",[["11L","29R",3538,45,20.53102,-103.32666,20.518,-103.29567],["11R","29L",4000,60,20.52879,-103.3277,20.51407,-103.29266]]],["PVR","Puerto Vallarta","Gustavo Díaz Ordaz","MX","NA",20.67991,-105.25439,7,"Puerto Vallarta","MMPR",[["04","22",3100,45,20.6705,-105.265,20.6896,-105.243]]],["SJD","Los Cabos","Los Cabos","MX","NA",23.15192,-109.72073,114,"San José del Cabo","MMSD",[["16","34",3000,45,23.1653,-109.723,23.1384,-109.719]]],["HAV","Havanna","José Martí","CU","NA",22.9892,-82.4091,64,"Havana","MUHA",[["06","24",4000,45,22.9786,-82.4249,22.9997,-82.3932]]],["VRA","Varadero","Juan Gualberto Gómez","CU","NA",23.0344,-81.4353,64,"Matanzas","MUVR",[["06","24",3502,45,23.0255,-81.4494,23.0434,-81.4212]]],["PUJ","Punta Cana","Punta Cana","DO","NA",18.56709,-68.36456,14,"Punta Cana","MDPC",[["08","26",3100,45,18.5703,-68.3831,18.5781,-68.3548],["09","27",3100,45,18.5661,-68.3781,18.5686,-68.3488]]],["SDQ","Santo Domingo","Las Américas","DO","NA",18.4297,-69.6689,18,"Santo Domingo","MDSD",[["17","35",3353,61,18.444,-69.6742,18.4154,-69.6637],["18","36",2991,45,18.4414,-69.67521,18.41589,-69.66584]]],["POP","Puerto Plata","Gregorio Luperón","DO","NA",19.7579,-70.57,5,"Puerto Plata","MDPP",[["08","26",3081,46,19.7538,-70.5841,19.762,-70.556]]],["MBJ","Montego Bay","Sangster","JM","NA",18.50342,-77.91323,1,"Montego Bay","MKJS",[["07","25",3060,45,18.4987,-77.9248,18.5087,-77.9019]]],["NAS","Nassau","Lynden Pindling","BS","NA",25.039,-77.4662,5,"Nassau","MYNN",[["10","28",2522,46,25.0359,-77.482,25.0361,-77.4569],["14","32",3460,46,25.0518,-77.4756,25.0305,-77.452]]],["SJU","San Juan","Luis Muñoz Marín","PR","NA",18.4394,-66.0018,3,"San Juan","TJSJ",[["08","26",3049,61,18.4388,-66.0149,18.4495,-65.9883],["10","28",2443,46,18.4336,-66.0137,18.4335,-65.9906]]],["AUA","Aruba","Reina Beatrix","AW","NA",12.50106,-70.01428,18,"Oranjestad","TNCA",[["11","29",2743,45,12.5044,-70.0275,12.4984,-70.003]]],["CUR","Curaçao","Hato","CW","NA",12.1889,-68.9598,9,"Willemstad","TNCC",[["11","29",3410,60,12.1921,-68.9751,12.1856,-68.9445]]],["BGI","Barbados","Grantley Adams","BB","NA",13.07467,-59.49103,52,"Bridgetown","TBPB",[["09","27",3353,46,13.0709,-59.5075,13.0783,-59.4774]]],["SJO","San José","Juan Santamaría","CR","NA",9.99386,-84.2088,921,"San José (Alajuela)","MROC",[["07","25",3012,46,9.989,-84.2219,9.99885,-84.1959]]],["LIR","Liberia","Guanacaste","CR","NA",10.5933,-85.5444,82,"Liberia","MRLB",[["07","25",2750,45,10.5891,-85.5563,10.5975,-85.5325]]],["PTY","Panama-Stadt","Tocumen","PA","NA",9.07136,-79.3835,41,"Tocumen","MPTO",[["03L","21R",2682,61,9.07279,-79.3873,9.09362,-79.3748],["03R","21L",3050,45,9.04757,-79.3927,9.07156,-79.379]]],["GRU","São Paulo","Guarulhos","BR","SA",-23.43127,-46.46995,750,"São Paulo","SBGR",[["10L","28R",3700,45,-23.43406,-46.48255,-23.42504,-46.4492],["10R","28L",3000,45,-23.4388,-46.487,-23.4312,-46.4589]]],["GIG","Rio de Janeiro","Galeão","BR","SA",-22.81,-43.25056,9,"Rio De Janeiro","SBGL",[["10","28",4000,45,-22.8018,-43.2552,-22.7922,-43.2177],["15","33",3180,47,-22.8124,-43.2637,-22.8291,-43.2385]]],["BSB","Brasília","Juscelino Kubitschek","BR","SA",-15.86917,-47.92083,1066,"Brasília","SBBR",[["11L","29R",3200,45,-15.8636,-47.9235,-15.8617,-47.8977],["11R","29L",3300,45,-15.8807,-47.94,-15.8787,-47.9092]]],["SSA","Salvador","Salvador","BR","SA",-12.90861,-38.3225,20,"Salvador","SBSV",[["10","28",3005,45,78.0],["17","35",1520,45,143.0]]],["REC","Recife","Guararapes","BR","SA",-8.12747,-34.92296,10,"Recife","SBRF",[["18","36",3007,45,162.0]]],["FOR","Fortaleza","Pinto Martins","BR","SA",-3.77583,-38.53222,25,"Fortaleza","SBFZ",[["13","31",2755,45,-3.77301,-38.54492,-3.77943,-38.52095]]],["EZE","Buenos Aires","Ezeiza","AR","SA",-34.8222,-58.5358,20,"Buenos Aires (Ezeiza)","SAEZ",[["11","29",3300,60,-34.8191,-58.5535,-34.8254,-58.5182],["17","35",3105,45,-34.8083,-58.5339,-34.8352,-58.5246]]],["AEP","Buenos Aires","Aeroparque","AR","SA",-34.55942,-58.41554,5,"Buenos Aires","SABE",[["13","31",2350,45,-34.5539,-58.4251,-34.5645,-58.4061]]],["SCL","Santiago de Chile","Arturo Merino Benítez","CL","SA",-33.393,-70.7858,474,"Santiago","SCEL",[["17L","35R",3750,55,-33.3761,-70.7867,-33.4099,-70.7852],["17R","35L",3750,45,-33.3719,-70.8037,-33.4069,-70.8019]]],["LIM","Lima","Jorge Chávez","PE","SA",-12.0219,-77.11431,34,"Lima","SPJC",[["16L","34R",3507,45,-12.00761,-77.12136,-12.03127,-77.10968],["16R","34L",3480,45,-12.01205,-77.1311,-12.03505,-77.11977]]],["CUZ","Cusco","Alejandro Velasco Astete","PE","SA",-13.5357,-71.9388,3310,"Cusco","SPZO",[["10","28",3397,45,-13.5341,-71.9544,-13.5373,-71.9232]]],["BOG","Bogotá","El Dorado","CO","SA",4.70159,-74.1469,2548,"Bogota","SKBO",[["14L","32R",3800,45,4.71339,-74.1521,4.6927,-74.1247],["14R","32L",3800,45,4.7105,-74.1692,4.68979,-74.1418]]],["MDE","Medellín","José María Córdova","CO","SA",6.16454,-75.4231,2120,"Medellín","SKRG",[["01","19",3440,45,6.14927,-75.42302,6.18037,-75.42323]]],["CTG","Cartagena","Rafael Núñez","CO","SA",10.4424,-75.513,1,"Cartagena","SKCG",[["01","19",2600,45,10.43086,-75.51338,10.45247,-75.51249]]],["UIO","Quito","Mariscal Sucre","EC","SA",-0.1254,-78.35431,2390,"Quito","SEQM",[["18","36",4098,45,-0.10562,-78.35521,-0.14265,-78.35362]]],["GYE","Guayaquil","José Joaquín de Olmedo","EC","SA",-2.15742,-79.8836,6,"Guayaquil","SEGU",[["03","21",2790,46,-2.16827,-79.8899,-2.14657,-79.8772]]],["MVD","Montevideo","Carrasco","UY","SA",-34.83565,-56.0265,32,"Ciudad de la Costa","SUMU",[["01","19",2250,45,-34.84192,-56.03073,-34.8217,-56.03095],["07","25",3200,45,-34.844,-56.04,-34.8268,-56.0119]]],["CAI","Kairo","Cairo International","EG","AF",30.11153,31.39669,98,"Cairo","HECA",[["05C","23C",4000,60,30.0997,31.3982,30.1233,31.4296],["05L","23R",3300,60,30.1197,31.3802,30.1391,31.4063],["05R","23L",4000,60,30.09717,31.419,30.12067,31.4505]]],["HRG","Hurghada","Hurghada","EG","AF",27.17678,33.79669,10,"Hurghada","HEGN",[["16L","34R",4015,45,27.1961,33.7958,27.1611,33.8061],["16R","34L",4014,60,27.1939,33.7865,27.159,33.7969]]],["SSH","Scharm El-Scheich","Sharm El Sheikh","EG","AF",27.97727,34.39472,58,"Sharm El Sheikh","HESH",[["04L","22R",3081,45,27.9685,34.3826,27.9889,34.4039],["04R","22L",3081,45,27.9657,34.386,27.9861,34.4073]]],["RMF","Marsa Alam","Marsa Alam","EG","AF",25.55555,34.59245,65,"Marsa Alam","HEMA",[["15","33",3430,45,25.5688,34.5762,25.5454,34.5912]]],["CMN","Casablanca","Mohammed V","MA","AF",33.3675,-7.58997,200,"Casablanca","GMMN",[["17L","35R",3720,45,33.384,-7.59352,33.3518,-7.58249],["17R","35L",3720,45,33.3831,-7.59743,33.3509,-7.58642]]],["RAK","Marrakesch","Menara","MA","AF",31.60481,-8.03579,471,"Marrakesh","GMMX",[["10","28",3100,45,31.6084,-8.05254,31.6055,-8.01999]]],["AGA","Agadir","Al Massira","MA","AF",30.32248,-9.412,76,"Agadir (Temsia)","GMAD",[["09","27",3200,45,30.32303,-9.42816,30.32224,-9.39489]]],["TUN","Tunis","Tunis-Carthage","TN","AF",36.851,10.2272,7,"Tunis","DTTA",[["01","19",3200,45,36.8391,10.2238,36.8672,10.2314],["11","29",2840,45,36.8543,10.2177,36.8444,10.2472]]],["DJE","Djerba","Djerba-Zarzis","TN","AF",33.87372,10.7773,6,"Mellita","DTTJ",[["09","27",3100,45,33.875,10.7604,33.8759,10.7939]]],["ALG","Algier","Houari Boumediene","DZ","AF",36.69389,3.21453,25,"Algiers","DAAG",[["05","23",3500,60,36.6939,3.22017,36.7129,3.2514],["09","27",3500,45,36.6921,3.17083,36.6912,3.20992]]],["SID","Sal","Amílcar Cabral (Kap Verde)","CV","AF",16.7414,-22.9494,54,"Espargos","GVAC",[["01","19",3280,45,16.72155,-22.94885,16.75107,-22.94905]]],["BVC","Boa Vista","Aristides Pereira (Kap Verde)","CV","AF",16.1365,-22.8889,21,"Rabil","GVBA",[["03","21",2100,45,16.1282,-22.89142,16.14645,-22.88576]]],["DKR","Dakar","Blaise Diagne","SN","AF",14.74234,-17.47922,26,"Dakar","GOOY",[["18","36",3490,45,14.7571,-17.4809,14.7258,-17.4767]]],["ACC","Accra","Kotoka","GH","AF",5.60519,-0.16679,62,"Accra","DGAA",[["03","21",3403,61,5.59096,-0.17264,5.61941,-0.16094]]],["LOS","Lagos","Murtala Muhammed","NG","AF",6.57737,3.32116,41,"Lagos","DNMM",[["18L","36R",2742,45,6.59701,3.32914,6.57221,3.32914],["18R","36L",3900,60,6.58778,3.31356,6.55252,3.31356]]],["ADD","Addis Abeba","Bole","ET","AF",8.97789,38.7993,2326,"Addis Ababa","HAAB",[["07L","25R",3700,45,8.97398,38.7824,8.98339,38.8147],["07R","25L",3800,45,8.97226,38.7835,8.98194,38.8167]]],["NBO","Nairobi","Jomo Kenyatta","KE","AF",-1.31889,36.92823,1625,"Nairobi","HKJK",[["06","24",4117,45,-1.32759,36.9164,-1.30571,36.9463]]],["MBA","Mombasa","Moi","KE","AF",-4.03483,39.5942,61,"Mombasa","HKMO",[["03","21",3350,46,-4.03952,39.5917,-4.01309,39.6064],["15","33",1363,36,-4.02983,39.5914,-4.04054,39.5975]]],["JRO","Kilimandscharo","Kilimanjaro International","TZ","AF",-3.42705,37.07353,894,"Arusha","HTKJ",[["09","27",3600,45,-3.43016,37.0583,-3.42875,37.0907]]],["DAR","Daressalam","Julius Nyerere","TZ","AF",-6.8735,39.20729,55,"Dar es Salaam","HTDA",[["05","23",3000,46,-6.88286,39.1978,-6.86372,39.217],["14","32",1000,30,-6.87359,39.1979,-6.88001,39.2043]]],["ZNZ","Sansibar","Abeid Amani Karume","TZ","AF",-6.22202,39.2249,16,"Zanzibar","HTZA",[["18","36",3022,45,-6.21098,39.2238,-6.23307,39.226]]],["KGL","Kigali","Kigali International","RW","AF",-1.96863,30.1395,1481,"Kigali","HRYR",[["10","28",3500,45,-1.9659,30.1239,-1.97135,30.155]]],["EBB","Entebbe","Entebbe International","UG","AF",0.04239,32.4435,1153,"Entebbe","HUEN",[["12","30",2408,46,0.05123,32.4391,0.03981,32.4579],["17","35",3658,46,0.0556,32.4359,0.02291,32.4411]]],["JNB","Johannesburg","O. R. Tambo","ZA","AF",-26.14008,28.2468,1694,"Johannesburg","FAOR",[["03L","21R",4418,61,-26.1463,28.2343,-26.108,28.2463],["03R","21L",3400,60,-26.1647,28.2482,-26.1352,28.2573]]],["CPT","Kapstadt","Cape Town International","ZA","AF",-33.97403,18.60433,46,"Cape Town","FACT",[["01","19",3201,61,-33.9877,18.6089,-33.9598,18.6],["16","34",1701,46,-33.9614,18.5975,-33.9723,18.6104]]],["DUR","Durban","King Shaka","ZA","AF",-29.61444,31.11972,90,"Durban","FALE",[["06","24",3700,60,61.0]]],["WDH","Windhoek","Hosea Kutako","NA","AF",-22.4799,17.4709,1719,"Windhoek","FYWH",[["08","26",4575,45,-22.4898,17.4495,-22.4714,17.4894],["16","34",1524,30,-22.4777,17.469,-22.4884,17.4783]]],["VFA","Victoria Falls","Victoria Falls","ZW","AF",-18.09744,25.83687,1064,"Victoria Falls","FVFA",[["12","30",4000,45,-18.09081,25.81806,-18.10319,25.85356]]],["MRU","Mauritius","Sir Seewoosagur Ramgoolam","MU","AF",-20.4302,57.6836,57,"Plaine Magnien","FIMP",[["14","32",3370,45,-20.42331,57.66919,-20.43715,57.69795]]],["SEZ","Seychellen","Mahé","SC","AF",-4.67434,55.5218,3,"Victoria","FSIA",[["13","31",2987,46,-4.66663,55.5108,-4.68213,55.5329]]],["TNR","Antananarivo","Ivato","MG","AF",-18.7969,47.4788,1280,"Antananarivo","FMMI",[["11","29",3100,45,-18.7948,47.4643,-18.7991,47.4933]]],["SYD","Sydney","Kingsford Smith","AU","OC",-33.9461,151.177,6,"Sydney (Mascot)","YSSY",[["07","25",2530,45,-33.9437,151.164,-33.9375,151.19],["16L","34R",2438,45,-33.9496,151.188,-33.9711,151.194],["16R","34L",3962,45,-33.9294,151.172,-33.9643,151.181]]],["MEL","Melbourne","Tullamarine","AU","OC",-37.67073,144.8379,132,"Melbourne","YMML",[["09","27",2286,45,-37.6608,144.82201,-37.6623,144.84801],["16","34",3657,60,-37.6532,144.83501,-37.6858,144.841]]],["BNE","Brisbane","Brisbane","AU","OC",-27.3842,153.117,4,"Brisbane","YBBN",[["01L","19R",3300,60,-27.3831,153.10699,-27.3566,153.12199],["01R","19L",3560,45,-27.4039,153.118,-27.3753,153.134]]],["PER","Perth","Perth","AU","OC",-31.9403,115.967,20,"Perth","YPPH",[["03","21",3444,45,-31.9587,115.96,-31.9286,115.968],["06","24",2163,45,-31.941,115.959,-31.9309,115.979]]],["ADL","Adelaide","Adelaide","AU","OC",-34.94751,138.53339,6,"Adelaide","YPAD",[["05","23",3100,45,-34.9585,138.517,-34.9406,138.543],["12","30",1652,45,-34.9412,138.522,-34.9494,138.537]]],["CNS","Cairns","Cairns","AU","OC",-16.87892,145.74948,3,"Cairns","YBCS",[["15","33",3197,45,-16.8658,145.744,-16.8923,145.756]]],["OOL","Gold Coast","Gold Coast","AU","OC",-28.16596,153.50664,6,"Gold Coast","YBCG",[["14","32",2492,45,-28.1565,153.50101,-28.17609,153.51318]]],["DRW","Darwin","Darwin","AU","OC",-12.41497,130.88185,31,"Darwin","YPDN",[["11","29",3354,60,-12.4094,130.86501,-12.4192,130.894],["18","36",1524,30,-12.4088,130.871,-12.4226,130.871]]],["AKL","Auckland","Auckland","NZ","OC",-37.01199,174.78633,7,"Auckland","NZAA",[["05R","23L",3635,45,-37.0171,174.767,-37.0067,174.80499]]],["WLG","Wellington","Wellington","NZ","OC",-41.32684,174.80686,12,"Wellington","NZWN",[["16","34",1936,45,-41.3174,174.80701,-41.3348,174.806]]],["CHC","Christchurch","Christchurch","NZ","OC",-43.48903,172.53206,37,"Christchurch","NZCH",[["02","20",3288,45,-43.4976,172.522,-43.475,172.548],["11","29",1703,45,-43.4846,172.52499,-43.4947,172.541]]],["ZQN","Queenstown","Queenstown","NZ","OC",-45.0192,168.74638,357,"Queenstown","NZQN",[["05","23",1891,45,-45.02012,168.73492,-45.01644,168.75836],["14","32",890,10,-45.01718,168.74091,-45.02477,168.74457]]],["NAN","Nadi","Nadi International","FJ","OC",-17.76182,177.43784,18,"Nadi","NFFN",[["02","20",3273,46,-17.7737,177.42799,-17.7504,177.44701],["09","27",2136,46,-17.7535,177.436,-17.7583,177.455]]],["PPT","Papeete","Faa'a (Tahiti)","PF","OC",-17.55347,-149.60694,2,"Papeete","NTAA",[["04","22",3463,45,-17.5629,-149.62,-17.5446,-149.59399]]]];
+const CONT = {EU:"Europa",AS:"Asien",NA:"Nordamerika",SA:"Südamerika",AF:"Afrika",OC:"Ozeanien"};
+const CONT_ORDER = ["EU","AS","NA","SA","AF","OC"];
+const BASE = DATA.map(r=>({code:r[0],city:r[1],name:r[2],cc:r[3],cont:r[4],lat:r[5],lon:r[6],elev:r[7],muni:r[8],icao:r[9],rw:r[10]}));
+const LSKEY = "airport-tracker-v1";
+
+let regionNames;
+try{ regionNames = new Intl.DisplayNames(["de"],{type:"region"}); }catch(e){ regionNames=null; }
+const countryName = cc => { try{ return (regionNames && regionNames.of(cc)) || cc; }catch(e){ return cc; } };
+const flag = cc => /^[A-Z]{2}$/.test(cc) ? String.fromCodePoint(...[...cc].map(c=>0x1F1E6+c.charCodeAt(0)-65)) : "🏳️";
+const fmtDate = d => { if(!d) return ""; const [y,m,dd]=d.split("-"); return `${dd}.${m}.${y}`; };
+const today = () => { const n=new Date(); return `${n.getFullYear()}-${String(n.getMonth()+1).padStart(2,"0")}-${String(n.getDate()).padStart(2,"0")}`; };
+const esc = s => String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const num = (x,d) => x.toLocaleString("de-DE",{minimumFractionDigits:d,maximumFractionDigits:d});
+const hasPos = a => typeof a.lat==="number" && typeof a.lon==="number" && isFinite(a.lat) && isFinite(a.lon);
+function dms(v,pos,neg){ const s=v<0?neg:pos; v=Math.abs(v); const d=Math.floor(v), mf=(v-d)*60, m=Math.floor(mf), sec=Math.round((mf-m)*60); return `${d}° ${String(m).padStart(2,"0")}′ ${String(sec).padStart(2,"0")}″ ${s}`; }
+const fmtLL = a => `${num(Math.abs(a.lat),4)}° ${a.lat<0?"S":"N"}, ${num(Math.abs(a.lon),4)}° ${a.lon<0?"W":"O"}`;
+
+let state = {visits:{}, custom:[], updatedAt:0};
+let ui = {filter:"all", cont:null, sort:"name", q:""};
+let storageOk = true;
+try{ const s = JSON.parse(localStorage.getItem(LSKEY)||"null"); if(s && s.visits) state = Object.assign({visits:{},custom:[],updatedAt:0}, s); }catch(e){ storageOk=false; }
+const all = () => BASE.concat(state.custom.map(c=>Object.assign({own:true,rw:[]},c)));
+function save(){ state.updatedAt=Date.now(); try{ localStorage.setItem(LSKEY, JSON.stringify(state)); }catch(e){ storageOk=false; toast("Speichern im Browser nicht möglich"); } }
+
+// ---------- Liste ----------
+const $ = id => document.getElementById(id);
+function renderChips(){
+  let h = [["all","Alle"],["seen","Besucht"],["miss","Fehlt"]].map(([k,l])=>`<button class="chip${ui.filter===k?" on":""}" data-f="${k}">${l}</button>`).join("");
+  h += `<span class="vsep"></span>` + CONT_ORDER.map(k=>`<button class="chip${ui.cont===k?" on":""}" data-c="${k}">${CONT[k]}</button>`).join("");
+  $("chips").innerHTML = h;
+}
+function filtered(){
+  const q = ui.q.trim().toLowerCase();
+  let arr = all().filter(a=>{
+    const seen = !!state.visits[a.code];
+    if(ui.filter==="seen" && !seen) return false;
+    if(ui.filter==="miss" && seen) return false;
+    if(ui.cont && a.cont!==ui.cont) return false;
+    if(q && !(a.code+" "+(a.icao||"")+" "+a.city+" "+a.name+" "+(a.muni||"")+" "+countryName(a.cc)+" "+a.cc).toLowerCase().includes(q)) return false;
+    return true;
+  });
+  const byName = (a,b)=> a.city.localeCompare(b.city,"de") || a.code.localeCompare(b.code);
+  if(ui.sort==="name") arr.sort(byName);
+  else if(ui.sort==="land") arr.sort((a,b)=> countryName(a.cc).localeCompare(countryName(b.cc),"de") || byName(a,b));
+  else arr.sort((a,b)=>{ const da=state.visits[a.code]||"", db=state.visits[b.code]||""; return da!==db ? db.localeCompare(da) : byName(a,b); });
+  return arr;
+}
+function card(a){
+  const d = state.visits[a.code];
+  return `<button class="card${d?" seen":""}" data-code="${esc(a.code)}">
+    <span class="check" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></span>
+    <span class="body">
+      <div class="city">${esc(a.city)}</div>
+      <div class="meta"><span class="tag code c-${a.cont}">${esc(a.code)}</span><span class="tag cc">${esc(countryName(a.cc))}</span>${a.own?'<span class="tag own">eigener</span>':""}</div>
+      ${a.name?`<div class="aname">${esc(a.name)}</div>`:""}
+      ${hasPos(a)?`<div class="coords">${fmtLL(a)}</div>`:""}
+      ${d?`<div class="date">✓ ${fmtDate(d)}</div>`:""}
+    </span>
+    <span class="flag" aria-label="${esc(countryName(a.cc))}">${flag(a.cc)}</span>
+  </button>`;
+}
+function render(){
+  const list = all(), seen = list.filter(a=>state.visits[a.code]).length;
+  $("pillTxt").textContent = `${seen}/${list.length}`;
+  renderChips();
+  const arr = filtered();
+  $("count").textContent = `${arr.length} von ${list.length} Flughäfen`;
+  $("list").innerHTML = arr.length ? arr.map(card).join("") :
+    (ui.q ? `<div class="empty"><b>Kein Treffer für „${esc(ui.q)}“</b>Fehlt ein Flughafen? Über + kannst du ihn selbst anlegen.</div>`
+          : ui.filter==="seen" ? `<div class="empty"><b>Noch nichts abgehakt</b>Tippe auf einen Flughafen, um ihn als besucht zu markieren.</div>`
+          : `<div class="empty"><b>Alles erledigt</b>In dieser Auswahl fehlt dir kein Flughafen mehr.</div>`);
+  if($("statSheet").classList.contains("on")) renderStats();
+}
+
+// ---------- Statistik ----------
+function renderStats(){
+  const list = all(), seenArr = list.filter(a=>state.visits[a.code]);
+  const pct = list.length ? seenArr.length/list.length*100 : 0, C = 2*Math.PI*92;
+  const countries = [...new Set(seenArr.map(a=>a.cc))], conts = new Set(seenArr.map(a=>a.cont));
+  const rows = CONT_ORDER.map(k=>{ const tot=list.filter(a=>a.cont===k).length, s=seenArr.filter(a=>a.cont===k).length;
+    return `<div class="row"><span class="n">${CONT[k]}</span><span class="bar"><i style="width:${tot?s/tot*100:0}%"></i></span><span class="v">${s}/${tot}</span></div>`; }).join("");
+  const byC = {}; seenArr.forEach(a=>{ byC[a.cc]=(byC[a.cc]||0)+1; });
+  const top = Object.entries(byC).sort((a,b)=>b[1]-a[1]).slice(0,6);
+  const topRows = top.map(([cc,n])=>{ const tot=list.filter(a=>a.cc===cc).length;
+    return `<div class="row"><span class="n">${flag(cc)} ${esc(countryName(cc))}</span><span class="bar"><i style="width:${n/tot*100}%"></i></span><span class="v">${n}/${tot}</span></div>`; }).join("");
+  // Extrempunkte
+  const pos = seenArr.filter(hasPos);
+  let ext = "";
+  if(pos.length){
+    const pick = f => pos.reduce((m,a)=>f(a,m)?a:m);
+    const N=pick((a,m)=>a.lat>m.lat), S=pick((a,m)=>a.lat<m.lat), W=pick((a,m)=>a.lon<m.lon), O=pick((a,m)=>a.lon>m.lon);
+    const hi = pos.filter(a=>a.elev!=null); const H = hi.length ? hi.reduce((m,a)=>a.elev>m.elev?a:m) : null;
+    const f = (l,a,v)=>`<div class="fact"><span>${l}</span><span>${esc(a.city)} (${esc(a.code)}) · ${v}</span></div>`;
+    ext = `<div class="sec">Deine Extreme</div><div class="facts">${f("Nördlichster",N,num(N.lat,1)+"°")}${f("Südlichster",S,num(S.lat,1)+"°")}${f("Westlichster",W,num(W.lon,1)+"°")}${f("Östlichster",O,num(O.lon,1)+"°")}${H?f("Höchstgelegener",H,num(H.elev,0)+" m"):""}</div>`;
+  }
+  const now = new Date(), months = [];
+  for(let i=11;i>=0;i--){ const d=new Date(now.getFullYear(),now.getMonth()-i,1); months.push({key:`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}`,lbl:d.toLocaleDateString("de-DE",{month:"narrow"}),n:0}); }
+  Object.values(state.visits).forEach(v=>{ const m=months.find(x=>v.startsWith(x.key)); if(m) m.n++; });
+  const max = Math.max(1,...months.map(m=>m.n));
+  const bars = months.map(m=>`<div class="mcol">${m.n?`<b>${m.n}</b>`:""}<i class="${m.n?"":"z"}" style="height:${m.n?Math.max(6,m.n/max*100):3}%"></i><span>${m.lbl}</span></div>`).join("");
+  $("statBody").innerHTML = `
+    <div class="ring"><svg viewBox="0 0 220 220"><circle cx="110" cy="110" r="92" fill="none" stroke="var(--fill2)" stroke-width="20"/>
+      <circle cx="110" cy="110" r="92" fill="none" stroke="var(--blue)" stroke-width="20" stroke-linecap="round" stroke-dasharray="${C}" stroke-dashoffset="${C*(1-pct/100)}" ${seenArr.length?"":'opacity="0"'}/></svg>
+      <div class="in"><span class="frac">${seenArr.length}/${list.length}</span><span class="pct">${num(pct,1)} %</span><span class="lbl">BESUCHT</span></div></div>
+    <div class="quick"><div><b>${countries.length}</b><span>Länder</span></div><div><b>${conts.size}/6</b><span>Kontinente</span></div><div><b>${seenArr.filter(a=>a.cc==="DE").length}</b><span>in Deutschland</span></div></div>
+    <div class="sec">Nach Kontinent</div><div class="group">${rows}</div>
+    ${top.length?`<div class="sec">Meistbesuchte Länder</div><div class="group">${topRows}</div>`:""}
+    ${ext}
+    <div class="sec">Besuche in den letzten 12 Monaten</div><div class="group"><div class="months">${bars}</div></div>
+    ${countries.length?`<div class="sec">Deine Länder</div><div class="group"><div class="countries">${countries.sort((a,b)=>countryName(a).localeCompare(countryName(b),"de")).map(cc=>`<span>${flag(cc)} ${esc(countryName(cc))}</span>`).join("")}</div></div>`:""}
+    <div class="foot">Gezählt wird pro Flughafen der letzte Besuch.</div>`;
+}
+
+// ---------- Pistenplan (offline, SVG) ----------
+function planSVG(a){
+  const W=360, H=250, lat0=a.lat, lon0=a.lon, k=Math.cos(lat0*Math.PI/180);
+  const P = (la,lo)=>[(lo-lon0)*k*111320, -(la-lat0)*110574];
+  const segs = a.rw.map(r=>{
+    let p1,p2;
+    if(r.length>=8){ p1=P(r[4],r[5]); p2=P(r[6],r[7]); }
+    else { const h=r[4]*Math.PI/180, dx=Math.sin(h)*r[2]/2, dy=-Math.cos(h)*r[2]/2; p1=[-dx,-dy]; p2=[dx,dy]; }
+    return {a:r[0],b:r[1],len:r[2],wid:r[3]||45,p1,p2,approx:r.length<8};
+  });
+  const xs=[0,...segs.flatMap(s=>[s.p1[0],s.p2[0]])], ys=[0,...segs.flatMap(s=>[s.p1[1],s.p2[1]])];
+  let minX=Math.min(...xs),maxX=Math.max(...xs),minY=Math.min(...ys),maxY=Math.max(...ys);
+  const pad=Math.max(350,(maxX-minX+maxY-minY)*0.12);
+  minX-=pad;maxX+=pad;minY-=pad;maxY+=pad;
+  const s=Math.min(W/(maxX-minX),H/(maxY-minY)), cx=(minX+maxX)/2, cy=(minY+maxY)/2;
+  const T=p=>[W/2+(p[0]-cx)*s, H/2+(p[1]-cy)*s];
+  let g="";
+  segs.forEach(sg=>{
+    const [x1,y1]=T(sg.p1),[x2,y2]=T(sg.p2), w=Math.max(6,sg.wid*s);
+    g+=`<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="var(--text)" stroke-opacity=".82" stroke-width="${w}"/>`;
+    g+=`<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="var(--group)" stroke-width="1" stroke-dasharray="6 5" stroke-opacity=".9"/>`;
+    const L=Math.hypot(x2-x1,y2-y1)||1, ux=(x2-x1)/L, uy=(y2-y1)/L;
+    g+=`<text x="${x1-ux*14}" y="${y1-uy*14+4}" text-anchor="middle" font-size="11" font-weight="700" fill="var(--text2)">${esc(sg.a)}</text>`;
+    g+=`<text x="${x2+ux*14}" y="${y2+uy*14+4}" text-anchor="middle" font-size="11" font-weight="700" fill="var(--text2)">${esc(sg.b)}</text>`;
+  });
+  const [ax,ay]=T([0,0]);
+  g+=`<circle cx="${ax}" cy="${ay}" r="5" fill="var(--blue)" stroke="var(--group)" stroke-width="2"/>`;
+  // Maßstab
+  const mPerPx=1/s, target=mPerPx*90, steps=[250,500,1000,2000,5000,10000];
+  const sb=steps.find(v=>v>=target*0.6)||10000, sbpx=sb*s;
+  g+=`<g transform="translate(14 ${H-16})"><rect width="${sbpx}" height="4" fill="var(--text2)"/><text y="-6" font-size="11" fill="var(--text2)">${sb>=1000?num(sb/1000,sb%1000?1:0)+" km":sb+" m"}</text></g>`;
+  // Nordpfeil
+  g+=`<g transform="translate(${W-22} 28)"><path d="M0-14 6 6 0 2-6 6Z" fill="var(--text2)"/><text y="20" text-anchor="middle" font-size="11" font-weight="700" fill="var(--text2)">N</text></g>`;
+  return {svg:`<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Pistenplan ${esc(a.code)}">${g}</svg>`, approx:segs.some(x=>x.approx)};
+}
+
+// ---------- Kacheln (online) ----------
+let tileZ = 14, planMode = "plan", current = null;
+function tilesHTML(){ return `<div class="tiles" id="tiles"><div class="off" id="tOff">Keine Verbindung – Satellit und Karte brauchen Internet. Der Pistenplan funktioniert offline.</div><span class="pin"></span><div class="zoom"><button id="zIn" aria-label="Hineinzoomen">+</button><button id="zOut" aria-label="Herauszoomen">−</button></div></div><span class="attr" id="tAttr"></span>`; }
+function drawTiles(){
+  const box=$("tiles"); if(!box||!current) return;
+  box.querySelectorAll("img").forEach(i=>i.remove());
+  const w=box.clientWidth||340, h=box.clientHeight||260, z=tileZ, n=2**z;
+  const la=current.lat*Math.PI/180;
+  const cx=(current.lon+180)/360*n*256, cy=(1-Math.log(Math.tan(la)+1/Math.cos(la))/Math.PI)/2*n*256;
+  const x0=Math.floor((cx-w/2)/256), x1=Math.floor((cx+w/2)/256), y0=Math.floor((cy-h/2)/256), y1=Math.floor((cy+h/2)/256);
+  let total=0, failed=0; const frag=document.createDocumentFragment();
+  for(let ty=y0;ty<=y1;ty++) for(let tx=x0;tx<=x1;tx++){
+    if(ty<0||ty>=n) continue;
+    const xx=((tx%n)+n)%n, img=new Image(); total++;
+    img.alt=""; img.decoding="async"; img.referrerPolicy="no-referrer-when-downgrade";
+    img.style.left=(tx*256-(cx-w/2))+"px"; img.style.top=(ty*256-(cy-h/2))+"px";
+    img.onerror=()=>{ failed++; if(failed===total){ const o=$("tOff"); if(o) o.style.display="flex"; } };
+    img.src = planMode==="sat" ? `https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/${z}/${ty}/${xx}` : `https://tile.openstreetmap.org/${z}/${xx}/${ty}.png`;
+    frag.appendChild(img);
+  }
+  box.insertBefore(frag, box.firstChild);
+  $("tAttr").textContent = planMode==="sat" ? "© Esri, Maxar, Earthstar Geographics" : "© OpenStreetMap-Mitwirkende";
+}
+function renderPlan(){
+  const a=current, box=$("plan"), hint=$("planHint");
+  document.querySelectorAll("#planSeg button").forEach(b=>b.classList.toggle("on",b.dataset.m===planMode));
+  $("planSeg").style.display = hasPos(a) ? "flex" : "none";
+  if(!hasPos(a)){ box.innerHTML=`<div class="empty" style="padding:30px">Für diesen Flughafen sind keine Koordinaten hinterlegt.</div>`; hint.textContent=""; return; }
+  if(planMode==="plan"){
+    if(!a.rw || !a.rw.length){ box.innerHTML=`<div class="empty" style="padding:30px">Keine Pistendaten vorhanden – schau dir die Satellitenansicht an.</div>`; hint.textContent=""; return; }
+    const p=planSVG(a); box.innerHTML=p.svg;
+    hint.textContent = "Schematisch: Start- und Landebahnen maßstabsgetreu, blauer Punkt = Flughafenbezugspunkt." + (p.approx?" Lage einzelner Pisten nur aus Richtung und Länge geschätzt.":"");
+  } else {
+    box.innerHTML=tilesHTML(); hint.textContent="";
+    $("zIn").onclick=()=>{ tileZ=Math.min(18,tileZ+1); drawTiles(); };
+    $("zOut").onclick=()=>{ tileZ=Math.max(8,tileZ-1); drawTiles(); };
+    requestAnimationFrame(drawTiles);
+  }
+}
+$("planSeg").addEventListener("click",e=>{ const b=e.target.closest("button"); if(!b) return; planMode=b.dataset.m; renderPlan(); });
+
+// ---------- Sheets ----------
+function show(id){ closeSheets(); $("scrim").classList.add("on"); $(id).classList.add("on"); document.body.style.overflow="hidden"; }
+function closeSheets(){ document.querySelectorAll(".sheet.on").forEach(s=>s.classList.remove("on")); $("scrim").classList.remove("on"); document.body.style.overflow=""; }
+$("scrim").onclick = closeSheets;
+document.querySelectorAll("[data-close]").forEach(b=>b.onclick=closeSheets);
+document.addEventListener("keydown",e=>{ if(e.key==="Escape") closeSheets(); });
+document.querySelectorAll(".sheet").forEach(sh=>{
+  let y0=null, dy=0;
+  sh.addEventListener("touchstart",e=>{ const body=sh.querySelector(".sh-body"); if(e.target.closest(".tiles")) return; if(body.contains(e.target) && body.scrollTop>0) return; y0=e.touches[0].clientY; dy=0; },{passive:true});
+  sh.addEventListener("touchmove",e=>{ if(y0===null) return; dy=e.touches[0].clientY-y0; if(dy>0){ sh.style.transition="none"; sh.style.transform=`translateY(${dy}px)`; } },{passive:true});
+  sh.addEventListener("touchend",()=>{ if(y0===null) return; sh.style.transition=""; sh.style.transform=""; if(dy>110) closeSheets(); y0=null; });
+});
+
+function openVisit(code){
+  const a = all().find(x=>x.code===code); if(!a) return;
+  current = a; tileZ = 14;
+  if(planMode==="plan" && (!a.rw||!a.rw.length) && hasPos(a)) planMode="sat";
+  const d = state.visits[code];
+  $("vTitle").textContent = d ? "Besucht" : "Flughafen";
+  $("vHero").innerHTML = `<div class="f">${flag(a.cc)}</div><div class="c">${esc(a.city)} · ${esc(a.code)}</div><div class="s">${esc(a.name||"")}${a.name?", ":""}${esc(countryName(a.cc))}</div>`;
+  $("vDate").value = d || today(); $("vDate").max = today();
+  $("vSave").textContent = d ? "Datum speichern" : "Als besucht speichern";
+  $("vRemove").style.display = d ? "block" : "none";
+  $("vDelete").style.display = a.own ? "block" : "none";
+  const f=(l,v)=>v!=null&&v!==""?`<div class="fact"><span>${l}</span><span>${v}</span></div>`:"";
+  const rwTxt = (a.rw||[]).map(r=>`${esc(r[0])}/${esc(r[1])} · ${num(r[2],0)} m`).join("<br>");
+  $("vFacts").innerHTML =
+    f("Stadt",esc(a.city)) + (a.muni && a.muni!==a.city ? f("Gemeinde",esc(a.muni)) : "") + f("Land",`${flag(a.cc)} ${esc(countryName(a.cc))}`) +
+    f("Kontinent",CONT[a.cont]) + f("IATA / ICAO",`${esc(a.code)}${a.icao?" / "+esc(a.icao):""}`) +
+    (hasPos(a)? f("Breitengrad",`${num(a.lat,5)}°<br><small>${dms(a.lat,"N","S")}</small>`) + f("Längengrad",`${num(a.lon,5)}°<br><small>${dms(a.lon,"O","W")}</small>`) : "") +
+    (a.elev!=null? f("Höhe",`${num(a.elev,0)} m ü. M.`):"") + (rwTxt? f(a.rw.length>1?"Pisten":"Piste",rwTxt):"") +
+    (d? f("Besucht am",fmtDate(d)):"");
+  $("vLinks").innerHTML = hasPos(a) ? `<a href="https://maps.apple.com/?ll=${a.lat},${a.lon}&q=${encodeURIComponent(a.code+" "+(a.name||a.city))}&t=k" target="_blank" rel="noopener">Apple Karten</a><a href="https://www.google.com/maps/search/?api=1&query=${a.lat},${a.lon}" target="_blank" rel="noopener">Google Maps</a>` : "";
+  show("visitSheet"); $("vBody").scrollTop=0;
+  renderPlan();
+}
+$("vSave").onclick = ()=>{ if(!current) return; state.visits[current.code] = $("vDate").value || today(); save(); closeSheets(); render(); toast(`${current.city} gespeichert`); };
+$("vRemove").onclick = ()=>{ if(!current) return; delete state.visits[current.code]; save(); closeSheets(); render(); toast(`${current.city} entfernt`); };
+$("vDelete").onclick = ()=>{ if(!current||!current.own) return; if(!confirm(`${current.city} (${current.code}) wirklich löschen?`)) return;
+  state.custom = state.custom.filter(c=>c.code!==current.code); delete state.visits[current.code]; save(); closeSheets(); render(); toast("Flughafen gelöscht"); };
+
+// ---------- Eigener Flughafen ----------
+$("aCont").innerHTML = CONT_ORDER.map(k=>`<option value="${k}">${CONT[k]}</option>`).join("");
+$("addBtn").onclick = ()=>{ ["aCode","aCC","aCity","aName","aLat","aLon"].forEach(i=>$(i).value=""); $("aCont").value="EU"; $("aErr").textContent=""; show("addSheet"); };
+$("aSave").onclick = ()=>{
+  const code=$("aCode").value.trim().toUpperCase(), cc=$("aCC").value.trim().toUpperCase(), city=$("aCity").value.trim(), name=$("aName").value.trim(), cont=$("aCont").value;
+  const la=$("aLat").value.trim().replace(",","."), lo=$("aLon").value.trim().replace(",",".");
+  if(!/^[A-Z0-9]{3}$/.test(code)) return $("aErr").textContent="Der IATA-Code braucht genau drei Zeichen.";
+  if(!/^[A-Z]{2}$/.test(cc)) return $("aErr").textContent="Gib das Land als zweistelligen ISO-Code an, etwa DE oder FR.";
+  if(!city) return $("aErr").textContent="Gib eine Stadt an.";
+  if(all().some(a=>a.code===code)) return $("aErr").textContent=`${code} ist schon in der Liste – such einfach danach.`;
+  const entry={code,city,name,cc,cont};
+  if(la||lo){ const lat=parseFloat(la), lon=parseFloat(lo);
+    if(!(lat>=-90&&lat<=90&&lon>=-180&&lon<=180)) return $("aErr").textContent="Koordinaten als Dezimalgrad angeben, z. B. 51.23 und 6.50.";
+    entry.lat=lat; entry.lon=lon; }
+  state.custom.push(entry); save(); closeSheets(); ui.q=code; $("q").value=code; $("qClear").style.display="grid"; render(); toast(`${city} hinzugefügt`);
+};
+
+// ---------- Sicherung ----------
+$("menuBtn").onclick = ()=>{ const n=Object.keys(state.visits).length;
+  $("dataInfo").textContent = storageOk ? `${n} Besuche${state.custom.length?`, ${state.custom.length} eigene Flughäfen`:""} gespeichert.` : "Achtung: Dieser Browser speichert nichts dauerhaft. Sichere deine Daten regelmäßig.";
+  show("dataSheet"); };
+$("expBtn").onclick = ()=>{
+  const blob=new Blob([JSON.stringify({app:"flughaefen",version:1,exported:new Date().toISOString(),visits:state.visits,custom:state.custom},null,2)],{type:"application/json"});
+  const url=URL.createObjectURL(blob), a=document.createElement("a");
+  a.href=url; a.download=`flughaefen-${today()}.json`; document.body.appendChild(a); a.click(); a.remove(); setTimeout(()=>URL.revokeObjectURL(url),4000);
+  toast("Sicherung erstellt");
+};
+$("impBtn").onclick = ()=>$("impFile").click();
+$("impFile").onchange = async e=>{
+  const file=e.target.files[0]; e.target.value=""; if(!file) return;
+  try{
+    const d=JSON.parse(await file.text());
+    if(!d || typeof d.visits!=="object") throw 0;
+    const visits={}; Object.entries(d.visits).forEach(([k,v])=>{ if(/^[A-Z0-9]{3}$/.test(k) && /^\d{4}-\d{2}-\d{2}$/.test(v)) visits[k]=v; });
+    const custom=Array.isArray(d.custom)?d.custom.filter(c=>c&&/^[A-Z0-9]{3}$/.test(c.code)&&c.city&&/^[A-Z]{2}$/.test(c.cc)&&CONT[c.cont]).map(c=>({code:c.code,city:String(c.city),name:String(c.name||""),cc:c.cc,cont:c.cont,...(typeof c.lat==="number"&&typeof c.lon==="number"?{lat:c.lat,lon:c.lon}:{})})):[];
+    if(!confirm(`Sicherung mit ${Object.keys(visits).length} Besuchen laden? Deine aktuellen Einträge werden ersetzt.`)) return;
+    state.visits=visits; state.custom=custom; save(); closeSheets(); render(); toast("Sicherung geladen");
+  }catch(err){ toast("Datei ist keine gültige Sicherung"); }
+};
+
+$("statBtn").onclick = ()=>{ renderStats(); show("statSheet"); $("statBody").scrollTop=0; };
+
+// ---------- Events ----------
+$("list").addEventListener("click",e=>{ const c=e.target.closest(".card"); if(c) openVisit(c.dataset.code); });
+$("chips").addEventListener("click",e=>{ const b=e.target.closest(".chip"); if(!b) return;
+  if(b.dataset.f) ui.filter=b.dataset.f; if(b.dataset.c) ui.cont = ui.cont===b.dataset.c ? null : b.dataset.c; render(); window.scrollTo({top:0}); });
+document.querySelectorAll(".tab").forEach(t=>t.onclick=()=>{ ui.sort=t.dataset.sort; document.querySelectorAll(".tab").forEach(x=>x.classList.toggle("on",x===t)); render(); window.scrollTo({top:0}); });
+$("q").addEventListener("input",e=>{ ui.q=e.target.value; $("qClear").style.display=ui.q?"grid":"none"; render(); });
+$("qClear").onclick = ()=>{ ui.q=""; $("q").value=""; $("qClear").style.display="none"; render(); $("q").focus(); };
+let tt; function toast(msg){ const t=$("toast"); t.textContent=msg; t.classList.add("on"); clearTimeout(tt); tt=setTimeout(()=>t.classList.remove("on"),1800); }
+render();
+
+</script>
+</body>
+</html>
