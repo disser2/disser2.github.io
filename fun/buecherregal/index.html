@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Mein Bücherregal</title>
+<meta name="description" content="Interaktives Bücherregal aus dem Goodreads-Export: sortieren, filtern, suchen, nach Lesejahr ins Regal stellen und Bücher aufschlagen.">
+<meta name="theme-color" content="#f4ece1" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#1b1730" media="(prefers-color-scheme: dark)">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%23f4ece1'/%3E%3Crect x='12' y='14' width='9' height='38' rx='2' fill='%235b4bc4'/%3E%3Crect x='22' y='10' width='11' height='42' rx='2' fill='%23d4507f'/%3E%3Crect x='34' y='16' width='8' height='36' rx='2' fill='%232f8f83'/%3E%3Crect x='44' y='18' width='8' height='34' rx='2' fill='%23e3a857' transform='rotate(-10 44 52)'/%3E%3Crect x='8' y='52' width='48' height='4' rx='2' fill='%23b48a63'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Caveat:wght@500;600&family=DM+Sans:ital,opsz,wght@0,9..40,400..700;1,9..40,400&family=Fraunces:ital,opsz,wght@0,9..144,300..800;1,9..144,400..600&family=Oswald:wght@400..600&display=swap">
+<link rel="preconnect" href="https://covers.openlibrary.org">
+<link rel="stylesheet" href="style.css">
+<script>
+  // Theme vor dem ersten Zeichnen setzen (kein Aufblitzen)
+  try { var t = JSON.parse(localStorage.getItem("bs.theme")); if (t) document.documentElement.dataset.theme = t; } catch (e) {}
+</script>
+</head>
+<body>
+<a class="skip" href="#case">Zum Regal springen</a>
+
+<header class="topbar">
+  <a class="topbar__home" href="/">← Startseite</a>
+  <div class="topbar__right">
+    <div class="menuwrap">
+      <button class="pillbtn" id="dataBtn" type="button" aria-haspopup="true" aria-expanded="false" aria-controls="dataMenu">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v12m0 0l-4.5-4.5M12 15l4.5-4.5M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        Daten
+      </button>
+      <div class="menu" id="dataMenu" hidden>
+        <p class="menu__info" id="sourceInfo"></p>
+        <button type="button" data-act="import"><b>Goodreads-CSV importieren …</b><span>goodreads.com → My Books → Import and export → Export Library. Bleibt nur in diesem Browser.</span></button>
+        <button type="button" data-act="booksjs"><b>books.js für die Website erzeugen</b><span>Inkl. gefundener Cover &amp; Themen, ohne private Notizen – nach <code>data/</code> legen.</span></button>
+        <button type="button" data-act="csv"><b>Aktuelle Auswahl als CSV</b><span>Die gerade gefilterten Bücher im Goodreads-Format.</span></button>
+        <button type="button" data-act="online" role="menuitemcheckbox" aria-checked="true"><b>Cover von Open Library laden</b><span>Kostenlos, ohne Key. Aus: nur selbst gestaltete Einbände.</span></button>
+        <button type="button" data-act="clearcache"><b>Cover-Cache leeren</b><span>Beim nächsten Laden wird neu gesucht.</span></button>
+        <button type="button" data-act="unimport" hidden><b>Lokalen Import entfernen</b><span>Zurück zu den Daten der Website.</span></button>
+      </div>
+    </div>
+    <button class="pillbtn pillbtn--icon" id="themeBtn" type="button" aria-label="Leselampe an/aus (helles oder dunkles Design)">
+      <svg class="lamp" viewBox="0 0 24 24" aria-hidden="true"><path class="lamp__shade" d="M7 3h10l3 8H4z"/><path d="M12 11v8M8 21h8" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><path class="lamp__glow" d="M5 12l-2 6M19 12l2 6M12 12v3" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+    </button>
+  </div>
+</header>
+
+<section class="hero" aria-label="Überblick">
+  <div class="hero__panel">
+    <div class="hero__dots" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
+    <div class="hero__intro">
+      <h1 class="hero__title">Mein<br>Bücherregal</h1>
+      <p class="hero__lead" id="heroLead">&nbsp;</p>
+      <label class="searchpill">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="6.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M16 16l4.5 4.5" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+        <input id="heroSearch" type="search" placeholder="Titel, Autor:in, ISBN oder Thema" autocomplete="off" aria-label="Bücher durchsuchen">
+      </label>
+      <p class="hero__hint">Probier mal <button type="button" class="qex">seiten&gt;500</button> <button type="button" class="qex">thema:krimi</button> <button type="button" class="qex">jahr&lt;1950</button></p>
+    </div>
+    <div class="hero__stage">
+      <div class="hero__circle" aria-hidden="true"></div>
+      <button class="hero__book" id="heroBook" type="button"></button>
+      <p class="hero__booklabel"><span>Zuletzt gelesen</span><strong id="heroBookMeta"></strong></p>
+    </div>
+    <div class="hero__cards">
+      <div class="hcard-wrap">
+        <span class="hcard__vlabel" aria-hidden="true">Meistgelesen</span>
+        <button class="hcard hcard--author" id="authorCard" type="button" aria-label="Meistgelesene Autor:in – nach ihr filtern">
+          <span class="hcard__photo"></span>
+          <span class="hcard__name"></span>
+          <span class="hcard__meta"></span>
+        </button>
+      </div>
+      <div class="hcard-wrap">
+        <span class="hcard__vlabel" id="yearLabel" aria-hidden="true">Lesejahr</span>
+        <div class="hcard hcard--year" id="yearCard" title="Klick zeigt die Bücher dieses Jahres"></div>
+      </div>
+    </div>
+  </div>
+  <div class="hero__board" aria-hidden="true"></div>
+</section>
+
+<div class="demo-banner" id="demoBanner" hidden>
+  <span class="demo-banner__icon" aria-hidden="true">📚</span>
+  <p><strong>Das sind Beispieldaten.</strong> Lade deinen Goodreads-Export (CSV), dann stehen hier deine Bücher. Alternativ legst du die Datei als <code>data/goodreads_library_export.csv</code> ins Repo.</p>
+  <button type="button" class="btn btn--primary" id="demoImport">CSV wählen</button>
+</div>
+
+<nav class="toolbar" id="toolbar" aria-label="Regal steuern">
+  <div class="toolbar__inner">
+    <label class="tsearch">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="6.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M16 16l4.5 4.5" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+      <input id="search" type="search" placeholder="Suchen …" autocomplete="off" aria-label="Bücher durchsuchen (Taste /)">
+      <button type="button" class="tsearch__help" id="syntaxBtn" aria-label="Suchsyntax anzeigen" aria-expanded="false" aria-controls="syntaxPop">?</button>
+    </label>
+    <div class="seg" role="group" aria-label="Ansicht">
+      <button type="button" data-view="spine" aria-pressed="true" title="Buchrücken (v)"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4" width="4" height="16" rx="1"/><rect x="8.5" y="2.5" width="5" height="17.5" rx="1"/><rect x="15" y="5" width="3.5" height="15" rx="1"/><rect x="19.5" y="6" width="2" height="14" rx=".8" transform="rotate(-8 20.5 20)"/></svg><span>Rücken</span></button>
+      <button type="button" data-view="cover" aria-pressed="false" title="Cover (v)"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="2.5" y="4" width="8.5" height="16" rx="1.2"/><rect x="13" y="4" width="8.5" height="16" rx="1.2"/></svg><span>Cover</span></button>
+      <button type="button" data-view="list" aria-pressed="false" title="Liste (v)"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5" width="18" height="2.4" rx="1"/><rect x="3" y="10.8" width="18" height="2.4" rx="1"/><rect x="3" y="16.6" width="18" height="2.4" rx="1"/></svg><span>Liste</span></button>
+    </div>
+    <label class="sel"><span class="sel__label">Brett je</span><select id="groupSel" aria-label="Bretter (Gruppierung)"></select></label>
+    <div class="sortgrp">
+      <label class="sel"><span class="sel__label">Sortieren</span><select id="sortSel" aria-label="Sortieren nach"></select></label>
+      <button type="button" class="iconbtn dirbtn" id="dirBtn" data-dir="desc"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4v16m0 0l-6-6m6 6l6-6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+    </div>
+    <div class="toolbar__actions">
+      <button type="button" class="btn" id="filterBtn" aria-expanded="false" aria-controls="drawer" title="Filter (f)">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 6h16M7 12h10M10 18h4" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></svg>Filter<span class="badge" id="filterCount" hidden></span>
+      </button>
+      <button type="button" class="btn" id="statsBtn" aria-expanded="false" aria-controls="stats" title="Statistik (s)">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 20V11M10 20V5M15 20v-7M20 20V9" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"/></svg>Statistik
+      </button>
+      <button type="button" class="iconbtn" id="randomBtn" aria-label="Zufälliges Buch aufschlagen (r)" title="Überrasch mich (r)">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3.5" y="3.5" width="17" height="17" rx="4" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="8.5" cy="8.5" r="1.5"/><circle cx="15.5" cy="15.5" r="1.5"/><circle cx="12" cy="12" r="1.5"/><circle cx="15.5" cy="8.5" r="1.5"/><circle cx="8.5" cy="15.5" r="1.5"/></svg>
+      </button>
+    </div>
+    <div class="toolbar__sub">
+      <p class="resultcount" id="resultCount" aria-live="polite"></p>
+      <div class="chipsbar" id="activeChips" hidden></div>
+    </div>
+  </div>
+</nav>
+
+<div class="syntax-pop" id="syntaxPop" hidden role="dialog" aria-label="Suchsyntax">
+  <p><strong>Freitext</strong> sucht in Titel, Autor:in, Verlag, ISBN, Themen und Regalen. Felder lassen sich kombinieren (Klick fügt hinzu):</p>
+  <ul>
+    <li><code>autor:king</code> <code>titel:dune</code> <code>verlag:diogenes</code></li>
+    <li><code>seiten&gt;500</code> <code>seiten:200-350</code></li>
+    <li><code>jahr:1990-1999</code> <code>jahr&lt;1950</code> <code>jahr:19*</code></li>
+    <li><code>gelesen:2024</code> <code>gelesen:2023-05</code> <code>gelesen:ohne</code></li>
+    <li><code>isbn:9780441</code> <code>thema:fantasy</code> <code>typ:hörbuch</code></li>
+    <li><code>bewertung&gt;=4</code> <code>regal:favoriten</code> <code>reihe:dune</code></li>
+  </ul>
+  <p>Ein Minus schließt aus: <code>-thema:horror</code>. Anführungszeichen für Wortgruppen: <code>autor:"le guin"</code>.</p>
+</div>
+
+<section id="stats" class="stats" hidden aria-label="Statistik"></section>
+
+<main id="case" class="case case--spine" aria-label="Bücherregal"></main>
+<div id="list" class="list" hidden></div>
+<div class="empty" id="empty" hidden>
+  <svg viewBox="0 0 124 60" aria-hidden="true" class="empty__cat"><use href="#cat"/></svg>
+  <p><strong>Hier ist es leer.</strong> Kein Buch passt zu Suche und Filtern.</p>
+  <button type="button" class="btn btn--primary" id="emptyReset">Filter zurücksetzen</button>
+</div>
+
+<footer class="foot">
+  <p>Daten aus dem Goodreads-Export · Cover &amp; Themen von <a href="https://openlibrary.org" target="_blank" rel="noopener">Open Library</a> · fehlende Einbände sind generiert, die Rückenbreite folgt der Seitenzahl.</p>
+  <p class="foot__keys"><kbd>/</kbd> suchen · <kbd>f</kbd> Filter · <kbd>v</kbd> Ansicht · <kbd>s</kbd> Statistik · <kbd>r</kbd> Zufallsbuch · <kbd>←</kbd><kbd>→</kbd> im Regal &amp; im Buch blättern</p>
+</footer>
+
+<aside class="drawer" id="drawer" hidden aria-label="Filter">
+  <div class="drawer__backdrop"></div>
+  <div class="drawer__panel" role="dialog" aria-modal="true" aria-labelledby="drawerTitle">
+    <header class="drawer__head">
+      <h2 id="drawerTitle">Filter</h2>
+      <button type="button" class="iconbtn drawer__close" data-close aria-label="Filter schließen"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></svg></button>
+    </header>
+    <div class="drawer__body"></div>
+    <footer class="drawer__foot">
+      <button type="button" class="btn" data-reset>Zurücksetzen</button>
+      <button type="button" class="btn btn--primary" data-close>Bücher zeigen</button>
+    </footer>
+  </div>
+</aside>
+
+<div class="toast" id="toast" hidden role="status" aria-live="polite"></div>
+<div class="dropzone" id="dropzone" hidden><div><strong>Goodreads-CSV hier ablegen</strong><span>Die Bücher werden sofort eingeräumt.</span></div></div>
+<input type="file" id="fileInput" accept=".csv,text/csv" hidden>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="cat" viewBox="0 0 124 60"><path d="M100 50c15 0 20-14 9-21" stroke="#3d3a6b" stroke-width="7" fill="none" stroke-linecap="round"/><ellipse cx="68" cy="43" rx="40" ry="16" fill="#3d3a6b"/><ellipse cx="54" cy="48" rx="18" ry="8" fill="#f3eefe"/><circle cx="32" cy="37" r="15" fill="#3d3a6b"/><path d="M19 28l2-15 9 11z" fill="#3d3a6b"/><path d="M35 23l9-11v16z" fill="#3d3a6b"/><path d="M24 38q3 2.5 6 0M35 38q3 2.5 6 0" stroke="#f3eefe" stroke-width="1.6" fill="none" stroke-linecap="round"/><ellipse cx="32.5" cy="44" rx="6" ry="4" fill="#f3eefe"/></symbol>
+</svg>
+
+<script src="js/util.js"></script>
+<script src="js/csv.js"></script>
+<script src="js/model.js"></script>
+<script src="js/covers.js"></script>
+<script src="js/spine.js"></script>
+<script src="js/shelf.js"></script>
+<script src="js/reader.js"></script>
+<script src="js/stats.js"></script>
+<script src="js/ui.js"></script>
+<script src="data/demo.js"></script>
+<script src="data/books.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>
