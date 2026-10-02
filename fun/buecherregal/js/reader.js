@@ -128,6 +128,8 @@
       '<button type="button" class="chip chip--theme" data-filter="genre" data-value="' + k + '" style="--sw:' +
       U.esc(M.GENRE[k].pal[0]) + '"><i></i>' + U.esc(M.GENRE[k].label) + "</button>").join("") +
       b.shelves.map((s) => '<button type="button" class="chip chip--shelf" data-filter="shelf" data-value="' + U.esc(s) + '">#' + U.esc(s) + "</button>").join("");
+    const tags = b.tags.map((t) =>
+      '<button type="button" class="chip chip--tag" data-filter="q" data-value="' + U.esc(t) + '">' + U.esc(t) + "</button>").join("");
     return '<div class="pg pg--left">' +
       '<div class="exlibris"><span class="exlibris__t">Ex Libris</span>' +
       (b.no ? '<span class="exlibris__n">Nr. ' + b.no + "</span>" : '<span class="exlibris__n">' + U.esc(M.statusLabel(b.status)) + "</span>") +
@@ -135,13 +137,14 @@
       '<dl class="facts">' +
       fact("Erstveröffentlichung", b.origYear != null ? String(b.origYear) : "") +
       fact("Diese Ausgabe", edition) +
-      fact("Seiten", b.pages ? U.fmt(b.pages) + (b.grPages ? "" : " (laut Open Library)") : "") +
+      fact("Seiten", b.pages ? U.fmt(b.pages) + (b.grPages ? "" : " (laut Katalog)") : "") +
       fact("Buchtyp", U.esc(M.TYPE[b.type].label)) +
       fact("ISBN", isbn ? '<span class="isbn">' + U.esc(isbn) + '</span> <button type="button" class="linkbtn" data-copy="' + U.esc(isbn) + '">kopieren</button>' : "") +
       fact("Gelesen", U.esc(read)) +
       fact("Ins Regal gestellt", b.dateAdded ? U.fmtDate(b.dateAdded) : "") +
       "</dl>" +
-      (chips ? '<div class="pg__chips">' + chips + "</div>" : "") +
+      (chips ? '<h3 class="pg__h">Themen</h3><div class="pg__chips">' + chips + "</div>" : "") +
+      (tags ? '<h3 class="pg__h">Stichworte</h3><div class="pg__chips">' + tags + "</div>" : "") +
       '<p class="pg__links"><a href="' + U.esc(M.grLink(b)) + '" target="_blank" rel="noopener">Goodreads ↗</a>' +
       '<a href="' + U.esc(M.olLink(b)) + '" target="_blank" rel="noopener">Open Library ↗</a></p>' +
       "</div>";

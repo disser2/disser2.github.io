@@ -201,6 +201,9 @@ kbd { border-bottom: 2px solid var(--chip-2); }
 .pillbtn svg { width: 17px; height: 17px; }
 .pillbtn--icon { padding: 8px; }
 .pillbtn--icon svg { width: 20px; height: 20px; }
+.pillbtn[aria-pressed="true"] { background: var(--accent); color: var(--accent-ink); }
+/* Breite Ansicht: alle Bereiche nutzen die ganze Fensterbreite (16px Rand bleiben) */
+:root[data-wide="1"] { --max: 100%; }
 .lamp__shade { fill: currentColor; transition: fill 0.4s; }
 .lamp__glow { opacity: 0; transition: opacity 0.4s; color: #ffb347; }
 :root[data-theme="dark"] .lamp__shade { fill: #ffcf7a; }
@@ -1138,7 +1141,10 @@ kbd { border-bottom: 2px solid var(--chip-2); }
 .reader.is-cover-open .b3__cover { transform: rotateY(-180deg); }
 .reader--single.is-cover-open .b3__cover { opacity: 0; }
 .b3__face { position: absolute; inset: 0; backface-visibility: hidden; -webkit-backface-visibility: hidden; overflow: hidden; }
-.b3__face--front { border-radius: 2px 8px 8px 2px; }
+/* Firefox blendet die Rückseite nur aus, wenn die Fläche selbst eine 3D-Transformation hat –
+   sonst liegt das gespiegelte Cover über der linken Seite des aufgeschlagenen Buchs. */
+.b3__face--front { border-radius: 2px 8px 8px 2px; transform: rotateY(0deg); }
+.reader--spread.is-cover-open .b3__face--front { visibility: hidden; }
 .b3__face--front .cv { border-radius: inherit; box-shadow: none; }
 .b3__face--front .cv__t { font-size: calc(10cqw * var(--ts, 1)); }
 .b3__face--inside {
@@ -1221,6 +1227,8 @@ kbd { border-bottom: 2px solid var(--chip-2); }
 .pg__chips { display: flex; flex-wrap: wrap; gap: 5px; margin: 6px 0 14px; }
 .b3 .chip { background: rgba(60, 40, 30, 0.07); color: #2f2638; }
 .b3 .chip:hover { background: rgba(60, 40, 30, 0.13); }
+.b3 .chip--tag { background: none; box-shadow: inset 0 0 0 1px rgba(60, 40, 30, 0.2); color: #5d5266; font-size: 12px; padding: 3px 9px; }
+.pg--left .pg__h { margin-top: 14px; }
 .pg__links { display: flex; gap: 14px; margin: 8px 0 0; font-size: 13px; }
 .pg__links a { color: #5b4bc4; text-decoration: none; }
 .pg__links a:hover { text-decoration: underline; }
@@ -1267,6 +1275,11 @@ kbd { border-bottom: 2px solid var(--chip-2); }
 .toast.is-on { transform: none; opacity: 1; }
 .toast__spin { width: 14px; height: 14px; border-radius: 50%; border: 2px solid currentColor; border-right-color: transparent; animation: spin 0.9s linear infinite; opacity: 0.8; }
 @keyframes spin { to { transform: rotate(360deg); } }
+.toast__btn {
+  margin-left: auto; border: 0; border-radius: 9px; padding: 4px 11px;
+  background: color-mix(in srgb, currentColor 16%, transparent); color: inherit; font-size: 12.5px; font-weight: 600;
+}
+.toast__btn:hover { background: color-mix(in srgb, currentColor 28%, transparent); }
 .toast__bar { flex-basis: 100%; height: 3px; border-radius: 2px; background: linear-gradient(90deg, var(--accent-2) calc(var(--p) * 100%), rgba(127, 127, 127, 0.25) 0); }
 .dropzone {
   position: fixed; inset: 12px; z-index: 200;

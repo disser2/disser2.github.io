@@ -26,13 +26,13 @@
 
   // ---------- Daten laden ----------
   async function loadSource() {
+    // Cover, Seitenzahlen und Themen aus books.js gelten auch für einen lokalen Import
+    // (gleiche Schlüssel) – sonst sucht der Browser alles noch einmal bei Open Library.
+    const pub = window.BOOKSHELF_DATA;
+    if (pub && pub.enrichment) BS.covers.seed(pub.enrichment);
     const imp = U.store.get(IMPORT_KEY, null);
     if (imp && imp.csv) return { kind: "import", rows: BS.csv.toObjects(imp.csv), name: imp.name, date: imp.date };
-    const pub = window.BOOKSHELF_DATA;
-    if (pub && pub.rows && pub.rows.length) {
-      BS.covers.seed(pub.enrichment);
-      return { kind: "published", rows: pub.rows, date: pub.generated };
-    }
+    if (pub && pub.rows && pub.rows.length) return { kind: "published", rows: pub.rows, date: pub.generated };
     if (/^https?:/.test(location.protocol)) {
       try {
         const r = await fetch("data/goodreads_library_export.csv", { cache: "no-cache" });
@@ -375,6 +375,33 @@
       if (!U.reducedMotion()) document.body.animate([{ filter: "brightness(" + (next === "dark" ? 1.25 : 0.7) + ")" }, { filter: "none" }], { duration: 500, easing: "ease-out" });
     });
 
+    // Breite Ansicht: Regal über die ganze Fensterbreite
+    const wideBtn = U.$("#wideBtn");
+    const syncWide = () => {
+      const wide = document.documentElement.dataset.wide === "1";
+      wideBtn.setAttribute("aria-pressed", String(wide));
+      wideBtn.title = wide ? "Normale Breite" : "Ganze Bildschirmbreite nutzen";
+    };
+    syncWide();
+    wideBtn.addEventListener("click", () => {
+      const wide = document.documentElement.dataset.wide !== "1";
+      if (wide) document.documentElement.dataset.wide = "1";
+      else delete document.documentElement.dataset.wide;
+      U.store.set("bs.wide", wide);
+      syncWide();
+      // Bretter neu füllen: die Bücher hüpfen an ihren neuen Platz
+      if (state.view !== "list") apply();
+      if (state.stats) BS.stats.update();
+    });
+
+    // Laufende Cover-Suche anhalten / fortsetzen (Knöpfe in der Meldung unten links)
+    U.$("#toast").addEventListener("click", (e) => {
+      const t = e.target.closest("[data-toast]");
+      if (!t) return;
+      if (t.dataset.toast === "stop") stopEnrich();
+      else if (t.dataset.toast === "resume") enrich();
+    });
+
     // Daten-Menü
     U.$("#dataBtn").addEventListener("click", (e) => {
       e.stopPropagation();
@@ -589,10 +616,12 @@
   }
 
   // ---------- Open-Library-Anreicherung ----------
+  let lookup = null; // Stand des laufenden Suchdurchgangs (für Stopp/Fortsetzen)
   function enrich() {
     if (!BS.covers.online()) return;
     const pending = [];
     let found = 0;
+    const me = (lookup = { done: 0, total: 0, paused: false });
     const flush = U.debounce(() => {
       if (!pending.length) return;
       let relayout = false;
@@ -620,16 +649,39 @@
         flush();
       },
       (doneN, total, stopped, finished) => {
+        if (lookup !== me) return; // inzwischen läuft ein neuer Durchgang
+        me.done = doneN;
+        me.total = total;
+        me.found = found;
+        if (stopped === "user") {
+          // Stopp-Knopf zeigt selbst eine Meldung; beim Schalter im Daten-Menü nur aufräumen
+          if (finished && !me.paused) BS.ui.hideToast();
+          return;
+        }
         if (finished) {
           if (stopped && found === 0) BS.ui.toast("Open Library ist gerade nicht erreichbar – die Einbände bleiben selbst gestaltet.", { ms: 5000 });
           else if (total > 5) BS.ui.toast("Fertig: <strong>" + found + " Cover</strong> gefunden" + (total - found > 0 ? ", " + (total - found) + " Einbände selbst gestaltet." : "."), { ms: 4000 });
           else BS.ui.hideToast();
           return;
         }
-        if (total > 5)
-          BS.ui.toast('<span class="toast__spin" aria-hidden="true"></span>Suche Cover &amp; Themen bei Open Library … ' + doneN + "/" + total +
-            '<span class="toast__bar" style="--p:' + (doneN / total).toFixed(3) + '"></span>');
+        if (total <= 5) return;
+        // Nur Zahl und Balken nachführen – sonst tauscht jeder Schritt den Stopp-Knopf unter dem Mauszeiger aus
+        let label = U.$("#toast.is-on [data-progress]");
+        if (!label) {
+          BS.ui.toast('<span class="toast__spin" aria-hidden="true"></span><span>Suche Cover &amp; Themen bei Open Library … <span data-progress></span></span>' +
+            '<button type="button" class="toast__btn" data-toast="stop">Stopp</button><span class="toast__bar"></span>');
+          label = U.$("#toast [data-progress]");
+        }
+        label.textContent = doneN + "/" + total;
+        U.$("#toast .toast__bar").style.setProperty("--p", (doneN / total).toFixed(3));
       });
+  }
+  function stopEnrich() {
+    if (!lookup) return;
+    lookup.paused = true;
+    BS.covers.stop();
+    BS.ui.toast("Suche angehalten bei " + lookup.done + " von " + lookup.total + " Büchern." +
+      '<button type="button" class="toast__btn" data-toast="resume">Fortsetzen</button>', { ms: 12000 });
   }
 
   // ---------- Start ----------
@@ -640,6 +692,7 @@
     BS.reader.init({ navList: () => order, onFilter: (kind, value) => {
       if (kind === "genre") toggleFacet("genres", value);
       else if (kind === "shelf") toggleFacet("shelves", value);
+      else if (kind === "q") setQuery('"' + value.replace(/"/g, "") + '"');
       U.$("#toolbar").scrollIntoView({ behavior: U.reducedMotion() ? "auto" : "smooth" });
     } });
     BS.ui.init(api);

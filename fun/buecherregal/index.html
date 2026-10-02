@@ -16,6 +16,8 @@
 <script>
   // Theme vor dem ersten Zeichnen setzen (kein Aufblitzen)
   try { var t = JSON.parse(localStorage.getItem("bs.theme")); if (t) document.documentElement.dataset.theme = t; } catch (e) {}
+  // ebenso die breite Ansicht
+  try { if (JSON.parse(localStorage.getItem("bs.wide"))) document.documentElement.dataset.wide = "1"; } catch (e) {}
 </script>
 </head>
 <body>
@@ -39,6 +41,9 @@
         <button type="button" data-act="unimport" hidden><b>Lokalen Import entfernen</b><span>Zurück zu den Daten der Website.</span></button>
       </div>
     </div>
+    <button class="pillbtn pillbtn--icon" id="wideBtn" type="button" aria-pressed="false" aria-label="Breite Ansicht: ganze Bildschirmbreite nutzen">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 12h18M7 8l-4 4 4 4M17 8l4 4-4 4" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </button>
     <button class="pillbtn pillbtn--icon" id="themeBtn" type="button" aria-label="Leselampe an/aus (helles oder dunkles Design)">
       <svg class="lamp" viewBox="0 0 24 24" aria-hidden="true"><path class="lamp__shade" d="M7 3h10l3 8H4z"/><path d="M12 11v8M8 21h8" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><path class="lamp__glow" d="M5 12l-2 6M19 12l2 6M12 12v3" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
     </button>
@@ -145,7 +150,7 @@
 </div>
 
 <footer class="foot">
-  <p>Daten aus dem Goodreads-Export · Cover &amp; Themen von <a href="https://openlibrary.org" target="_blank" rel="noopener">Open Library</a> · fehlende Einbände sind generiert, die Rückenbreite folgt der Seitenzahl.</p>
+  <p>Daten aus dem Goodreads-Export · Cover &amp; Schlagwörter von <a href="https://openlibrary.org" target="_blank" rel="noopener">Open Library</a> und der <a href="https://www.dnb.de" target="_blank" rel="noopener">Deutschen Nationalbibliothek</a> · fehlende Einbände sind generiert, die Rückenbreite folgt der Seitenzahl.</p>
   <p class="foot__keys"><kbd>/</kbd> suchen · <kbd>f</kbd> Filter · <kbd>v</kbd> Ansicht · <kbd>s</kbd> Statistik · <kbd>r</kbd> Zufallsbuch · <kbd>←</kbd><kbd>→</kbd> im Regal &amp; im Buch blättern</p>
 </footer>
 

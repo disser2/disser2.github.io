@@ -21,7 +21,7 @@
   let cache = U.store.get(CACHE_KEY, {}) || {};
   let seeded = {}; // aus data/books.js (vorab angereichert)
   const failedImg = new Set();
-  let running = false, stopFlag = false;
+  let current = null; // laufender Suchdurchgang
 
   const online = () => U.store.get(SETTINGS_KEY, true) !== false;
   function setOnline(v) {
@@ -31,8 +31,9 @@
   function seed(enrichment) {
     seeded = enrichment || {};
   }
+  // books.js geht vor: dort stehen auch lokale Cover (img) und die Themen von Hand (th)
   function get(key) {
-    return cache[key] || seeded[key] || null;
+    return seeded[key] || cache[key] || null;
   }
   const saveCache = U.debounce(() => {
     if (!U.store.set(CACHE_KEY, cache)) {
@@ -42,15 +43,26 @@
     }
   }, 800);
 
-  function coverUrl(book, size) {
+  // Kandidaten in der Reihenfolge, in der sie probiert werden: lokale Datei aus
+  // data/covers/ (von tools/build_books.py), dann Open Library per Cover-ID, dann per ISBN.
+  function coverUrls(book, size) {
     size = size || "M";
     const rec = get(book.olKey);
-    if (rec && rec.c) return "https://covers.openlibrary.org/b/id/" + rec.c + "-" + size + ".jpg";
-    if (rec && rec.c === 0 && rec.t) return null; // gesucht, nichts gefunden
+    const out = [];
+    if (rec && rec.img && !failedImg.has(rec.img)) out.push(rec.img);
+    if (rec && rec.c && online()) out.push("https://covers.openlibrary.org/b/id/" + rec.c + "-" + size + ".jpg");
+    if (out.length || (rec && rec.c === 0 && rec.t)) return out; // gesucht, nichts (weiteres) gefunden
     const isbn = book.isbn13 || book.isbn10;
     if (isbn && online() && !failedImg.has(isbn))
-      return "https://covers.openlibrary.org/b/isbn/" + isbn + "-" + size + ".jpg?default=false";
-    return null;
+      out.push("https://covers.openlibrary.org/b/isbn/" + isbn + "-" + size + ".jpg?default=false");
+    return out;
+  }
+  function coverUrl(book, size) {
+    return coverUrls(book, size)[0] || null;
+  }
+  function markFailedUrl(book, url) {
+    if (/^https?:/.test(url)) markFailed(book);
+    else failedImg.add(url);
   }
   function markFailed(book) {
     const isbn = book.isbn13 || book.isbn10;
@@ -131,6 +143,7 @@
   }
 
   function needs(book) {
+    if (seeded[book.olKey]) return false; // schon von tools/build_books.py nachgeschlagen
     const rec = get(book.olKey);
     if (!rec) return true;
     if (!rec.c && rec.t && Date.now() - rec.t > RETRY_NONE_MS) return true;
@@ -139,17 +152,19 @@
 
   // Warteschlange: 2 parallel, höflicher Abstand, bei 429 Pause, bei
   // wiederholten Netzfehlern (offline, blockiert) für diese Sitzung aufgeben.
+  // onProgress(erledigt, gesamt, gestoppt, fertig) – gestoppt: "user" (Stopp-Knopf, Schalter,
+  // neue Daten) oder "net" (Open Library nicht erreichbar).
   async function run(books, onResult, onProgress) {
-    if (running || !online() || !window.fetch) return;
+    if (!online() || !window.fetch) return;
+    stop(); // ein älterer Durchgang läuft nach seiner letzten Anfrage aus
     const todo = books.filter(needs);
     if (!todo.length) return;
-    running = true;
-    stopFlag = false;
+    const job = (current = { stop: false });
     let doneCount = 0, netFails = 0;
     const total = todo.length;
     onProgress && onProgress(0, total);
     const worker = async () => {
-      while (todo.length && !stopFlag) {
+      while (todo.length && !job.stop) {
         const book = todo.shift();
         try {
           const rec = await lookup(book);
@@ -163,19 +178,20 @@
             await U.wait(30000);
             continue;
           }
-          if (++netFails >= 4) stopFlag = true;
+          if (++netFails >= 4) job.stop = job.stop || "net";
         }
         doneCount++;
-        onProgress && onProgress(doneCount, total, stopFlag);
+        onProgress && onProgress(doneCount, total, job.stop);
         await U.wait(350);
       }
     };
     await Promise.all([worker(), worker()]);
-    running = false;
-    onProgress && onProgress(total, total, stopFlag, true);
+    if (current === job) current = null;
+    onProgress && onProgress(doneCount, total, job.stop, true);
   }
   function stop() {
-    stopFlag = true;
+    if (current) current.stop = "user";
+    current = null;
   }
   function clear() {
     cache = {};
@@ -192,5 +208,5 @@
     return out;
   }
 
-  BS.covers = { seed, get, coverUrl, markFailed, authorPhotoUrl, run, stop, clear, exportFor, online, setOnline, similar };
+  BS.covers = { seed, get, coverUrl, coverUrls, markFailed, markFailedUrl, authorPhotoUrl, run, stop, clear, exportFor, online, setOnline, similar };
 })();

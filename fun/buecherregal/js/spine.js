@@ -144,28 +144,31 @@
   // Echtes Cover über das generierte legen, sobald es geladen ist
   function attachCover(coverEl, b, size) {
     if (!coverEl || coverEl.querySelector(".cv__img")) return;
-    const url = BS.covers.coverUrl(b, size || "M");
-    if (!url) return;
+    const urls = BS.covers.coverUrls(b, size || "M");
+    if (!urls.length) return;
     const img = new Image();
     img.className = "cv__img";
     img.alt = "";
     img.decoding = "async";
     img.referrerPolicy = "no-referrer";
+    // Fehlt die lokale Datei, kommt der nächste Kandidat dran (Open Library)
+    const next = () => {
+      const url = urls.shift();
+      if (url) img.src = url;
+      else img.remove();
+    };
+    const failed = () => {
+      BS.covers.markFailedUrl(b, img.getAttribute("src"));
+      next();
+    };
     img.onload = () => {
       // Open Library liefert bei fehlenden Covern teils 1×1-Pixel
-      if (img.naturalWidth < 20) {
-        img.remove();
-        BS.covers.markFailed(b);
-        return;
-      }
+      if (img.naturalWidth < 20) return failed();
       coverEl.classList.add("has-img");
       requestAnimationFrame(() => img.classList.add("is-loaded"));
     };
-    img.onerror = () => {
-      img.remove();
-      BS.covers.markFailed(b);
-    };
-    img.src = url;
+    img.onerror = failed;
+    next();
     coverEl.append(img);
   }
 

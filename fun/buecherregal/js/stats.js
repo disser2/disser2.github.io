@@ -346,7 +346,7 @@
     const counts = {};
     books.forEach((b) => b.themes.forEach((k) => (counts[k] = (counts[k] || 0) + 1)));
     const rows = Object.keys(counts).map((k) => ({ key: k, label: M.GENRE[k].label, n: counts[k] }))
-      .sort((a, b) => b.n - a.n || M.GENRE[a.key].order - M.GENRE[b.key].order).slice(0, 12);
+      .sort((a, b) => b.n - a.n || M.GENRE[a.key].order - M.GENRE[b.key].order).slice(0, 16);
     hbars(c, rows, sel, (k) => app.toggleFacet("genres", k), (r) => M.GENRE[r.key].pal[0]);
     c.subEl.textContent = "Ein Buch kann mehrere Themen haben · Punkt = typische Einbandfarbe im Regal";
     setTable(c, ["Thema", "Bücher"], rows.map((r) => [r.label, U.fmt(r.n)]));

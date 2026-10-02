@@ -6,18 +6,163 @@
   const U = BS.util;
 
   // ---------- Themen ----------
-  // Reihenfolge = Anzeige-Reihenfolge. "generic" zählt schwächer, damit z. B.
-  // "Fiction" + "Science fiction" bei Science-Fiction landet und nicht bei Roman.
+  // Reihenfolge = Anzeige-Reihenfolge. Schlüssel stehen auch in data/themen.csv und in der URL.
   // Die Paletten sind Einbandfarben (Deko auf dem Regal), keine Diagrammfarben.
   const GENRES = [
-    { key: "roman", label: "Roman", generic: true,
+    // ----- Sachbuch -----
+    { key: "politik", label: "Politik & Demokratie",
+      pal: ["#3d405b", "#5c6784", "#9d2933", "#2b3a55", "#7a3e48", "#4a5a7a"],
+      kw: ["politics", "politik", "political science", "political", "politikwissenschaft", "politische bildung",
+        "democracy", "demokratie", "populism", "populismus", "rechtspopulismus", "rechtsextremismus",
+        "rechtsradikalismus", "right wing extremism", "extremismus", "fascism", "faschismus", "totalitarianism",
+        "totalitarismus", "authoritarianism", "autoritarismus", "dictatorship", "diktatur", "government",
+        "regierung", "world politics", "weltpolitik", "geopolitics", "geopolitik", "international relations",
+        "internationale politik", "public policy", "elections", "wahlen", "propaganda", "liberalism",
+        "liberalismus", "socialism", "sozialismus", "communism", "kommunismus", "political ideologies", "staat",
+        "verfassung", "constitution", "recht", "law", "human rights", "menschenrechte", "terrorism",
+        "terrorismus", "war", "krieg", "military", "militar", "current events", "zeitgeschehen",
+        "european union", "europaische union", "verschworungstheorie", "conspiracy theories"] },
+    { key: "gesellschaft", label: "Gesellschaft & Ungleichheit",
+      pal: ["#8e4585", "#a05195", "#7b3f73", "#b06aa6", "#6f2f66", "#9a5b8f"],
+      kw: ["sociology", "soziologie", "society", "gesellschaft", "social science", "social sciences",
+        "sozialwissenschaften", "social conditions", "social classes", "soziale ungleichheit", "inequality",
+        "ungleichheit", "equality", "poverty", "armut", "klasse", "klassengesellschaft", "working class",
+        "arbeiterklasse", "racism", "rassismus", "race relations", "discrimination", "diskriminierung",
+        "migration", "immigration", "einwanderung", "emigration and immigration", "integration", "refugees",
+        "fluchtlinge", "flucht", "education", "bildung", "bildungswesen", "social problems", "soziale probleme",
+        "social justice", "soziale gerechtigkeit", "cities", "city planning", "urbanism", "stadt", "stadte",
+        "stadtplanung", "media", "medien", "journalism", "journalismus", "social change", "sozialer wandel",
+        "gesellschaftskritik", "demography", "demografie", "soziale herkunft", "chancengleichheit"] },
+    { key: "feminismus", label: "Feminismus & Gender",
+      pal: ["#d6336c", "#c2255c", "#e64980", "#b02a5b", "#f06595", "#a61e4d"],
+      kw: ["feminism", "feminismus", "feminist", "feminist theory", "women", "frauen", "frau", "women s studies",
+        "frauenbewegung", "gender", "geschlecht", "geschlechterrolle", "geschlechterverhaltnis", "gender studies",
+        "geschlechterforschung", "sexism", "sexismus", "patriarchy", "patriarchat", "misogyny", "misogynie",
+        "frauenfeindlichkeit", "lgbt", "lgbtq", "lgbtqia", "queer", "homosexuality", "homosexualitat",
+        "transgender", "masculinity", "mannlichkeit", "gleichberechtigung", "gleichstellung", "women s rights",
+        "frauenrechte", "sex role", "sex discrimination", "metoo"] },
+    { key: "wirtschaft", label: "Wirtschaft & Kapitalismus",
+      pal: ["#606c38", "#283618", "#bc6c25", "#b5894a", "#556b2f"],
+      kw: ["economics", "okonomie", "wirtschaft", "volkswirtschaft", "business economics", "economic history",
+        "wirtschaftsgeschichte", "wirtschaftspolitik", "economic policy", "capitalism", "kapitalismus",
+        "finance", "finanzen", "money", "geld", "investing", "investment", "banks", "banken", "banking",
+        "globalization", "globalisierung", "economic development", "development economics", "wealth",
+        "vermogen", "reichtum", "taxation", "steuern", "trade", "handel", "economic growth", "wachstum",
+        "behavioral economics", "verhaltensokonomie", "income distribution", "neoliberalism", "neoliberalismus",
+        "consumption", "konsum", "labor", "arbeit", "arbeitsmarkt", "arbeitswelt", "finanzkrise",
+        "financial crises"] },
+    { key: "business", label: "Business & Management",
+      pal: ["#b08d57", "#9c7a45", "#c2a06a", "#8a6a3a", "#a98250", "#7d6238"],
+      kw: ["business", "management", "leadership", "fuhrung", "entrepreneurship", "unternehmertum", "startup",
+        "startups", "marketing", "corporations", "unternehmen", "unternehmensfuhrung", "innovation",
+        "strategy", "strategie", "organizational behavior", "negotiation", "verhandlung", "product management",
+        "karriere", "careers", "new business enterprises", "industries"] },
+    { key: "geschichte", label: "Geschichte",
+      pal: ["#6f4e37", "#8b5e3c", "#4a4e69", "#5e503f", "#7c6a56", "#3f4a5a"],
+      not: ["natural history"],
+      kw: ["history", "geschichte", "zeitgeschichte", "world history", "weltgeschichte", "antike",
+        "mittelalter", "middle ages", "ancient", "civilization", "zivilisation", "archaeology", "archaologie",
+        "alte geschichte archaologie", "geschichte europas", "geschichte deutschlands", "world war",
+        "weltkrieg", "holocaust", "nationalsozialismus", "drittes reich", "cold war", "kalter krieg", "ddr",
+        "weimarer republik", "colonialism", "kolonialismus", "slavery", "sklaverei", "kulturgeschichte"] },
+    { key: "welt", label: "Welt & Reportage",
+      pal: ["#3a86c8", "#2f74b5", "#4a9ad4", "#2a6aa0", "#5aa5d6", "#256091"],
+      kw: ["travel", "reise", "reisen", "reisebericht", "reiseberichte", "reportage", "reportagen",
+        "erlebnisbericht", "geography", "geografie", "geografie reisen", "china", "russia", "russland",
+        "africa", "afrika", "asia", "asien", "middle east", "naher osten", "india", "indien", "iran",
+        "afghanistan", "north korea", "nordkorea", "latin america", "lateinamerika", "ukraine", "japan",
+        "developing countries", "entwicklungslander", "foreign relations", "voyages and travels"] },
+    { key: "ki", label: "KI & Digitales",
+      not: ["science fiction", "robots fiction"],
+      pal: ["#3a0ca3", "#4361ee", "#3f6fd8", "#3f37c9", "#560bad", "#5e60ce"],
+      kw: ["artificial intelligence", "kunstliche intelligenz", "ki", "ai", "machine learning",
+        "maschinelles lernen", "deep learning", "data science", "big data", "daten", "algorithms",
+        "algorithmen", "algorithmus", "computer", "computers", "computer science", "informatik", "technology",
+        "technologie", "programming", "programmieren", "software", "internet", "digital", "digitalisierung",
+        "digitale revolution", "social media", "soziale medien", "soziale netzwerke", "robots", "roboter",
+        "robotics", "tech", "silicon valley", "surveillance", "uberwachung", "datenschutz", "privacy",
+        "video games", "computerspiele", "information technology", "informationstechnik",
+        "information society", "informationsgesellschaft"] },
+    { key: "wissenschaft", label: "Naturwissenschaft & Mathe",
+      not: ["science fiction", "sci fi", "computer science", "political science", "social science", "fiction science",
+        "life sciences"],
+      pal: ["#2a9d8f", "#264653", "#3a7d7c", "#287271", "#1b998b", "#40798c"],
+      kw: ["science", "sciences", "wissenschaft", "naturwissenschaft", "naturwissenschaften", "popular science",
+        "popularwissenschaft", "physics", "physik", "mathematics", "mathematik", "mathe", "math", "maths",
+        "statistics", "statistik", "probability", "wahrscheinlichkeit", "chemistry", "chemie", "astronomy",
+        "astronomie", "astrophysics", "cosmology", "kosmologie", "universe", "universum", "weltall", "quantum",
+        "geology", "geowissenschaften", "evolution", "genetics", "genetik", "complexity", "komplexitat",
+        "systems", "systemtheorie", "bayesian", "wissenschaftsgeschichte", "wissenschaftstheorie"] },
+    { key: "natur", label: "Natur, Klima & Umwelt",
+      pal: ["#4f8a3c", "#3f7a34", "#6a9f4d", "#2f6b2f", "#7bab5a", "#386641"],
+      kw: ["nature", "natur", "ecology", "okologie", "environment", "umwelt", "umweltschutz", "environmental",
+        "climate", "klima", "klimawandel", "klimaanderung", "climate change", "global warming", "klimakrise",
+        "biodiversity", "biodiversitat", "artensterben", "artenvielfalt", "extinction", "animals", "tiere",
+        "tiere zoologie", "zoology", "zoologie", "plants", "pflanzen", "botany", "botanik", "biology",
+        "biologie", "life sciences", "oceans", "ozean", "meer", "forests", "wald", "sustainability",
+        "nachhaltigkeit", "conservation", "naturschutz", "anthropocene", "anthropozan", "energy", "energie",
+        "agriculture", "landwirtschaft", "animal rights", "tierschutz", "tierethik", "fungi", "pilze",
+        "insects", "insekten", "paleontology", "palaontologie", "natural history"] },
+    { key: "anthropologie", label: "Mensch, Kultur & Sprache",
+      pal: ["#c9713f", "#b86434", "#d4844f", "#a5562b", "#c27a50", "#96502a"],
+      kw: ["anthropology", "anthropologie", "ethnology", "ethnologie", "ethnography", "ethnografie",
+        "ethnographie", "human evolution", "menschwerdung", "prehistoric peoples", "urgeschichte",
+        "vorgeschichte", "culture", "kultur", "kulturanthropologie", "cultural anthropology", "language",
+        "sprache", "languages", "sprachen", "linguistics", "linguistik", "sprachwissenschaft",
+        "sprache linguistik", "language and languages", "indigenous peoples", "indigene volker",
+        "human beings", "menschheit", "menschheitsgeschichte", "social evolution"] },
+    { key: "medizin", label: "Medizin & Gesundheit",
+      pal: ["#52b69a", "#6fae9b", "#34a0a4", "#76b8b0", "#4d908e", "#88b5a8"],
+      kw: ["medicine", "medizin", "medical", "medizinisch", "health", "gesundheit", "medizin gesundheit",
+        "gesundheitswesen", "neuroscience", "neurowissenschaft", "neurowissenschaften", "neurology",
+        "neurologie", "physicians", "arzte", "arzt", "doctors", "diseases", "disease", "krankheit",
+        "krankheiten", "cancer", "krebs", "psychiatry", "psychiatrie", "nutrition", "ernahrung", "sleep",
+        "schlaf", "public health", "epidemics", "epidemiologie", "pandemic", "pandemie", "hospital",
+        "krankenhaus", "klinik", "surgery", "chirurgie", "nursing", "pflege", "human body", "anatomy",
+        "anatomie", "pharmaceutical industry", "arzneimittel", "immunsystem", "addiction", "sucht"] },
+    { key: "psychologie", label: "Psychologie & Denken",
+      pal: ["#e07a7a", "#e8a598", "#d9704f", "#c96a6a", "#e59a8a", "#b85c5c"],
+      kw: ["psychology", "psychologie", "cognitive", "kognition", "cognitive science", "kognitionswissenschaft",
+        "cognitive psychology", "behavior", "behaviour", "verhalten", "decision making", "entscheidung",
+        "entscheidungen", "entscheidungsfindung", "brain", "gehirn", "consciousness", "bewusstsein", "memory",
+        "gedachtnis", "thinking", "denken", "thought and thinking", "emotions", "emotionen", "gefuhle",
+        "social psychology", "sozialpsychologie", "reasoning", "personality", "personlichkeit",
+        "psychotherapy", "psychotherapie"] },
+    { key: "ratgeber", label: "Ratgeber & Selbsthilfe",
+      pal: ["#f4a261", "#e9965a", "#f6b17a", "#e08a4c", "#f2a977", "#d98248"],
+      kw: ["self help", "selbsthilfe", "ratgeber", "lebenshilfe", "lebensfuhrung", "personal development",
+        "personlichkeitsentwicklung", "self improvement", "personal growth", "productivity", "produktivitat",
+        "habits", "gewohnheiten", "mindfulness", "achtsamkeit", "happiness", "gluck", "motivation", "success",
+        "erfolg", "self actualization", "selbstmanagement", "zeitmanagement", "time management",
+        "conduct of life", "interpersonal relations", "relationships", "beziehungen", "parenting",
+        "family relationships"] },
+    { key: "philosophie", label: "Philosophie & Religion",
+      pal: ["#5f6caf", "#6c757d", "#495057", "#6f7fc9", "#4a5568"],
+      kw: ["philosophy", "philosophie", "ethics", "ethik", "moral", "religion", "religions", "spirituality",
+        "spiritualitat", "theology", "theologie", "buddhism", "buddhismus", "stoicism", "stoizismus",
+        "existentialism", "existenzialismus", "atheism", "atheismus", "islam", "christentum", "christianity",
+        "bibel"] },
+    { key: "biografie", label: "Biografie & Memoir",
+      pal: ["#b07d8c", "#9d6b84", "#a985b0", "#7d5a6b", "#c99595", "#a26769"],
+      kw: ["biography", "biographies", "biografie", "biographie", "biografien", "autobiography", "autobiografie",
+        "autobiographie", "memoir", "memoirs", "memoiren", "erinnerungen", "biography autobiography",
+        "personal narratives", "lebenserinnerungen", "autobiografische literatur"] },
+    { key: "sachbuch", label: "Sachbuch", generic: true,
+      pal: ["#d9a441", "#c08b30", "#ddb85a", "#b08968", "#cfa877", "#a68a64"],
+      kw: ["nonfiction", "sachbuch", "sachbucher", "essays", "essay", "true crime", "cooking", "kochen", "sports",
+        "sport", "music", "musik", "art", "kunst", "kunste", "design", "architecture", "architektur",
+        "sachliteratur", "games", "spiel", "spiele", "film", "fotografie"] },
+    // ----- Belletristik -----
+    // "generic" zählt schwächer, damit z. B. "Fiction" + "Science fiction" bei
+    // Science-Fiction landet und nicht bei Roman.
+    { key: "roman", label: "Roman & Erzählung", generic: true,
       not: ["nonfiction"],
       pal: ["#c8553d", "#b5654a", "#d9785c", "#c99567", "#a44a3f", "#c97b63", "#8e5572", "#b86f52"],
       kw: ["fiction", "roman", "romane", "novel", "novels", "literary fiction", "literary", "literatur",
         "belletristik", "gegenwartsliteratur", "contemporary", "contemporary fiction", "domestic fiction",
         "coming of age", "family", "familie", "short stories", "kurzgeschichten", "erzahlungen", "erzahlung",
         "general fiction", "deutsche literatur", "german literature", "american literature", "english literature",
-        "literary collections"] },
+        "literary collections", "erzahlende literatur"] },
     { key: "klassiker", label: "Klassiker",
       pal: ["#5c1a1b", "#1d3b2a", "#13294b", "#3e2723", "#4a1f3d", "#2f3e46", "#6b2737", "#22403a"],
       kw: ["classics", "classic", "klassiker", "classic literature", "weltliteratur", "literary classics", "kanon"] },
@@ -27,39 +172,38 @@
         "historical novels", "historienroman"] },
     { key: "krimi", label: "Krimi & Thriller",
       pal: ["#1f1f24", "#2b2d33", "#7a1f1f", "#3a3f47", "#1b2333", "#8c2f2f", "#2d2a32"],
-      kw: ["crime", "crime fiction", "krimi", "krimis", "kriminalroman", "kriminalromane", "thriller", "thrillers",
+      kw: ["crime fiction", "krimi", "krimis", "kriminalroman", "kriminalromane", "thriller", "thrillers",
         "mystery", "mysteries", "mystery fiction", "detective", "detective and mystery stories", "detektiv",
-        "detektivgeschichten", "suspense", "suspense fiction", "spannung", "murder", "mord", "police", "polizei",
-        "noir", "spy", "spionage", "espionage", "psychological thriller", "psychothriller"] },
+        "detektivgeschichten", "suspense", "suspense fiction", "noir", "spy stories", "psychological thriller",
+        "psychothriller", "krimi thriller"] },
     { key: "scifi", label: "Science-Fiction",
       pal: ["#1f4e79", "#2a6f97", "#014f86", "#3d5a80", "#0f6e7d", "#22577a", "#16425b"],
       kw: ["science fiction", "sci fi", "scifi", "sf", "space opera", "cyberpunk", "dystopia", "dystopian",
         "dystopias", "dystopie", "dystopien", "utopia", "utopie", "time travel", "zeitreise", "aliens",
-        "extraterrestrial", "post apocalyptic", "postapokalyptisch", "apocalyptic", "weltraum", "raumfahrt",
-        "space travel", "life on other planets"] },
+        "extraterrestrial", "post apocalyptic", "postapokalyptisch", "apocalyptic", "space travel",
+        "life on other planets"] },
     { key: "fantasy", label: "Fantasy",
       pal: ["#4b2e83", "#5a3d8a", "#6a4c93", "#3c2a6e", "#7b4b94", "#2e3a87", "#553c9a"],
       kw: ["fantasy", "fantasy fiction", "epic fantasy", "high fantasy", "urban fantasy", "magic", "magie",
         "magical realism", "magischer realismus", "dragons", "drachen", "wizards", "zauberer", "witches", "hexen",
-        "elves", "fairy tales", "marchen", "mythology", "mythologie", "myths", "mythen", "sword and sorcery",
-        "romantasy"] },
+        "elves", "fairy tales", "marchen", "sword and sorcery", "romantasy"] },
     { key: "horror", label: "Horror",
       pal: ["#141216", "#3b0d0d", "#5c1010", "#1d1a1f", "#2a0f1f", "#40121a"],
       kw: ["horror", "horror fiction", "horror tales", "ghost stories", "ghosts", "gespenster", "supernatural",
         "ubernaturlich", "vampires", "vampire", "zombies", "haunted houses", "gothic", "grusel"] },
     { key: "romance", label: "Liebesroman",
       pal: ["#e5989b", "#d16d8a", "#e8a3b5", "#c75c7c", "#d98fb3", "#b5577a"],
-      kw: ["romance", "romances", "liebesroman", "liebesromane", "love stories", "love story", "liebe",
-        "romantic", "chick lit", "man woman relationships"] },
+      kw: ["romance", "romances", "liebesroman", "liebesromane", "love stories", "love story", "chick lit"] },
     { key: "jugend", label: "Kinder & Jugend",
       pal: ["#f2a541", "#e9c53d", "#ee964b", "#45b69c", "#f06543", "#3a86ff"],
       kw: ["young adult", "young adult fiction", "ya", "juvenile fiction", "juvenile literature", "jugendbuch",
         "jugendbucher", "jugendliteratur", "kinderbuch", "kinderbucher", "children", "childrens",
-        "children s literature", "children s fiction", "kinderliteratur", "middle grade", "jugend", "teen"] },
+        "children s literature", "children s fiction", "kinderliteratur", "middle grade", "jugend", "teen",
+        "kinder und jugendliteratur", "kinder und jugendbuch", "kinderbucher bis 11 jahre"] },
     { key: "comic", label: "Comic & Graphic Novel",
       pal: ["#e63946", "#f4a259", "#1d3557", "#fb8500", "#191919", "#2a9d8f"],
       kw: ["comic", "comics", "graphic novel", "graphic novels", "manga", "bande dessinee", "cartoons",
-        "comic books strips etc", "comics graphic novels"] },
+        "comic books strips etc", "comics graphic novels", "comics cartoons karikaturen"] },
     { key: "lyrik", label: "Lyrik & Drama",
       pal: ["#9f9cc7", "#a3a1c8", "#b49fd6", "#8d7fbf", "#a68fb5"],
       kw: ["poetry", "lyrik", "gedichte", "poems", "poesie", "drama", "dramen", "theater", "theatre", "plays",
@@ -67,63 +211,7 @@
     { key: "humor", label: "Humor & Satire",
       pal: ["#f2b632", "#ef476f", "#06a77d", "#f78c6b", "#e9a92a"],
       kw: ["humor", "humour", "humorous", "humorous fiction", "humorous stories", "satire", "satirical", "comedy",
-        "komik", "lustig", "witzig", "parody", "parodie"] },
-    { key: "biografie", label: "Biografie & Memoir",
-      pal: ["#b07d8c", "#9d6b84", "#a985b0", "#7d5a6b", "#c99595", "#a26769"],
-      kw: ["biography", "biographies", "biografie", "biographie", "biografien", "autobiography", "autobiografie",
-        "autobiographie", "memoir", "memoirs", "memoiren", "erinnerungen", "biography autobiography",
-        "personal narratives", "lebenserinnerungen"] },
-    { key: "geschichte", label: "Geschichte & Politik",
-      pal: ["#6f4e37", "#8b5e3c", "#4a4e69", "#5e503f", "#7c6a56", "#3f4a5a"],
-      kw: ["history", "geschichte", "zeitgeschichte", "politics", "politik", "political science", "political",
-        "war", "krieg", "world war", "weltkrieg", "holocaust", "sociology", "soziologie", "society",
-        "gesellschaft", "journalism", "journalismus", "current affairs", "civilization", "zivilisation",
-        "anthropology", "anthropologie", "social science", "social sciences"] },
-    { key: "wissenschaft", label: "Wissenschaft & Mathe",
-      not: ["science fiction", "sci fi", "computer science", "political science", "social science", "fiction science"],
-      pal: ["#2a9d8f", "#264653", "#3a7d7c", "#287271", "#1b998b", "#40798c"],
-      kw: ["science", "sciences", "wissenschaft", "naturwissenschaft", "naturwissenschaften", "popular science",
-        "popularwissenschaft", "physics", "physik", "mathematics", "mathematik", "mathe", "math", "maths",
-        "statistics", "statistik", "probability", "wahrscheinlichkeit", "biology", "biologie", "chemistry",
-        "chemie", "astronomy", "astronomie", "cosmology", "kosmologie", "evolution", "genetics", "genetik",
-        "nature", "natur", "ecology", "okologie", "climate", "klima", "systems", "systemtheorie", "bayesian"] },
-    { key: "medizin", label: "Medizin & Gesundheit",
-      pal: ["#52b69a", "#6fae9b", "#34a0a4", "#76b8b0", "#4d908e", "#88b5a8"],
-      kw: ["medicine", "medizin", "medical", "medizinisch", "health", "gesundheit", "neuroscience",
-        "neurowissenschaft", "neurowissenschaften", "neurology", "neurologie", "physicians", "arzte", "arzt",
-        "doctors", "diseases", "disease", "krankheit", "krankheiten", "cancer", "krebs", "psychiatry",
-        "psychiatrie", "nutrition", "ernahrung", "sleep", "schlaf", "public health", "epidemics",
-        "epidemiologie", "pandemic", "pandemie", "hospital", "krankenhaus", "klinik", "surgery", "chirurgie",
-        "nursing", "pflege", "human body", "anatomy", "anatomie"] },
-    { key: "ki", label: "KI & Daten",
-      not: ["science fiction", "robots fiction"],
-      pal: ["#3a0ca3", "#4361ee", "#3f6fd8", "#3f37c9", "#560bad", "#5e60ce"],
-      kw: ["artificial intelligence", "kunstliche intelligenz", "ki", "ai", "machine learning",
-        "maschinelles lernen", "deep learning", "data", "daten", "data science", "big data", "algorithms",
-        "algorithmen", "computer", "computers", "computer science", "informatik", "technology", "technologie",
-        "technik", "programming", "programmieren", "software", "internet", "digital", "digitalisierung",
-        "robots", "roboter", "robotics", "tech", "silicon valley"] },
-    { key: "psychologie", label: "Psychologie & Ratgeber",
-      pal: ["#e07a7a", "#e8a598", "#e3a857", "#84a59d", "#d9704f", "#e59a5a"],
-      kw: ["psychology", "psychologie", "self help", "selbsthilfe", "ratgeber", "personal development",
-        "personlichkeitsentwicklung", "productivity", "produktivitat", "habits", "gewohnheiten", "mindfulness",
-        "achtsamkeit", "happiness", "gluck", "behavior", "behaviour", "verhalten", "decision making",
-        "entscheidungen", "cognitive", "kognition", "motivation", "self improvement", "success"] },
-    { key: "wirtschaft", label: "Wirtschaft",
-      pal: ["#606c38", "#283618", "#bc6c25", "#b5894a", "#556b2f"],
-      kw: ["business", "wirtschaft", "economics", "okonomie", "volkswirtschaft", "finance", "finanzen",
-        "management", "leadership", "fuhrung", "entrepreneurship", "unternehmertum", "startup", "startups",
-        "marketing", "money", "geld", "investing", "investment", "corporations", "unternehmen"] },
-    { key: "philosophie", label: "Philosophie & Religion",
-      pal: ["#5f6caf", "#6c757d", "#495057", "#6f7fc9", "#4a5568"],
-      kw: ["philosophy", "philosophie", "ethics", "ethik", "religion", "religions", "spirituality",
-        "spiritualitat", "theology", "theologie", "buddhism", "buddhismus", "stoicism", "stoizismus",
-        "existentialism", "existenzialismus"] },
-    { key: "sachbuch", label: "Sachbuch", generic: true,
-      pal: ["#d9a441", "#c08b30", "#ddb85a", "#b08968", "#cfa877", "#a68a64"],
-      kw: ["nonfiction", "sachbuch", "sachbucher", "essays", "essay", "travel", "reise", "reisen",
-        "reiseberichte", "true crime", "cooking", "kochen", "sports", "sport", "language", "sprache", "music",
-        "musik", "art", "kunst", "design", "sachliteratur"] },
+        "komik", "witzig", "parody", "parodie"] },
     { key: "none", label: "Unsortiert",
       pal: ["#8d99ae", "#9aa48b", "#a5a58d", "#9a8c98", "#b79a92", "#6d6875", "#c08a8f", "#7f8c8d"],
       kw: [] },
@@ -144,8 +232,12 @@
     return U.norm(s).replace(/non[\s\-_]+fiction/g, "nonfiction").replace(/[^a-z0-9]+/g, " ").trim();
   }
 
-  // Thema aus eigenen Goodreads-Regalen (stark) und Open-Library-Schlagwörtern (schwach)
-  function classify(shelves, subjects, origYear) {
+  // Regale über Besitz und Herkunft (bleiben als Filter, sagen aber nichts über das Thema)
+  const OWNER_SHELVES = /(^| )(besitz|owned|geliehen|borrowed|geschenk\w*|gift)( |$)/;
+
+  // Thema aus eigenen Goodreads-Regalen (stark), Schlagwörtern von Open Library und DNB
+  // (schwach) und dem Titel samt Untertitel. Von Hand vergebene Themen gehen vor, s. derive().
+  function classify(shelves, subjects, origYear, title) {
     const score = {};
     const add = (term, w) => {
       const t = termNorm(term);
@@ -155,10 +247,11 @@
         if (g.rx.some((r) => r.test(t))) score[g.key] = (score[g.key] || 0) + w * (g.generic ? 0.35 : 1);
       }
     };
-    shelves.forEach((s, i) => add(s, 3 / (1 + 0.15 * i)));
+    shelves.filter((s) => !OWNER_SHELVES.test(termNorm(s))).forEach((s, i) => add(s, 3 / (1 + 0.15 * i)));
     (subjects || []).forEach((s, i) => {
       if (!NOISE.test(U.norm(s))) add(s, i < 10 ? 1 : 0.6);
     });
+    if (title) add(title, 1.5);
     let keys = Object.keys(score).filter((k) => score[k] >= 0.3).sort((a, b) => score[b] - score[a]);
     let genre = keys[0] || "none";
     if (genre === "roman" && origYear != null && origYear < 1940) {
@@ -248,7 +341,8 @@
   const cleanIsbn = (s) => String(s || "").replace(/[="\s]/g, "").replace(/[^0-9Xx]/g, "").toUpperCase();
 
   function splitTitle(raw) {
-    let title = String(raw || "").trim();
+    // Kindle-Ausgaben heißen bei Goodreads "… (German Edition)" – gleiche Regel in tools/build_books.py
+    let title = String(raw || "").trim().replace(/\s*\((?:German|English|French|Spanish|Italian|Dutch) Edition\)\s*$/i, "");
     let series = "", seriesNo = null;
     const m = title.match(/\s*\(([^()]*?),?\s*#\s*([\d.]+)[^()]*\)\s*$/);
     if (m) {
@@ -293,7 +387,8 @@
         }
       }
     }
-    const rating = U.int(col(row, "My Rating")) || 0;
+    // neuere Exporte schreiben "5.0" statt "5"
+    const rating = Math.round(U.num(col(row, "My Rating")) || 0);
     const binding = col(row, "Binding").trim();
     const b = {
       id, row,
@@ -335,14 +430,37 @@
     b.ol = ol || null;
     b.pages = b.grPages || (ol && ol.p) || null;
     b.origYear = b.grOrigYear != null ? b.grOrigYear : b.year != null ? b.year : (ol && ol.y) || null;
-    const c = classify(b.shelves, ol && ol.s, b.origYear);
+    // Themen von Hand (data/themen.csv → books.js) gehen vor der automatischen Zuordnung
+    const manual = ol && Array.isArray(ol.th) ? ol.th.filter((k) => GENRE[k] && k !== "none") : [];
+    const c = manual.length ? { genre: manual[0], themes: manual.slice(0, 5) }
+      : classify(b.shelves, ol && ol.s, b.origYear, b.title);
     b.genre = c.genre;
     b.themes = c.themes;
+    b.themeSrc = manual.length ? "manual" : "auto";
+    b.tags = tagsOf(ol);
     b.hay = U.norm([
       b.title, b.series, b.author, b.additional.join(" "), b.publisher, b.isbn10, b.isbn13,
       b.shelves.join(" "), b.themes.map((k) => GENRE[k].label).join(" "), TYPE[b.type].label, b.binding,
+      b.tags.join(" "),
     ].join(" | "));
     return b;
+  }
+
+  // Stichworte zum Anzeigen: die der DNB (k), sonst die brauchbaren Schlagwörter von Open Library
+  const DULL_TAGS = /^(fiction|nonfiction|non fiction|general|literature|history|biography|juvenile|ya|teens?|tweens|teenagers|young adult|.*\b(fiction|literature|criticism|curriculum|works by)\b.*)$/;
+  function tagsOf(ol) {
+    if (!ol) return [];
+    const src = ol.k && ol.k.length ? ol.k
+      : (ol.s || []).filter((s) => s.length <= 32 && !/[\/:(,]/.test(s) && !NOISE.test(U.norm(s)) && !DULL_TAGS.test(U.norm(s)));
+    const seen = new Set(), out = [];
+    for (const s of src) {
+      const k = U.norm(s);
+      if (!seen.has(k)) {
+        seen.add(k);
+        out.push(s);
+      }
+    }
+    return out.slice(0, 6);
   }
 
   function grLink(b) {
