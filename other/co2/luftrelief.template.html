@@ -1,0 +1,1571 @@
+<title>Luftrelief</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&family=Newsreader:ital,opsz,wght@1,6..72,400;1,6..72,500&display=swap">
+<style>
+/* Layout: ein Kartenblatt. Kopfzeile, Werkzeugleiste, Reliefbühne (füllt den Rest), Profilleiste.
+   Die Chrome bleibt neutral; Farbe tragen allein die Messwerte. */
+:root {
+  color-scheme: light;
+  --mode: light;
+  --ground: #e8ecef;
+  --ground-hi: #f5f7f8;
+  --ground-lo: #d8dfe3;
+  --panel: #f6f8f9;
+  --ink: #14212b;
+  --ink-2: #44535e;
+  --ink-3: #647480;
+  --hair: #d2d9de;
+  --hair-2: #bcc6cd;
+  --wall: #cdd4d9;
+  --good: #0ca30c;
+  --warn: #fab219;
+  --serious: #ec835a;
+  --critical: #d03b3b;
+  --font-display: "Newsreader", "Iowan Old Style", "Palatino Linotype", Georgia, serif;
+  --font-ui: "IBM Plex Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-data: "IBM Plex Mono", ui-monospace, "Cascadia Mono", Consolas, monospace;
+  --gutter: clamp(16px, 2.2vw, 28px);
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    color-scheme: dark;
+    --mode: dark;
+    --ground: #0e1418;
+    --ground-hi: #19232b;
+    --ground-lo: #090d10;
+    --panel: #131b21;
+    --ink: #edf2f5;
+    --ink-2: #b1bec7;
+    --ink-3: #8795a0;
+    --hair: #25313a;
+    --hair-2: #384853;
+    --wall: #2b3943;
+  }
+}
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --mode: dark;
+  --ground: #0e1418;
+  --ground-hi: #19232b;
+  --ground-lo: #090d10;
+  --panel: #131b21;
+  --ink: #edf2f5;
+  --ink-2: #b1bec7;
+  --ink-3: #8795a0;
+  --hair: #25313a;
+  --hair-2: #384853;
+  --wall: #2b3943;
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+[hidden] { display: none !important; }
+html, body { height: 100%; }
+body {
+  margin: 0;
+  background: var(--ground);
+  color: var(--ink);
+  font: 14px/1.45 var(--font-ui);
+  -webkit-font-smoothing: antialiased;
+}
+:focus-visible { outline: 2px solid var(--ink); outline-offset: 2px; }
+
+.app {
+  height: 100%;
+  display: grid;
+  grid-template-rows: auto auto minmax(340px, 1fr) auto;
+}
+
+/* Kopfzeile */
+.masthead {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 2px 22px;
+  padding: 14px var(--gutter) 4px;
+}
+.masthead h1 {
+  margin: 0;
+  font: italic 400 31px/1.05 var(--font-display);
+  letter-spacing: -0.01em;
+}
+.sub { margin: 0; color: var(--ink-2); font-size: 13px; }
+.lede {
+  flex: 1 1 100%;
+  margin: 0;
+  color: var(--ink-3);
+  font-size: 12.5px;
+}
+
+/* Werkzeugleiste */
+.toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: end;
+  gap: 10px 22px;
+  padding: 8px var(--gutter) 12px;
+  border-bottom: 1px solid var(--hair);
+}
+.field { display: grid; gap: 4px; min-width: 0; margin: 0; padding: 0; border: 0; }
+.lab {
+  padding: 0;
+  color: var(--ink-3);
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+.lab output { font-family: var(--font-data); letter-spacing: 0; color: var(--ink-2); }
+.seg {
+  display: inline-flex;
+  flex-wrap: wrap;
+  gap: 2px;
+  padding: 2px;
+  border: 1px solid var(--hair-2);
+  border-radius: 7px;
+  background: var(--panel);
+}
+.seg button {
+  padding: 7px 10px;
+  border: 0;
+  border-radius: 5px;
+  background: none;
+  color: var(--ink-2);
+  font: 500 13px/1 var(--font-ui);
+  cursor: pointer;
+}
+.seg button:hover { color: var(--ink); background: color-mix(in srgb, var(--ink) 8%, transparent); }
+.seg button[aria-pressed="true"] { background: var(--ink); color: var(--panel); }
+select {
+  appearance: none;
+  padding: 8px 30px 8px 10px;
+  border: 1px solid var(--hair-2);
+  border-radius: 7px;
+  background-color: var(--panel);
+  background-image: linear-gradient(45deg, transparent 50%, currentColor 50%), linear-gradient(135deg, currentColor 50%, transparent 50%);
+  background-position: calc(100% - 15px) 55%, calc(100% - 10px) 55%;
+  background-size: 5px 5px;
+  background-repeat: no-repeat;
+  color: var(--ink);
+  font: 500 13px/1 var(--font-ui);
+  cursor: pointer;
+}
+input[type="range"] { width: 132px; height: 31px; margin: 0; accent-color: var(--ink); cursor: pointer; }
+
+/* Reliefbühne */
+.stage {
+  position: relative;
+  min-height: 0;
+  overflow: hidden;
+  background: radial-gradient(110% 85% at 50% 30%, var(--ground-hi), var(--ground) 55%, var(--ground-lo));
+}
+#gl {
+  position: absolute;
+  inset: 0;
+  display: block;
+  width: 100%;
+  height: 100%;
+  cursor: grab;
+  touch-action: none;
+}
+#gl:active { cursor: grabbing; }
+#gl:focus-visible { outline-offset: -4px; }
+.labels { position: absolute; inset: 0; overflow: hidden; pointer-events: none; }
+.lbl {
+  position: absolute;
+  left: 0;
+  top: 0;
+  visibility: hidden;
+  white-space: nowrap;
+  color: var(--ink-2);
+  font: 11.5px/1.2 var(--font-data);
+  text-shadow: 0 0 3px var(--ground), 0 0 7px var(--ground);
+}
+.lbl.month { font: 500 11px/1.2 var(--font-ui); letter-spacing: 0.12em; text-transform: uppercase; }
+.lbl.peak { padding-bottom: 14px; color: var(--ink); text-align: center; text-shadow: none; }
+.lbl.peak .tag {
+  display: grid;
+  justify-items: center;
+  padding: 3px 7px 4px;
+  border-radius: 5px;
+  background: color-mix(in srgb, var(--panel) 86%, transparent);
+  box-shadow: 0 0 0 1px var(--hair);
+}
+.lbl.peak b { font: 500 12px/1.2 var(--font-data); }
+.lbl.peak span { color: var(--ink-2); font: 11px/1.2 var(--font-ui); }
+.lbl.peak::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  bottom: 1px;
+  width: 1px;
+  height: 13px;
+  background: var(--ink);
+}
+.marker {
+  position: absolute;
+  left: -7px;
+  top: -7px;
+  width: 14px;
+  height: 14px;
+  border: 2px solid var(--ink);
+  border-radius: 50%;
+  box-shadow: 0 0 0 2px var(--panel), inset 0 0 0 2px var(--panel);
+  visibility: hidden;
+}
+.views { position: absolute; top: 12px; right: 16px; }
+.legend {
+  position: absolute;
+  left: 16px;
+  bottom: 14px;
+  display: grid;
+  gap: 5px;
+  width: min(264px, calc(100% - 32px));
+  padding: 10px 12px 11px;
+  border: 1px solid var(--hair);
+  border-radius: 8px;
+  background: color-mix(in srgb, var(--panel) 88%, transparent);
+  backdrop-filter: blur(8px);
+  font-size: 12px;
+}
+.legend h2 { margin: 0; font: 600 12px/1.3 var(--font-ui); }
+.legend canvas { display: block; width: 100%; height: 10px; border-radius: 2px; }
+.legend .ticks { position: relative; height: 14px; color: var(--ink-2); font: 11px/1.2 var(--font-data); }
+.legend .ticks span { position: absolute; top: 0; transform: translateX(-50%); }
+.legend .ticks span:first-child { transform: none; }
+.legend .ticks span:last-child { transform: translateX(-100%); }
+.legend p { margin: 0; color: var(--ink-2); line-height: 1.35; }
+.legend .key { display: inline-block; width: 18px; height: 3px; margin-right: 7px; border-radius: 2px; background: var(--warn); box-shadow: 0 0 0 1px color-mix(in srgb, var(--ink) 45%, transparent); vertical-align: middle; }
+.tip {
+  position: absolute;
+  left: 0;
+  top: 0;
+  z-index: 3;
+  padding: 7px 10px 8px;
+  border-radius: 6px;
+  background: var(--ink);
+  color: var(--panel);
+  font-size: 12px;
+  line-height: 1.35;
+  white-space: nowrap;
+  pointer-events: none;
+}
+.tip b { font: 500 13px/1.3 var(--font-data); }
+.tip i { font-style: normal; opacity: 0.72; }
+.hint {
+  position: absolute;
+  left: 16px;
+  top: 14px;
+  max-width: calc(100% - 380px);
+  margin: 0;
+  color: var(--ink-3);
+  font-size: 12px;
+  transition: opacity 0.6s;
+  pointer-events: none;
+}
+.hint.gone { opacity: 0; }
+.fail { position: absolute; inset: 0; display: grid; place-items: center; margin: 0; padding: 24px; color: var(--ink-2); text-align: center; }
+
+/* Profilleiste */
+.panel {
+  display: grid;
+  grid-template-columns: minmax(300px, 340px) minmax(0, 1fr) minmax(0, 1.5fr);
+  gap: 8px 30px;
+  padding: 12px var(--gutter) 14px;
+  border-top: 1px solid var(--hair);
+  background: var(--panel);
+}
+.readout { display: grid; align-content: start; gap: 6px; min-width: 0; }
+.when { margin: 0; font-weight: 600; }
+.when span { color: var(--ink-2); font-weight: 400; }
+.vals { display: grid; grid-template-columns: 1fr 1fr; gap: 1px 24px; margin: 0; }
+.vals div:first-child { grid-column: 1 / -1; }
+.vals div { display: flex; align-items: baseline; gap: 8px; }
+.vals dt { flex: 1; color: var(--ink-2); font-size: 12.5px; }
+.vals dd { margin: 0; color: var(--ink-2); font-size: 12px; white-space: nowrap; }
+.vals dd b { color: var(--ink); font: 500 13.5px/1.4 var(--font-data); }
+.vals .on dt { color: var(--ink); font-weight: 600; }
+.status { display: inline-flex; align-items: baseline; gap: 4px; margin-left: 6px; color: var(--ink); }
+.status i { font-style: normal; font-size: 10px; }
+.status[data-s="good"] i { color: var(--good); }
+.status[data-s="warn"] i { color: var(--warn); }
+.status[data-s="serious"] i { color: var(--serious); }
+.status[data-s="critical"] i { color: var(--critical); }
+.foot { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 2px 14px; }
+.note { margin: 0; color: var(--ink-3); font-size: 12px; }
+.link {
+  justify-self: start;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--ink-2);
+  font: 12.5px/1.4 var(--font-ui);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  cursor: pointer;
+}
+.link:hover { color: var(--ink); }
+.chart { display: grid; grid-template-rows: auto 1fr; gap: 4px; min-width: 0; margin: 0; }
+.chart figcaption { display: flex; flex-wrap: wrap; align-items: baseline; gap: 2px 14px; font-size: 12.5px; }
+.chart figcaption b { font-weight: 600; }
+.chart .keys { display: flex; flex-wrap: wrap; gap: 2px 12px; color: var(--ink-2); font-size: 12px; }
+.chart .keys i { display: inline-block; width: 14px; margin-right: 5px; border-top: 2px solid var(--ink); vertical-align: middle; }
+.chart .keys i.thin { border-top: 1px solid var(--ink-3); }
+.chart svg { display: block; width: 100%; height: 124px; overflow: visible; cursor: crosshair; touch-action: pan-y; }
+.chart text { fill: var(--ink-3); font: 11px var(--font-data); }
+.chart .ty { text-anchor: end; }
+.chart .tx { text-anchor: middle; }
+.chart .tr { text-anchor: end; fill: var(--ink-2); }
+.chart .tv { fill: var(--ink); font-weight: 500; paint-order: stroke; stroke: var(--panel); stroke-width: 4px; stroke-linejoin: round; }
+.chart .g { stroke: var(--hair); }
+.chart .axis { stroke: var(--hair-2); }
+.chart .ref { stroke: var(--warn); stroke-width: 1.5; }
+.chart .cross { stroke: var(--ink-3); }
+.chart path { fill: none; stroke-linejoin: round; stroke-linecap: round; }
+.chart .s-main { stroke: var(--ink); stroke-width: 2; }
+#svgYear .s-main { stroke-width: 1.5; }
+.chart .s-thin { stroke: var(--ink-3); stroke-width: 1; }
+.chart .dot { fill: var(--ink); stroke: var(--panel); stroke-width: 2; }
+.tablewrap { grid-column: 2 / -1; max-height: 150px; overflow: auto; }
+.tablewrap table { width: 100%; border-collapse: collapse; font: 12px/1.3 var(--font-data); font-variant-numeric: tabular-nums; }
+.tablewrap th, .tablewrap td { padding: 3px 10px; border-bottom: 1px solid var(--hair); text-align: right; white-space: nowrap; }
+.tablewrap th { position: sticky; top: 0; background: var(--panel); color: var(--ink-2); font: 500 11.5px/1.3 var(--font-ui); }
+.tablewrap th:first-child, .tablewrap td:first-child { text-align: left; }
+.tablewrap tr.sel td { background: color-mix(in srgb, var(--ink) 9%, transparent); }
+.tablewrap tbody tr { cursor: pointer; }
+
+@media (max-width: 1000px) {
+  .panel { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
+  .readout { grid-column: 1 / -1; }
+  .vals { grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); column-gap: 28px; }
+  .vals div:first-child { grid-column: auto; }
+  .tablewrap { grid-column: 1 / -1; }
+}
+@media (max-width: 900px), (max-height: 700px) {
+  .lede, #lgContour { display: none; }
+}
+@media (max-width: 640px) {
+  .app { height: auto; grid-template-rows: auto auto 56svh auto; }
+  .masthead h1 { font-size: 27px; }
+  .lede, .hint { display: none; }
+  .panel { grid-template-columns: minmax(0, 1fr); }
+  .legend { bottom: 10px; padding: 8px 10px; }
+  .views { right: 12px; }
+  .seg button { padding: 7px 8px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .hint { transition: none; }
+}
+</style>
+
+<div class="app">
+  <header class="masthead">
+    <h1>Luftrelief</h1>
+    <p class="sub" id="sub">Raumluft als Geländemodell</p>
+    <p class="lede" id="lede"></p>
+  </header>
+
+  <div class="toolbar">
+    <fieldset class="field">
+      <legend class="lab">Höhe</legend>
+      <div class="seg" id="segHeight"></div>
+    </fieldset>
+    <label class="field">
+      <span class="lab">Farbe</span>
+      <select id="selColor"></select>
+    </label>
+    <fieldset class="field">
+      <legend class="lab">Glättung</legend>
+      <div class="seg" id="segSmooth">
+        <button type="button" data-v="raw">Rohdaten</button>
+        <button type="button" data-v="w7">7 Tage</button>
+        <button type="button" data-v="w30">30 Tage</button>
+      </div>
+    </fieldset>
+    <label class="field">
+      <span class="lab">Überhöhung <output id="exOut" for="rngEx">1,0×</output></span>
+      <input type="range" id="rngEx" min="0.4" max="2.4" step="0.1" value="1">
+    </label>
+  </div>
+
+  <main class="stage" id="stage">
+    <canvas id="gl" tabindex="0" aria-label="3D-Relief der Messwerte: Datum von links nach rechts, Uhrzeit von hinten nach vorn, Messwert als Höhe. Pfeiltasten bewegen die Auswahl."></canvas>
+    <div class="labels" id="labels" aria-hidden="true"><div class="marker" id="marker"></div></div>
+    <div class="views seg" id="segView" role="group" aria-label="Ansicht">
+      <button type="button" data-v="relief">Relief</button>
+      <button type="button" data-v="karte">Karte</button>
+      <button type="button" data-v="jahr">Jahresgang</button>
+      <button type="button" data-v="tag">Tagesgang</button>
+    </div>
+    <div class="legend" id="legend">
+      <h2 id="lgTitle"></h2>
+      <canvas id="lgRamp" width="256" height="1"></canvas>
+      <div class="ticks" id="lgTicks"></div>
+      <p id="lgContour"></p>
+      <p id="lgThresh"><span class="key"></span>1.000 ppm, Pettenkofer-Zahl</p>
+    </div>
+    <div class="tip" id="tip" hidden></div>
+    <p class="hint" id="hint">Ziehen dreht · Scrollen zoomt · Rechtsklick verschiebt · Klick heftet einen Zeitpunkt an</p>
+  </main>
+
+  <section class="panel" aria-label="Ausgewählter Zeitpunkt">
+    <div class="readout">
+      <p class="when" id="roWhen"></p>
+      <dl class="vals" id="roVals"></dl>
+      <div class="foot">
+        <button type="button" class="link" id="btnTable" aria-pressed="false">Tageswerte als Tabelle</button>
+        <p class="note" id="roNote"></p>
+      </div>
+    </div>
+    <figure class="chart" id="figDay">
+      <figcaption><b id="capDay"></b><span class="keys" id="keysDay"></span></figcaption>
+      <svg id="svgDay" role="img" aria-label="Verlauf des ausgewählten Tages"></svg>
+    </figure>
+    <figure class="chart" id="figYear">
+      <figcaption><b id="capYear"></b><span class="keys" id="keysYear"></span></figcaption>
+      <svg id="svgYear" role="img" aria-label="Verlauf der ausgewählten Uhrzeit über alle Tage"></svg>
+    </figure>
+    <div class="tablewrap" id="tableWrap" hidden></div>
+  </section>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/0.147.0/three.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.147.0/examples/js/controls/OrbitControls.js"></script>
+<script>/*__DATA__*/</script>
+<script>
+(() => {
+'use strict';
+const $ = (s, r = document) => r.querySelector(s);
+const el = (tag, cls, text) => {
+  const n = document.createElement(tag);
+  if (cls) n.className = cls;
+  if (text != null) n.textContent = text;
+  return n;
+};
+const stage = $('#stage'), canvas = $('#gl'), labelLayer = $('#labels');
+const fail = msg => { stage.append(el('p', 'fail', msg)); canvas.hidden = true; $('#legend').hidden = true; $('#hint').hidden = true; };
+if (!window.THREE || !THREE.OrbitControls) {
+  fail('Die 3D-Bibliothek konnte nicht geladen werden. Bitte Internetverbindung prüfen und die Seite neu laden.');
+  return;
+}
+
+// ---------- Daten ----------
+const NX = DATA.days, NZ = DATA.slots, N = NX * NZ;
+const W = 24, D = 9.6, H0 = 3.4, BASE = 0.34;
+const X0 = -W / 2, Z0 = -D / 2, DX = W / (NX - 1), DZ = D / (NZ - 1);
+const startUTC = Date.parse(DATA.start + 'T00:00:00Z');
+const dayDate = i => new Date(startUTC + i * 864e5);
+const gapSet = new Set(DATA.gaps);
+const clamp = (v, a, b) => Math.min(b, Math.max(a, v));
+const lerp = (a, b, t) => a + (b - a) * t;
+const easeInOut = t => t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
+const easeOut = t => 1 - Math.pow(1 - t, 3);
+
+const METRICS = [
+  { id: 'co2', name: 'CO₂', unit: 'ppm', dec: 0, q: 100, step: 100, idx: 5, hue: [160, 228], chroma: 0.125 },
+  { id: 't', name: 'Temperatur', unit: '°C', dec: 1, q: 1, step: 1, idx: 5, hue: [98, 28], chroma: 0.17 },
+  { id: 'rh', name: 'rel. Feuchte', unit: '%', dec: 0, q: 5, step: 2, idx: 5, hue: [240, 272], chroma: 0.15 },
+  { id: 'ah', name: 'abs. Feuchte', unit: 'g/m³', dec: 1, q: 1, step: 1, idx: 5, hue: [305, 288], chroma: 0.15 },
+  { id: 'dpt', name: 'Taupunkt', unit: '°C', dec: 1, q: 1, step: 1, idx: 5, hue: [335, 355], chroma: 0.14 },
+  { id: 'vpd', name: 'VPD', unit: 'kPa', dec: 2, q: 0.5, step: 0.1, idx: 5, hue: [88, 55], chroma: 0.11 },
+];
+const raw = {};
+for (const m of METRICS) {
+  const src = DATA.m[m.id], sc = DATA.scale[m.id], a = new Float32Array(N);
+  let lo = Infinity, hi = -Infinity;
+  for (let k = 0; k < N; k++) { const v = src[k] / sc; a[k] = v; if (v < lo) lo = v; if (v > hi) hi = v; }
+  raw[m.id] = a;
+  m.min = lo; m.max = hi;
+  m.lo = Math.floor(lo / m.q + 1e-9) * m.q;
+  m.hi = Math.ceil(hi / m.q - 1e-9) * m.q;
+  if (m.hi <= m.lo) m.hi = m.lo + m.q;
+  m.nf = new Intl.NumberFormat('de-DE', { minimumFractionDigits: m.dec, maximumFractionDigits: m.dec });
+  m.ticks = [];
+  const big = m.step * m.idx;
+  for (let n = Math.ceil(m.lo / big - 1e-9); n * big <= m.hi + 1e-9; n++) if (n * big > m.lo + 1e-9) m.ticks.push(n * big);
+}
+const byId = Object.fromEntries(METRICS.map(m => [m.id, m]));
+const fmt = (m, v) => m.nf.format(v);
+const nfPlain = new Intl.NumberFormat('de-DE', { maximumFractionDigits: 2 });
+const fmtTick = v => nfPlain.format(v);
+
+const SMOOTH = { raw: 0, w7: 3, w30: 15 };
+const SMOOTH_NAME = { raw: 'Rohdaten', w7: '7-Tage-Mittel', w30: '30-Tage-Mittel' };
+const fieldCache = new Map();
+function field(id, mode) {
+  const r = SMOOTH[mode];
+  if (!r) return raw[id];
+  const key = id + mode;
+  if (fieldCache.has(key)) return fieldCache.get(key);
+  const src = raw[id], out = new Float32Array(N), pre = new Float64Array(NX + 1);
+  for (let j = 0; j < NZ; j++) {
+    for (let i = 0; i < NX; i++) pre[i + 1] = pre[i] + src[i * NZ + j];
+    for (let i = 0; i < NX; i++) {
+      const a = Math.max(0, i - r), b = Math.min(NX - 1, i + r);
+      out[i * NZ + j] = (pre[b + 1] - pre[a]) / (b - a + 1);
+    }
+  }
+  fieldCache.set(key, out);
+  return out;
+}
+const medianCache = new Map();
+function slotMedian(id) {
+  if (medianCache.has(id)) return medianCache.get(id);
+  const out = new Float32Array(NZ), col = new Float32Array(NX);
+  for (let j = 0; j < NZ; j++) {
+    for (let i = 0; i < NX; i++) col[i] = raw[id][i * NZ + j];
+    col.sort();
+    out[j] = NX % 2 ? col[(NX - 1) / 2] : (col[NX / 2 - 1] + col[NX / 2]) / 2;
+  }
+  medianCache.set(id, out);
+  return out;
+}
+
+const MON = ['Jan', 'Feb', 'Mär', 'Apr', 'Mai', 'Jun', 'Jul', 'Aug', 'Sep', 'Okt', 'Nov', 'Dez'];
+const MONTH = ['Januar', 'Februar', 'März', 'April', 'Mai', 'Juni', 'Juli', 'August', 'September', 'Oktober', 'November', 'Dezember'];
+const WD = ['So', 'Mo', 'Di', 'Mi', 'Do', 'Fr', 'Sa'];
+const slotLabel = j => String(j >> 1).padStart(2, '0') + ':' + (j & 1 ? '30' : '00');
+const dateLong = i => { const d = dayDate(i); return `${WD[d.getUTCDay()]}, ${d.getUTCDate()}. ${MONTH[d.getUTCMonth()]} ${d.getUTCFullYear()}`; };
+const dateShort = i => { const d = dayDate(i); return `${d.getUTCDate()}. ${MON[d.getUTCMonth()]}`; };
+const months = [];
+for (let i = 0; i < NX; i++) {
+  const d = dayDate(i), mo = d.getUTCMonth();
+  if (!months.length || months[months.length - 1].mo !== mo) months.push({ mo, i0: i, i1: i });
+  else months[months.length - 1].i1 = i;
+}
+
+// ---------- Zustand ----------
+const state = { hm: METRICS[0], cm: null, smooth: 'w7', ex: 1, view: 'relief', pin: { i: 0, j: 0 }, hover: null, table: false };
+const colorMetric = () => state.cm || state.hm;
+const sel = () => state.hover || state.pin;
+{ // Startauswahl: der höchste CO₂-Wert
+  let best = 0;
+  for (let k = 1; k < N; k++) if (raw.co2[k] > raw.co2[best]) best = k;
+  state.pin = { i: Math.floor(best / NZ), j: best % NZ };
+}
+
+// ---------- Farbrampen (OKLCH, Helligkeit streng monoton) ----------
+function oklch(L, C, hDeg) {
+  const h = hDeg * Math.PI / 180, a = C * Math.cos(h), b = C * Math.sin(h);
+  const l = Math.pow(L + 0.3963377774 * a + 0.2158037573 * b, 3);
+  const m = Math.pow(L - 0.1055613458 * a - 0.0638541728 * b, 3);
+  const s = Math.pow(L - 0.0894841775 * a - 1.2914855480 * b, 3);
+  return [
+    4.0767416621 * l - 3.3077115913 * m + 0.2309699292 * s,
+    -1.2684380046 * l + 2.6097574011 * m - 0.3413193965 * s,
+    -0.0041960863 * l - 0.7034186147 * m + 1.7076147010 * s,
+  ];
+}
+const srgb8 = x => Math.round(255 * clamp(x <= 0.0031308 ? 12.92 * x : 1.055 * Math.pow(x, 1 / 2.4) - 0.055, 0, 1));
+function buildRamp(m, dark) {
+  const out = new Uint8Array(256 * 4);
+  for (let n = 0; n < 256; n++) {
+    const t = n / 255;
+    const L = dark ? 0.27 + 0.67 * t : 0.955 - 0.625 * t;
+    const prof = dark
+      ? (t < 0.55 ? 0.45 + 0.55 * t / 0.55 : 1 - 0.5 * (t - 0.55) / 0.45)
+      : (t < 0.6 ? 0.2 + 0.8 * t / 0.6 : 1 - 0.3 * (t - 0.6) / 0.4);
+    const h = lerp(m.hue[0], m.hue[1], t);
+    let C = m.chroma * prof, rgb = oklch(L, C, h);
+    for (let it = 0; it < 40 && rgb.some(c => c < -0.001 || c > 1.001); it++) { C *= 0.94; rgb = oklch(L, C, h); }
+    out[n * 4] = srgb8(rgb[0]); out[n * 4 + 1] = srgb8(rgb[1]); out[n * 4 + 2] = srgb8(rgb[2]); out[n * 4 + 3] = 255;
+  }
+  return out;
+}
+let dark = false;
+const rampCache = new Map();
+function rampOf(m) {
+  const key = m.id + (dark ? 'd' : 'l');
+  if (!rampCache.has(key)) {
+    const data = buildRamp(m, dark);
+    const tex = new THREE.DataTexture(data, 256, 1, THREE.RGBAFormat);
+    tex.minFilter = tex.magFilter = THREE.LinearFilter;
+    tex.needsUpdate = true;
+    rampCache.set(key, { data, tex });
+  }
+  return rampCache.get(key);
+}
+
+// ---------- Szene ----------
+let renderer;
+try {
+  renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true, powerPreference: 'high-performance' });
+} catch (e) {
+  fail('Dieser Browser stellt kein WebGL bereit, das Relief kann nicht gezeichnet werden.');
+  return;
+}
+renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+renderer.setClearColor(0x000000, 0);
+const scene = new THREE.Scene();
+const camera = new THREE.PerspectiveCamera(30, 1, 1, 2400);
+const controls = new THREE.OrbitControls(camera, canvas);
+Object.assign(controls, {
+  enableDamping: true, dampingFactor: 0.09, rotateSpeed: 0.7, zoomSpeed: 0.8,
+  maxPolarAngle: Math.PI * 0.495, minDistance: 5, maxDistance: 1200, screenSpacePanning: true,
+});
+
+const LIGHT = new THREE.Vector3(-0.55, 0.62, -0.56).normalize();
+const GLSL_LINES = `
+  float aaLine(float d, float w) { return 1.0 - smoothstep(w - 0.6, w + 0.6, d); }
+  float contour(float g, float w) {
+    float fw = fwidth(g);
+    float keep = smoothstep(0.002, 0.012, fw) * (1.0 - smoothstep(0.32, 0.62, fw));
+    return aaLine(abs(fract(g - 0.5) - 0.5) / max(fw, 1e-6), w) * keep;
+  }
+`;
+
+// Gelände
+const pos = new Float32Array(N * 3), nor = new Float32Array(N * 3), aC = new Float32Array(N), aAO = new Float32Array(N).fill(1);
+const curH = new Float32Array(N), targetH = new Float32Array(N);
+for (let i = 0; i < NX; i++) for (let j = 0; j < NZ; j++) {
+  const k = i * NZ + j;
+  pos[k * 3] = X0 + i * DX; pos[k * 3 + 2] = Z0 + j * DZ; nor[k * 3 + 1] = 1;
+}
+const index = new Uint32Array((NX - 1) * (NZ - 1) * 6);
+for (let i = 0, n = 0; i < NX - 1; i++) for (let j = 0; j < NZ - 1; j++) {
+  const a = i * NZ + j, b = a + NZ, c = b + 1, d = a + 1;
+  index[n++] = a; index[n++] = d; index[n++] = b; index[n++] = b; index[n++] = d; index[n++] = c;
+}
+const geo = new THREE.BufferGeometry();
+geo.setAttribute('position', new THREE.BufferAttribute(pos, 3));
+geo.setAttribute('normal', new THREE.BufferAttribute(nor, 3));
+geo.setAttribute('aC', new THREE.BufferAttribute(aC, 1));
+geo.setAttribute('aAO', new THREE.BufferAttribute(aAO, 1));
+geo.setIndex(new THREE.BufferAttribute(index, 1));
+geo.boundingSphere = new THREE.Sphere(new THREE.Vector3(0, H0, 0), 60);
+
+const monthX = new Array(14).fill(1e6);
+months.slice(1).forEach((m, n) => { if (n < 14) monthX[n] = X0 + (m.i0 - 0.5) * DX; });
+const surfU = {
+  uRampA: { value: null }, uRampB: { value: null }, uRampMix: { value: 0 },
+  uInk: { value: new THREE.Color() }, uCase: { value: new THREE.Color() }, uHaze: { value: new THREE.Color() },
+  uLnDark: { value: new THREE.Color(0x0b1820) }, uLnLight: { value: new THREE.Color(0xffffff) }, uLnRange: { value: new THREE.Vector2(-2, -1) },
+  uLight: { value: LIGHT }, uDark: { value: 0 }, uYScale: { value: 1 },
+  uLo: { value: 0 }, uHi: { value: 1 }, uStep: { value: 1 }, uIdx: { value: 5 }, uH0: { value: H0 },
+  uContour: { value: 1 }, uSel: { value: new THREE.Vector2() },
+  uThresh: { value: 1000 }, uThreshOn: { value: 0 }, uWarn: { value: new THREE.Color() },
+  uMonthX: { value: monthX }, uMonthN: { value: Math.min(14, months.length - 1) },
+  uZ0: { value: Z0 }, uDz: { value: DZ }, uFog: { value: new THREE.Vector2(10, 60) },
+};
+const surface = new THREE.Mesh(geo, new THREE.ShaderMaterial({
+  uniforms: surfU,
+  side: THREE.DoubleSide,
+  extensions: { derivatives: true },
+  vertexShader: `
+    attribute float aC;
+    attribute float aAO;
+    varying vec3 vP;
+    varying vec3 vN;
+    varying float vC;
+    varying float vAO;
+    varying float vDepth;
+    void main() {
+      vP = position; vN = normal; vC = aC; vAO = aAO;
+      vec4 mv = modelViewMatrix * vec4(position, 1.0);
+      vDepth = -mv.z;
+      gl_Position = projectionMatrix * mv;
+    }`,
+  fragmentShader: `
+    precision highp float;
+    uniform sampler2D uRampA;
+    uniform sampler2D uRampB;
+    uniform float uRampMix;
+    uniform vec3 uInk;
+    uniform vec3 uCase;
+    uniform vec3 uHaze;
+    uniform vec3 uLnDark;
+    uniform vec3 uLnLight;
+    uniform vec2 uLnRange;
+    uniform vec3 uLight;
+    uniform float uDark;
+    uniform float uYScale;
+    uniform float uLo;
+    uniform float uHi;
+    uniform float uStep;
+    uniform float uIdx;
+    uniform float uH0;
+    uniform float uContour;
+    uniform vec2 uSel;
+    uniform float uThresh;
+    uniform float uThreshOn;
+    uniform vec3 uWarn;
+    uniform float uMonthX[14];
+    uniform int uMonthN;
+    uniform float uZ0;
+    uniform float uDz;
+    uniform vec2 uFog;
+    varying vec3 vP;
+    varying vec3 vN;
+    varying float vC;
+    varying float vAO;
+    varying float vDepth;
+    ${GLSL_LINES}
+    void main() {
+      vec2 uv = vec2(clamp(vC, 0.002, 0.998), 0.5);
+      vec3 col = mix(texture2D(uRampA, uv).rgb, texture2D(uRampB, uv).rgb, uRampMix);
+
+      // Schummerung: Licht von links oben, warme Lichthänge, kühle Schatten
+      vec3 n = normalize(vec3(vN.x * 0.55, vN.y / max(uYScale, 0.001), vN.z * 0.55));
+      float sh = dot(n, uLight) / uLight.y;
+      float dk = clamp(1.0 - sh, 0.0, 1.0);
+      float br = clamp(sh - 1.0, 0.0, 0.6);
+      col *= 1.0 - dk * mix(0.34, 0.44, uDark);
+      col = mix(col, col * vec3(0.80, 0.88, 1.12), dk * 0.55);
+      col += br * mix(vec3(0.15, 0.13, 0.07), vec3(0.11, 0.10, 0.08), uDark);
+      col *= mix(1.0, vAO, 0.75);
+
+      float lum = dot(col, vec3(0.2126, 0.7152, 0.0722));
+      vec3 lc = mix(uLnLight, uLnDark, smoothstep(uLnRange.x, uLnRange.y, lum));
+
+      // Höhenlinien
+      float v = uLo + vP.y / uH0 * (uHi - uLo);
+      float g = v / uStep;
+      float line = max(contour(g, 0.45) * 0.30, contour(g / uIdx, 0.8) * 0.52) * uContour;
+      col = mix(col, lc, line);
+
+      // Gradnetz: Monatsgrenzen und 6-Stunden-Linien
+      float fx = max(fwidth(vP.x), 1e-6);
+      float fz = max(fwidth(vP.z), 1e-6);
+      float dm = 1e5;
+      for (int k = 0; k < 14; k++) { if (k < uMonthN) dm = min(dm, abs(vP.x - uMonthX[k])); }
+      float s6 = (vP.z - uZ0) / uDz / 12.0;
+      float grat = max(aaLine(dm / fx, 0.45), aaLine(abs(fract(s6 - 0.5) - 0.5) / max(fwidth(s6), 1e-6), 0.45));
+      col = mix(col, lc, grat * 0.2);
+
+      // Leitwert
+      float ft = fwidth(v);
+      float td = abs(v - uThresh) / max(ft, 1e-6);
+      float ton = uThreshOn * uContour * step(1e-4, ft);
+      col = mix(col, uLnDark, aaLine(td, 1.8) * 0.5 * ton);
+      col = mix(col, uWarn, aaLine(td, 0.9) * ton);
+
+      // Dunst in der Tiefe
+      col = mix(col, uHaze, smoothstep(uFog.x, uFog.y, vDepth) * 0.16);
+
+      // Fadenkreuz der Auswahl
+      float d = min(abs(vP.x - uSel.x) / fx, abs(vP.z - uSel.y) / fz);
+      col = mix(col, uCase, aaLine(d, 2.3) * 0.9);
+      col = mix(col, uInk, aaLine(d, 0.85));
+
+      gl_FragColor = vec4(col, 1.0);
+    }`,
+}));
+surface.frustumCulled = false;
+scene.add(surface);
+
+// Sockel
+const EDGES = [
+  { n: [0, 0, 1], count: NX, k: c => c * NZ + NZ - 1 },
+  { n: [0, 0, -1], count: NX, k: c => c * NZ },
+  { n: [-1, 0, 0], count: NZ, k: c => c },
+  { n: [1, 0, 0], count: NZ, k: c => (NX - 1) * NZ + c },
+];
+const SV = 2 * (NX + NZ) * 2;
+const sPos = new Float32Array(SV * 3), sNor = new Float32Array(SV * 3), sBot = new Float32Array(SV), sCol = new Float32Array(SV), sMap = new Int32Array(SV);
+const sIdx = [];
+{
+  let v = 0;
+  for (const e of EDGES) {
+    const v0 = v;
+    for (let c = 0; c < e.count; c++) for (let b = 0; b < 2; b++, v++) {
+      const k = e.k(c);
+      sPos[v * 3] = pos[k * 3]; sPos[v * 3 + 2] = pos[k * 3 + 2];
+      sNor.set(e.n, v * 3); sBot[v] = b; sMap[v] = b ? -1 : k;
+    }
+    for (let c = 0; c < e.count - 1; c++) { const t = v0 + c * 2; sIdx.push(t, t + 1, t + 2, t + 2, t + 1, t + 3); }
+  }
+}
+const sGeo = new THREE.BufferGeometry();
+sGeo.setAttribute('position', new THREE.BufferAttribute(sPos, 3));
+sGeo.setAttribute('normal', new THREE.BufferAttribute(sNor, 3));
+sGeo.setAttribute('aBottom', new THREE.BufferAttribute(sBot, 1));
+sGeo.setAttribute('aC', new THREE.BufferAttribute(sCol, 1));
+sGeo.setIndex(sIdx);
+const skirtU = {
+  uWall: { value: new THREE.Color() }, uLine: { value: new THREE.Color() }, uHaze: surfU.uHaze, uLight: surfU.uLight,
+  uYScale: surfU.uYScale, uBase: { value: BASE }, uLo: surfU.uLo, uHi: surfU.uHi, uStep: surfU.uStep, uIdx: surfU.uIdx,
+  uH0: surfU.uH0, uContour: surfU.uContour, uFog: surfU.uFog,
+  uRampA: surfU.uRampA, uRampB: surfU.uRampB, uRampMix: surfU.uRampMix, uSame: { value: 1 },
+};
+const skirt = new THREE.Mesh(sGeo, new THREE.ShaderMaterial({
+  uniforms: skirtU,
+  side: THREE.DoubleSide,
+  extensions: { derivatives: true },
+  vertexShader: `
+    attribute float aBottom;
+    attribute float aC;
+    uniform float uBase;
+    uniform float uYScale;
+    varying vec3 vP;
+    varying vec3 vN;
+    varying float vC;
+    varying float vDepth;
+    void main() {
+      vec3 p = position;
+      p.y = mix(p.y, -uBase / max(uYScale, 0.001), aBottom);
+      vP = p; vN = normal; vC = aC;
+      vec4 mv = modelViewMatrix * vec4(p, 1.0);
+      vDepth = -mv.z;
+      gl_Position = projectionMatrix * mv;
+    }`,
+  fragmentShader: `
+    precision highp float;
+    uniform vec3 uWall;
+    uniform vec3 uLine;
+    uniform vec3 uHaze;
+    uniform vec3 uLight;
+    uniform float uYScale;
+    uniform float uBase;
+    uniform float uLo;
+    uniform float uHi;
+    uniform float uStep;
+    uniform float uIdx;
+    uniform float uH0;
+    uniform float uContour;
+    uniform vec2 uFog;
+    uniform sampler2D uRampA;
+    uniform sampler2D uRampB;
+    uniform float uRampMix;
+    uniform float uSame;
+    varying vec3 vP;
+    varying vec3 vN;
+    varying float vC;
+    varying float vDepth;
+    ${GLSL_LINES}
+    void main() {
+      float yw = vP.y * uYScale;
+      float fy = max(fwidth(yw), 1e-6);
+      float above = smoothstep(-0.5, 0.5, yw / fy);
+      // über dem Sockel: Schichtfarbe des Geländes; darunter neutraler Sockel
+      vec2 uv = vec2(clamp(mix(vC, vP.y / uH0, uSame), 0.002, 0.998), 0.5);
+      vec3 strata = mix(texture2D(uRampA, uv).rgb, texture2D(uRampB, uv).rgb, uRampMix);
+      vec3 col = mix(uWall, mix(strata, uWall, 0.18), above);
+      col *= 0.86 + 0.20 * dot(normalize(vN), uLight);
+      col *= 1.0 - 0.12 * clamp(-yw / uBase, 0.0, 1.0);
+      float g = (uLo + vP.y / uH0 * (uHi - uLo)) / uStep;
+      float line = max(contour(g, 0.45) * 0.22, contour(g / uIdx, 0.8) * 0.42) * uContour * above;
+      line = max(line, aaLine(abs(yw) / fy, 0.6) * 0.45);
+      col = mix(col, uLine, line);
+      col = mix(col, uHaze, smoothstep(uFog.x, uFog.y, vDepth) * 0.16);
+      gl_FragColor = vec4(col, 1.0);
+    }`,
+}));
+skirt.frustumCulled = false;
+scene.add(skirt);
+
+// Schlagschatten auf dem Tisch
+const shadowU = { uCol: { value: new THREE.Color() }, uAlpha: { value: 0.3 }, uHalf: { value: new THREE.Vector2(W / 2, D / 2) } };
+const shadow = new THREE.Mesh(new THREE.PlaneGeometry(W + 18, D + 18), new THREE.ShaderMaterial({
+  uniforms: shadowU, transparent: true, depthWrite: false,
+  vertexShader: `varying vec2 vQ; void main() { vQ = position.xy; gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0); }`,
+  fragmentShader: `
+    precision highp float;
+    uniform vec3 uCol; uniform float uAlpha; uniform vec2 uHalf;
+    varying vec2 vQ;
+    void main() {
+      vec2 q = abs(vQ - vec2(0.5, -0.45)) - uHalf;
+      float d = length(max(q, 0.0)) + min(max(q.x, q.y), 0.0);
+      float a = 1.0 - smoothstep(-0.6, 4.2, d);
+      gl_FragColor = vec4(uCol, a * a * uAlpha);
+    }`,
+}));
+shadow.rotation.x = -Math.PI / 2;
+shadow.position.y = -BASE - 0.004;
+shadow.renderOrder = -1;
+scene.add(shadow);
+
+// Achsstriche und Messlatte
+const MAXSEG = 64;
+const tickPos = new Float32Array(MAXSEG * 6);
+const tickGeo = new THREE.BufferGeometry();
+tickGeo.setAttribute('position', new THREE.BufferAttribute(tickPos, 3));
+const tickMat = new THREE.LineBasicMaterial({ color: 0x000000 });
+const tickLines = new THREE.LineSegments(tickGeo, tickMat);
+tickLines.frustumCulled = false;
+scene.add(tickLines);
+
+// ---------- Beschriftung ----------
+const mkLabel = cls => { const n = el('div', 'lbl ' + cls); labelLayer.append(n); n._t = ''; n._w = 0; n._h = 0; return n; };
+const setText = (n, t) => { if (n._t !== t) { n.textContent = t; n._t = t; n._w = n.offsetWidth; n._h = n.offsetHeight; } };
+const monthLbl = months.map(m => { const n = mkLabel('month'); setText(n, MON[m.mo]); return n; });
+const hourLbl = [0, 12, 24, 36].map(s => { const n = mkLabel('hour'); setText(n, (s / 2) + ' Uhr'); n._s = s; return n; });
+const staffLbl = Array.from({ length: 8 }, () => mkLabel('staff'));
+const peakLbl = Array.from({ length: 3 }, () => {
+  const n = mkLabel('peak'), tag = el('div', 'tag'); n._b = el('b'); n._s = el('span'); tag.append(n._b, n._s); n.append(tag); return n;
+});
+const marker = $('#marker');
+let peaks = [];
+let targetField = field('co2', state.smooth);
+
+function computePeaks() {
+  const f = targetField, hm = state.hm, best = [];
+  for (let i = 0; i < NX; i++) {
+    let bj = 0;
+    for (let j = 1; j < NZ; j++) if (f[i * NZ + j] > f[i * NZ + bj]) bj = j;
+    best.push({ i, j: bj, v: f[i * NZ + bj] });
+  }
+  best.sort((a, b) => b.v - a.v);
+  peaks = [];
+  for (const p of best) {
+    if (peaks.every(q => Math.abs(q.i - p.i) >= 26)) peaks.push(p);
+    if (peaks.length === 3) break;
+  }
+  peaks.forEach((p, n) => {
+    const l = peakLbl[n];
+    l._b.textContent = `${state.smooth === 'raw' ? '' : 'Ø '}${fmt(hm, p.v)} ${hm.unit}`;
+    l._s.textContent = `${dateShort(p.i)}, ${slotLabel(p.j)}`;
+    l._t = ''; l._w = l.offsetWidth; l._h = l.offsetHeight;
+  });
+}
+
+const v3 = new THREE.Vector3();
+let sw = 1, sh = 1, fixedRects = [];
+function project(x, y, z) {
+  v3.set(x, y, z).project(camera);
+  return { x: (v3.x * 0.5 + 0.5) * sw, y: (-v3.y * 0.5 + 0.5) * sh, ok: v3.z < 1 };
+}
+function layoutOverlay(ys) {
+  camera.updateMatrixWorld();
+  const cam = camera.position, tg = controls.target;
+  const sx = cam.x - tg.x >= 0 ? 1 : -1, sz = cam.z - tg.z >= 0 ? 1 : -1;
+  const xE = sx * W / 2, zE = sz * D / 2, yB = -BASE;
+  const overhead = (cam.y - tg.y) / cam.distanceTo(tg) > 0.985;
+  const placed = fixedRects.slice();
+  let seg = 0;
+  const line = (ax, ay, az, bx, by, bz) => { if (seg < MAXSEG) { tickPos.set([ax, ay, az, bx, by, bz], seg * 6); seg++; } };
+  const hide = n => { n.style.visibility = 'hidden'; };
+  const place = (n, p, align) => {
+    if (!p.ok) return hide(n);
+    const w = n._w, h = n._h;
+    const x0 = align === 'l' ? p.x : align === 'r' ? p.x - w : p.x - w / 2;
+    const y0 = align === 'b' ? p.y - h : p.y - h / 2;
+    if (x0 < 2 || y0 < 2 || x0 + w > sw - 2 || y0 + h > sh - 2) return hide(n);
+    for (const r of placed) if (x0 < r[2] + 5 && x0 + w + 5 > r[0] && y0 < r[3] + 2 && y0 + h + 2 > r[1]) return hide(n);
+    placed.push([x0, y0, x0 + w, y0 + h]);
+    n.style.transform = `translate(${x0.toFixed(1)}px,${y0.toFixed(1)}px)`;
+    n.style.visibility = 'visible';
+  };
+  const span = (a, b) => Math.hypot(a.x - b.x, a.y - b.y);
+
+  // Auswahlmarke
+  const s = sel(), sk = s.i * NZ + s.j;
+  const mp = project(pos[sk * 3], curH[sk] * ys, pos[sk * 3 + 2]);
+  marker.style.visibility = mp.ok ? 'visible' : 'hidden';
+  marker.style.transform = `translate(${mp.x.toFixed(1)}px,${mp.y.toFixed(1)}px)`;
+
+  // Messlatte an der freien vorderen Ecke
+  const cx = -sx * W / 2, cz = zE, hm = state.hm;
+  const top = H0 * ys;
+  if (!overhead && span(project(cx, 0, cz), project(cx, top, cz)) > 60) {
+    line(cx, 0, cz, cx, top, cz);
+    const side = project(cx, 0, cz).x >= project(0, 0, 0).x ? 'l' : 'r';
+    const out = side === 'l' ? 9 : -9;
+    const vals = (hm.ticks.includes(hm.hi) ? hm.ticks : hm.ticks.concat(hm.hi)).slice().reverse();
+    staffLbl.forEach((n, t) => {
+      if (t >= vals.length) return hide(n);
+      const v = vals[t], y = (v - hm.lo) / (hm.hi - hm.lo) * top;
+      line(cx, y, cz, cx - sx * 0.22, y, cz);
+      setText(n, fmtTick(v) + (t ? '' : ' ' + hm.unit));
+      const p = project(cx - sx * 0.22, y, cz);
+      p.x += out;
+      place(n, p, side);
+    });
+  } else staffLbl.forEach(hide);
+
+  // Monate an der vorderen Kante
+  if (span(project(-W / 2, yB, zE), project(W / 2, yB, zE)) > 220) {
+    months.forEach((m, n) => {
+      if (n) { const xb = X0 + (m.i0 - 0.5) * DX; line(xb, yB, zE, xb, yB, zE + sz * 0.3); }
+      place(monthLbl[n], project(X0 + (m.i0 + m.i1) / 2 * DX, yB, zE + sz * 0.78), 'c');
+    });
+  } else monthLbl.forEach(hide);
+
+  // Uhrzeiten an der seitlichen Kante
+  if (span(project(xE, yB, -D / 2), project(xE, yB, D / 2)) > 110) {
+    for (const n of hourLbl) {
+      const z = Z0 + n._s * DZ;
+      line(xE, yB, z, xE + sx * 0.3, yB, z);
+      const a = project(xE, yB, z), b = project(xE + sx * 0.5, yB, z);
+      const horiz = Math.abs(b.x - a.x) > Math.abs(b.y - a.y) * 0.6;
+      place(n, project(xE + sx * (horiz ? 0.5 : 0.85), yB, z), horiz ? (b.x > a.x ? 'l' : 'r') : 'c');
+    }
+  } else hourLbl.forEach(hide);
+
+  // Gipfel
+  peakLbl.forEach((n, t) => {
+    const p = peaks[t];
+    if (!p) return hide(n);
+    const k = p.i * NZ + p.j;
+    place(n, project(pos[k * 3], curH[k] * ys, pos[k * 3 + 2]), 'b');
+  });
+
+  tickGeo.setDrawRange(0, seg * 2);
+  tickGeo.attributes.position.needsUpdate = true;
+}
+
+// ---------- Animation ----------
+const RM = matchMedia('(prefers-reduced-motion: reduce)').matches;
+const tweens = new Set();
+let dirty = true, panelDirty = true, introK = 1;
+function tween(ms, fn, done, delay = 0) {
+  const t = { t0: performance.now() + (RM ? 0 : delay), ms: RM ? 0 : ms, fn, done };
+  tweens.add(t);
+  return t;
+}
+function render() {
+  const ys = Math.max(0.001, state.ex * introK);
+  surface.scale.y = skirt.scale.y = ys;
+  surfU.uYScale.value = ys;
+  const dist = camera.position.distanceTo(controls.target);
+  surfU.uFog.value.set(dist - 8, dist + 26);
+  layoutOverlay(ys);
+  renderer.render(scene, camera);
+}
+function frame(now) {
+  for (const t of tweens) {
+    if (now < t.t0) continue;
+    const u = t.ms <= 0 ? 1 : Math.min(1, (now - t.t0) / t.ms);
+    t.fn(u);
+    dirty = true;
+    if (u >= 1) { tweens.delete(t); if (t.done) t.done(); }
+  }
+  if (controls.enabled) controls.update();
+  if (pendingMove) { handleHover(pendingMove); pendingMove = null; }
+  if (dirty) { dirty = false; render(); }
+  if (panelDirty) { panelDirty = false; updatePanel(); }
+  requestAnimationFrame(frame);
+}
+controls.addEventListener('change', () => { dirty = true; });
+
+// ---------- Geländeform ----------
+function applyHeights() {
+  for (let i = 0; i < NX; i++) {
+    const i0 = i ? i - 1 : 0, i1 = i < NX - 1 ? i + 1 : i, ix = 1 / ((i1 - i0) * DX);
+    for (let j = 0; j < NZ; j++) {
+      const j0 = j ? j - 1 : 0, j1 = j < NZ - 1 ? j + 1 : j, k = i * NZ + j;
+      const a = curH[i1 * NZ + j], b = curH[i0 * NZ + j], c = curH[i * NZ + j1], d = curH[i * NZ + j0], h = curH[k];
+      const hx = (a - b) * ix, hz = (c - d) / ((j1 - j0) * DZ), inv = 1 / Math.hypot(hx, 1, hz);
+      pos[k * 3 + 1] = h;
+      nor[k * 3] = -hx * inv; nor[k * 3 + 1] = inv; nor[k * 3 + 2] = -hz * inv;
+      aAO[k] = 1 - Math.min(0.4, Math.max(0, (a + b + c + d) * 0.25 - h) * 0.8);
+    }
+  }
+  for (let v = 0; v < SV; v++) if (sMap[v] >= 0) { sPos[v * 3 + 1] = curH[sMap[v]]; sCol[v] = sCol[v + 1] = aC[sMap[v]]; }
+  geo.attributes.position.needsUpdate = geo.attributes.normal.needsUpdate = true;
+  geo.attributes.aC.needsUpdate = geo.attributes.aAO.needsUpdate = true;
+  sGeo.attributes.position.needsUpdate = sGeo.attributes.aC.needsUpdate = true;
+  dirty = true;
+}
+function setContourMetric(m) {
+  surfU.uLo.value = m.lo; surfU.uHi.value = m.hi; surfU.uStep.value = m.step; surfU.uIdx.value = m.idx;
+  surfU.uThreshOn.value = m.id === 'co2' && m.hi > 1000 ? 1 : 0;
+}
+let morph = null, contourMetric = null;
+function retarget(animate) {
+  const hm = state.hm, cm = colorMetric();
+  const hf = field(hm.id, state.smooth), cf = field(cm.id, state.smooth);
+  if (morph) { tweens.delete(morph); morph.done(); }
+  const fromH = curH.slice(), fromC = aC.slice();
+  const kh = H0 / (hm.hi - hm.lo), kc = 1 / (cm.hi - cm.lo);
+  for (let k = 0; k < N; k++) targetH[k] = (hf[k] - hm.lo) * kh;
+  const rampNew = rampOf(cm).tex, rampChange = surfU.uRampA.value !== rampNew;
+  const lineChange = contourMetric !== hm;
+  if (rampChange) surfU.uRampB.value = rampNew;
+  let switched = !lineChange;
+  const sameFrom = skirtU.uSame.value, sameTo = cm === hm ? 1 : 0;
+  const finish = () => {
+    skirtU.uSame.value = sameTo;
+    if (rampChange) { surfU.uRampA.value = surfU.uRampB.value = rampOf(cm).tex; surfU.uRampMix.value = 0; }
+    if (!switched) { setContourMetric(hm); switched = true; }
+    contourMetric = hm;
+    surfU.uContour.value = 1;
+    morph = null;
+  };
+  morph = tween(animate ? 950 : 0, u => {
+    const e = easeInOut(u);
+    for (let k = 0; k < N; k++) {
+      curH[k] = fromH[k] + (targetH[k] - fromH[k]) * e;
+      aC[k] = fromC[k] + (clamp((cf[k] - cm.lo) * kc, 0, 1) - fromC[k]) * e;
+    }
+    if (rampChange) surfU.uRampMix.value = e;
+    skirtU.uSame.value = lerp(sameFrom, sameTo, e);
+    if (lineChange) {
+      if (u >= 0.4 && !switched) { setContourMetric(hm); switched = true; }
+      surfU.uContour.value = u < 0.4 ? 1 - u / 0.4 : (u - 0.4) / 0.6;
+    }
+    applyHeights();
+  }, finish);
+  targetField = hf;
+  computePeaks();
+  updateLegend();
+  panelDirty = true;
+}
+
+// ---------- Kamera ----------
+const PRESETS = {
+  relief: { theta: -0.56, phi: 1.02, fov: 30, ty: 0.75, reserve: 0.4 },
+  karte: { theta: -0.0002, phi: 0.012, fov: 9, ty: 0, reserve: 1 },
+  jahr: { theta: 0.0002, phi: 1.38, fov: 7, ty: 1.2, reserve: 1 },
+  tag: { theta: -Math.PI / 2, phi: 1.2, fov: 6, ty: 1, reserve: 1 },
+};
+const probe = new THREE.PerspectiveCamera();
+const tanHalf = fov => Math.tan(fov * Math.PI / 360);
+function boundsAt(p, target, r) {
+  probe.fov = p.fov; probe.aspect = camera.aspect; probe.near = 1; probe.far = 9000; probe.updateProjectionMatrix();
+  probe.position.setFromSphericalCoords(r, p.phi, p.theta).add(target);
+  probe.lookAt(target);
+  probe.updateMatrixWorld();
+  const b = { x0: 9, x1: -9, y0: 9, y1: -9 };
+  const add = (x, y, z) => {
+    v3.set(x, y, z).project(probe);
+    b.x0 = Math.min(b.x0, v3.x); b.x1 = Math.max(b.x1, v3.x); b.y0 = Math.min(b.y0, v3.y); b.y1 = Math.max(b.y1, v3.y);
+  };
+  for (let c = 0; c < 4; c++) add(c & 1 ? W / 2 : -W / 2, -BASE, c & 2 ? D / 2 : -D / 2);
+  for (let i = 0; i < NX; i = i < NX - 1 ? Math.min(i + 3, NX - 1) : NX) {
+    for (let j = 0; j < NZ; j = j < NZ - 1 ? Math.min(j + 3, NZ - 1) : NZ) {
+      const k = i * NZ + j;
+      add(pos[k * 3], targetH[k] * state.ex, pos[k * 3 + 2]);
+    }
+  }
+  return b;
+}
+const poseOf = name => {
+  const portrait = sw < sh * 0.95;
+  const p = name === 'relief' && portrait ? { ...PRESETS.relief, theta: -1.12, phi: 0.98 } : PRESETS[name];
+  const target = new THREE.Vector3(0, p.ty * state.ex, 0);
+  // Platz, den die Legende belegt: breit links, schmal unten
+  const lg = fixedRects[0];
+  const padX = lg && sw >= 900 ? (lg[2] + 4) * p.reserve : 0, padY = lg && sw < 900 ? sh - lg[1] + 4 : 0;
+  const safeW = clamp(sw - padX, Math.min(sw, 160), sw), safeH = clamp(sh - padY, Math.min(sh, 160), sh);
+  const mx = safeW / sw * clamp(1 - 170 / safeW, 0.76, 0.92), my = safeH / sh * clamp(1 - 100 / safeH, 0.55, 0.9);
+  let r = 60;
+  for (let pass = 0; pass < 5; pass++) {
+    let b = boundsAt(p, target, r);
+    r *= Math.max((b.x1 - b.x0) / (2 * mx), (b.y1 - b.y0) / (2 * my));
+    if (Math.sin(p.phi) > 0.2) {
+      b = boundsAt(p, target, r);
+      target.y += (b.y0 + b.y1) / 2 * r * tanHalf(p.fov) / Math.sin(p.phi);
+    }
+  }
+  return { theta: p.theta, phi: p.phi, fov: p.fov, target, r, dx: padX / 2, dy: -padY / 2 };
+};
+function applyPose(q) {
+  camera.fov = q.fov;
+  viewShift.set(q.dx, q.dy);
+  camera.setViewOffset(sw, sh, -q.dx, -q.dy, sw, sh);
+  camera.position.setFromSphericalCoords(q.r, q.phi, q.theta).add(q.target);
+  controls.target.copy(q.target);
+  camera.lookAt(q.target);
+  dirty = true;
+}
+let camTween = null, camTo = null, userMoved = false;
+const viewShift = new THREE.Vector2();
+function goView(name, ms = 1100, delay = 0) {
+  state.view = name;
+  userMoved = false;
+  pressView();
+  camTo = poseOf(name);
+  const sph = new THREE.Spherical().setFromVector3(camera.position.clone().sub(controls.target));
+  const from = { theta: sph.theta, phi: sph.phi, fov: camera.fov, target: controls.target.clone(), size: sph.radius * tanHalf(camera.fov), dx: viewShift.x, dy: viewShift.y };
+  let dTheta = camTo.theta - from.theta;
+  dTheta = ((dTheta + Math.PI) % (2 * Math.PI) + 2 * Math.PI) % (2 * Math.PI) - Math.PI;
+  if (camTween) tweens.delete(camTween);
+  controls.enabled = false;
+  camTween = tween(ms, u => {
+    const e = easeInOut(u), to = camTo, fov = lerp(from.fov, to.fov, e);
+    applyPose({
+      fov, theta: from.theta + dTheta * e, phi: lerp(from.phi, to.phi, e),
+      target: from.target.clone().lerp(to.target, e), r: lerp(from.size, to.r * tanHalf(to.fov), e) / tanHalf(fov),
+      dx: lerp(from.dx, to.dx, e), dy: lerp(from.dy, to.dy, e),
+    });
+  }, () => { camTween = null; controls.enabled = true; controls.update(); }, delay);
+}
+let interacting = false;
+controls.addEventListener('start', () => { interacting = true; });
+controls.addEventListener('end', () => { interacting = false; });
+controls.addEventListener('change', () => {
+  if (!interacting || userMoved) return;
+  userMoved = true;
+  state.view = null;
+  pressView();
+  $('#hint').classList.add('gone');
+});
+
+// ---------- Farbgebung ----------
+function cssVar(name) { return getComputedStyle(document.documentElement).getPropertyValue(name).trim(); }
+function applyTheme() {
+  dark = cssVar('--mode') === 'dark';
+  surfU.uRampA.value = rampOf(colorMetric()).tex;
+  surfU.uRampB.value = surfU.uRampA.value;
+  surfU.uRampMix.value = 0;
+  surfU.uInk.value.set(cssVar('--ink'));
+  surfU.uCase.value.set(cssVar('--panel'));
+  surfU.uHaze.value.set(cssVar('--ground'));
+  surfU.uDark.value = dark ? 1 : 0;
+  if (dark) surfU.uLnRange.value.set(0.42, 0.62); else surfU.uLnRange.value.set(-2, -1);
+  surfU.uLnLight.value.set('#b4ccd6');
+  surfU.uWarn.value.set(cssVar('--warn'));
+  skirtU.uWall.value.set(cssVar('--wall'));
+  skirtU.uLine.value.set(dark ? '#dfe8ee' : '#1c2a35');
+  tickMat.color.set(cssVar('--ink-3'));
+  shadowU.uCol.value.set(dark ? '#000000' : '#1b2a36');
+  shadowU.uAlpha.value = dark ? 0.55 : 0.26;
+  updateLegend();
+  dirty = true;
+}
+matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => setTimeout(applyTheme, 0));
+new MutationObserver(applyTheme).observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
+
+// ---------- Legende ----------
+function updateLegend() {
+  const hm = state.hm, cm = colorMetric();
+  $('#lgTitle').textContent = cm === hm ? `${cm.name} in ${cm.unit}` : `Farbe: ${cm.name} in ${cm.unit}`;
+  const cv = $('#lgRamp'), ctx = cv.getContext('2d'), img = ctx.createImageData(256, 1);
+  img.data.set(rampOf(cm).data);
+  ctx.putImageData(img, 0, 0);
+  const ticks = $('#lgTicks');
+  ticks.replaceChildren();
+  const vals = [cm.lo, ...cm.ticks.filter(v => v < cm.hi - 1e-9), cm.hi];
+  const minGap = vals.length > 5 ? 0.12 : 0.08;
+  let last = -1;
+  vals.forEach((v, n) => {
+    const t = (v - cm.lo) / (cm.hi - cm.lo);
+    if (n && n < vals.length - 1 && (t - last < minGap || 1 - t < minGap)) return;
+    const s = el('span', '', fmtTick(v));
+    s.style.left = (t * 100).toFixed(2) + '%';
+    ticks.append(s);
+    last = t;
+  });
+  const sm = state.smooth === 'raw' ? '' : `, Fläche als ${SMOOTH_NAME[state.smooth]}`;
+  $('#lgContour').textContent = `Höhe: ${hm.name}. Linien alle ${fmtTick(hm.step)} ${hm.unit}, verstärkt alle ${fmtTick(hm.step * hm.idx)}. Sockel bei ${fmtTick(hm.lo)} ${hm.unit}${hm.id === 'co2' && hm.lo === 400 ? ' (Außenluft)' : ''}${sm}.`;
+  $('#legend').title = $('#lgContour').textContent;
+  $('#lgThresh').hidden = !(hm.id === 'co2' && hm.hi > 1000);
+  requestAnimationFrame(measureFixed);
+}
+function measureFixed() {
+  const s = stage.getBoundingClientRect();
+  fixedRects = [$('#legend'), $('#segView')].map(n => {
+    const r = n.getBoundingClientRect();
+    return [r.left - s.left, r.top - s.top, r.right - s.left, r.bottom - s.top];
+  });
+  dirty = true;
+}
+
+// ---------- Profilleiste ----------
+const roVals = $('#roVals'), rows = {};
+for (const m of METRICS) {
+  const row = el('div'), dd = el('dd'), b = el('b');
+  dd.append(b, ' ' + m.unit);
+  row.append(el('dt', '', m.name), dd);
+  roVals.append(row);
+  rows[m.id] = { row, b, dd };
+}
+const statusEl = el('span', 'status'), statusIcon = el('i'), statusText = el('span');
+statusEl.append(statusIcon, statusText);
+rows.co2.dd.append(statusEl);
+const co2Status = v => v < 1000 ? ['good', '●', 'unbedenklich'] : v < 1400 ? ['warn', '▲', 'erhöht'] : v < 2000 ? ['serious', '◆', 'hoch'] : ['critical', '■', 'inakzeptabel'];
+
+function linePath(n, X, Y) {
+  let d = '';
+  for (let k = 0; k < n; k++) d += (k ? 'L' : 'M') + X(k).toFixed(1) + ' ' + Y(k).toFixed(1);
+  return d;
+}
+function drawChart(svg, o) {
+  const w = svg.clientWidth || 320, h = svg.clientHeight || 124;
+  const ml = 46, mr = 12, mt = 12, mb = 20, pw = Math.max(40, w - ml - mr), ph = h - mt - mb;
+  const m = o.metric;
+  const X = v => ml + (v - o.x0) / (o.x1 - o.x0) * pw;
+  const Y = v => mt + (1 - (clamp(v, m.lo, m.hi) - m.lo) / (m.hi - m.lo)) * ph;
+  let s = '';
+  for (const v of m.ticks) {
+    s += `<line class="g" x1="${ml}" x2="${ml + pw}" y1="${Y(v).toFixed(1)}" y2="${Y(v).toFixed(1)}"/>`;
+    s += `<text class="ty" x="${ml - 8}" y="${Y(v).toFixed(1)}" dy=".34em">${fmtTick(v)}</text>`;
+  }
+  s += `<line class="axis" x1="${ml}" x2="${ml + pw}" y1="${mt + ph}" y2="${mt + ph}"/>`;
+  if (m.id === 'co2' && m.hi > 1000) s += `<line class="ref" x1="${ml}" x2="${ml + pw}" y1="${Y(1000).toFixed(1)}" y2="${Y(1000).toFixed(1)}"/>`;
+  for (const t of o.xTicks) {
+    if (t.tick != null) s += `<line class="axis" x1="${X(t.tick).toFixed(1)}" x2="${X(t.tick).toFixed(1)}" y1="${mt + ph}" y2="${mt + ph + 4}"/>`;
+    if (t.label && (t.w == null || t.w * pw / (o.x1 - o.x0) > 26)) s += `<text class="tx" x="${X(t.at).toFixed(1)}" y="${h - 4}">${t.label}</text>`;
+  }
+  for (const sr of o.series) s += `<path class="${sr.cls}" d="${linePath(sr.n, k => X(sr.x(k)), k => Y(sr.y(k)))}"/>`;
+  const sx = X(o.selX), sy = Y(o.selY);
+  s += `<line class="cross" x1="${sx.toFixed(1)}" x2="${sx.toFixed(1)}" y1="${mt}" y2="${mt + ph}"/>`;
+  s += `<circle class="dot" cx="${sx.toFixed(1)}" cy="${sy.toFixed(1)}" r="4.5"/>`;
+  const right = sx < ml + pw - 70;
+  s += `<text class="tv" x="${(sx + (right ? 9 : -9)).toFixed(1)}" y="${Math.max(mt + 4, sy - 9).toFixed(1)}" text-anchor="${right ? 'start' : 'end'}">${fmt(m, o.selY)}</text>`;
+  svg.setAttribute('viewBox', `0 0 ${w} ${h}`);
+  svg.innerHTML = s;
+  svg._g = { ml, pw, x0: o.x0, x1: o.x1 };
+}
+function keys(node, items) {
+  node.replaceChildren(...items.map(([cls, text]) => { const s = el('span'); s.append(el('i', cls), text); return s; }));
+}
+function updatePanel() {
+  const s = sel(), k = s.i * NZ + s.j, hm = state.hm, smoothed = state.smooth !== 'raw';
+  const shown = field(hm.id, state.smooth), rw = raw[hm.id];
+  $('#roWhen').replaceChildren(dateLong(s.i), ' ', el('span', '', `· ${slotLabel(s.j)} Uhr`));
+  for (const m of METRICS) {
+    rows[m.id].b.textContent = fmt(m, raw[m.id][k]);
+    rows[m.id].row.className = m === hm ? 'on' : '';
+  }
+  const st = co2Status(raw.co2[k]);
+  statusEl.dataset.s = st[0]; statusIcon.textContent = st[1]; statusText.textContent = st[2];
+  const notes = [];
+  if (gapSet.has(k)) notes.push('Keine Messung in diesem Slot, Werte interpoliert.');
+  if (smoothed) notes.push(`${SMOOTH_NAME[state.smooth]}: ${fmt(hm, shown[k])} ${hm.unit}`);
+  $('#roNote').textContent = notes.join(' ');
+
+  $('#capDay').textContent = `${hm.name} am ${dateShort(s.i)} in ${hm.unit}`;
+  $('#capYear').textContent = `${hm.name} um ${slotLabel(s.j)} Uhr in ${hm.unit}`;
+  const med = slotMedian(hm.id);
+  const daySeries = [{ cls: 's-thin', n: NZ, x: j => j / 2, y: j => med[j] }];
+  const yearSeries = [];
+  if (smoothed) {
+    daySeries.push({ cls: 's-thin', n: NZ, x: j => j / 2, y: j => rw[s.i * NZ + j] });
+    yearSeries.push({ cls: 's-thin', n: NX, x: i => i, y: i => rw[i * NZ + s.j] });
+  }
+  daySeries.push({ cls: 's-main', n: NZ, x: j => j / 2, y: j => shown[s.i * NZ + j] });
+  yearSeries.push({ cls: 's-main', n: NX, x: i => i, y: i => shown[i * NZ + s.j] });
+  keys($('#keysDay'), smoothed ? [['', SMOOTH_NAME[state.smooth]], ['thin', 'Messwerte und Median aller Tage']] : [['', 'dieser Tag'], ['thin', 'Median aller Tage']]);
+  keys($('#keysYear'), smoothed ? [['', SMOOTH_NAME[state.smooth]], ['thin', 'Messwerte']] : []);
+  if (!state.table) {
+    drawChart($('#svgDay'), {
+      metric: hm, x0: 0, x1: 24, selX: s.j / 2, selY: shown[k], series: daySeries,
+      xTicks: [0, 6, 12, 18, 24].map(hr => ({ tick: hr, at: hr, label: hr + ' Uhr' })),
+    });
+    drawChart($('#svgYear'), {
+      metric: hm, x0: 0, x1: NX - 1, selX: s.i, selY: shown[k], series: yearSeries,
+      xTicks: months.map((m, n) => ({ tick: n ? m.i0 - 0.5 : null, at: (m.i0 + m.i1) / 2, label: MON[m.mo], w: m.i1 - m.i0 + 1 })),
+    });
+  } else updateTable();
+}
+let tableDay = -1;
+function updateTable() {
+  const s = sel(), wrap = $('#tableWrap');
+  if (tableDay !== s.i) {
+    tableDay = s.i;
+    const table = el('table'), thead = el('thead'), hr = el('tr'), tbody = el('tbody');
+    hr.append(el('th', '', dateShort(s.i)), ...METRICS.map(m => el('th', '', `${m.name} (${m.unit})`)));
+    thead.append(hr);
+    for (let j = 0; j < NZ; j++) {
+      const tr = el('tr');
+      tr.dataset.j = j;
+      tr.append(el('td', '', slotLabel(j)), ...METRICS.map(m => el('td', '', fmt(m, raw[m.id][s.i * NZ + j]))));
+      tbody.append(tr);
+    }
+    table.append(thead, tbody);
+    wrap.replaceChildren(table);
+    const row = tbody.children[s.j];
+    wrap.scrollTop = row.offsetTop - wrap.clientHeight / 2;
+  }
+  for (const tr of wrap.querySelectorAll('tbody tr')) tr.classList.toggle('sel', +tr.dataset.j === s.j);
+}
+$('#tableWrap').addEventListener('click', e => {
+  const tr = e.target.closest('tbody tr');
+  if (tr) setPin(sel().i, +tr.dataset.j);
+});
+$('#btnTable').addEventListener('click', () => {
+  state.table = !state.table;
+  $('#btnTable').setAttribute('aria-pressed', state.table);
+  $('#btnTable').textContent = state.table ? 'Verläufe anzeigen' : 'Tageswerte als Tabelle';
+  $('#figDay').hidden = $('#figYear').hidden = state.table;
+  $('#tableWrap').hidden = !state.table;
+  tableDay = -1;
+  panelDirty = true;
+});
+
+// ---------- Auswahl ----------
+function selectionChanged() {
+  const s = sel();
+  surfU.uSel.value.set(X0 + s.i * DX, Z0 + s.j * DZ);
+  dirty = panelDirty = true;
+}
+function setPin(i, j) {
+  state.pin = { i: clamp(i, 0, NX - 1), j: clamp(j, 0, NZ - 1) };
+  state.hover = null;
+  selectionChanged();
+}
+const raycaster = new THREE.Raycaster(), ndc = new THREE.Vector2();
+function pick(e) {
+  const r = canvas.getBoundingClientRect();
+  ndc.set((e.clientX - r.left) / r.width * 2 - 1, -(e.clientY - r.top) / r.height * 2 + 1);
+  raycaster.setFromCamera(ndc, camera);
+  const hit = raycaster.intersectObject(surface, false)[0];
+  if (!hit) return null;
+  const p = surface.worldToLocal(hit.point.clone());
+  return { i: clamp(Math.round((p.x - X0) / DX), 0, NX - 1), j: clamp(Math.round((p.z - Z0) / DZ), 0, NZ - 1) };
+}
+const tip = $('#tip');
+function showTip(e, s) {
+  const k = s.i * NZ + s.j, hm = state.hm, cm = colorMetric();
+  tip.replaceChildren(el('i', '', `${WD[dayDate(s.i).getUTCDay()]}, ${dateShort(s.i)} · ${slotLabel(s.j)} Uhr`));
+  const add = (m, v, what) => tip.append(el('br'), el('b', '', `${fmt(m, v)} ${m.unit}`), ' ' + what);
+  if (state.smooth !== 'raw') add(hm, field(hm.id, state.smooth)[k], `${hm.name}, ${SMOOTH_NAME[state.smooth]}`);
+  add(hm, raw[hm.id][k], state.smooth === 'raw' ? hm.name : 'gemessen');
+  if (cm !== hm) add(cm, raw[cm.id][k], cm.name);
+  tip.hidden = false;
+  const r = stage.getBoundingClientRect(), x = e.clientX - r.left, y = e.clientY - r.top;
+  const tw = tip.offsetWidth, th = tip.offsetHeight;
+  tip.style.transform = `translate(${Math.round(x + 16 + tw > r.width ? x - tw - 12 : x + 16)}px,${Math.round(y + 18 + th > r.height ? y - th - 12 : y + 18)}px)`;
+}
+let pendingMove = null, downAt = null;
+function handleHover(e) {
+  const hit = pick(e);
+  if (hit) {
+    if (!state.hover || state.hover.i !== hit.i || state.hover.j !== hit.j) { state.hover = hit; selectionChanged(); }
+    showTip(e, hit);
+  } else if (state.hover) { state.hover = null; tip.hidden = true; selectionChanged(); } else tip.hidden = true;
+}
+canvas.addEventListener('pointerdown', e => { downAt = { x: e.clientX, y: e.clientY }; tip.hidden = true; pendingMove = null; });
+canvas.addEventListener('pointermove', e => {
+  if (e.buttons || e.pointerType === 'touch' || camTween) return;
+  pendingMove = e;
+});
+canvas.addEventListener('pointerup', e => {
+  if (downAt && Math.hypot(e.clientX - downAt.x, e.clientY - downAt.y) < 5) {
+    const hit = pick(e);
+    if (hit) setPin(hit.i, hit.j);
+  }
+  downAt = null;
+});
+canvas.addEventListener('pointerleave', () => {
+  pendingMove = null;
+  tip.hidden = true;
+  if (state.hover) { state.hover = null; selectionChanged(); }
+});
+canvas.addEventListener('keydown', e => {
+  const step = { ArrowLeft: [-1, 0], ArrowRight: [1, 0], ArrowUp: [0, -1], ArrowDown: [0, 1] }[e.key];
+  if (!step) return;
+  e.preventDefault();
+  setPin(state.pin.i + step[0] * (e.shiftKey ? 7 : 1), state.pin.j + step[1] * (e.shiftKey ? 4 : 1));
+});
+for (const [id, axis] of [['svgDay', 'j'], ['svgYear', 'i']]) {
+  const svg = $('#' + id);
+  const at = e => {
+    const g = svg._g;
+    if (!g) return null;
+    const v = g.x0 + (e.clientX - svg.getBoundingClientRect().left - g.ml) / g.pw * (g.x1 - g.x0);
+    const base = state.hover || state.pin;
+    return axis === 'j' ? { i: base.i, j: clamp(Math.round(v * 2), 0, NZ - 1) } : { i: clamp(Math.round(v), 0, NX - 1), j: base.j };
+  };
+  svg.addEventListener('pointermove', e => {
+    const s = at(e);
+    if (!s) return;
+    state.hover = axis === 'j' ? { i: state.pin.i, j: s.j } : { i: s.i, j: state.pin.j };
+    selectionChanged();
+  });
+  svg.addEventListener('pointerleave', () => { if (state.hover) { state.hover = null; selectionChanged(); } });
+  svg.addEventListener('click', e => {
+    const s = at(e);
+    if (s) axis === 'j' ? setPin(state.pin.i, s.j) : setPin(s.i, state.pin.j);
+  });
+}
+
+// ---------- Bedienelemente ----------
+const segHeight = $('#segHeight'), selColor = $('#selColor');
+for (const m of METRICS) {
+  const b = el('button', '', m.name);
+  b.type = 'button'; b.dataset.v = m.id;
+  segHeight.append(b);
+}
+selColor.append(new Option('wie Höhe', ''), ...METRICS.map(m => new Option(m.name, m.id)));
+const press = (group, v) => { for (const b of group.querySelectorAll('button')) b.setAttribute('aria-pressed', b.dataset.v === v); };
+const pressView = () => press($('#segView'), state.view);
+function refit() {
+  if (userMoved || !state.view) return;
+  if (camTween) camTo = poseOf(state.view); else applyPose(poseOf(state.view));
+}
+segHeight.addEventListener('click', e => {
+  const b = e.target.closest('button');
+  if (!b || state.hm.id === b.dataset.v) return;
+  state.hm = byId[b.dataset.v];
+  press(segHeight, state.hm.id);
+  retarget(true);
+  refit();
+});
+selColor.addEventListener('change', () => { state.cm = selColor.value ? byId[selColor.value] : null; retarget(true); });
+$('#segSmooth').addEventListener('click', e => {
+  const b = e.target.closest('button');
+  if (!b || state.smooth === b.dataset.v) return;
+  state.smooth = b.dataset.v;
+  press($('#segSmooth'), state.smooth);
+  retarget(true);
+  refit();
+});
+const rngEx = $('#rngEx'), exOut = $('#exOut');
+rngEx.addEventListener('input', () => {
+  state.ex = +rngEx.value;
+  exOut.textContent = state.ex.toFixed(1).replace('.', ',') + '×';
+  refit();
+  dirty = true;
+});
+$('#segView').addEventListener('click', e => {
+  const b = e.target.closest('button');
+  if (b) goView(b.dataset.v);
+});
+
+// ---------- Kopfzeile ----------
+{
+  const last = NX - 1, d0 = dayDate(0), d1 = dayDate(last);
+  $('#sub').textContent = `Raumluft vom ${d0.getUTCDate()}. ${MONTH[d0.getUTCMonth()]} bis ${d1.getUTCDate()}. ${MONTH[d1.getUTCMonth()]} ${d1.getUTCFullYear()} · ${DATA.measured.toLocaleString('de-DE')} Messungen im 30-Minuten-Takt`;
+  const co2 = raw.co2, m = byId.co2;
+  let over = 0;
+  for (let k = 0; k < N; k++) if (co2[k] > 1000) over++;
+  const means = months.filter(x => x.i1 - x.i0 >= 13).map(x => {
+    let sum = 0;
+    for (let k = x.i0 * NZ; k < (x.i1 + 1) * NZ; k++) sum += co2[k];
+    return { mo: x.mo, v: sum / ((x.i1 - x.i0 + 1) * NZ) };
+  }).sort((a, b) => b.v - a.v);
+  let bj = 0, bv = -1;
+  for (let j = 0; j < NZ; j++) {
+    let sum = 0;
+    for (let i = 0; i < NX; i++) sum += co2[i * NZ + j];
+    if (sum > bv) { bv = sum; bj = j; }
+  }
+  const parts = [`${Math.round(over / N * 100)} % der Messungen liegen über 1.000 ppm CO₂`];
+  if (means.length > 1) parts.push(`Monatsmittel von ${fmt(m, means[0].v)} ppm im ${MONTH[means[0].mo]} bis ${fmt(m, means[means.length - 1].v)} ppm im ${MONTH[means[means.length - 1].mo]}`);
+  parts.push(`im Tagesmittel am höchsten um ${slotLabel(bj)} Uhr`);
+  $('#lede').textContent = parts.join(' · ');
+}
+
+// ---------- Start ----------
+// Der Auftakt beginnt erst, wenn die Bühne eine echte Größe hat: aus der Karte wächst das Relief.
+let started = false;
+function start() {
+  started = true;
+  if (RM) {
+    state.view = 'relief';
+    applyPose(poseOf('relief'));
+    pressView();
+    return;
+  }
+  introK = 0.02;
+  state.view = 'karte';
+  applyPose(poseOf('karte'));
+  goView('relief', 2300, 450);
+  tween(2100, u => { introK = lerp(0.02, 1, easeOut(u)); }, null, 650);
+}
+function resize() {
+  const r = stage.getBoundingClientRect();
+  sw = Math.max(1, r.width); sh = Math.max(1, r.height);
+  renderer.setSize(sw, sh, false);
+  camera.aspect = sw / sh;
+  camera.setViewOffset(sw, sh, -viewShift.x, -viewShift.y, sw, sh);
+  measureFixed();
+  if (started) refit(); else if (sw > 80 && sh > 80) start();
+  dirty = panelDirty = true;
+}
+press(segHeight, state.hm.id);
+press($('#segSmooth'), state.smooth);
+applyTheme();
+setContourMetric(state.hm);
+contourMetric = state.hm;
+retarget(false);
+resize();
+selectionChanged();
+new ResizeObserver(resize).observe(stage);
+new ResizeObserver(() => { panelDirty = true; }).observe($('#figYear'));
+if (document.fonts && document.fonts.ready) document.fonts.ready.then(() => {
+  for (const n of labelLayer.querySelectorAll('.lbl')) { n._w = n.offsetWidth; n._h = n.offsetHeight; }
+  dirty = panelDirty = true;
+});
+requestAnimationFrame(frame);
+})();
+</script>
