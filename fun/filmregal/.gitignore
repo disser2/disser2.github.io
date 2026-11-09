@@ -1,0 +1,3 @@
+tools/.enrich_cache.json
+tools/.enrich_cache.json.tmp
+data/*.zip
