@@ -134,20 +134,23 @@ def to_rows(files, watchlist=True):
 
 
 # ---------- Wikidata & Wikipedia (wie js/enrich.js) ----------
-def fetch_json(url, tries=6):
+def fetch_json(url, tries=8):
+    host = urllib.parse.urlsplit(url).netloc
     for attempt in range(tries):
         try:
             req = urllib.request.Request(url, headers={"User-Agent": UA, "Accept": "application/json"})
             with urllib.request.urlopen(req, timeout=60) as res:
                 return json.loads(res.read().decode("utf-8"))
         except urllib.error.HTTPError as e:
-            if e.code in (429, 500, 502, 503, 504) and attempt < tries - 1:
-                time.sleep(min(90, float(e.headers.get("Retry-After") or 0) + 3 or 5 * (attempt + 1)))
-                continue
-            raise
-        except (urllib.error.URLError, TimeoutError):
+            if e.code not in (429, 500, 502, 503, 504) or attempt == tries - 1:
+                raise
+            pause = min(600, float(e.headers.get("Retry-After") or 0) + 3 or 5 * (attempt + 1))
+            print("    %s: HTTP %d, warte %d s" % (host, e.code, pause), flush=True)
+            time.sleep(pause)
+        except (urllib.error.URLError, TimeoutError, ConnectionError) as e:
             if attempt == tries - 1:
                 raise
+            print("    %s: %s, neuer Versuch" % (host, getattr(e, "reason", e)), flush=True)
             time.sleep(3 * (attempt + 1))
 
 
