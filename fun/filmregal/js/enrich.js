@@ -80,17 +80,19 @@
     }
   }
 
+  // Reihenfolge fest vorgeben: Der Planer von Wikidata wählt sonst oft einen Plan, der in den Timeout läuft.
   function sparql(ids) {
-    return "SELECT ?imdb ?item ?p ?l WHERE { VALUES ?imdb { " + ids.map((i) => '"' + i + '"').join(" ") + " } " +
+    return 'SELECT ?imdb ?item ?p ?l WHERE { hint:Query hint:optimizer "None" . ' +
+      "VALUES ?imdb { " + ids.map((i) => '"' + i + '"').join(" ") + " } " +
       "?item wdt:P345 ?imdb . " +
-      '{ BIND("de" AS ?p) ?item rdfs:label ?l . FILTER(LANG(?l) = "de") } ' +
-      'UNION { BIND("rt" AS ?p) ?item wdt:P2047 ?l . } ' +
-      'UNION { BIND("po" AS ?p) ?item wdt:P3383 ?l . } ' +
+      '{ ?item rdfs:label ?l . FILTER(LANG(?l) = "de") BIND("de" AS ?p) } ' +
+      'UNION { ?item wdt:P2047 ?l . BIND("rt" AS ?p) } ' +
+      'UNION { ?item wdt:P3383 ?l . BIND("po" AS ?p) } ' +
       'UNION { VALUES (?p ?prop) { ("g" wdt:P136) ("d" wdt:P57) ("c" wdt:P161) ("co" wdt:P495) ("l" wdt:P364) } ' +
       '?item ?prop ?v . OPTIONAL { ?v rdfs:label ?lde . FILTER(LANG(?lde) = "de") } ' +
       'OPTIONAL { ?v rdfs:label ?len . FILTER(LANG(?len) = "en") } BIND(COALESCE(?lde, ?len) AS ?l) } ' +
-      'UNION { BIND("en" AS ?p) ?l schema:about ?item ; schema:isPartOf <https://en.wikipedia.org/> . } ' +
-      'UNION { BIND("dw" AS ?p) ?l schema:about ?item ; schema:isPartOf <https://de.wikipedia.org/> . } }';
+      'UNION { ?l schema:about ?item ; schema:isPartOf <https://en.wikipedia.org/> . BIND("en" AS ?p) } ' +
+      'UNION { ?l schema:about ?item ; schema:isPartOf <https://de.wikipedia.org/> . BIND("dw" AS ?p) } }';
   }
 
   // SPARQL-Zeilen → ein Datensatz je IMDb-ID (identisch zu tools/build_movies.py)
@@ -151,7 +153,8 @@
       if (!pg.thumbnail || !pg.thumbnail.source) continue;
       const names = [pg.title];
       for (let i = 0; i < names.length; i++) for (const a of alias[names[i]] || []) names.includes(a) || names.push(a);
-      names.forEach((n) => (out[n] = pg.thumbnail.source));
+      const src = pg.thumbnail.source.replace(/\?utm_.*$/, ""); // Zählparameter der API braucht niemand
+      names.forEach((n) => (out[n] = src));
     }
     return out;
   }

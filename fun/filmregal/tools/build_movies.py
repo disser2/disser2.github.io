@@ -134,15 +134,15 @@ def to_rows(files, watchlist=True):
 
 
 # ---------- Wikidata & Wikipedia (wie js/enrich.js) ----------
-def fetch_json(url, tries=4):
+def fetch_json(url, tries=6):
     for attempt in range(tries):
         try:
             req = urllib.request.Request(url, headers={"User-Agent": UA, "Accept": "application/json"})
-            with urllib.request.urlopen(req, timeout=90) as res:
+            with urllib.request.urlopen(req, timeout=60) as res:
                 return json.loads(res.read().decode("utf-8"))
         except urllib.error.HTTPError as e:
             if e.code in (429, 500, 502, 503, 504) and attempt < tries - 1:
-                time.sleep(float(e.headers.get("Retry-After") or 0) or 5 * (attempt + 1))
+                time.sleep(min(90, float(e.headers.get("Retry-After") or 0) + 3 or 5 * (attempt + 1)))
                 continue
             raise
         except (urllib.error.URLError, TimeoutError):
@@ -152,16 +152,18 @@ def fetch_json(url, tries=4):
 
 
 def sparql(ids):
-    return ("SELECT ?imdb ?item ?p ?l WHERE { VALUES ?imdb { " + " ".join('"%s"' % i for i in ids) + " } "
+    # Reihenfolge fest vorgeben: Der Planer von Wikidata wählt sonst oft einen Plan, der in den Timeout läuft.
+    return ('SELECT ?imdb ?item ?p ?l WHERE { hint:Query hint:optimizer "None" . '
+            "VALUES ?imdb { " + " ".join('"%s"' % i for i in ids) + " } "
             "?item wdt:P345 ?imdb . "
-            '{ BIND("de" AS ?p) ?item rdfs:label ?l . FILTER(LANG(?l) = "de") } '
-            'UNION { BIND("rt" AS ?p) ?item wdt:P2047 ?l . } '
-            'UNION { BIND("po" AS ?p) ?item wdt:P3383 ?l . } '
+            '{ ?item rdfs:label ?l . FILTER(LANG(?l) = "de") BIND("de" AS ?p) } '
+            'UNION { ?item wdt:P2047 ?l . BIND("rt" AS ?p) } '
+            'UNION { ?item wdt:P3383 ?l . BIND("po" AS ?p) } '
             'UNION { VALUES (?p ?prop) { ("g" wdt:P136) ("d" wdt:P57) ("c" wdt:P161) ("co" wdt:P495) ("l" wdt:P364) } '
             '?item ?prop ?v . OPTIONAL { ?v rdfs:label ?lde . FILTER(LANG(?lde) = "de") } '
             'OPTIONAL { ?v rdfs:label ?len . FILTER(LANG(?len) = "en") } BIND(COALESCE(?lde, ?len) AS ?l) } '
-            'UNION { BIND("en" AS ?p) ?l schema:about ?item ; schema:isPartOf <https://en.wikipedia.org/> . } '
-            'UNION { BIND("dw" AS ?p) ?l schema:about ?item ; schema:isPartOf <https://de.wikipedia.org/> . } }')
+            'UNION { ?l schema:about ?item ; schema:isPartOf <https://en.wikipedia.org/> . BIND("en" AS ?p) } '
+            'UNION { ?l schema:about ?item ; schema:isPartOf <https://de.wikipedia.org/> . BIND("dw" AS ?p) } }')
 
 
 def collect(bindings):
@@ -236,27 +238,48 @@ def posters(titles):
     return out
 
 
-def enrich(rows, cache):
-    def key(r):
-        return r["imdb"] or "t:" + r["id"]
+def key_of(r):
+    return r["imdb"] or "t:" + r["id"]
 
-    todo = [r for r in rows if key(r) not in cache]
+
+def enrich(rows, cache):
+    """Erst die Metadaten aus Wikidata, dann die Plakate. Die Wikipedia-API drosselt
+    gelegentlich (HTTP 429); dann bleiben die Plakate offen und der nächste Lauf holt sie nach."""
+    todo = [r for r in rows if key_of(r) not in cache]
     for i in range(0, len(todo), BATCH):
         batch = todo[i:i + BATCH]
         ids = [r["imdb"] for r in batch if re.match(r"^tt\d+$", r["imdb"] or "")]
         data = fetch_json(SPARQL + "?" + urllib.parse.urlencode({"format": "json", "query": sparql(ids)})) if ids else {}
         recs = collect((data.get("results") or {}).get("bindings") or [])
-        need = sorted({wiki_title(en) for rec, en in recs.values() if not rec.get("img") and en} - {""})
-        imgs = posters(need)
         for r in batch:
             rec, en = recs.get(r["imdb"], ({"t": int(time.time() * 1000)}, ""))
-            if not rec.get("img") and en and imgs.get(wiki_title(en)):
-                rec["img"] = imgs[wiki_title(en)]
-            cache[key(r)] = rec
+            if en and not rec.get("img"):
+                rec["en"] = wiki_title(en)  # Artikel, in dem das Plakat steht
+            cache[key_of(r)] = rec
         CACHE.write_text(json.dumps(cache, ensure_ascii=False), encoding="utf-8")
-        print("  %d/%d Filme nachgeschlagen" % (min(i + BATCH, len(todo)), len(todo)), flush=True)
+        print("  Wikidata: %d/%d Filme" % (min(i + BATCH, len(todo)), len(todo)), flush=True)
         time.sleep(1)
-    return {key(r): cache[key(r)] for r in rows if key(r) in cache}
+
+    # "en" ohne "img" heißt: Plakat noch nicht gesucht ("ni" = Artikel hat kein Bild)
+    open_recs = [cache[key_of(r)] for r in rows if key_of(r) in cache]
+    open_recs = [rec for rec in open_recs if rec.get("en") and not rec.get("img") and not rec.get("ni")]
+    for i in range(0, len(open_recs), BATCH):
+        batch = open_recs[i:i + BATCH]
+        try:
+            imgs = posters(sorted({rec["en"] for rec in batch}))
+        except urllib.error.URLError as e:
+            print("  Plakate: Wikipedia antwortet nicht (%s) – %d bleiben offen, einfach später erneut starten."
+                  % (e, len(open_recs) - i))
+            break
+        for rec in batch:
+            if imgs.get(rec["en"]):
+                rec["img"] = imgs[rec["en"]]
+            else:
+                rec["ni"] = 1
+        CACHE.write_text(json.dumps(cache, ensure_ascii=False), encoding="utf-8")
+        print("  Plakate: %d/%d Filme" % (min(i + BATCH, len(open_recs)), len(open_recs)), flush=True)
+        time.sleep(3)
+    return {key_of(r): cache[key_of(r)] for r in rows if key_of(r) in cache}
 
 
 def download_posters(rows, enrichment):
@@ -329,9 +352,12 @@ def main():
         except (urllib.error.URLError, TimeoutError) as e:
             print("Wikidata nicht erreichbar (%s) – weiter ohne neue Anreicherung." % e)
             enrichment = {k: cache[k] for k in (r["imdb"] or "t:" + r["id"] for r in rows) if k in cache}
-    enrichment = {k: dict(v) for k, v in enrichment.items()}
+    enrichment = {k: {f: x for f, x in v.items() if f not in ("en", "ni")} for k, v in enrichment.items()}
     if args.download_posters and not args.offline:
         download_posters(rows, enrichment)
+    for rec in enrichment.values():  # Zählparameter der Wikipedia-API braucht niemand
+        if "img" in rec:
+            rec["img"] = re.sub(r"\?utm_.*$", "", rec["img"])
     for r in rows:  # lokale Plakate gehen vor
         if (POSTERS / (r["id"] + ".jpg")).exists():
             enrichment.setdefault(r["imdb"] or "t:" + r["id"], {})["img"] = "data/posters/%s.jpg" % r["id"]
