@@ -67,7 +67,7 @@ schreibt dieselbe Datei aus dem, was der Browser gefunden hat.
   ```
   Trakt Id;Titel;Jahr;Genres
   4891;The Fast and the Furious: Tokyo Drift;2006;action
-  481;Blade Runner;1982;scifi, krimi
+  48;Blade Runner;1982;scifi, krimi
   ```
 
   Gültige Schlüssel (siehe `GENRES` in `js/model.js`): `action`, `abenteuer`,
