@@ -23,7 +23,7 @@
   // ---------- Persistenz ----------
   // Sichtung: { id, ts "YYYY-MM-DDTHH:MM", code, kind "reg"|"flt", ap ICAO,
   //             ll [lat,lon], reg, typ, typn, man, al, alc, cty, ctyn,
-  //             fr, to, photo, note }
+  //             fr, to, photo, note, tm (1 = Typ von Hand gewählt) }
   function loadSpots() {
     try {
       var raw = JSON.parse(localStorage.getItem(STORE_KEY));
@@ -36,7 +36,7 @@
     var s = { id: x.id || newId(), ts: x.ts || todayISO() + "T12:00",
               code: String(x.code).toUpperCase(), kind: x.kind || Lookup.kindOf(x.code) };
     ["ap", "reg", "typ", "typn", "man", "al", "alc", "cty", "ctyn", "fr", "to",
-     "photo", "note"].forEach(function (k) { if (x[k]) s[k] = x[k]; });
+     "photo", "note", "tm"].forEach(function (k) { if (x[k]) s[k] = x[k]; });
     if (x.ll && x.ll.length === 2) s.ll = [+x.ll[0], +x.ll[1]];
     return s;
   }
@@ -285,34 +285,44 @@
     else renderCollection();
   }
 
-  function spotCard(s) {
-    var title = s.reg || s.code;
-    var sub = [];
-    if (s.al) sub.push('<span class="badge">' + esc(s.al) + '</span>');
-    if (s.typ) {
-      sub.push('<span class="badge soft">' + esc(Lookup.typeName(s.typ)) + '</span>');
-    } else if (s.typn) {
-      sub.push('<span class="badge soft">' + esc(s.typn) + '</span>');
-    }
-    if (s.kind === "flt" && s.code !== title) sub.push('<span>' + esc(s.code) + '</span>');
-    if (s.fr && s.to) {
-      sub.push('<span class="badge route">' + esc(apName(s.fr)) + ' → ' + esc(apName(s.to)) + '</span>');
-    }
-    if (s.ap) sub.push('<span>' + esc(apName(s.ap)) + '</span>');
-    return '<div class="card" data-spot="' + esc(s.id) + '">' +
-      '<div class="regbadge">' + (s.cty ? '<span class="flag">' + flag(s.cty) + '</span>' : "") +
-        esc(title) + '</div>' +
-      '<div class="card-body">' +
-        '<div class="card-name">' + esc(s.typn || Lookup.typeName(s.typ) || s.al || "Sichtung") + '</div>' +
-        '<div class="card-sub">' + sub.join("") + '</div>' +
-      '</div>' +
-      '<div class="card-right"><b>' + fmtTime(s.ts) + '</b>' + fmtDate(s.ts) + '</div>' +
+  // Kompakte Tabelle statt Karten: jede Angabe hat ihre feste Spalte, so lassen
+  // sich viele Sichtungen untereinander vergleichen. Die Uhrzeit steht nur im
+  // Bearbeiten-Sheet.
+  function shortDate(ts) {
+    var p = String(ts || "").slice(0, 10).split("-");
+    return p.length === 3 ? p[2] + "." + p[1] + "." + p[0].slice(2) : "";
+  }
+  function typeLabel(o) {
+    if (o.typ && TYPE_BY_ID[o.typ]) return TYPE_BY_ID[o.typ][1];
+    return o.typ || o.typn || "";
+  }
+  function cell(cls, text) {
+    return '<span class="tc ' + cls + (text ? "" : " nil") + '">' + esc(text || "–") + '</span>';
+  }
+  function regCell(code, iso) {
+    return '<span class="tc c-reg"><i class="flag">' + flag(iso) + '</i>' + esc(code) + '</span>';
+  }
+  function tableHead(c4, c5) {
+    return '<div class="thead">' +
+      '<span class="tc c-reg"><i class="flag"></i>Kennz.</span><span class="tc c-typ">Typ</span>' +
+      '<span class="tc c-al">Airline</span><span class="tc c-ap">' + c4 + '</span>' +
+      '<span class="tc c-dt">' + c5 + '</span></div>';
+  }
+  function spotRow(s) {
+    var a = s.ap ? ap(s.ap) : null;
+    return '<div class="trow" data-spot="' + esc(s.id) + '">' +
+      regCell(s.reg || s.code, s.cty) +
+      cell("c-typ", typeLabel(s)) +
+      cell("c-al", s.al) +
+      cell("c-ap", a ? (a[1] || a[0]) : (s.ap || "")) +
+      cell("c-dt", shortDate(s.ts)) +
     '</div>';
   }
 
   function renderSpotList() {
     var arr = filteredSpots();
-    $("list").innerHTML = arr.map(spotCard).join("");
+    $("list").innerHTML = arr.length
+      ? '<div class="tbl">' + tableHead("Ort", "Datum") + arr.map(spotRow).join("") + '</div>' : "";
     $("listMeta").textContent = arr.length + (arr.length === 1 ? " Sichtung" : " Sichtungen") +
       (spots.length !== arr.length ? " von " + spots.length : "");
     $("emptyText").textContent = spots.length ? "Keine Sichtung gefunden"
@@ -330,20 +340,15 @@
       }).sort(function (x, y) { return a.planes[y].last < a.planes[x].last ? -1 : 1; });
       keys.forEach(function (k) {
         var p = a.planes[k];
-        html += '<div class="card" data-plane="' + esc(k) + '">' +
-          '<div class="regbadge">' + (p.cty ? '<span class="flag">' + flag(p.cty) + '</span>' : "") +
-            esc(k) + '</div>' +
-          '<div class="card-body">' +
-            '<div class="card-name">' + esc(p.typn || Lookup.typeName(p.typ) || p.al || "Flugzeug") + '</div>' +
-            '<div class="card-sub">' +
-              (p.al ? '<span class="badge">' + esc(p.al) + '</span>' : "") +
-              (p.typ ? '<span class="badge soft">' + esc(p.typ) + '</span>' : "") +
-              '<span>zuletzt ' + esc(fmtDate(p.last)) + '</span>' +
-            '</div>' +
-          '</div>' +
-          '<div class="card-right"><b>' + p.n + '</b>' + (p.n === 1 ? "Sichtung" : "Sichtungen") + '</div>' +
+        html += '<div class="trow" data-plane="' + esc(k) + '">' +
+          regCell(k, p.cty) +
+          cell("c-typ", typeLabel(p)) +
+          cell("c-al", p.al) +
+          cell("c-ap", p.n + "×") +
+          cell("c-dt", shortDate(p.last)) +
         '</div>';
       });
+      if (html) html = '<div class="tbl">' + tableHead("Anz.", "Zuletzt") + html + '</div>';
       meta = keys.length + (keys.length === 1 ? " Flugzeug" : " Flugzeuge");
       empty = spots.length ? "Kein Flugzeug gefunden" : "Noch kein Flugzeug gesammelt";
     } else if (state.sub === "typ") {
@@ -446,7 +451,9 @@
   }
 
   // ---------- Sichtung eintragen ----------
-  // form: { id, code, ts, ap, ll, info, note, manualAp, more }
+  // form: { id, code, ts, ap, ll, info, note, manualAp, more, typ, typManual }
+  // Der Typ kommt normalerweise aus der Code-Auflösung; wer ihn von Hand wählt
+  // (typManual), überstimmt die Abfrage – auch bei späteren Änderungen am Code.
   var form = null, lookupTimer = null, lookupSeq = 0;
   var geo = { pos: null, t: 0, state: "idle" };   // idle | wait | ok | deny | off
 
@@ -454,10 +461,12 @@
     var s = id ? spots.filter(function (x) { return x.id === id; })[0] : null;
     if (s) {
       form = { id: s.id, code: s.code, ts: s.ts, ap: s.ap || "", ll: s.ll || null,
-               note: s.note || "", info: infoOf(s), manualAp: true, more: true };
+               note: s.note || "", info: infoOf(s), manualAp: true, more: true,
+               typ: s.tm ? s.typ || "" : "", typManual: !!s.tm };
     } else {
       form = { id: null, code: presetCode || "", ts: nowISO(), ap: lastAirport(),
-               ll: null, note: "", info: null, manualAp: false, more: false };
+               ll: null, note: "", info: null, manualAp: false, more: false,
+               typ: "", typManual: false };
     }
     $("editTitle").textContent = s ? "Sichtung bearbeiten" : "Sichtung eintragen";
     renderEdit();
@@ -472,6 +481,8 @@
     var info = { code: s.code, kind: s.kind, src: "gespeichert" };
     ["reg", "typ", "typn", "man", "al", "alc", "cty", "ctyn", "fr", "to", "photo"]
       .forEach(function (k) { if (s[k]) info[k] = s[k]; });
+    // ein von Hand gewählter Typ ist kein Ergebnis der Code-Auflösung
+    if (s.tm) { delete info.typ; delete info.typn; delete info.man; }
     return info;
   }
   function lastAirport() {
@@ -487,6 +498,7 @@
         'autocapitalize="characters" spellcheck="false" enterkeyhint="done">' +
       '<div class="code-hint">Kennzeichen oder Flugnummer – mehr braucht es nicht</div>' +
       '<div id="lkBox"></div>' +
+      '<div id="typBox"></div>' +
       '<div class="form-section">Automatisch' +
         '<span class="fs-right" id="toggleMore">' + (form.more ? "fertig" : "ändern") + '</span>' +
       '</div>' +
@@ -521,8 +533,27 @@
     if ($("fDelete")) $("fDelete").addEventListener("click", deleteForm);
 
     updateLookup();
+    updateType();
     updateAuto();
     updateSave();
+  }
+
+  // --- Flugzeugtyp: automatisch aus dem Code oder von Hand gewählt ---
+  function effType() {
+    if (form.typManual) return form.typ || "";
+    return (form.info && form.info.typ) || "";
+  }
+  function updateType() {
+    var box = $("typBox");
+    if (!box) return;
+    var t = effType(), e = t ? TYPE_BY_ID[t] : null;
+    var note = form.typManual ? "von Hand gewählt" : (t ? "aus dem Code" : "");
+    box.innerHTML = '<div class="form-section">Flugzeugtyp' +
+        (note ? '<span class="fs-note">' + note + '</span>' : "") + '</div>' +
+      '<div class="form-group"><div class="form-row"><span class="k">Typ</span>' +
+        '<button class="picker-btn' + (t ? "" : " empty") + '" id="fTyp">' +
+          (t ? esc(e ? e[1] + " · " + t : t) : "Typ wählen") + '</button></div></div>';
+    $("fTyp").addEventListener("click", openTypePicker);
   }
 
   function updateSave() {
@@ -532,13 +563,14 @@
 
   // --- Code auflösen ---
   function runLookup(code) {
-    if (!code) { form.info = null; updateLookup(); return; }
+    if (!code) { form.info = null; updateLookup(); updateType(); return; }
     var seq = ++lookupSeq;
     Lookup.resolve(code, opts.online, function (info, final) {
       if (seq !== lookupSeq) return;          // inzwischen weitergetippt
       form.info = info;
       form.pending = !final;
       updateLookup();
+      updateType();
       // Bei einer Flugnummer mit bekannter Route: steht man an Start oder Ziel,
       // ist das der Flughafen der Sichtung.
       if (final && !form.manualAp && geo.pos && (info.fr || info.to)) {
@@ -569,14 +601,17 @@
         '</div></div>';
       return;
     }
-    var name = i.typn || Lookup.typeName(i.typ) || i.al ||
+    // ein von Hand gewählter Typ geht der Abfrage vor
+    var mt = form.typManual && form.typ;
+    var typ = mt ? form.typ : i.typ;
+    var name = (mt ? typeLabel({ typ: typ }) : i.typn || Lookup.typeName(typ)) || i.al ||
       (i.kind === "reg" ? "Kennzeichen" : "Flugnummer");
     var sub = [];
-    if (i.al && (i.typn || i.typ)) sub.push(esc(i.al));
+    if (i.al && (mt || i.typn || i.typ)) sub.push(esc(i.al));
     if (i.kind === "reg") {
       if (i.ctyn) sub.push(flag(i.cty) + " " + esc(i.ctyn));
       if (i.dcls) sub.push(esc(i.dcls));
-      if (i.typ) sub.push(esc(i.typ));
+      if (typ) sub.push(esc(typ));
     } else {
       if (i.fr && i.to) {
         sub.push(esc(apName(i.fr) || i.fr) + " → " + esc(apName(i.to) || i.to));
@@ -684,13 +719,12 @@
   }
   function geoHint() {
     if (geo.state === "wait") return '<div class="hint">Position wird bestimmt …</div>';
-    if (geo.state === "deny") {
-      return '<div class="hint warn">Ohne Standortfreigabe rät die App nicht mit – ' +
-        'Flughafen bitte über „ändern“ wählen. ' +
-        '<span class="fs-right" id="geoRetry">nochmal versuchen</span></div>';
-    }
-    if (geo.state === "off") {
-      return '<div class="hint">Kein Standort verfügbar. ' +
+    if (geo.state === "deny" || geo.state === "off") {
+      var why = geo.state === "deny" ? "Keine Standortfreigabe" : "Kein Standort verfügbar";
+      var what = form.ap && !form.manualAp
+        ? " – Flughafen der letzten Sichtung übernommen."
+        : " – Flughafen bitte über „ändern“ wählen.";
+      return '<div class="hint' + (form.ap ? "" : " warn") + '">' + why + what + ' ' +
         '<span class="fs-right" id="geoRetry">nochmal versuchen</span></div>';
     }
     return "";
@@ -707,6 +741,16 @@
     if (form.note) s.note = form.note;
     ["reg", "typ", "typn", "man", "al", "alc", "cty", "ctyn", "fr", "to", "photo"]
       .forEach(function (k) { if (i[k]) s[k] = i[k]; });
+    if (form.typManual && form.typ) {
+      if (form.typ !== s.typ) {
+        // Klartext und Hersteller der Abfrage beschreiben dann einen anderen Typ
+        var te = TYPE_BY_ID[form.typ];
+        s.typ = form.typ;
+        delete s.typn;
+        if (te) s.man = te[2]; else delete s.man;
+      }
+      s.tm = 1;
+    }
 
     var idx = -1;
     spots.forEach(function (x, k) { if (x.id === s.id) idx = k; });
@@ -743,8 +787,54 @@
     showSheet("pickSheet", "pickBackdrop");
     setTimeout(function () { $("pickSearch").focus(); }, 320);
   }
+  function openTypePicker() {
+    pickMode = "typ";
+    $("pickTitle").textContent = "Flugzeugtyp";
+    $("pickSearch").placeholder = "Typ, Hersteller oder ICAO-Code";
+    $("pickSearch").value = "";
+    renderPicker();
+    showSheet("pickSheet", "pickBackdrop");
+  }
+  function renderTypePicker(raw) {
+    var q = norm(raw), cur = effType(), seen = agg().types, html = "";
+    var autoT = form.info && form.info.typ;
+    function row(code, name, sub, sel) {
+      return '<div class="pick-row' + (sel ? " sel" : "") + '" data-typ="' + esc(code) + '">' +
+        '<div><div class="pn">' + esc(name) + '</div><div class="ps">' + esc(sub) + '</div></div>' +
+        (sel ? '<span class="badge">gewählt</span>'
+             : (code && seen[code] ? '<span class="badge ok">gesammelt</span>' : "")) +
+      '</div>';
+    }
+    if (!q) {
+      html += row("", "Automatisch",
+        autoT ? "aus dem Code: " + typeLabel(form.info) + " · " + autoT
+              : "aus der Online-Abfrage, sobald der Code bekannt ist",
+        !form.typManual);
+    }
+    TYPE_CATS.forEach(function (c) {
+      var items = TYPES.filter(function (t) {
+        return t[3] === c && (!q || norm(t.join(" ")).indexOf(q) >= 0);
+      });
+      if (!items.length) return;
+      html += '<div class="hist-title">' + esc(c) + '</div>';
+      items.forEach(function (t) {
+        html += row(t[0], t[1], t[2] + " · " + t[0], form.typManual && t[0] === cur);
+      });
+    });
+    // Typen ausserhalb der Sammelliste: ICAO-Code direkt übernehmen
+    var code = Lookup.normalize(raw).replace(/-/g, "");
+    if (/^[A-Z][A-Z0-9]{1,3}$/.test(code) && !TYPE_BY_ID[code]) {
+      html += '<div class="hist-title">Anderer Typ</div>' +
+        row(code, "„" + code + "“ übernehmen", "ICAO-Typcode, der nicht in der Sammelliste steht",
+            form.typManual && code === cur);
+    }
+    if (!html) html = '<div class="hint">Kein Typ gefunden.</div>';
+    $("pickContent").innerHTML = html;
+  }
+
   function renderPicker() {
     var q = norm($("pickSearch").value.trim()), html = "";
+    if (pickMode === "typ") { renderTypePicker($("pickSearch").value.trim()); return; }
     if (pickMode !== "ap") return;
     var list = [];
     if (!q && geo.pos) {
@@ -1184,7 +1274,7 @@
   });
 
   $("list").addEventListener("click", function (ev) {
-    var card = ev.target.closest(".card");
+    var card = ev.target.closest(".card, .trow");
     if (!card) return;
     if (card.dataset.spot) openEdit(card.dataset.spot);
     else if (card.dataset.plane) openPlane(card.dataset.plane);
@@ -1236,8 +1326,19 @@
   $("pickBackdrop").addEventListener("click", function () { hideSheet("pickSheet", "pickBackdrop"); });
   $("pickSearch").addEventListener("input", renderPicker);
   $("pickContent").addEventListener("click", function (ev) {
+    if (!form) return;
+    var t = ev.target.closest("[data-typ]");
+    if (t) {
+      form.typ = t.dataset.typ;
+      form.typManual = !!form.typ;
+      hideSheet("pickSheet", "pickBackdrop");
+      if (!form.typManual && form.code) runLookup(form.code);   // zurück auf automatisch
+      updateLookup();
+      updateType();
+      return;
+    }
     var r = ev.target.closest("[data-ap]");
-    if (!r || !form) return;
+    if (!r) return;
     form.ap = r.dataset.ap;
     form.manualAp = true;
     hideSheet("pickSheet", "pickBackdrop");

@@ -160,6 +160,37 @@ main { padding: 4px 16px 0; max-width: 640px; margin: 0 auto; }
 .card-right { flex: 0 0 auto; text-align: right; color: var(--text2); font-size: 12px; }
 .card-right b { display: block; color: var(--text); font-size: 15px; font-variant-numeric: tabular-nums; }
 
+/* Tabellenliste (Sichtungen, Flugzeuge): kleine Schrift, feste Spalten */
+.tbl {
+  background: var(--card); border-radius: 14px; box-shadow: var(--shadow);
+  overflow: hidden; margin-bottom: 8px;
+}
+.thead, .trow { display: flex; align-items: center; gap: 6px; padding: 0 12px; }
+.thead {
+  padding-top: 9px; padding-bottom: 6px; border-bottom: .5px solid var(--sep);
+  font-size: 10.5px; font-weight: 700; color: var(--text2);
+  text-transform: uppercase; letter-spacing: .3px;
+}
+.trow {
+  min-height: 38px; font-size: 12.5px; cursor: pointer;
+  border-bottom: .5px solid var(--sep);
+}
+.trow:last-child { border-bottom: none; }
+.trow:active { background: var(--chipbg); }
+.tc { flex: 0 0 auto; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.tc.nil { color: var(--text2); }
+.c-reg { width: 86px; font-weight: 700; }
+.trow .c-reg { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 12px; }
+.c-reg .flag {
+  display: inline-block; width: 19px; font-style: normal; font-size: 12px;
+  font-family: -apple-system, "Segoe UI Emoji", "Apple Color Emoji", sans-serif;
+}
+.c-typ { width: 68px; }
+.c-al  { flex: 1 1 auto; }
+.c-ap  { width: 34px; font-weight: 600; font-variant-numeric: tabular-nums; }
+.c-dt  { width: 52px; text-align: right; color: var(--text2); font-variant-numeric: tabular-nums; }
+.thead .c-dt { color: var(--text2); }
+
 .empty { text-align: center; color: var(--text2); padding: 60px 0; }
 .empty-icon { font-size: 40px; margin-bottom: 8px; }
 .credits { color: var(--text2); font-size: 12px; text-align: center; padding: 24px 0 8px; line-height: 1.6; }
@@ -264,6 +295,8 @@ main { padding: 4px 16px 0; max-width: 640px; margin: 0 auto; }
   text-transform: uppercase; letter-spacing: .4px; margin: 18px 4px 7px; }
 .form-section .fs-right { float: right; text-transform: none; letter-spacing: 0;
   color: var(--accent); font-weight: 600; cursor: pointer; }
+.form-section .fs-note { float: right; text-transform: none; letter-spacing: 0;
+  font-weight: 500; }
 .form-group { background: var(--bg); border-radius: 13px; overflow: hidden; }
 .form-row {
   display: flex; align-items: center; justify-content: space-between; gap: 12px;

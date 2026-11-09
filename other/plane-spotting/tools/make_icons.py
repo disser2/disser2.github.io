@@ -68,18 +68,20 @@ def poly(pts):
 # Verkehrsflugzeug von oben plus Streckenband mit zwei Halten
 def shapes():
     s = []
-    s.append(("rumpf", rrect(488, 90, 536, 620, 24)))
-    s.append(("flaeche", poly([(504, 270), (520, 270), (872, 490), (872, 536),
-                               (520, 410), (504, 410), (152, 536), (152, 490)])))
-    s.append(("leitwerk", poly([(504, 520), (520, 520), (688, 614), (688, 648),
-                                (520, 580), (504, 580), (336, 648), (336, 614)])))
-    s.append(("route", rrect(300, 718, 724, 762, 22)))
-    s.append(("stop1", circle(300, 740, 62)))
-    s.append(("stop2", circle(724, 740, 62)))
+    # Flugzeug im selben Block wie die ICE-Wortmarke (y ~ 200..606)
+    s.append(("rumpf", rrect(486, 196, 538, 590, 26)))
+    s.append(("flaeche", poly([(500, 320), (524, 320), (846, 486), (846, 530),
+                               (524, 428), (500, 428), (178, 530), (178, 486)])))
+    s.append(("leitwerk", poly([(500, 524), (524, 524), (656, 580), (656, 606),
+                                (524, 578), (500, 578), (368, 606), (368, 580)])))
+    # Signaturband exakt wie bei ICE Verbindungen
+    s.append(("route", rrect(300, 680, 724, 724, 22)))
+    s.append(("stop1", circle(300, 702, 62)))
+    s.append(("stop2", circle(724, 702, 62)))
     return s
 
 
-HOLES = [circle(300, 740, 26), circle(724, 740, 26)]   # blaue Punkte in den Halten
+HOLES = [circle(300, 702, 26), circle(724, 702, 26)]   # blaue Punkte in den Halten
 
 
 def color_at(x, y, white_shapes):

@@ -71,6 +71,7 @@ body {
   -webkit-font-smoothing: antialiased;
 }
 :focus-visible { outline: 2px solid var(--ink); outline-offset: 2px; }
+.dr-scroll:focus-visible { outline-offset: -2px; }
 
 .app {
   height: 100%;
@@ -137,6 +138,7 @@ body {
 }
 .seg button:hover { color: var(--ink); background: color-mix(in srgb, var(--ink) 8%, transparent); }
 .seg button[aria-pressed="true"] { background: var(--ink); color: var(--panel); }
+.seg button:disabled { opacity: 0.38; cursor: default; background: none; color: var(--ink-2); }
 select {
   appearance: none;
   padding: 8px 30px 8px 10px;
@@ -334,6 +336,56 @@ input[type="range"] { width: 132px; height: 31px; margin: 0; accent-color: var(-
 .tablewrap th:first-child, .tablewrap td:first-child { text-align: left; }
 .tablewrap tr.sel td { background: color-mix(in srgb, var(--ink) 9%, transparent); }
 .tablewrap tbody tr { cursor: pointer; }
+.chart .s-dash { stroke: var(--ink-2); stroke-width: 1.2; stroke-dasharray: 3 3; }
+.chart .keys i.dash { border-top: 1.5px dashed var(--ink-2); }
+.chart .band-we { fill: color-mix(in srgb, var(--ink) 7%, transparent); }
+.chart .band-hol { fill: color-mix(in srgb, var(--ink) 16%, transparent); }
+.legend .mkey { display: inline-block; width: 18px; height: 10px; margin-right: 7px; border-radius: 2px; background: color-mix(in srgb, var(--ink) 20%, transparent); box-shadow: inset 1px 0 0 color-mix(in srgb, var(--ink) 60%, transparent), inset -1px 0 0 color-mix(in srgb, var(--ink) 60%, transparent); vertical-align: -1px; }
+.legend .sub2 { color: var(--ink-3); }
+.daytag { margin-left: 6px; padding: 1px 6px; border-radius: 4px; background: color-mix(in srgb, var(--ink) 10%, transparent); color: var(--ink); font-size: 12px; font-weight: 500; }
+
+/* Tabelle aller Werte */
+.drawer {
+  position: absolute;
+  top: 56px;
+  right: 12px;
+  bottom: 12px;
+  z-index: 4;
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr) auto;
+  width: min(820px, calc(100% - 24px));
+  border: 1px solid var(--hair-2);
+  border-radius: 10px;
+  background: var(--panel);
+  box-shadow: 0 12px 40px color-mix(in srgb, #000 22%, transparent);
+}
+.dr-head { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 14px; padding: 10px 12px 10px 16px; border-bottom: 1px solid var(--hair); }
+.dr-head h2 { margin: 0 auto 0 0; font: italic 400 21px/1.1 var(--font-display); }
+.dr-head .seg button { padding: 6px 9px; font-size: 12.5px; }
+.dr-count { color: var(--ink-3); font: 12px var(--font-data); }
+.dr-close { width: 30px; height: 30px; border: 0; border-radius: 6px; background: none; color: var(--ink-2); font: 20px/1 var(--font-ui); cursor: pointer; }
+.dr-close:hover { background: color-mix(in srgb, var(--ink) 8%, transparent); color: var(--ink); }
+.dr-scroll { overflow: auto; overscroll-behavior: contain; }
+.dr-scroll table { min-width: 100%; border-collapse: collapse; font: 12.5px/1 var(--font-data); font-variant-numeric: tabular-nums; }
+.dr-scroll th { position: sticky; top: 0; z-index: 1; padding: 0; border-bottom: 1px solid var(--hair-2); background: var(--panel); text-align: right; white-space: nowrap; }
+.dr-scroll th button { width: 100%; padding: 9px 10px 8px; border: 0; background: none; color: var(--ink-2); font: 500 11.5px/1.25 var(--font-ui); text-align: inherit; white-space: nowrap; cursor: pointer; }
+.dr-scroll th button:hover { color: var(--ink); background: color-mix(in srgb, var(--ink) 6%, transparent); }
+.dr-scroll th[aria-sort] button { color: var(--ink); font-weight: 600; }
+.dr-scroll th .arr { display: inline-block; width: 1em; color: var(--ink-3); }
+.dr-scroll th[aria-sort] .arr { color: var(--ink); }
+.dr-scroll th.l, .dr-scroll td.l { text-align: left; }
+.dr-scroll td { height: 26px; padding: 0 10px; border-bottom: 1px solid var(--hair); color: var(--ink-2); text-align: right; white-space: nowrap; }
+.dr-scroll td.sk { color: var(--ink); font-weight: 500; background: color-mix(in srgb, var(--ink) 4%, transparent); }
+.dr-scroll td.t { font-family: var(--font-ui); font-size: 12px; color: var(--ink-3); }
+.dr-scroll td.ip { font-style: italic; color: var(--ink-3); }
+.dr-scroll .dr-t { color: var(--ink-3); }
+.dr-scroll tbody tr.row { cursor: pointer; }
+.dr-scroll tbody tr.row:hover td { background: color-mix(in srgb, var(--ink) 7%, transparent); }
+.dr-scroll tbody tr.free td { background: color-mix(in srgb, var(--ink) 5%, transparent); }
+.dr-scroll tbody tr.sel td { background: color-mix(in srgb, var(--ink) 14%, transparent); color: var(--ink); }
+.dr-scroll tr.sp td { height: auto; padding: 0; border: 0; }
+.dr-foot { margin: 0; padding: 7px 16px 9px; border-top: 1px solid var(--hair); color: var(--ink-3); font-size: 12px; }
+@media (max-width: 640px) { .drawer { top: 52px; right: 8px; bottom: 8px; width: calc(100% - 16px); } }
 
 @media (max-width: 1000px) {
   .panel { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
@@ -387,6 +439,19 @@ input[type="range"] { width: 132px; height: 31px; margin: 0; accent-color: var(-
       <span class="lab">Überhöhung <output id="exOut" for="rngEx">1,0×</output></span>
       <input type="range" id="rngEx" min="0.4" max="2.4" step="0.1" value="1">
     </label>
+    <fieldset class="field">
+      <legend class="lab">Kalender</legend>
+      <div class="seg" id="segMarks">
+        <button type="button" data-v="marks" aria-pressed="false" title="Samstage, Sonntage und gesetzliche Feiertage in NRW hervorheben">Wochenende &amp; Feiertage</button>
+      </div>
+    </fieldset>
+    <fieldset class="field">
+      <legend class="lab">Form</legend>
+      <div class="seg" id="segForm">
+        <button type="button" data-v="flat" title="Tage nebeneinander als Fläche">Fläche</button>
+        <button type="button" data-v="cyl" title="Uhrzeit zum Zylinder rollen: 23:30 Uhr geht nahtlos in 0:00 Uhr des Folgetags über">Zylinder</button>
+      </div>
+    </fieldset>
   </div>
 
   <main class="stage" id="stage">
@@ -404,8 +469,27 @@ input[type="range"] { width: 132px; height: 31px; margin: 0; accent-color: var(-
       <div class="ticks" id="lgTicks"></div>
       <p id="lgContour"></p>
       <p id="lgThresh"><span class="key"></span>1.000 ppm, Pettenkofer-Zahl</p>
+      <p id="lgMarks" hidden></p>
     </div>
     <div class="tip" id="tip" hidden></div>
+    <section class="drawer" id="drawer" hidden aria-label="Alle Messwerte">
+      <header class="dr-head">
+        <h2>Alle Werte</h2>
+        <div class="seg" id="segRows" role="group" aria-label="Zeilen">
+          <button type="button" data-v="slot">Messungen</button>
+          <button type="button" data-v="day">Tage</button>
+        </div>
+        <div class="seg" id="segFilter" role="group" aria-label="Filter">
+          <button type="button" data-v="all">Alle</button>
+          <button type="button" data-v="work">Werktage</button>
+          <button type="button" data-v="free">Wochenende &amp; Feiertage</button>
+        </div>
+        <span class="dr-count" id="drCount"></span>
+        <button type="button" class="dr-close" id="drClose" aria-label="Tabelle schließen">×</button>
+      </header>
+      <div class="dr-scroll" id="drScroll" tabindex="0"><table><thead id="drHead"></thead><tbody id="drBody"></tbody></table></div>
+      <p class="dr-foot" id="drFoot"></p>
+    </section>
     <p class="hint" id="hint">Ziehen dreht · Scrollen zoomt · Rechtsklick verschiebt · Klick heftet einen Zeitpunkt an</p>
   </main>
 
@@ -415,6 +499,7 @@ input[type="range"] { width: 132px; height: 31px; margin: 0; accent-color: var(-
       <dl class="vals" id="roVals"></dl>
       <div class="foot">
         <button type="button" class="link" id="btnTable" aria-pressed="false">Tageswerte als Tabelle</button>
+        <button type="button" class="link" id="btnAll" aria-expanded="false" aria-controls="drawer">Alle Werte, sortierbar</button>
         <p class="note" id="roNote"></p>
       </div>
     </div>
@@ -510,15 +595,19 @@ function field(id, mode) {
   return out;
 }
 const medianCache = new Map();
-function slotMedian(id) {
-  if (medianCache.has(id)) return medianCache.get(id);
-  const out = new Float32Array(NZ), col = new Float32Array(NX);
+// grp: -1 alle Tage, 0 Werktage, 1 Wochenenden und Feiertage
+function slotMedian(id, grp = -1) {
+  const key = id + grp;
+  if (medianCache.has(key)) return medianCache.get(key);
+  const days = [];
+  for (let i = 0; i < NX; i++) if (grp < 0 || (dayType[i] > 0 ? 1 : 0) === grp) days.push(i);
+  const n = days.length, out = new Float32Array(NZ), col = new Float32Array(n);
   for (let j = 0; j < NZ; j++) {
-    for (let i = 0; i < NX; i++) col[i] = raw[id][i * NZ + j];
+    days.forEach((i, c) => { col[c] = raw[id][i * NZ + j]; });
     col.sort();
-    out[j] = NX % 2 ? col[(NX - 1) / 2] : (col[NX / 2 - 1] + col[NX / 2]) / 2;
+    out[j] = !n ? NaN : n % 2 ? col[(n - 1) / 2] : (col[n / 2 - 1] + col[n / 2]) / 2;
   }
-  medianCache.set(id, out);
+  medianCache.set(key, out);
   return out;
 }
 
@@ -535,8 +624,42 @@ for (let i = 0; i < NX; i++) {
   else months[months.length - 1].i1 = i;
 }
 
+// ---------- Kalender: Wochenenden und gesetzliche Feiertage (Nordrhein-Westfalen) ----------
+function easter(y) {
+  const a = y % 19, b = Math.floor(y / 100), c = y % 100, d = Math.floor(b / 4), e = b % 4, f = Math.floor((b + 8) / 25);
+  const g = Math.floor((b - f + 1) / 3), h = (19 * a + b - d - g + 15) % 30, i = Math.floor(c / 4), k = c % 4;
+  const l = (32 + 2 * e + 2 * i - h - k) % 7, m = Math.floor((a + 11 * h + 22 * l) / 451);
+  return Date.UTC(y, Math.floor((h + l - 7 * m + 114) / 31) - 1, (h + l - 7 * m + 114) % 31 + 1);
+}
+const holidayCache = new Map();
+function holidays(y) {
+  if (holidayCache.has(y)) return holidayCache.get(y);
+  const map = new Map(), e = easter(y), add = (t, name) => map.set(t, name);
+  add(Date.UTC(y, 0, 1), 'Neujahr');
+  add(e - 2 * 864e5, 'Karfreitag');
+  add(e + 1 * 864e5, 'Ostermontag');
+  add(Date.UTC(y, 4, 1), 'Tag der Arbeit');
+  add(e + 39 * 864e5, 'Christi Himmelfahrt');
+  add(e + 50 * 864e5, 'Pfingstmontag');
+  add(e + 60 * 864e5, 'Fronleichnam');
+  add(Date.UTC(y, 9, 3), 'Tag der Deutschen Einheit');
+  add(Date.UTC(y, 10, 1), 'Allerheiligen');
+  add(Date.UTC(y, 11, 25), '1. Weihnachtstag');
+  add(Date.UTC(y, 11, 26), '2. Weihnachtstag');
+  holidayCache.set(y, map);
+  return map;
+}
+// 0 Werktag, 1 Wochenende, 2 Feiertag
+const dayType = new Uint8Array(NX), holName = new Array(NX).fill('');
+for (let i = 0; i < NX; i++) {
+  const d = dayDate(i), name = holidays(d.getUTCFullYear()).get(d.getTime());
+  if (name) { dayType[i] = 2; holName[i] = name; } else if (d.getUTCDay() % 6 === 0) dayType[i] = 1;
+}
+const dayTag = i => dayType[i] === 2 ? 'Feiertag: ' + holName[i] : dayType[i] === 1 ? 'Wochenende' : '';
+const holidayList = [...new Set(holName.filter(Boolean))];
+
 // ---------- Zustand ----------
-const state = { hm: METRICS[0], cm: null, smooth: 'w7', ex: 1, view: 'relief', pin: { i: 0, j: 0 }, hover: null, table: false };
+const state = { hm: METRICS[0], cm: null, smooth: 'w7', ex: 1, form: 'flat', marks: false, view: 'relief', pin: { i: 0, j: 0 }, hover: null, table: false };
 const colorMetric = () => state.cm || state.hm;
 const sel = () => state.hover || state.pin;
 { // Startauswahl: der höchste CO₂-Wert
@@ -606,6 +729,14 @@ Object.assign(controls, {
 });
 
 const LIGHT = new THREE.Vector3(-0.55, 0.62, -0.56).normalize();
+const GLSL_MARK = `
+  uniform sampler2D uMarks;
+  uniform float uMarkOn;
+  uniform float uNx;
+  uniform float uX0;
+  uniform float uDx;
+  float mark(float i) { return texture2D(uMarks, vec2((clamp(i, 0.0, uNx - 1.0) + 0.5) / uNx, 0.5)).r; }
+`;
 const GLSL_LINES = `
   float aaLine(float d, float w) { return 1.0 - smoothstep(w - 0.6, w + 0.6, d); }
   float contour(float g, float w) {
@@ -616,24 +747,110 @@ const GLSL_LINES = `
 `;
 
 // Gelände
-const pos = new Float32Array(N * 3), nor = new Float32Array(N * 3), aC = new Float32Array(N), aAO = new Float32Array(N).fill(1);
+// pos/curH/cC/cAO je Messpunkt k (flache Lage, Höhe unskaliert); daraus wird das Netz gebogen.
+const pos = new Float32Array(N * 3), cAO = new Float32Array(N).fill(1), cC = new Float32Array(N);
 const curH = new Float32Array(N), targetH = new Float32Array(N);
 for (let i = 0; i < NX; i++) for (let j = 0; j < NZ; j++) {
   const k = i * NZ + j;
-  pos[k * 3] = X0 + i * DX; pos[k * 3 + 2] = Z0 + j * DZ; nor[k * 3 + 1] = 1;
+  pos[k * 3] = X0 + i * DX; pos[k * 3 + 2] = Z0 + j * DZ;
 }
-const index = new Uint32Array((NX - 1) * (NZ - 1) * 6);
-for (let i = 0, n = 0; i < NX - 1; i++) for (let j = 0; j < NZ - 1; j++) {
-  const a = i * NZ + j, b = a + NZ, c = b + 1, d = a + 1;
-  index[n++] = a; index[n++] = d; index[n++] = b; index[n++] = b; index[n++] = d; index[n++] = c;
+// Netz mit Nahtreihen: Zeile j = NZ ist 0:00 Uhr des Folgetags, Spalte i = NX ist wieder der erste Tag.
+// So läuft die Zeitreihe beim Zylinder als Schraube ohne Sprung um die Achse.
+const NZE = NZ + 1, NV = (NX + 1) * NZE;
+const vmap = new Int32Array(NV), fX = new Float32Array(NV), fZ = new Float32Array(NV);
+for (let i = 0; i <= NX; i++) for (let j = 0; j <= NZ; j++) {
+  const v = i * NZE + j, ii = (i + (j === NZ ? 1 : 0)) % NX, jj = j === NZ ? 0 : j;
+  vmap[v] = ii * NZ + jj; fX[v] = X0 + i * DX; fZ[v] = Z0 + j * DZ;
+}
+const vOf = k => Math.floor(k / NZ) * NZE + k % NZ;
+const bPos = new Float32Array(NV * 3), bNor = new Float32Array(NV * 3), bUp = new Float32Array(NV * 3);
+const aFlat = new Float32Array(NV * 3), aC = new Float32Array(NV), aAO = new Float32Array(NV).fill(1);
+for (let v = 0; v < NV; v++) { aFlat[v * 3] = fX[v]; aFlat[v * 3 + 2] = fZ[v]; }
+// Dreiecke in drei Blöcken: Fläche, Tagesnaht (23:30 → 0:00), Jahresnaht (letzter → erster Tag)
+const QF = (NX - 1) * (NZ - 1), QJ = NX - 1, QI = NZ;
+const index = new Uint32Array((QF + QJ + QI) * 6);
+{
+  let n = 0;
+  const quad = (i, j) => {
+    const a = i * NZE + j, b = a + NZE, c = b + 1, d = a + 1;
+    index[n++] = a; index[n++] = d; index[n++] = b; index[n++] = b; index[n++] = d; index[n++] = c;
+  };
+  for (let i = 0; i < NX - 1; i++) for (let j = 0; j < NZ - 1; j++) quad(i, j);
+  for (let i = 0; i < NX - 1; i++) quad(i, NZ - 1);
+  for (let j = 0; j < NZ; j++) quad(NX - 1, j);
 }
 const geo = new THREE.BufferGeometry();
-geo.setAttribute('position', new THREE.BufferAttribute(pos, 3));
-geo.setAttribute('normal', new THREE.BufferAttribute(nor, 3));
+geo.setAttribute('position', new THREE.BufferAttribute(bPos, 3));
+geo.setAttribute('normal', new THREE.BufferAttribute(bNor, 3));
+geo.setAttribute('aUp', new THREE.BufferAttribute(bUp, 3));
+geo.setAttribute('aFlat', new THREE.BufferAttribute(aFlat, 3));
 geo.setAttribute('aC', new THREE.BufferAttribute(aC, 1));
 geo.setAttribute('aAO', new THREE.BufferAttribute(aAO, 1));
 geo.setIndex(new THREE.BufferAttribute(index, 1));
+geo.setDrawRange(0, QF * 6);
 geo.boundingSphere = new THREE.Sphere(new THREE.Vector3(0, H0, 0), 60);
+
+// Zylinder: die Uhrzeit rollt sich um eine Achse längs der Tage (6 Uhr oben, 12 Uhr vorn, 18 Uhr unten, 0 Uhr hinten).
+// Jede Windung ist um einen Tag versetzt, so geht 23:30 Uhr nahtlos in 0:00 Uhr des Folgetags über.
+const LZ = NZ * DZ, RC = 2.6, KT = 0.6, ZC = Z0 + 12 * DZ;
+const cylY = ys => -BASE + RC + KT * H0 * ys + 0.12;
+let bendT = 0, bentT = -1, bentYs = -1, geoDirty = true;
+let bA = 0, bRA = 0, bScale = 1, bYC = 0;
+// Biegt einen Flächenpunkt (x, z, radiale Höhe hh) in die aktuelle Rolllage; liefert den Rollwinkel
+function bendPoint(x, z, hh, out, o) {
+  if (bA <= 0) { out[o] = x; out[o + 1] = hh; out[o + 2] = z; return 0; }
+  const al = (z - ZC) * bScale / bRA, ca = Math.cos(al), sa = Math.sin(al), sh = Math.sin(al / 2);
+  out[o] = x + bA * DX * ((z - Z0) / LZ - 0.5);
+  out[o + 1] = hh * ca - 2 * bRA * sh * sh + bA * (bYC + RC);
+  out[o + 2] = ZC * (1 - bA) + (bRA + hh) * sa;
+  return al;
+}
+function bendAll(ys) {
+  const a = easeInOut(clamp(bendT, 0, 1)), closed = a >= 1;
+  const lz = lerp(LZ, 2 * Math.PI * RC, a);
+  bA = a; bScale = lz / LZ; bRA = a > 0 ? lz / (2 * Math.PI * a) : 0; bYC = cylY(ys);
+  const kh = ys * lerp(1, KT, a);
+  for (let v = 0; v < NV; v++) {
+    const o = v * 3, al = bendPoint(fX[v], fZ[v], curH[vmap[v]] * kh, bPos, o);
+    bUp[o] = 0; bUp[o + 1] = Math.cos(al); bUp[o + 2] = Math.sin(al);
+  }
+  // Normalen aus dem gebogenen Netz; geschlossen über die Tagesnaht hinweg
+  const jMax = a > 0 ? NZ : NZ - 1;
+  const canon = (i, j) => {
+    if (closed) { i += Math.floor(j / NZ); j = ((j % NZ) + NZ) % NZ; } else j = clamp(j, 0, jMax);
+    return [clamp(i, 0, NX - 1), j];
+  };
+  const at = (i, j) => { const c = canon(i, j); return c[0] * NZE + c[1]; };
+  for (let i = 0; i <= NX; i++) for (let j = 0; j <= NZ; j++) {
+    const [ci, cj] = canon(i, j);
+    const p0 = at(ci - 1, cj) * 3, p1 = at(ci + 1, cj) * 3, q0 = at(ci, cj - 1) * 3, q1 = at(ci, cj + 1) * 3;
+    const ux = bPos[p1] - bPos[p0], uy = bPos[p1 + 1] - bPos[p0 + 1], uz = bPos[p1 + 2] - bPos[p0 + 2];
+    const wx = bPos[q1] - bPos[q0], wy = bPos[q1 + 1] - bPos[q0 + 1], wz = bPos[q1 + 2] - bPos[q0 + 2];
+    const nx = wy * uz - wz * uy, ny = wz * ux - wx * uz, nz = wx * uy - wy * ux;
+    const inv = 1 / (Math.hypot(nx, ny, nz) || 1), o = (i * NZE + j) * 3;
+    bNor[o] = nx * inv; bNor[o + 1] = ny * inv; bNor[o + 2] = nz * inv;
+  }
+  geo.setDrawRange(0, (a > 0 ? QF + QJ : QF) * 6);
+  geo.attributes.position.needsUpdate = geo.attributes.normal.needsUpdate = geo.attributes.aUp.needsUpdate = true;
+
+  // Sockel rollt mit: die Unterkanten wandern zur Achse, die Stirnseiten werden zu Deckeln
+  const f = a * a;
+  for (let v = 0; v < SV; v++) {
+    const k = sK[v], bot = sBot[v], x = sPos[v * 3], z = sPos[v * 3 + 2], o = v * 3;
+    const al = bendPoint(x, z, bot ? -BASE - f * (bRA - BASE) : curH[k] * kh, sB, o);
+    sFlat[o] = x; sFlat[o + 1] = bot ? -BASE / ys : curH[k]; sFlat[o + 2] = z;
+    const ca = Math.cos(al), sa = Math.sin(al), ny = sNor0[o + 1], nz = sNor0[o + 2];
+    sN[o] = sNor0[o]; sN[o + 1] = ny * ca - nz * sa; sN[o + 2] = ny * sa + nz * ca;
+  }
+  sGeo.setDrawRange(0, a > 0 ? sIdx.length : SEAM_S);
+  sGeo.attributes.position.needsUpdate = sGeo.attributes.normal.needsUpdate = sGeo.attributes.aFlat.needsUpdate = true;
+
+  surfU.uBend.value = a;
+  shadowU.uHalf.value.set(W / 2 + a * 0.3, lerp(D / 2, RC + KT * H0 * ys * 0.35, a));
+  bentT = bendT; bentYs = ys; geoDirty = false;
+}
+// Weltposition eines Messpunkts im aktuellen Netz
+const worldOf = k => { const o = vOf(k) * 3; return [bPos[o], bPos[o + 1], bPos[o + 2], bUp[o], bUp[o + 1], bUp[o + 2]]; };
 
 const monthX = new Array(14).fill(1e6);
 months.slice(1).forEach((m, n) => { if (n < 14) monthX[n] = X0 + (m.i0 - 0.5) * DX; });
@@ -646,8 +863,17 @@ const surfU = {
   uContour: { value: 1 }, uSel: { value: new THREE.Vector2() },
   uThresh: { value: 1000 }, uThreshOn: { value: 0 }, uWarn: { value: new THREE.Color() },
   uMonthX: { value: monthX }, uMonthN: { value: Math.min(14, months.length - 1) },
-  uZ0: { value: Z0 }, uDz: { value: DZ }, uFog: { value: new THREE.Vector2(10, 60) },
+  uZ0: { value: Z0 }, uDz: { value: DZ }, uFog: { value: new THREE.Vector2(10, 60) }, uBend: { value: 0 },
+  uMarks: { value: null }, uMarkOn: { value: 0 }, uNx: { value: NX }, uX0: { value: X0 }, uDx: { value: DX },
 };
+{
+  const data = new Uint8Array(NX * 4);
+  for (let i = 0; i < NX; i++) data[i * 4] = dayType[i] === 2 ? 255 : dayType[i] === 1 ? 128 : 0;
+  const tex = new THREE.DataTexture(data, NX, 1, THREE.RGBAFormat);
+  tex.minFilter = tex.magFilter = THREE.NearestFilter;
+  tex.needsUpdate = true;
+  surfU.uMarks.value = tex;
+}
 const surface = new THREE.Mesh(geo, new THREE.ShaderMaterial({
   uniforms: surfU,
   side: THREE.DoubleSide,
@@ -655,13 +881,16 @@ const surface = new THREE.Mesh(geo, new THREE.ShaderMaterial({
   vertexShader: `
     attribute float aC;
     attribute float aAO;
+    attribute vec3 aUp;
+    attribute vec3 aFlat;
     varying vec3 vP;
     varying vec3 vN;
+    varying vec3 vUp;
     varying float vC;
     varying float vAO;
     varying float vDepth;
     void main() {
-      vP = position; vN = normal; vC = aC; vAO = aAO;
+      vP = aFlat; vN = normal; vUp = aUp; vC = aC; vAO = aAO;
       vec4 mv = modelViewMatrix * vec4(position, 1.0);
       vDepth = -mv.z;
       gl_Position = projectionMatrix * mv;
@@ -695,8 +924,11 @@ const surface = new THREE.Mesh(geo, new THREE.ShaderMaterial({
     uniform float uZ0;
     uniform float uDz;
     uniform vec2 uFog;
+    uniform float uBend;
+    ${GLSL_MARK}
     varying vec3 vP;
     varying vec3 vN;
+    varying vec3 vUp;
     varying float vC;
     varying float vAO;
     varying float vDepth;
@@ -705,18 +937,36 @@ const surface = new THREE.Mesh(geo, new THREE.ShaderMaterial({
       vec2 uv = vec2(clamp(vC, 0.002, 0.998), 0.5);
       vec3 col = mix(texture2D(uRampA, uv).rgb, texture2D(uRampB, uv).rgb, uRampMix);
 
-      // Schummerung: Licht von links oben, warme Lichthänge, kühle Schatten
-      vec3 n = normalize(vec3(vN.x * 0.55, vN.y / max(uYScale, 0.001), vN.z * 0.55));
-      float sh = dot(n, uLight) / uLight.y;
+      // Schummerung: Licht von links oben, warme Lichthänge, kühle Schatten.
+      // Gemessen gegen die Grundfläche, damit das Relief auch auf dem Zylinder gleich liest.
+      vec3 up = normalize(vUp);
+      vec3 nn = normalize(vN);
+      float nu = dot(nn, up);
+      vec3 n = normalize(up * nu + (nn - up * nu) * 0.55);
+      float lu = dot(up, uLight);
+      float sh = 1.0 + (dot(n, uLight) - lu) / uLight.y;
       float dk = clamp(1.0 - sh, 0.0, 1.0);
       float br = clamp(sh - 1.0, 0.0, 0.6);
       col *= 1.0 - dk * mix(0.34, 0.44, uDark);
       col = mix(col, col * vec3(0.80, 0.88, 1.12), dk * 0.55);
       col += br * mix(vec3(0.15, 0.13, 0.07), vec3(0.11, 0.10, 0.08), uDark);
       col *= mix(1.0, vAO, 0.75);
+      // Körperschatten der Röhre
+      col *= mix(1.0, 0.56 + 0.44 * (lu + 1.0) / (uLight.y + 1.0), uBend);
 
       float lum = dot(col, vec3(0.2126, 0.7152, 0.0722));
       vec3 lc = mix(uLnLight, uLnDark, smoothstep(uLnRange.x, uLnRange.y, lum));
+
+      // Wochenenden und Feiertage: Werktage treten zurück, freie Tage behalten volle Farbe und Randlinien
+      if (uMarkOn > 0.0) {
+        float di = (vP.x - uX0) / uDx + 0.5, dI = floor(di), fr = di - dI;
+        float m0 = mark(dI), on = step(0.25, m0), hol = step(0.75, m0);
+        col = mix(col, uHaze, (1.0 - on) * mix(0.62, 0.7, uDark) * uMarkOn);
+        float fd = max(fwidth(di), 1e-6), near = 1.0 - smoothstep(0.3, 0.7, fd);
+        float edge = max(aaLine(fr / fd, 0.5) * abs(on - step(0.25, mark(dI - 1.0))),
+                         aaLine((1.0 - fr) / fd, 0.5) * abs(on - step(0.25, mark(dI + 1.0))));
+        col = mix(col, uInk, edge * mix(0.35, 0.75, hol) * near * uMarkOn);
+      }
 
       // Höhenlinien
       float v = uLo + vP.y / uH0 * (uHi - uLo);
@@ -761,51 +1011,60 @@ const EDGES = [
   { n: [-1, 0, 0], count: NZ, k: c => c },
   { n: [1, 0, 0], count: NZ, k: c => (NX - 1) * NZ + c },
 ];
-const SV = 2 * (NX + NZ) * 2;
-const sPos = new Float32Array(SV * 3), sNor = new Float32Array(SV * 3), sBot = new Float32Array(SV), sCol = new Float32Array(SV), sMap = new Int32Array(SV);
+const SV = 2 * (NX + NZ) * 2 + 4;
+const sPos = new Float32Array(SV * 3), sNor0 = new Float32Array(SV * 3), sBot = new Float32Array(SV), sCol = new Float32Array(SV), sK = new Int32Array(SV);
+const sB = new Float32Array(SV * 3), sN = new Float32Array(SV * 3), sFlat = new Float32Array(SV * 3);
 const sIdx = [];
+let SEAM_S = 0;
 {
   let v = 0;
+  const pair = (x, z, k, n) => {
+    for (let b = 0; b < 2; b++, v++) { sPos[v * 3] = x; sPos[v * 3 + 2] = z; sNor0.set(n, v * 3); sBot[v] = b; sK[v] = k; }
+    return v - 2;
+  };
+  const starts = [];
   for (const e of EDGES) {
     const v0 = v;
-    for (let c = 0; c < e.count; c++) for (let b = 0; b < 2; b++, v++) {
-      const k = e.k(c);
-      sPos[v * 3] = pos[k * 3]; sPos[v * 3 + 2] = pos[k * 3 + 2];
-      sNor.set(e.n, v * 3); sBot[v] = b; sMap[v] = b ? -1 : k;
-    }
+    starts.push(v0);
+    for (let c = 0; c < e.count; c++) { const k = e.k(c); pair(pos[k * 3], pos[k * 3 + 2], k, e.n); }
     for (let c = 0; c < e.count - 1; c++) { const t = v0 + c * 2; sIdx.push(t, t + 1, t + 2, t + 2, t + 1, t + 3); }
+  }
+  // Nahtkeil der Stirnseiten (nur gerollt): 0:00 Uhr des Folgetags schließt den Deckel
+  SEAM_S = sIdx.length;
+  const zEnd = Z0 + NZ * DZ;
+  for (const [e, x, k] of [[2, X0, NZ], [3, X0 + (NX - 1) * DX, N - 1]]) {
+    const t = starts[e] + (NZ - 1) * 2, u = pair(x, zEnd, k, EDGES[e].n);
+    sIdx.push(t, t + 1, u, u, t + 1, u + 1);
   }
 }
 const sGeo = new THREE.BufferGeometry();
-sGeo.setAttribute('position', new THREE.BufferAttribute(sPos, 3));
-sGeo.setAttribute('normal', new THREE.BufferAttribute(sNor, 3));
-sGeo.setAttribute('aBottom', new THREE.BufferAttribute(sBot, 1));
+sGeo.setAttribute('position', new THREE.BufferAttribute(sB, 3));
+sGeo.setAttribute('normal', new THREE.BufferAttribute(sN, 3));
+sGeo.setAttribute('aFlat', new THREE.BufferAttribute(sFlat, 3));
 sGeo.setAttribute('aC', new THREE.BufferAttribute(sCol, 1));
 sGeo.setIndex(sIdx);
+sGeo.setDrawRange(0, SEAM_S);
 const skirtU = {
   uWall: { value: new THREE.Color() }, uLine: { value: new THREE.Color() }, uHaze: surfU.uHaze, uLight: surfU.uLight,
   uYScale: surfU.uYScale, uBase: { value: BASE }, uLo: surfU.uLo, uHi: surfU.uHi, uStep: surfU.uStep, uIdx: surfU.uIdx,
   uH0: surfU.uH0, uContour: surfU.uContour, uFog: surfU.uFog,
   uRampA: surfU.uRampA, uRampB: surfU.uRampB, uRampMix: surfU.uRampMix, uSame: { value: 1 },
+  uMarks: surfU.uMarks, uMarkOn: surfU.uMarkOn, uNx: surfU.uNx, uX0: surfU.uX0, uDx: surfU.uDx,
 };
 const skirt = new THREE.Mesh(sGeo, new THREE.ShaderMaterial({
   uniforms: skirtU,
   side: THREE.DoubleSide,
   extensions: { derivatives: true },
   vertexShader: `
-    attribute float aBottom;
+    attribute vec3 aFlat;
     attribute float aC;
-    uniform float uBase;
-    uniform float uYScale;
     varying vec3 vP;
     varying vec3 vN;
     varying float vC;
     varying float vDepth;
     void main() {
-      vec3 p = position;
-      p.y = mix(p.y, -uBase / max(uYScale, 0.001), aBottom);
-      vP = p; vN = normal; vC = aC;
-      vec4 mv = modelViewMatrix * vec4(p, 1.0);
+      vP = aFlat; vN = normal; vC = aC;
+      vec4 mv = modelViewMatrix * vec4(position, 1.0);
       vDepth = -mv.z;
       gl_Position = projectionMatrix * mv;
     }`,
@@ -833,6 +1092,7 @@ const skirt = new THREE.Mesh(sGeo, new THREE.ShaderMaterial({
     varying float vC;
     varying float vDepth;
     ${GLSL_LINES}
+    ${GLSL_MARK}
     void main() {
       float yw = vP.y * uYScale;
       float fy = max(fwidth(yw), 1e-6);
@@ -847,6 +1107,12 @@ const skirt = new THREE.Mesh(sGeo, new THREE.ShaderMaterial({
       float line = max(contour(g, 0.45) * 0.22, contour(g / uIdx, 0.8) * 0.42) * uContour * above;
       line = max(line, aaLine(abs(yw) / fy, 0.6) * 0.45);
       col = mix(col, uLine, line);
+      // Kalenderleiste im Sockel der Längsseiten
+      if (uMarkOn > 0.0) {
+        float m0 = mark(floor((vP.x - uX0) / uDx + 0.5));
+        float strip = (1.0 - above) * step(abs(vN.x), 0.5) * step(0.25, m0) * uMarkOn;
+        col = mix(col, uLine, strip * mix(0.4, 0.8, step(0.75, m0)));
+      }
       col = mix(col, uHaze, smoothstep(uFog.x, uFog.y, vDepth) * 0.16);
       gl_FragColor = vec4(col, 1.0);
     }`,
@@ -855,7 +1121,9 @@ skirt.frustumCulled = false;
 scene.add(skirt);
 
 // Schlagschatten auf dem Tisch
-const shadowU = { uCol: { value: new THREE.Color() }, uAlpha: { value: 0.3 }, uHalf: { value: new THREE.Vector2(W / 2, D / 2) } };
+const shadowU = {
+  uCol: { value: new THREE.Color() }, uAlpha: { value: 0.3 }, uHalf: { value: new THREE.Vector2(W / 2, D / 2) },
+};
 const shadow = new THREE.Mesh(new THREE.PlaneGeometry(W + 18, D + 18), new THREE.ShaderMaterial({
   uniforms: shadowU, transparent: true, depthWrite: false,
   vertexShader: `varying vec2 vQ; void main() { vQ = position.xy; gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0); }`,
@@ -925,6 +1193,39 @@ function project(x, y, z) {
   v3.set(x, y, z).project(camera);
   return { x: (v3.x * 0.5 + 0.5) * sw, y: (-v3.y * 0.5 + 0.5) * sh, ok: v3.z < 1 };
 }
+// Beschriftung am Zylinder: Monate auf dem Tisch längs der Achse, Uhrzeiten rund um die Stirnseite zur Kamera
+// Liegt ein Punkt hinter dem Zylinderkern? (Sichtstrahl von der Kamera gegen den Kern ohne Relief)
+function behindCyl(x, y, z, ys) {
+  if (bendT < 1) return false;
+  const c = camera.position, yC = cylY(ys), r2 = RC * RC * 0.92, xm = W / 2 + DX;
+  for (let n = 1; n < 40; n++) {
+    const t = n / 40 * 0.94, px = c.x + (x - c.x) * t, py = c.y + (y - c.y) * t - yC, pz = c.z + (z - c.z) * t;
+    if (Math.abs(px) < xm && py * py + pz * pz < r2) return true;
+  }
+  return false;
+}
+function layoutCyl(ys, sx, sz, place, hide, line, span) {
+  const yB = -BASE, rv = RC + KT * H0 * ys, yC = cylY(ys), zM = sz * (rv + 0.75);
+  if (span(project(-W / 2, yB, zM), project(W / 2, yB, zM)) > 220) {
+    months.forEach((m, n) => {
+      if (n) { const xb = X0 + (m.i0 - 0.5) * DX; line(xb, yB, zM - sz * 0.5, xb, yB, zM - sz * 0.2); }
+      const lx = X0 + (m.i0 + m.i1) / 2 * DX;
+      if (behindCyl(lx, yB, zM, ys)) return hide(monthLbl[n]);
+      place(monthLbl[n], project(lx, yB, zM), 'c');
+    });
+  } else monthLbl.forEach(hide);
+  const xE = sx * (W / 2 + DX / 2);
+  if (span(project(xE, yC - rv, 0), project(xE, yC + rv, 0)) > 70 || span(project(xE, yC, -rv), project(xE, yC, rv)) > 70) {
+    for (const n of hourLbl) {
+      const al = 2 * Math.PI * (n._s - 12) / NZ, sa = Math.sin(al), ca = Math.cos(al);
+      const at = r => [xE + sx * 0.15, yC + r * ca, r * sa];
+      line(...at(rv + 0.1), ...at(rv + 0.4));
+      const q = at(rv + 0.85);
+      if (behindCyl(q[0], q[1], q[2], ys)) { hide(n); continue; }
+      place(n, project(q[0], q[1], q[2]), 'c');
+    }
+  } else hourLbl.forEach(hide);
+}
 function layoutOverlay(ys) {
   camera.updateMatrixWorld();
   const cam = camera.position, tg = controls.target;
@@ -948,11 +1249,29 @@ function layoutOverlay(ys) {
   };
   const span = (a, b) => Math.hypot(a.x - b.x, a.y - b.y);
 
-  // Auswahlmarke
-  const s = sel(), sk = s.i * NZ + s.j;
-  const mp = project(pos[sk * 3], curH[sk] * ys, pos[sk * 3 + 2]);
-  marker.style.visibility = mp.ok ? 'visible' : 'hidden';
+  // Auswahlmarke; auf dem Zylinder nur, wenn die Stelle zur Kamera zeigt
+  const facing = w => bendT <= 0 || ((cam.x - w[0]) * w[3] + (cam.y - w[1]) * w[4] + (cam.z - w[2]) * w[5] > 0 && !behindCyl(w[0], w[1], w[2], ys));
+  const s = sel(), sw0 = worldOf(s.i * NZ + s.j);
+  const mp = project(sw0[0], sw0[1], sw0[2]);
+  marker.style.visibility = mp.ok && facing(sw0) ? 'visible' : 'hidden';
   marker.style.transform = `translate(${mp.x.toFixed(1)}px,${mp.y.toFixed(1)}px)`;
+  const peakAt = () => peakLbl.forEach((n, t) => {
+    const p = peaks[t];
+    if (!p) return hide(n);
+    const w = worldOf(p.i * NZ + p.j);
+    if (!facing(w)) return hide(n);
+    place(n, project(w[0], w[1], w[2]), 'b');
+  });
+
+  if (bendT > 0) {
+    staffLbl.forEach(hide);
+    if (bendT < 1) { monthLbl.forEach(hide); hourLbl.forEach(hide); }
+    else layoutCyl(ys, sx, sz, place, hide, line, span);
+    peakAt();
+    tickGeo.setDrawRange(0, seg * 2);
+    tickGeo.attributes.position.needsUpdate = true;
+    return;
+  }
 
   // Messlatte an der freien vorderen Ecke
   const cx = -sx * W / 2, cz = zE, hm = state.hm;
@@ -993,12 +1312,7 @@ function layoutOverlay(ys) {
   } else hourLbl.forEach(hide);
 
   // Gipfel
-  peakLbl.forEach((n, t) => {
-    const p = peaks[t];
-    if (!p) return hide(n);
-    const k = p.i * NZ + p.j;
-    place(n, project(pos[k * 3], curH[k] * ys, pos[k * 3 + 2]), 'b');
-  });
+  peakAt();
 
   tickGeo.setDrawRange(0, seg * 2);
   tickGeo.attributes.position.needsUpdate = true;
@@ -1015,8 +1329,8 @@ function tween(ms, fn, done, delay = 0) {
 }
 function render() {
   const ys = Math.max(0.001, state.ex * introK);
-  surface.scale.y = skirt.scale.y = ys;
   surfU.uYScale.value = ys;
+  if (geoDirty || ys !== bentYs || bendT !== bentT) bendAll(ys);
   const dist = camera.position.distanceTo(controls.target);
   surfU.uFog.value.set(dist - 8, dist + 26);
   layoutOverlay(ys);
@@ -1041,21 +1355,19 @@ controls.addEventListener('change', () => { dirty = true; });
 // ---------- Geländeform ----------
 function applyHeights() {
   for (let i = 0; i < NX; i++) {
-    const i0 = i ? i - 1 : 0, i1 = i < NX - 1 ? i + 1 : i, ix = 1 / ((i1 - i0) * DX);
+    const i0 = i ? i - 1 : 0, i1 = i < NX - 1 ? i + 1 : i;
     for (let j = 0; j < NZ; j++) {
       const j0 = j ? j - 1 : 0, j1 = j < NZ - 1 ? j + 1 : j, k = i * NZ + j;
       const a = curH[i1 * NZ + j], b = curH[i0 * NZ + j], c = curH[i * NZ + j1], d = curH[i * NZ + j0], h = curH[k];
-      const hx = (a - b) * ix, hz = (c - d) / ((j1 - j0) * DZ), inv = 1 / Math.hypot(hx, 1, hz);
       pos[k * 3 + 1] = h;
-      nor[k * 3] = -hx * inv; nor[k * 3 + 1] = inv; nor[k * 3 + 2] = -hz * inv;
-      aAO[k] = 1 - Math.min(0.4, Math.max(0, (a + b + c + d) * 0.25 - h) * 0.8);
+      cAO[k] = 1 - Math.min(0.4, Math.max(0, (a + b + c + d) * 0.25 - h) * 0.8);
     }
   }
-  for (let v = 0; v < SV; v++) if (sMap[v] >= 0) { sPos[v * 3 + 1] = curH[sMap[v]]; sCol[v] = sCol[v + 1] = aC[sMap[v]]; }
-  geo.attributes.position.needsUpdate = geo.attributes.normal.needsUpdate = true;
-  geo.attributes.aC.needsUpdate = geo.attributes.aAO.needsUpdate = true;
-  sGeo.attributes.position.needsUpdate = sGeo.attributes.aC.needsUpdate = true;
-  dirty = true;
+  for (let v = 0; v < NV; v++) { const k = vmap[v]; aFlat[v * 3 + 1] = curH[k]; aC[v] = cC[k]; aAO[v] = cAO[k]; }
+  for (let v = 0; v < SV; v++) sCol[v] = cC[sK[v]];
+  geo.attributes.aFlat.needsUpdate = geo.attributes.aC.needsUpdate = geo.attributes.aAO.needsUpdate = true;
+  sGeo.attributes.aC.needsUpdate = true;
+  geoDirty = dirty = true;
 }
 function setContourMetric(m) {
   surfU.uLo.value = m.lo; surfU.uHi.value = m.hi; surfU.uStep.value = m.step; surfU.uIdx.value = m.idx;
@@ -1066,7 +1378,7 @@ function retarget(animate) {
   const hm = state.hm, cm = colorMetric();
   const hf = field(hm.id, state.smooth), cf = field(cm.id, state.smooth);
   if (morph) { tweens.delete(morph); morph.done(); }
-  const fromH = curH.slice(), fromC = aC.slice();
+  const fromH = curH.slice(), fromC = cC.slice();
   const kh = H0 / (hm.hi - hm.lo), kc = 1 / (cm.hi - cm.lo);
   for (let k = 0; k < N; k++) targetH[k] = (hf[k] - hm.lo) * kh;
   const rampNew = rampOf(cm).tex, rampChange = surfU.uRampA.value !== rampNew;
@@ -1086,7 +1398,7 @@ function retarget(animate) {
     const e = easeInOut(u);
     for (let k = 0; k < N; k++) {
       curH[k] = fromH[k] + (targetH[k] - fromH[k]) * e;
-      aC[k] = fromC[k] + (clamp((cf[k] - cm.lo) * kc, 0, 1) - fromC[k]) * e;
+      cC[k] = fromC[k] + (clamp((cf[k] - cm.lo) * kc, 0, 1) - fromC[k]) * e;
     }
     if (rampChange) surfU.uRampMix.value = e;
     skirtU.uSame.value = lerp(sameFrom, sameTo, e);
@@ -1121,6 +1433,15 @@ function boundsAt(p, target, r) {
     v3.set(x, y, z).project(probe);
     b.x0 = Math.min(b.x0, v3.x); b.x1 = Math.max(b.x1, v3.x); b.y0 = Math.min(b.y0, v3.y); b.y1 = Math.max(b.y1, v3.y);
   };
+  if (state.form === 'cyl') {
+    const rv = RC + KT * H0 * state.ex, yC = cylY(state.ex), xm = W / 2 + 0.6;
+    for (let n = 0; n < 24; n++) {
+      const a = n / 24 * 2 * Math.PI;
+      add(-xm, yC + rv * Math.cos(a), rv * Math.sin(a)); add(xm, yC + rv * Math.cos(a), rv * Math.sin(a));
+    }
+    for (const z of [-1, 1]) for (const x of [-1, 1]) add(x * W / 2, -BASE, z * (rv + 1));
+    return b;
+  }
   for (let c = 0; c < 4; c++) add(c & 1 ? W / 2 : -W / 2, -BASE, c & 2 ? D / 2 : -D / 2);
   for (let i = 0; i < NX; i = i < NX - 1 ? Math.min(i + 3, NX - 1) : NX) {
     for (let j = 0; j < NZ; j = j < NZ - 1 ? Math.min(j + 3, NZ - 1) : NZ) {
@@ -1133,7 +1454,7 @@ function boundsAt(p, target, r) {
 const poseOf = name => {
   const portrait = sw < sh * 0.95;
   const p = name === 'relief' && portrait ? { ...PRESETS.relief, theta: -1.12, phi: 0.98 } : PRESETS[name];
-  const target = new THREE.Vector3(0, p.ty * state.ex, 0);
+  const target = new THREE.Vector3(0, state.form === 'cyl' ? cylY(state.ex) : p.ty * state.ex, 0);
   // Platz, den die Legende belegt: breit links, schmal unten
   const lg = fixedRects[0];
   const padX = lg && sw >= 900 ? (lg[2] + 4) * p.reserve : 0, padY = lg && sw < 900 ? sh - lg[1] + 4 : 0;
@@ -1238,9 +1559,24 @@ function updateLegend() {
     last = t;
   });
   const sm = state.smooth === 'raw' ? '' : `, Fläche als ${SMOOTH_NAME[state.smooth]}`;
-  $('#lgContour').textContent = `Höhe: ${hm.name}. Linien alle ${fmtTick(hm.step)} ${hm.unit}, verstärkt alle ${fmtTick(hm.step * hm.idx)}. Sockel bei ${fmtTick(hm.lo)} ${hm.unit}${hm.id === 'co2' && hm.lo === 400 ? ' (Außenluft)' : ''}${sm}.`;
+  $('#lgContour').textContent = state.form === 'cyl'
+    ? `Höhe: ${hm.name}. Linien alle ${fmtTick(hm.step)} ${hm.unit}, verstärkt alle ${fmtTick(hm.step * hm.idx)}. Uhrzeit rund um den Zylinder: 6 Uhr oben, 12 Uhr vorn, 18 Uhr unten. Jede Windung ist ein Tag${sm}.`
+    : `Höhe: ${hm.name}. Linien alle ${fmtTick(hm.step)} ${hm.unit}, verstärkt alle ${fmtTick(hm.step * hm.idx)}. Sockel bei ${fmtTick(hm.lo)} ${hm.unit}${hm.id === 'co2' && hm.lo === 400 ? ' (Außenluft)' : ''}${sm}.`;
   $('#legend').title = $('#lgContour').textContent;
   $('#lgThresh').hidden = !(hm.id === 'co2' && hm.hi > 1000);
+  if (typeof drMetricChanged === 'function') drMetricChanged();
+  const lm = $('#lgMarks');
+  lm.hidden = !state.marks;
+  if (state.marks) {
+    let sw = 0, nw = 0, sf = 0, nf = 0;
+    for (let i = 0; i < NX; i++) for (let j = 0; j < NZ; j++) {
+      const v = raw[hm.id][i * NZ + j];
+      if (dayType[i]) { sf += v; nf++; } else { sw += v; nw++; }
+    }
+    lm.replaceChildren(el('span', 'mkey'), `Wochenende & Feiertage (NRW) farbig, Werktage blass. Ø ${nf ? fmt(hm, sf / nf) : '–'} gegenüber ${nw ? fmt(hm, sw / nw) : '–'} ${hm.unit}.`);
+    if (state.smooth !== 'raw') lm.append(el('span', 'sub2', ' Die Glättung verwischt den Wochenrhythmus; Rohdaten zeigen ihn.'));
+    lm.title = holidayList.length ? 'Feiertage im Zeitraum: ' + holidayList.join(', ') : '';
+  }
   requestAnimationFrame(measureFixed);
 }
 function measureFixed() {
@@ -1271,6 +1607,13 @@ function linePath(n, X, Y) {
   for (let k = 0; k < n; k++) d += (k ? 'L' : 'M') + X(k).toFixed(1) + ' ' + Y(k).toFixed(1);
   return d;
 }
+// Bänder für Wochenenden und Feiertage im Jahresverlauf (aufeinanderfolgende Tage gleicher Art zusammengefasst)
+const markBands = [];
+for (let i = 0; i < NX; i++) {
+  if (!dayType[i]) continue;
+  const cls = dayType[i] === 2 ? 'band-hol' : 'band-we', last = markBands[markBands.length - 1];
+  if (last && last.cls === cls && last.x1 === i - 0.5) last.x1 = i + 0.5; else markBands.push({ cls, x0: i - 0.5, x1: i + 0.5 });
+}
 function drawChart(svg, o) {
   const w = svg.clientWidth || 320, h = svg.clientHeight || 124;
   const ml = 46, mr = 12, mt = 12, mb = 20, pw = Math.max(40, w - ml - mr), ph = h - mt - mb;
@@ -1278,6 +1621,10 @@ function drawChart(svg, o) {
   const X = v => ml + (v - o.x0) / (o.x1 - o.x0) * pw;
   const Y = v => mt + (1 - (clamp(v, m.lo, m.hi) - m.lo) / (m.hi - m.lo)) * ph;
   let s = '';
+  for (const b of o.bands || []) {
+    const x0 = Math.max(ml, X(b.x0)), x1 = Math.min(ml + pw, X(b.x1));
+    if (x1 > x0) s += `<rect class="${b.cls}" x="${x0.toFixed(1)}" y="${mt}" width="${(x1 - x0).toFixed(1)}" height="${ph}"/>`;
+  }
   for (const v of m.ticks) {
     s += `<line class="g" x1="${ml}" x2="${ml + pw}" y1="${Y(v).toFixed(1)}" y2="${Y(v).toFixed(1)}"/>`;
     s += `<text class="ty" x="${ml - 8}" y="${Y(v).toFixed(1)}" dy=".34em">${fmtTick(v)}</text>`;
@@ -1305,6 +1652,7 @@ function updatePanel() {
   const s = sel(), k = s.i * NZ + s.j, hm = state.hm, smoothed = state.smooth !== 'raw';
   const shown = field(hm.id, state.smooth), rw = raw[hm.id];
   $('#roWhen').replaceChildren(dateLong(s.i), ' ', el('span', '', `· ${slotLabel(s.j)} Uhr`));
+  if (state.marks && dayType[s.i]) $('#roWhen').append(el('span', 'daytag', dayType[s.i] === 2 ? holName[s.i] : 'Wochenende'));
   for (const m of METRICS) {
     rows[m.id].b.textContent = fmt(m, raw[m.id][k]);
     rows[m.id].row.className = m === hm ? 'on' : '';
@@ -1318,8 +1666,14 @@ function updatePanel() {
 
   $('#capDay').textContent = `${hm.name} am ${dateShort(s.i)} in ${hm.unit}`;
   $('#capYear').textContent = `${hm.name} um ${slotLabel(s.j)} Uhr in ${hm.unit}`;
-  const med = slotMedian(hm.id);
-  const daySeries = [{ cls: 's-thin', n: NZ, x: j => j / 2, y: j => med[j] }];
+  const daySeries = [];
+  if (state.marks) {
+    const mw = slotMedian(hm.id, 0), mf = slotMedian(hm.id, 1);
+    daySeries.push({ cls: 's-thin', n: NZ, x: j => j / 2, y: j => mw[j] }, { cls: 's-dash', n: NZ, x: j => j / 2, y: j => mf[j] });
+  } else {
+    const med = slotMedian(hm.id);
+    daySeries.push({ cls: 's-thin', n: NZ, x: j => j / 2, y: j => med[j] });
+  }
   const yearSeries = [];
   if (smoothed) {
     daySeries.push({ cls: 's-thin', n: NZ, x: j => j / 2, y: j => rw[s.i * NZ + j] });
@@ -1327,7 +1681,9 @@ function updatePanel() {
   }
   daySeries.push({ cls: 's-main', n: NZ, x: j => j / 2, y: j => shown[s.i * NZ + j] });
   yearSeries.push({ cls: 's-main', n: NX, x: i => i, y: i => shown[i * NZ + s.j] });
-  keys($('#keysDay'), smoothed ? [['', SMOOTH_NAME[state.smooth]], ['thin', 'Messwerte und Median aller Tage']] : [['', 'dieser Tag'], ['thin', 'Median aller Tage']]);
+  keys($('#keysDay'), state.marks
+    ? [['', smoothed ? SMOOTH_NAME[state.smooth] : 'dieser Tag'], ['thin', smoothed ? 'Messwerte, Median Werktage' : 'Median Werktage'], ['dash', 'Median Wochenende & Feiertage']]
+    : smoothed ? [['', SMOOTH_NAME[state.smooth]], ['thin', 'Messwerte und Median aller Tage']] : [['', 'dieser Tag'], ['thin', 'Median aller Tage']]);
   keys($('#keysYear'), smoothed ? [['', SMOOTH_NAME[state.smooth]], ['thin', 'Messwerte']] : []);
   if (!state.table) {
     drawChart($('#svgDay'), {
@@ -1335,7 +1691,7 @@ function updatePanel() {
       xTicks: [0, 6, 12, 18, 24].map(hr => ({ tick: hr, at: hr, label: hr + ' Uhr' })),
     });
     drawChart($('#svgYear'), {
-      metric: hm, x0: 0, x1: NX - 1, selX: s.i, selY: shown[k], series: yearSeries,
+      metric: hm, x0: 0, x1: NX - 1, selX: s.i, selY: shown[k], series: yearSeries, bands: state.marks ? markBands : null,
       xTicks: months.map((m, n) => ({ tick: n ? m.i0 - 0.5 : null, at: (m.i0 + m.i1) / 2, label: MON[m.mo], w: m.i1 - m.i0 + 1 })),
     });
   } else updateTable();
@@ -1378,6 +1734,7 @@ $('#btnTable').addEventListener('click', () => {
 // ---------- Auswahl ----------
 function selectionChanged() {
   const s = sel();
+  if (typeof drSel === 'function') drSel();
   surfU.uSel.value.set(X0 + s.i * DX, Z0 + s.j * DZ);
   dirty = panelDirty = true;
 }
@@ -1392,14 +1749,20 @@ function pick(e) {
   ndc.set((e.clientX - r.left) / r.width * 2 - 1, -(e.clientY - r.top) / r.height * 2 + 1);
   raycaster.setFromCamera(ndc, camera);
   const hit = raycaster.intersectObject(surface, false)[0];
-  if (!hit) return null;
-  const p = surface.worldToLocal(hit.point.clone());
-  return { i: clamp(Math.round((p.x - X0) / DX), 0, NX - 1), j: clamp(Math.round((p.z - Z0) / DZ), 0, NZ - 1) };
+  if (!hit || !hit.face) return null;
+  const p = hit.point;
+  let best = -1, bd = Infinity;
+  for (const v of [hit.face.a, hit.face.b, hit.face.c]) {
+    const d = (bPos[v * 3] - p.x) ** 2 + (bPos[v * 3 + 1] - p.y) ** 2 + (bPos[v * 3 + 2] - p.z) ** 2;
+    if (d < bd) { bd = d; best = v; }
+  }
+  const k = vmap[best];
+  return { i: Math.floor(k / NZ), j: k % NZ };
 }
 const tip = $('#tip');
 function showTip(e, s) {
   const k = s.i * NZ + s.j, hm = state.hm, cm = colorMetric();
-  tip.replaceChildren(el('i', '', `${WD[dayDate(s.i).getUTCDay()]}, ${dateShort(s.i)} · ${slotLabel(s.j)} Uhr`));
+  tip.replaceChildren(el('i', '', `${WD[dayDate(s.i).getUTCDay()]}, ${dateShort(s.i)} · ${slotLabel(s.j)} Uhr${state.marks && dayType[s.i] === 2 ? ' · ' + holName[s.i] : ''}`));
   const add = (m, v, what) => tip.append(el('br'), el('b', '', `${fmt(m, v)} ${m.unit}`), ' ' + what);
   if (state.smooth !== 'raw') add(hm, field(hm.id, state.smooth)[k], `${hm.name}, ${SMOOTH_NAME[state.smooth]}`);
   add(hm, raw[hm.id][k], state.smooth === 'raw' ? hm.name : 'gemessen');
@@ -1502,8 +1865,195 @@ rngEx.addEventListener('input', () => {
 });
 $('#segView').addEventListener('click', e => {
   const b = e.target.closest('button');
-  if (b) goView(b.dataset.v);
+  if (b && !b.disabled) goView(b.dataset.v);
 });
+
+// Form: Fläche oder Zylinder. Die Uhrzeit rollt sich um eine Achse längs der Tage.
+const segForm = $('#segForm');
+let formTween = null;
+function setForm(f) {
+  if (state.form === f) return;
+  state.form = f;
+  press(segForm, f);
+  const cyl = f === 'cyl';
+  controls.maxPolarAngle = Math.PI * (cyl ? 0.94 : 0.495);
+  if (formTween) tweens.delete(formTween);
+  const from = bendT, to = cyl ? 1 : 0, ms = 2000 * Math.abs(to - from);
+  formTween = tween(ms, u => { bendT = lerp(from, to, u); }, () => { bendT = to; formTween = null; });
+  goView(state.view || 'relief', Math.max(1100, ms));
+  updateLegend();
+  $('#gl').setAttribute('aria-label', cyl
+    ? '3D-Zylinder der Messwerte: Datum entlang der Achse von links nach rechts, Uhrzeit rund um den Zylinder, Messwert als Höhe. Pfeiltasten bewegen die Auswahl.'
+    : '3D-Relief der Messwerte: Datum von links nach rechts, Uhrzeit von hinten nach vorn, Messwert als Höhe. Pfeiltasten bewegen die Auswahl.');
+}
+segForm.addEventListener('click', e => {
+  const b = e.target.closest('button');
+  if (b) setForm(b.dataset.v);
+});
+
+// Kalender-Hervorhebung ein/aus
+const segMarks = $('#segMarks');
+let markTween = null;
+segMarks.addEventListener('click', () => {
+  state.marks = !state.marks;
+  press(segMarks, state.marks ? 'marks' : '');
+  if (markTween) tweens.delete(markTween);
+  const from = surfU.uMarkOn.value, to = state.marks ? 1 : 0;
+  markTween = tween(350, u => { surfU.uMarkOn.value = lerp(from, to, u); }, () => { markTween = null; });
+  updateLegend();
+  panelDirty = true;
+  if (!drawer.hidden) drRows();
+});
+
+// ---------- Tabelle aller Werte ----------
+const dayAgg = {};
+for (const m of METRICS) {
+  const a = raw[m.id], mean = new Float32Array(NX), mn = new Float32Array(NX), mx = new Float32Array(NX), jmn = new Uint8Array(NX), jmx = new Uint8Array(NX);
+  for (let i = 0; i < NX; i++) {
+    let sum = 0;
+    for (let j = 0; j < NZ; j++) {
+      const v = a[i * NZ + j];
+      sum += v;
+      if (!j || v < mn[i]) { mn[i] = v; jmn[i] = j; }
+      if (!j || v > mx[i]) { mx[i] = v; jmx[i] = j; }
+    }
+    mean[i] = sum / NZ;
+  }
+  dayAgg[m.id] = { mean, mn, mx, jmn, jmx };
+}
+const over1000 = new Float32Array(NX);
+for (let i = 0; i < NX; i++) { let c = 0; for (let j = 0; j < NZ; j++) if (raw.co2[i * NZ + j] > 1000) c++; over1000[i] = c / 2; }
+const nfH = new Intl.NumberFormat('de-DE', { minimumFractionDigits: 1, maximumFractionDigits: 1 });
+
+const drawer = $('#drawer'), drScroll = $('#drScroll'), drHead = $('#drHead'), drBody = $('#drBody');
+const tbl = { mode: 'slot', filter: 'all', key: 'date', dir: 1, order: [], cols: [], rh: 27, hmId: null };
+const esc = t => String(t).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+const fmtDate = i => {
+  const d = dayDate(i);
+  return `${WD[d.getUTCDay()]} ${String(d.getUTCDate()).padStart(2, '0')}.${String(d.getUTCMonth() + 1).padStart(2, '0')}.${d.getUTCFullYear()}`;
+};
+const typeText = i => dayType[i] === 2 ? holName[i] : dayType[i] === 1 ? (dayDate(i).getUTCDay() === 6 ? 'Samstag' : 'Sonntag') : '';
+const withTime = (txt, j) => `${txt}<span class="dr-t"> · ${slotLabel(j)}</span>`;
+const dayOfRow = r => tbl.mode === 'slot' ? Math.floor(r / NZ) : r;
+
+function columns() {
+  if (tbl.mode === 'slot') {
+    return [
+      { key: 'date', label: 'Datum', l: 1, v: k => k, f: k => fmtDate(Math.floor(k / NZ)) },
+      { key: 'time', label: 'Uhrzeit', v: k => (k % NZ) * N + k, f: k => slotLabel(k % NZ) },
+      { key: 'type', label: 'Tag', l: 1, t: 1, v: k => dayType[Math.floor(k / NZ)] * N + k, f: k => typeText(Math.floor(k / NZ)) },
+      ...METRICS.map(m => ({ key: m.id, label: `${m.name} (${m.unit})`, num: 1, v: k => raw[m.id][k], f: k => fmt(m, raw[m.id][k]) })),
+    ];
+  }
+  const hm = state.hm, A = dayAgg[hm.id];
+  const cols = [
+    { key: 'date', label: 'Datum', l: 1, v: i => i, f: fmtDate },
+    { key: 'type', label: 'Tag', l: 1, t: 1, v: i => dayType[i] * NX + i, f: typeText },
+    { key: 'h-mean', label: `${hm.name} Ø (${hm.unit})`, num: 1, v: i => A.mean[i], f: i => fmt(hm, A.mean[i]) },
+    { key: 'h-min', label: `${hm.name} min`, num: 1, html: 1, v: i => A.mn[i], f: i => withTime(fmt(hm, A.mn[i]), A.jmn[i]) },
+    { key: 'h-max', label: `${hm.name} max`, num: 1, html: 1, v: i => A.mx[i], f: i => withTime(fmt(hm, A.mx[i]), A.jmx[i]) },
+    { key: 'over', label: 'CO₂ > 1.000 ppm', num: 1, v: i => over1000[i], f: i => nfH.format(over1000[i]) + ' h' },
+  ];
+  for (const m of METRICS) if (m !== hm) cols.push({ key: m.id + '-mean', label: `${m.name} Ø (${m.unit})`, num: 1, v: i => dayAgg[m.id].mean[i], f: i => fmt(m, dayAgg[m.id].mean[i]) });
+  return cols;
+}
+function drBuild() {
+  const cols = tbl.cols = columns();
+  tbl.hmId = state.hm.id;
+  let col = cols.find(c => c.key === tbl.key);
+  if (!col) { tbl.key = 'date'; tbl.dir = 1; col = cols[0]; }
+  const n = tbl.mode === 'slot' ? N : NX, list = [], vals = new Float64Array(n);
+  for (let r = 0; r < n; r++) {
+    const t = dayType[dayOfRow(r)];
+    if ((tbl.filter === 'work' && t) || (tbl.filter === 'free' && !t)) continue;
+    list.push(r);
+    vals[r] = col.v(r);
+  }
+  list.sort((a, b) => (vals[a] - vals[b]) * tbl.dir || a - b);
+  tbl.order = list;
+  drHead.innerHTML = '<tr>' + cols.map(c => {
+    const on = c.key === tbl.key, arr = on ? (tbl.dir > 0 ? '▲' : '▼') : '';
+    return `<th class="${c.l ? 'l' : ''}"${on ? ` aria-sort="${tbl.dir > 0 ? 'ascending' : 'descending'}"` : ''}><button type="button" data-k="${c.key}">${esc(c.label)}<span class="arr">${arr}</span></button></th>`;
+  }).join('') + '</tr>';
+  const what = tbl.mode === 'slot' ? 'Messungen' : 'Tage';
+  $('#drCount').textContent = `${list.length.toLocaleString('de-DE')} ${what}`;
+  $('#drFoot').textContent = tbl.mode === 'slot'
+    ? 'Spaltenkopf sortiert (Messwerte zuerst absteigend) · Zeile wählt den Zeitpunkt · kursiv: Lücke, interpoliert'
+    : `Spaltenkopf sortiert (Messwerte zuerst absteigend) · Zeile wählt den Tag zum Höchstwert ${state.hm.name} · min/max mit Uhrzeit`;
+  drScroll.scrollTop = 0;
+  drRows();
+}
+function drRows() {
+  const order = tbl.order, cols = tbl.cols, total = order.length, rh = tbl.rh;
+  const top = Math.max(0, drScroll.scrollTop - drHead.offsetHeight), hgt = drScroll.clientHeight;
+  const first = Math.max(0, Math.floor(top / rh) - 10), last = Math.min(total, Math.ceil((top + hgt) / rh) + 10);
+  const s = sel(), selR = tbl.mode === 'slot' ? s.i * NZ + s.j : s.i;
+  let h = `<tr class="sp"><td colspan="${cols.length}" style="height:${first * rh}px"></td></tr>`;
+  for (let n = first; n < last; n++) {
+    const r = order[n], d = dayOfRow(r);
+    const cls = 'row' + (state.marks && dayType[d] ? ' free' : '') + (r === selR ? ' sel' : '');
+    h += `<tr class="${cls}" data-r="${r}">`;
+    for (const c of cols) {
+      const tc = (c.l ? 'l ' : '') + (c.t ? 't ' : '') + (c.key === tbl.key ? 'sk ' : '') + (tbl.mode === 'slot' && c.num && gapSet.has(r) ? 'ip' : '');
+      h += `<td class="${tc.trim()}">${c.html ? c.f(r) : esc(c.f(r))}</td>`;
+    }
+    h += '</tr>';
+  }
+  h += `<tr class="sp"><td colspan="${cols.length}" style="height:${(total - last) * rh}px"></td></tr>`;
+  drBody.innerHTML = h;
+  const probeRow = drBody.querySelector('tr.row');
+  if (probeRow && Math.abs(probeRow.offsetHeight - rh) > 0.5) { tbl.rh = probeRow.offsetHeight; drRows(); }
+}
+function drSel() {
+  if (drawer.hidden) return;
+  const s = sel(), selR = String(tbl.mode === 'slot' ? s.i * NZ + s.j : s.i);
+  for (const tr of drBody.querySelectorAll('tr.row')) tr.classList.toggle('sel', tr.dataset.r === selR);
+}
+let drRaf = 0;
+drScroll.addEventListener('scroll', () => { if (!drRaf) drRaf = requestAnimationFrame(() => { drRaf = 0; drRows(); }); });
+new ResizeObserver(() => { if (!drawer.hidden) drRows(); }).observe(drScroll);
+drHead.addEventListener('click', e => {
+  const b = e.target.closest('button');
+  if (!b) return;
+  const col = tbl.cols.find(c => c.key === b.dataset.k);
+  if (tbl.key === b.dataset.k) tbl.dir = -tbl.dir; else { tbl.key = b.dataset.k; tbl.dir = col && col.num ? -1 : 1; }
+  drBuild();
+});
+drBody.addEventListener('click', e => {
+  const tr = e.target.closest('tr.row');
+  if (!tr) return;
+  const r = +tr.dataset.r;
+  if (tbl.mode === 'slot') setPin(Math.floor(r / NZ), r % NZ);
+  else { const A = dayAgg[state.hm.id]; setPin(r, tbl.key === 'h-min' ? A.jmn[r] : A.jmx[r]); }
+});
+const segRows = $('#segRows'), segFilter = $('#segFilter');
+segRows.addEventListener('click', e => {
+  const b = e.target.closest('button');
+  if (!b || tbl.mode === b.dataset.v) return;
+  tbl.mode = b.dataset.v;
+  press(segRows, tbl.mode);
+  drBuild();
+});
+segFilter.addEventListener('click', e => {
+  const b = e.target.closest('button');
+  if (!b || tbl.filter === b.dataset.v) return;
+  tbl.filter = b.dataset.v;
+  press(segFilter, tbl.filter);
+  drBuild();
+});
+press(segRows, tbl.mode);
+press(segFilter, tbl.filter);
+function setDrawer(open) {
+  drawer.hidden = !open;
+  $('#btnAll').setAttribute('aria-expanded', open);
+  $('#btnAll').textContent = open ? 'Tabelle schließen' : 'Alle Werte, sortierbar';
+  if (open) { drBuild(); drScroll.focus({ preventScroll: true }); } else $('#btnAll').focus({ preventScroll: true });
+}
+$('#btnAll').addEventListener('click', () => setDrawer(drawer.hidden));
+$('#drClose').addEventListener('click', () => setDrawer(false));
+document.addEventListener('keydown', e => { if (e.key === 'Escape' && !drawer.hidden) setDrawer(false); });
+// Tageszeilen hängen an der Höhen-Größe: bei Wechsel neu aufbauen
+function drMetricChanged() { if (!drawer.hidden && tbl.mode === 'day' && tbl.hmId !== state.hm.id) drBuild(); }
 
 // ---------- Kopfzeile ----------
 {
@@ -1558,6 +2108,7 @@ function resize() {
 }
 press(segHeight, state.hm.id);
 press($('#segSmooth'), state.smooth);
+press(segForm, state.form);
 applyTheme();
 setContourMetric(state.hm);
 contourMetric = state.hm;
