@@ -355,7 +355,10 @@ def main():
         except (urllib.error.URLError, TimeoutError) as e:
             print("Wikidata nicht erreichbar (%s) – weiter ohne neue Anreicherung." % e)
             enrichment = {k: cache[k] for k in (r["imdb"] or "t:" + r["id"] for r in rows) if k in cache}
-    enrichment = {k: {f: x for f, x in v.items() if f not in ("en", "ni")} for k, v in enrichment.items()}
+    # "en" (Artikel mit dem Plakat) bleibt nur stehen, solange das Plakat noch offen ist:
+    # Dann holt es der Browser der Besucher:innen selbst nach.
+    enrichment = {k: {f: x for f, x in v.items() if f != "ni" and (f != "en" or not (v.get("img") or v.get("ni")))}
+                  for k, v in enrichment.items()}
     if args.download_posters and not args.offline:
         download_posters(rows, enrichment)
     for rec in enrichment.values():  # Zählparameter der Wikipedia-API braucht niemand

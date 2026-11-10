@@ -20,7 +20,9 @@
   const SPARQL = "https://query.wikidata.org/sparql";
   const WIKI_API = "https://en.wikipedia.org/w/api.php";
 
+  const POSTER_KEY = "fr.wp.v1";
   let cache = U.store.get(CACHE_KEY, {}) || {};
+  let pcache = U.store.get(POSTER_KEY, {}) || {}; // Artikel → Plakat-Adresse ("" = Artikel hat kein Bild)
   let seeded = {}; // aus data/movies.js (vorab angereichert)
   const failedImg = new Set();
   let current = null; // laufender Suchdurchgang
@@ -33,9 +35,13 @@
     seeded = enrichment || {};
   }
   // movies.js geht vor: dort stehen auch lokale Plakate (img) und die Genres von Hand (th)
+  // Fehlt dort das Plakat (rec.en nennt nur den Artikel), ergänzt es der Browser aus seinem Cache.
   function get(key) {
-    return seeded[key] || cache[key] || null;
+    const rec = seeded[key] || cache[key] || null;
+    if (rec && !rec.img && rec.en && pcache[rec.en]) return Object.assign({}, rec, { img: pcache[rec.en] });
+    return rec;
   }
+  const savePosters = U.debounce(() => U.store.set(POSTER_KEY, pcache), 800);
   const saveCache = U.debounce(() => {
     if (!U.store.set(CACHE_KEY, cache)) {
       // Speicher voll: Besetzung kürzen und erneut versuchen
@@ -95,6 +101,14 @@
       'UNION { ?l schema:about ?item ; schema:isPartOf <https://de.wikipedia.org/> . BIND("dw" AS ?p) } }';
   }
 
+  const wikiTitle = (url) => {
+    try {
+      return decodeURIComponent(url.split("/wiki/")[1] || "").replace(/_/g, " ");
+    } catch (e) {
+      return "";
+    }
+  };
+
   // SPARQL-Zeilen → ein Datensatz je IMDb-ID (identisch zu tools/build_movies.py)
   function collect(bindings) {
     const out = {};
@@ -125,18 +139,11 @@
       if (r.l.length) rec.l = r.l.slice(0, 3);
       if (r.dw || r.en) rec.wp = r.dw || r.en;
       if (r.po) rec.img = r.po.replace(/^http:/, "https:") + "?width=500";
-      recs[imdb] = { rec, en: r.en };
+      if (!rec.img && r.en) rec.en = wikiTitle(r.en); // Artikel, in dem das Plakat steht
+      recs[imdb] = rec;
     }
     return recs;
   }
-
-  const wikiTitle = (url) => {
-    try {
-      return decodeURIComponent(url.split("/wiki/")[1] || "").replace(/_/g, " ");
-    } catch (e) {
-      return "";
-    }
-  };
 
   // Plakate aus den englischen Artikeln (dort als Bildzitat hinterlegt)
   async function posters(titles) {
@@ -163,20 +170,7 @@
     const ids = films.map((f) => f.imdb).filter((i) => /^tt\d+$/.test(i));
     const data = ids.length ? await fetchJson(SPARQL + "?format=json&query=" + encodeURIComponent(sparql(ids))) : null;
     const recs = data ? collect((data.results && data.results.bindings) || []) : {};
-    const need = Object.values(recs).filter((r) => !r.rec.img && r.en).map((r) => wikiTitle(r.en)).filter(Boolean);
-    let imgs = {};
-    try {
-      imgs = await posters([...new Set(need)]);
-    } catch (e) {
-      if (e.rate) throw e; // ohne Plakate weitermachen, die Metadaten sind schon da
-    }
-    return films.map((f) => {
-      const hit = recs[f.imdb];
-      if (!hit) return { t: Date.now() };
-      const img = !hit.rec.img && hit.en ? imgs[wikiTitle(hit.en)] : null;
-      if (img) hit.rec.img = img;
-      return hit.rec;
-    });
+    return films.map((f) => recs[f.imdb] || { t: Date.now() });
   }
 
   function needs(film) {
@@ -186,19 +180,30 @@
     return !rec.q && rec.t && Date.now() - rec.t > RETRY_NONE_MS;
   }
 
-  // Stapelweise mit höflichem Abstand; bei 429 Pause, bei wiederholten Netzfehlern
-  // (offline, blockiert) für diese Sitzung aufgeben.
+  const posterOpen = (film) => {
+    const rec = seeded[film.key] || cache[film.key];
+    return !!(rec && !rec.img && rec.en && !(rec.en in pcache));
+  };
+
+  // Zwei Durchgänge, stapelweise mit höflichem Abstand: erst die Metadaten aus Wikidata,
+  // dann die Plakate aus der Wikipedia (auch für Filme aus movies.js, denen nur das Plakat fehlt).
+  // Bei 429 Pause, bei wiederholten Netzfehlern (offline, blockiert) für diese Sitzung aufgeben.
   // onProgress(erledigt, gesamt, gestoppt, fertig) – gestoppt: "user" (Stopp-Knopf, Schalter,
-  // neue Daten) oder "net" (Wikidata nicht erreichbar).
+  // neue Daten) oder "net" (nicht erreichbar).
   async function run(films, onResult, onProgress) {
     if (!online() || !window.fetch) return;
     stop(); // ein älterer Durchgang läuft nach seiner letzten Anfrage aus
     const todo = films.filter(needs);
-    if (!todo.length) return;
+    const total = todo.length + films.filter((f) => needs(f) || posterOpen(f)).length;
+    if (!total) return;
     const job = (current = { stop: false });
     let doneCount = 0, netFails = 0;
-    const total = todo.length;
     onProgress && onProgress(0, total);
+    const failed = async (e) => {
+      if (e.rate) await U.wait(30000);
+      else if (++netFails >= 3) job.stop = job.stop || "net";
+      else await U.wait(1500);
+    };
     while (todo.length && !job.stop) {
       const batch = todo.splice(0, BATCH);
       try {
@@ -213,12 +218,31 @@
         doneCount += batch.length;
       } catch (e) {
         todo.unshift(...batch);
-        if (e.rate) await U.wait(30000);
-        else if (++netFails >= 3) job.stop = job.stop || "net";
-        else await U.wait(1500);
+        await failed(e);
       }
       onProgress && onProgress(doneCount, total, job.stop);
       if (todo.length && !job.stop) await U.wait(400);
+    }
+    const open = films.filter(posterOpen);
+    while (open.length && !job.stop) {
+      const batch = open.splice(0, BATCH);
+      const en = (film) => (seeded[film.key] || cache[film.key]).en;
+      try {
+        const imgs = await posters([...new Set(batch.map(en))]);
+        if (job.stop) break;
+        batch.forEach((film) => {
+          pcache[en(film)] = imgs[en(film)] || "";
+          onResult && onResult(film, get(film.key));
+        });
+        savePosters();
+        netFails = 0;
+        doneCount += batch.length;
+      } catch (e) {
+        open.unshift(...batch);
+        await failed(e);
+      }
+      onProgress && onProgress(doneCount, total, job.stop);
+      if (open.length && !job.stop) await U.wait(400);
     }
     if (current === job) current = null;
     onProgress && onProgress(doneCount, total, job.stop, true);
@@ -229,7 +253,9 @@
   }
   function clear() {
     cache = {};
+    pcache = {};
     U.store.del(CACHE_KEY);
+    U.store.del(POSTER_KEY);
     failedImg.clear();
   }
   // Alles, was für die gegebenen Filme bekannt ist (für den movies.js-Export)

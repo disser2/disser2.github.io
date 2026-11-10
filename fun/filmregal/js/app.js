@@ -604,7 +604,7 @@
   function enrich() {
     if (!FR.enrich.online()) return;
     const pending = [];
-    let found = 0, posters = 0;
+    const seenKeys = new Map(); // ein Film kann in beiden Durchgängen (Daten, Plakat) vorkommen
     const me = (lookup = { done: 0, total: 0, paused: false });
     const flush = U.debounce(() => {
       if (!pending.length) return;
@@ -622,8 +622,7 @@
     }, 700);
     FR.enrich.run(state.view === "spine" ? films : order.concat(films.filter((b) => !order.includes(b))),
       (b, rec) => {
-        if (rec.q) found++;
-        if (rec.img) posters++;
+        seenKeys.set(b.key, rec);
         pending.push([b, rec]);
         flush();
       },
@@ -637,8 +636,10 @@
           return;
         }
         if (finished) {
+          const recs = [...seenKeys.values()];
+          const found = recs.filter((r) => r.q).length, posters = recs.filter((r) => r.img).length;
           if (stopped && found === 0) FR.ui.toast("Wikidata ist gerade nicht erreichbar – die Hüllen bleiben selbst gestaltet.", { ms: 5000 });
-          else if (total > 5) FR.ui.toast("Fertig: <strong>" + found + " Filme</strong> bei Wikidata gefunden, " + posters + " mit Plakat.", { ms: 5000 });
+          else if (total > 5) FR.ui.toast("Fertig: <strong>" + posters + " Plakate</strong> und Daten zu " + found + " Filmen geholt.", { ms: 5000 });
           else FR.ui.hideToast();
           return;
         }
