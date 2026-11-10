@@ -31,6 +31,7 @@ bekannter Route wird Start- oder Zielflughafen genommen, wenn man dort steht.
 | `geo.js` | Basiskarte: Landflächen und Seen weltweit (Natural Earth, stark vereinfacht) |
 | `data.js` | 7.011 Flughäfen, 1.248 Airline-Codes, 192 Kennzeichen-Präfixe, 100 Typen der Sammelliste |
 | `icons/` | Homescreen-Icons (120/152/167/180 px), erzeugt von `tools/make_icons.py` |
+| `apple-touch-icon.png` | Kopie von `icon-180.png` – iOS fragt diese Datei von selbst ab, wenn die App an der Wurzel der Domain liegt |
 | `standalone.html` | Einzeldatei-Variante (alles inline), erzeugt von `tools/build_standalone.py` |
 | `tools/` | Python-Skripte, mit denen `data.js`, `geo.js` und die Icons erzeugt wurden |
 
@@ -127,3 +128,8 @@ und Polygonen und schreibt das PNG direkt mit `zlib`. Raster und Signaturband
 (Strecke mit zwei Halten) sind identisch mit dem Icon von *ICE Verbindungen*:
 statt der Wortmarke „ICE“ steht dort ein Flugzeug in Draufsicht, statt Rot ein
 blauer Verlauf.
+
+iOS speichert Homescreen-Icons pro URL zwischen. Darum hängen die Icon-Links in
+`index.html` eine Versionsnummer an (`icons/icon-180.png?v=2`). Nach jeder
+Icon-Änderung die Nummer hochzählen, die App vom Homescreen löschen und neu
+hinzufügen – sonst zeigt iOS weiter das alte (oder ein leeres) Icon.

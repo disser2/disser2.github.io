@@ -31,7 +31,7 @@ def inline_icon(m):
     return 'href="data:image/png;base64,' + data + '"'
 
 
-html = re.sub(r'href="(icons/icon-\d+\.png)"', inline_icon, html)
+html = re.sub(r'href="(icons/icon-\d+\.png)(?:\?v=\d+)?"', inline_icon, html)
 
 assert "style.css" not in html and 'src="app.js"' not in html, "Einbetten fehlgeschlagen"
 assert "icons/icon-" not in html, "Icons nicht eingebettet"

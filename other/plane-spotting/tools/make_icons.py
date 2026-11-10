@@ -139,3 +139,9 @@ for s in SIZES:
     p = os.path.join(OUT, "icon-%d.png" % s)
     write_png(p, s, render(s, sh))
     print("icon-%d.png  %.1f KB" % (s, os.path.getsize(p) / 1024))
+
+# iOS fragt /apple-touch-icon.png auch ohne <link> ab, wenn die App an der
+# Wurzel der Domain liegt - zusaetzliche Absicherung neben den Links in index.html
+root = os.path.join(BASE, "..", "apple-touch-icon.png")
+io.open(root, "wb").write(io.open(os.path.join(OUT, "icon-180.png"), "rb").read())
+print("apple-touch-icon.png (Kopie von icon-180.png)")
